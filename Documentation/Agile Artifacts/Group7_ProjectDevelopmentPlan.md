@@ -12,10 +12,10 @@
 
 | NamE           | Email                     | Role |
 | -------------- | ------------------------- | ---- |
-| Kenny Bacdayan | kbacdayan@my.waketech.edu | TBD  |
-| Caleb Fowlkes  | cjfowlkes@my.waketech.edu | TBD  |
-| Tristin Gatt   | tjgatt@my.waketech.edu    | TBD  |
-| Kim Mayo       | kamayo@my.waketech.edu    | TBD  |
+| Kenny Bacdayan | kbacdayan@my.waketech.edu | Testing Lead  |
+| Caleb Fowlkes  | cjfowlkes@my.waketech.edu | Technical Writer  |
+| Tristin Gatt   | tjgatt@my.waketech.edu    | Software Architect  |
+| Kim Mayo       | kamayo@my.waketech.edu    | Product Owner  |
 | Rachel Mizer   | ramizer@my.waketech.edu   | TBD  |
 | Tyler Royal    | taroyal@my.waketech.edu   | TBD  |
 
@@ -23,7 +23,7 @@
 
 📌 *Provide a broad, high-level statement that articulates the desired outcome of the project. For example: “provide excellent customer service”*
 
-Optimize the order fulfillment process for businesses and their customers. 
+Provide a lightweight, web-based ordering software with a customer facing ordering experience and business-owner facing dashboard that allows for menu customization, inventory control, sales data reports, and supplier management.
 
 ## Project Objectives
 
