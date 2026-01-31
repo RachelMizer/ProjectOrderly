@@ -108,7 +108,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 #### Technology & Tools:
 
-- **Development**:
+- **Development**: React / Django / DRF / SimpleJWT / AWS / SQLite
 - **Project Management**: Trello for sprint tracking and task management
 - **Communication**: Microsoft Teams, Outlook
 - **Documentation**: Google Drive, Microsoft Teams
