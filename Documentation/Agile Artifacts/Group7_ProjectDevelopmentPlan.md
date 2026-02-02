@@ -25,8 +25,6 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 ## Project Objectives
 
-📌 *List at least 3 specific, measurable, achievable, relevant, and time-bound (SMART) target that a project aims to achieve. It outlines the tangible outcomes or results that the project intends to deliver. For example: “reduce customer wait time to one minute”* 
-
 1. **Deliver a fully-functional application by April 24th, 2026 that** includes a customer ordering interface, business management dashboard, and basic inventory tracking with demonstrated order processing capabilities. 
 2. **Reduce order processing time by 50%** compared to traditional manual ordering methods by implementing an intuitive self-service interface which minimizes human error and wait times. 
 3. **Achieve 90% user satisfaction rating** during prototype testing by providing a responsive design that works across multiple devices such as tablets, kiosks, and mobile devices with a user-friendly navigation system.
