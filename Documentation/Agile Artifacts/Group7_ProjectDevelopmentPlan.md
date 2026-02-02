@@ -21,8 +21,6 @@
 
 ## Project Goal
 
-📌 *Provide a broad, high-level statement that articulates the desired outcome of the project. For example: “provide excellent customer service”*
-
 Provide a lightweight, web-based ordering software with a customer facing ordering experience and business-owner facing dashboard that allows for menu customization, inventory control, sales data reports, and supplier management.
 
 ## Project Objectives
@@ -31,11 +29,9 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 1. **Deliver a fully-functional application by April 24th, 2026 that** includes a customer ordering interface, business management dashboard, and basic inventory tracking with demonstrated order processing capabilities. 
 2. **Reduce order processing time by 50%** compared to traditional manual ordering methods by implementing an intuitive self-service interface which minimizes human error and wait times. 
-3. **Achieve 90% user satisfaction rating** during prototype testing by providing a responsive design that works across multiple devices such as tablets, kiosks, and mobile devices with a user-friendly navigation system. 
+3. **Achieve 90% user satisfaction rating** during prototype testing by providing a responsive design that works across multiple devices such as tablets, kiosks, and mobile devices with a user-friendly navigation system.
 
 ## Project Scope
-
-📌 *Specify the boundaries and extent of the project, outlining what is included and what is excluded. Provides a clear understanding of the project's focus.*
 
 #### In-Scope:
 
@@ -45,7 +41,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 - Responsive design compatible with tables, kiosks, and mobile devices
 - User authentication and role-based access control
 - Simulated payment processing for protoype demonstration
-- Order management system tracking submissions through fulfillment.
+- Prototype supplier order management system tracking orders from submission to fulfillment.
 
 #### Out of Scope:
 
@@ -58,9 +54,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 ## Project Assumptions
 
-📌 List any factors or conditions that are considered to be true, real, or certain for planning purposes but have not been confirmed. The assumptions made that could impact the ability of the project team to achieve the project objectives.
-
-1. All Team members have consistent internet access and functioning devices capable of running development and collaboration tools. 
+1. All Team members have consistent internet access and functioning devices capable of running development and collaboration tools.
 2. Each member has access to shared resources (Trello, Microsoft Teams, Outlook, Google Drive, GitHub).
 3. Stakeholders and project mentor (TBD) will provide timely feedbak during sprint reviews. 
 4. The system will operate in a simulated environment during development (no real payment processing required)
@@ -69,8 +63,6 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 7. Modern web browsers are available on all developing and testing devices. 
 
 ## Project Constraints
-
-📌 List any limitations or restrictions that can impact the planning, execution, and completion of a project. Specify the known dependencies that could constrain the ability of the project team to achieve the project objectives.
 
 #### Time Constraints:
 
@@ -97,22 +89,20 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 ## Project Resources Required 
 
-📌 List assets, tools, personnel, and materials required for the successful planning, execution, and completion of a project.
-
 #### Personnel:
 
 - **Director of Product Development**: Professor Alex Tabbal
 - **Project Manager**: Serina Rodriguez
-- **Development Team**: 7 team members (Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer, Tyler Royal)
+- **Development Team**: Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer, Tyler Royal
 - **Project Mentor**: To be determined..
 
 #### Technology & Tools:
 
-- **Development**: React / Django / DRF / SimpleJWT / AWS / SQLite
+- **Development**: React / Django / DRF / SimpleJWT / AWS / SQLite / Git
 - **Project Management**: Trello for sprint tracking and task management
 - **Communication**: Microsoft Teams, Outlook
 - **Documentation**: Google Drive, Microsoft Teams
-- **Database**:
+- **Database**: Django / SQLite
 
 #### Hardware:
 
@@ -130,8 +120,6 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 ## Team Collaboration and Communication
 
-📌 Specify the collaboration and communication tools / platforms that will be used in this project development. Describe how your group will use these tools / platforms during this project development.}
-
 #### Tools/Platforms:
 
 - **Microsoft Teams**: Primary platform for daily communication, virtual meetings, chat discussions, and file sharing.
@@ -148,8 +136,6 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 ## Project Documentation
 
-📌 Specify the documentation tools / platforms that will be used in this project development. Describe how your group will use these tools / platforms during this project development.
-
 #### Tools/Plaforms:
 
 - **Google Drive**: Central Repository for all project documents with version control
@@ -161,13 +147,12 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 - **SCRUM Artifacts**: Stored in MSTeams, GitHub with consistent formatting and name conventions
 - **Design Documents**: Architectural diagrams, ERDs, wireframes, and class diagrams maintained in GitHub
 - **Meeting Notes**: Meeting summaries, Sprint Review, and Retrospective notes documented and shared via GitHub and MS Teams
-- **Presentation Files**: Final presentation materials organized in Github repository
+- **Presentation Files**: Final presentation materials organized in Google Drive and Github repository
 -  **Version Control**: All documents follow naming conventions to track revisions and maintain professional standards
 - **Code Documentation**: Developed code, inline comments and README files maintained in GitHub repository
 
 ## Project Management Plan and Methodologies
 
-📌 Specify what project management methods and tools will be used in this project development. Describe how your group will use these project management methods and tools during this project development.
 
 #### Methodology:
 
@@ -183,19 +168,39 @@ Trello serves as the primary project management tool, providing capabilities for
 
 **Sprint Structure (6 sprints, 2 weeks each):**
 
-1. Sprint 1 (01/31-02/13): Kickoff and Foundational Development
+1. Sprint 1 (01/31-02/13): 
+	+ High level design
+	+ UX Concept
+	+ Application Architecture
+	+ Stable Development Environment
 
-2. Sprint 2 (02/14-02/27):
+2. Sprint 2 (02/14-02/27): 
+	+ Prototype Design
+	+ User Accounts
+	+ Rough Backend, Frontend, and DB
 
-3. Sprint 3 (02/28-03/13):
+3. Sprint 3 (02/28-03/13): 
+	+ Deploy to cloud environment
+	+ JWT Auth
+	+ Customer and Business UI
 
-   COLLEGE CLOSED - Break (03/16-03/20)
+**COLLEGE CLOSED - Break (03/16-03/20)**
 
-4. Sprint 4 (03/31-04/03):
+4. Sprint 4 (03/31-04/03): 
+	+ Security
+	+ Remaining User and Business Features
+	+ Finalize UI
 
-5. Sprint 5 (04/04-04/17)
+5. Sprint 5 (04/04-04/17): 
+	+ Test and Iterate UX for Desktop and Mobile
+	+ Determine and Solve Critical Bugs
 
-6. Sprint 6 (04/18-05/01): Project Documentation Release, Final Sprint 5 Retrospective, Presentation, Evaluation
+6. Sprint 6 (04/18-05/01): 
+	+ Finalize Application
+	+ Project Documentation Release
+	+ Final Sprint 5 Retrospective
+	+ Presentation
+	+ Evaluation
 
 **Progress Tracking:**
 
@@ -211,18 +216,4 @@ Trello serves as the primary project management tool, providing capabilities for
 
 ---
 
-###### Notes:
-
-Remove all pinned messages before submitting. 
-
-Update: 
-
-	- Technical Constraints >> development stack >> (list stack chosen)
-	- Project Resources >> Personnel >> Mentor
-	- Project Resources >> Technology & Tools >> Development
-	- Project Resources >> Technology & Tools >> Database
-	- Project Resources >> Hardware >> AWS or Cloud ?
-	- Project Documentation >> Tools/Platforms >> Google Drive or Github instead? (*all documentation must be in markdown*)
-	- Project Documentation >> Usage >> Review all points once final home is determined with group.
-	- Project Management Plan >> Sprint Structure >> *add sprint focus*
 
