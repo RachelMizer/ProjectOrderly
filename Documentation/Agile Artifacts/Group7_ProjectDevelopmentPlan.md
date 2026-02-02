@@ -1,4 +1,4 @@
-# CSC.289 Programming Capstone Project Plan
+# Orderly | Project Plan
 
 ##### Project Name:   **Orderly**
 
@@ -213,5 +213,4 @@ Trello serves as the primary project management tool, providing capabilities for
 - **Continuous Adaptation**: Adjust approach based on feedback and lessons learned
 
 ---
-
 
