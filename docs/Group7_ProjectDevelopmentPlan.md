@@ -1,4 +1,4 @@
-# Orderly | Project Plan
+Plan# Orderly | Project Plan
 
 ##### Project Name:   **Orderly**
 
@@ -35,10 +35,10 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 - Customer-facing interface for browsing, customizing, and submitting orders
 - Business-facing interface for managing menus, inventory, and prices
-- Basic reporting dashboard for sales summaries and popular iems
-- Responsive design compatible with tables, kiosks, and mobile devices
+- Basic reporting dashboard for sales summaries and popular items
+- Responsive design compatible with tablets, kiosks, and mobile devices
 - User authentication and role-based access control
-- Simulated payment processing for protoype demonstration
+- Simulated payment processing for prototype demonstration
 - Prototype supplier order management system tracking orders from submission to fulfillment.
 
 #### Out of Scope:
@@ -54,7 +54,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 1. All Team members have consistent internet access and functioning devices capable of running development and collaboration tools.
 2. Each member has access to shared resources (Trello, Microsoft Teams, Outlook, Google Drive, GitHub).
-3. Stakeholders and project mentor (TBD) will provide timely feedbak during sprint reviews. 
+3. Stakeholders and project mentor (TBD) will provide timely feedback during sprint reviews. 
 4. The system will operate in a simulated environment during development (no real payment processing required)
 5. Test data will be fictional to maintain privacy and comply with ethical standards. 
 6. Broadband internet connectivity is available for real-time data synchronization.
@@ -105,7 +105,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 #### Hardware:
 
 	- Team member laptops/desktops for development
-	- Testing devices: tablets, mobile devices for respnsive design testing
+	- Testing devices: tablets, mobile devices for responsive design testing
 	- Server/cloud hosting (AWS or Azure for deployment)
 
 #### Software:
@@ -122,7 +122,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 - **Microsoft Teams**: Primary platform for daily communication, virtual meetings, chat discussions, and file sharing.
 - **Outlook**: Email communication, scheduling, deadline management, and meeting invitations
-- **Trello**: Sprint planning, task coorodination, and progress updates
+- **Trello**: Sprint planning, task coordination, and progress updates
 
 #### Usage:
 
@@ -138,7 +138,7 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 
 - **Google Drive**: Central Repository for all project documents with version control
 - **Trello**: Technical documentation of user stories, acceptance criteria, and task details
-- **GitHub:** Code documentation, READMEfiles, and version control comments
+- **GitHub:** Code documentation, README files, and version control comments
 
 #### Usage:
 
