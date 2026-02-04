@@ -1,0 +1,1 @@
+![High Level Architecture Diagram](../../images/Orderly_HLA_Diagram.png)
