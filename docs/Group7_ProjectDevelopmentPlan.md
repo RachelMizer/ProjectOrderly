@@ -16,8 +16,8 @@ Plan# Orderly | Project Plan
 | Caleb Fowlkes  | cjfowlkes@my.waketech.edu | Technical Writer  |
 | Tristin Gatt   | tjgatt@my.waketech.edu    | Software Architect  |
 | Kim Mayo       | kamayo@my.waketech.edu    | Product Owner  |
-| Rachel Mizer   | ramizer@my.waketech.edu   | TBD  |
-| Tyler Royal    | taroyal@my.waketech.edu   | TBD  |
+| Rachel Mizer   | ramizer@my.waketech.edu   | Front-End Development Lead |
+| Tyler Royal    | taroyal@my.waketech.edu   | Presentation Lead |
 
 ## Project Goal
 
