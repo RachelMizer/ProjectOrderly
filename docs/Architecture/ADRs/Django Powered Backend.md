@@ -7,7 +7,7 @@
 
 ---
 ## Decision
-While Express and Node are mentioned in the SRS, we've decided to use a Django powered backend. Django-REST-Framework and Simple-JWT libraries will be leveraged to achieve Stateless, JWT, and REST implementation.
+While Express and Node are mentioned in the SRS, we've decided to use a Django powered backend. Django-REST-Framework and Simple-JWT libraries will be leveraged to achieve stateless, JWT, and REST implementation.
 
 ---
 ## Why?
