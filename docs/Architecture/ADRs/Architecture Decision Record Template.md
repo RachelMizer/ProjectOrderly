@@ -6,6 +6,9 @@
 ## Decision
 
 ---
+## Why?
+
+---
 ## Consequences
 
 ---
