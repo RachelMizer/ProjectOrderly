@@ -16,11 +16,12 @@ Use JSON web tokens to maintain user authorization. The backend will generate an
 ---
 ## Consequences
 + JWTs will be given to users upon login, assigning their role.
-+ The Frontend must include its token in calls to the backend
-+ The Backend must authenticate the JWT of incoming requests
++ The Frontend will include its token in calls to the backend
++ The Backend will authenticate the token of incoming requests
   
-+ Tokens may need to be refreshed
-+ Backend must support token validation
 + Frontend must securely store the web token.
++ Backend must support token validation
++ Tokens may need to be refreshed
+
 
 ---
