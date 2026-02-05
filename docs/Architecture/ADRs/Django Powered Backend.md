@@ -22,6 +22,6 @@ Python is also a strong choice for business features such as data aggregation, r
 + Certain Django design patterns will need to be adhered to
 + Django is more opinionated than Node, speeding up initial prototyping and slowing down eventual customization
 + Clear APIs required to communicate with the JS-powered frontend
-+ Django is not async-first, like Node, which will require developers to be more deliberate in designing any live features such as kitchen order screens.
++ Django is not async-first, like Node, which may require developers to be more deliberate in designing live features such as kitchen order screens or order tracking.
 
 ---
