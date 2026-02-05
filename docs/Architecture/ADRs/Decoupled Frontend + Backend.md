@@ -11,7 +11,6 @@ Continue with the client-server, decoupled design mentioned in the SRS. The fron
 ## Consequences
 + Clear separation of concerns
 + The frontend and backend can be developed and tested independently.
-+ The backend must support communication with the frontend in this manner.
-+ The frontend is soley responsible for managing UI related to error, authorization, loading, or waiting for the backend
++ The frontend is solely responsible for managing UI related to error, authorization, loading, or waiting for the backend
 + Strict coordination on APIs between frontend and backend developers
 ---
