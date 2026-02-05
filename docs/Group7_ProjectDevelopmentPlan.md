@@ -49,6 +49,8 @@ Provide a lightweight, web-based ordering software with a customer facing orderi
 - Customer loyalty programs or promotional features
 - Multi-language and multi-currency support
 - Real supplier API integration
+- AES-256 Encryption
+
 
 ## Project Assumptions
 
