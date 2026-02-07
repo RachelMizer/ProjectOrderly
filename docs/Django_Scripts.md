@@ -30,13 +30,13 @@ Used for image handling (uploads, resizing, thumbnails). Required for product im
 
 Installation: pip install Pillow
 
-## Black
+### Black
 
 Code formatter that enforces consistent style and reduces merge conflicts.
 
 Installation: pip install black
 
-## Django-Taggit
+### Django-Taggit
 
 Adds tagging functionality to models. Useful for product labels and filtering.
 
