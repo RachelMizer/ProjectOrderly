@@ -97,7 +97,7 @@ Represents an abstract item or service offered by the client business
 ---
 
 ### ProductVariant
-Used for products that are stocked and sold as discrete units. individual SKUs
+Used for products that are sold as discrete units. individual SKUs
 ##### Attributes:
 + VariantID
 + ProductID
