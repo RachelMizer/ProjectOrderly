@@ -159,7 +159,7 @@ Defects will be reviewed regularly during stand-ups and sprint reviews.
 ---
 
 ## 11. Test Schedule
-Testing activities will align with the six-sprint project schedule defined in the PDP:
+Testing activities will align with the five-sprint project schedule defined in the PDP:
 - Test scenarios drafted during sprint planning
 - Continuous manual testing during development
 - Test status reviewed before sprint demos
