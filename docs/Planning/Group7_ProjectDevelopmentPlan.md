@@ -1,4 +1,4 @@
-Plan# Orderly | Project Plan
+# Orderly | Project Plan
 
 ##### Project Name:   **Orderly**
 
