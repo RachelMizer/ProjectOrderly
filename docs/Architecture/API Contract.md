@@ -1,5 +1,4 @@
 # Overview
----
 ## Authentication & Authorization
 #### How do we prove identity and permissions?
 The API uses token-based authentication.
