@@ -24,13 +24,15 @@ The objectives of testing are to:
 **Customer Functionality**
 - Product/menu catalog browsing
 - Order creation, customization, and submission
-- Order status visibility
+- Order status visibility (including basic status timeline display if implemented)
 - Basic input validation and error handling
 - Responsive behavior across desktop, tablet, and mobile screen sizes
+- Order cancellation while **Pending** (if implemented)
 
 **Business / Admin Functionality**
 - Product and menu management
 - Inventory management and stock updates
+- Low-stock notifications/indicators (if implemented)
 - Basic sales summary reporting
 - Prototype supplier order management workflows
 - Restricted access to admin-only features
@@ -38,6 +40,8 @@ The objectives of testing are to:
 **System & Security**
 - User authentication and session handling
 - Role-based access control (Customer vs Business)
+- Protected routes / secure access patterns (token/session handling)
+- Session timeout / session expiration behavior (if implemented)
 - Simulated payment processing flow
 - Basic usability, navigation, and validation messaging
 
@@ -158,8 +162,19 @@ Defects will be reviewed regularly during stand-ups and sprint reviews.
 
 ---
 
-## 11. Test Schedule
-Testing activities will align with the five-sprint project schedule defined in the PDP:
+## 11. Feature Stubs / Future Coverage (Planned Scenarios)
+The following items are included in developer documentation and may be scheduled for future sprints. Test scenarios and cases will be created when these items are added to active sprint scope:
+- Email verification for new accounts (if adopted)
+- Password reset / forgot password flow (if adopted)
+- CSV import/export for inventory or reporting (if adopted)
+- Report export options (PDF/CSV) (if adopted)
+- Accessibility improvements (keyboard navigation, contrast, ARIA labels) (if adopted)
+- Enhanced admin dashboards and advanced reporting (if adopted)
+
+---
+
+## 12. Test Schedule
+Testing activities will align with the sprint schedule defined in the PDP:
 - Test scenarios drafted during sprint planning
 - Continuous manual testing during development
 - Test status reviewed before sprint demos
@@ -168,6 +183,5 @@ Testing activities will align with the five-sprint project schedule defined in t
 
 ---
 
-## 12. Approval and Maintenance
+## 13. Approval and Maintenance
 This Test Plan is a **living document** and will be reviewed and updated as requirements, scope, sprint goals, and development progress evolve throughout the project lifecycle.
-
