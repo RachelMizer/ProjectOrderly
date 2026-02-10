@@ -1,6 +1,6 @@
 # Overview
 ---
-### Authentication & Authorization
+## Authentication & Authorization
 #### How do we prove identity and permissions?
 The API uses token-based authentication.
 JSON Web Tokens (JWT) are issued upon successful login.
@@ -173,7 +173,6 @@ body
 
 
 # Users
-
 ## Get current Customer profile
 **Endpoint:**
 **Description:**
