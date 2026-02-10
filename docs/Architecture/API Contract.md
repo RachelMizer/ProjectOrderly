@@ -40,7 +40,7 @@ Error respones use a consistent JSON structure:
 
 
 # Endpoint Contracts
----
+
 # Authentication
 ## Login
 **Endpoint:** `<POST> /api/auth/login/`
