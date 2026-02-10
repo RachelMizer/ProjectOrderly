@@ -13,7 +13,7 @@ Login and registration endpoints do not require authentication
 All API endpoints are prefixed with `/api/`.
 Endpoints follow RESTful resource-based naming.
 Plural nouns are used for collections (`/orders`, `/products`).
-### HTTP
+### HTTP Methods
 + GET: Retrieve resources
 + POST: Create new resources
 + PUT/PATCH: Update existing resources
@@ -25,8 +25,7 @@ Plural nouns are used for collections (`/orders`, `/products`).
 + 401 Unauthorized: Missing or invalid authentication
 + 403 Forbidden: Insufficient permissions
 + 404 Not Found: Resource does not exist
-###
-Data Format
+### Data Format
 All request and response bodies use JSON.
 Timestamps are returned in ISO 8601 format (UTC).
 Monetary values are represented as decimal numbers.
