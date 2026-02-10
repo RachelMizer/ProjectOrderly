@@ -35,7 +35,7 @@ Monetary values are represented as decimal numbers.
 Error respones use a consistent JSON structure:
 ```
     {
-        "error": "ERROR_TYPE"
+        "error": "ERROR_TYPE",
         "message": "Human readable message"
     }
 ```
