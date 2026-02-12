@@ -6,11 +6,11 @@ MySQL 8.4.8 (follow installation instructions below.)
 
 ## Backend
 Clone repository.
-navigate to Orderly directory in powershell (Directory containing this readme)
-run: `python -m venv .venv`
-activate virtual environment: `.venv\Scripts\Activate.ps1`(Windows)
-install dependencies: `pip install -r requirements.txt`(Windows)
-Double check settings. Open backend/orderly/settings.py
+navigate to Orderly directory in powershell (Directory containing this readme).
+run: `python -m venv .venv`.
+activate virtual environment: `.venv\Scripts\Activate.ps1`(Windows).
+install dependencies: `pip install -r requirements.txt`(Windows).
+Double check settings. Open backend/orderly/settings.py.
 ```
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -57,19 +57,19 @@ CORS_ALLOW_ALL_ORIGINS = True
 To start backend server, run: `python manage.py runserver`
 
 ## Database
-Go to https://www.mysql.com Downloads > MySQL Community (GPL) Downloads > MySQL Community Server
-Select version **8.4.8 LTS** for windows and download MSI installer
-Run installer, select typical installation
-Run MySQL Configurator
+Go to https://www.mysql.com Downloads > MySQL Community (GPL) Downloads > MySQL Community Server.
+Select version **8.4.8 LTS** for windows and download MSI installer.
+Run installer, select typical installation.
+Run MySQL Configurator.
 + (Optional) Choose database directory
 + Choose **Development Computer**
 + Keep default port: 3306
 + Create password and store safely.
 + Apply changes, Execute, Finish.
   
-In cmd, run command `mysql -u root -p` (If this doesn't work, you may need to add the MySQL\MySQL Server8.4\bin directory to PATH in environment variables. Use the full path from where MySQL is installed.)
-Login with the root password you created earlier
-Enter these commands
+In cmd, run command `mysql -u root -p` (If this doesn't work, you may need to add the MySQL\MySQL Server8.4\bin directory to PATH in environment variables. Use the full path from where MySQL is installed.).
+Login with the root password you created earlier.
+Enter these commands.
 
 
 ```
@@ -124,11 +124,11 @@ DATABASES = {
     }
 }
 ```
-In powershell, navigate to orderly directory, run `.venv\Scripts\Activate.ps1`
-navigate to backend, run `python manage.py migrate`
+In powershell, navigate to orderly directory, run `.venv\Scripts\Activate.ps1`.
+navigate to backend, run `python manage.py migrate`.
 
 ## Frontend
-Install Node.js (Windows installer is fine)
+Install Node.js (Windows installer is fine).
 In powershell, navigate to /orderly/frontend, run:
 ```
 npm install
