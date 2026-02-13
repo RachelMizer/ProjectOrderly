@@ -8,8 +8,8 @@ Thumbs.db
 #######################################
 # Python Virtual Environment
 #######################################
-orderly/venv/
-orderly/.venv/
+Orderly/venv/
+Orderly/.venv/
 
 #######################################
 # Python Cache
@@ -23,16 +23,16 @@ __pycache__/
 #######################################
 
 # SQLite (if ever used locally)
-orderly/backend/*.sqlite3
-orderly/backend/db.sqlite3
+Orderly/backend/*.sqlite3
+Orderly/backend/db.sqlite3
 
 # Django collected static files
-orderly/backend/staticfiles/
-orderly/backend/media/
+Orderly/backend/staticfiles/
+Orderly/backend/media/
 
 # Backend environment variables
-orderly/backend/.env
-orderly/backend/.env.*
+Orderly/backend/.env
+Orderly/backend/.env.*
 
 #######################################
 # MySQL
@@ -44,17 +44,17 @@ orderly/backend/.env.*
 # Frontend (React / Node)
 #######################################
 
-orderly/frontend/node_modules/
-orderly/frontend/build/
-orderly/frontend/dist/
-orderly/frontend/coverage/
+Orderly/frontend/node_modules/
+Orderly/frontend/build/
+Orderly/frontend/dist/
+Orderly/frontend/coverage/
 
-orderly/frontend/.pnp
-orderly/frontend/.pnp.js
+Orderly/frontend/.pnp
+Orderly/frontend/.pnp.js
 
 # Frontend env files
-orderly/frontend/.env
-orderly/frontend/.env.*
+Orderly/frontend/.env
+Orderly/frontend/.env.*
 .env.local
 .env.development.local
 .env.test.local
