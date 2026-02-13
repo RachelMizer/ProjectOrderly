@@ -4,6 +4,15 @@
 **Team Number:**  Group 7
 **Team Lead/Scrum Master:**  Serina Rodriguez
 
+**Team Members:**
+
+- Tristin Gatt (Software Architect)
+- Kenny Bacdayan (Testing Lead)
+- Rachel Mizer (Front-End Development Lead)
+- Kim Mayo (Product Owner)
+- Tyler Royal (Presentation Lead)
+- Caleb Fowlkes (Technical Writer)
+
 ## Trello Board Capture:
 
 { Insert screen capture here }
@@ -12,30 +21,22 @@
 
 ## Status Update Details:
 
-1. {Short description of task}
-2.  
-3.  
+#.# Task Name
+#.# Task Name
 
 ## Tasks Completed This Week By Team Members:
 
-#### Serina:
-
-#### Kim:
-
-#### Tristin:
-
-#### Kenny:
-
-#### Rachel:
-
-#### Caleb:
-
-#### Tyler:
+#.# Task Name
+#.# Task Name
 
 ---
 
 ## Problems/Challenges/Roadblocks:
 
-Template:
-**Description:** {Short description of Issue}
-**Status**:  {Resolved | Not Resolved}
+
+**Description:** { Short description of Issue }
+**Status**:  {Resolved ✅ | Not Resolved ❎}
+
+**Description:** Example ONLY: Cloning of Github Repo to Local Machine
+**Status**:  Resolved ✅
+
