@@ -43,7 +43,7 @@ Error respones use a consistent JSON structure:
 
 # Authentication
 ## Login
-**Endpoint:** `<POST> /api/auth/login/`
+**Endpoint:** `<POST> /api/v1/auth/login/`
 **Description:** Submit user credentials to login and receive authorization token
 **Authentication:** Not Required
 **Role:** All
@@ -67,10 +67,11 @@ Error respones use a consistent JSON structure:
 ```
 header
 
-http/1.1 200 OK
-Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/refresh
-content-type: application/json
+http/1.1 200 Ok
+Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/refresh; Max-Age=604800
+Content-Type: application/json
 ```
+
 ```
 body
 
@@ -86,10 +87,10 @@ body
 }
 ```
 + Access token expires in 3600 seconds (1 hour).
-+ Refresh token used to get new access token, issued in HTTP cookie.
++ Refresh token used to get new access token, issued in HTTP cookie. Expires in 7 days
 + Passwords are never returned
 + Passwords are hashed server-side
-+ Tokens must be sent on future requests as `Authorization: Bearer <accessToken>`
++ Tokens must be stored locally and sent on future requests as `Authorization: Bearer <accessToken>`
 
 **Unauthorized Response (401)**
 ```
@@ -118,17 +119,77 @@ body
 ```
 
 ## Register
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<POST> /api/v1/auth/register`
+**Description:** Submit user credentials to register new user and automatically login.
+**Authentication:** Not required
+**Role:** None
+**URL Parameters:** None
+**Request Parameters:** email, password, firstName, lastName
 #### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK)**
+**Header:** `Content-Type: application/json`
+**Body:** 
+```
+{
+    "email": "smith@email.com",
+    "password": "wordPass1234",
+    "firstName": "John",
+    "lastName": "Smith"
+}
+```
+**Rules:** 
+`email` - required, string, valid format
+`password` - required, string, min 8 characters, not a common password, not only numeric characters, not too similar to username firstName lastName or email
+`firstName` - required, string
+`lastName` - required, string
+
+**Success Response (201 CREATED)**
+```
+header
+
+http/1.1 201 Created
+Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/refresh; Max-Age=604800
+Content-Type: application/json
+Location: /api/v1/users/4001
+```
+```
+body
+{
+    "accessToken": "dsTy5FtytVrtym897SsRv...",
+    "expiresIn": 3600,
+    "tokenType": "bearer",
+    "user": {
+        "id": 4001,
+        "email": "smith@email.com",
+        "role": "customer"
+    }
+}
+```
++ Access token expires in 3600 seconds (1 hour).
++ Refresh token used to get new access token, issued in HTTP cookie. Expires in 7 days
++ Passwords are never returned
++ Passwords are hashed server-side
++ Tokens must be stored locally and sent on future requests as `Authorization: Bearer <accessToken>`
+  
+**Missing / Invalid Fields (400)**
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "Missing required fields",
+    "fields": {
+        "email": "required",
+        "password": "required",
+        "firstName": "required",
+        "lastName": "required",
+    }
+}
+```
+**Conflict (409)**
+```
+{
+    "error": "CONFLICT_ERROR",
+    "message": "Email is already registered"
+}
+```
 
 ## Refresh
 **Endpoint:**
