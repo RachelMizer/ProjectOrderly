@@ -1,4 +1,4 @@
-# Status Update: Sprint 1 - Week 1
+# Status Update: Sprint 1 - Week 2
 
 **Project Name:**  Orderly
 **Team Number:**  Group 7
@@ -32,6 +32,7 @@
 ---
 
 ## Problems/Challenges/Roadblocks:
+
 
 
 **Description:** { Short description of Issue }
