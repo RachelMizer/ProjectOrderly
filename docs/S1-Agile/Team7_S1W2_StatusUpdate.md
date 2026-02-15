@@ -15,16 +15,18 @@
 
 ## Trello Board Capture:
 
-{ Insert screen capture here }
+![S1W2_SprintBacklog_1](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S1W2_SprintBacklog_1.png)
 
-
+![S1W2_Sprint_Backlog_2](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S1W2_Sprint_Backlog_2.png)
 
 ## Status Update Details:
 
+### Tasks Scheduled For This Week:
+
 #.# Task Name
 #.# Task Name
 
-## Tasks Completed This Week By Team Members:
+### Tasks Completed This Week By Team Members:
 
 #.# Task Name
 #.# Task Name
