@@ -1,6 +1,68 @@
 # Sprint 1 Test Cases – Orderly
+(Sprint 1: Foundation & Environment Setup)
 
 ---
+
+## Overview
+
+Sprint 1 primarily delivers the initial project scaffold and development environment setup.  
+Functional feature implementation has not yet begun.
+
+This test file reflects:
+- Environment smoke testing (executed)
+- Feature-level test cases (prepared but currently blocked)
+
+---
+
+## TC-00 – Environment Smoke Test
+
+### Test Case ID:
+TC-00
+
+### Feature:
+Initial Codebase / Server Startup
+
+### User Story:
+As a developer, I want the initial codebase to run successfully so that the team can begin implementing features on a stable foundation.
+
+### Preconditions:
+- PR branch checked out locally
+- Dependencies installed
+- Required environment variables configured (if applicable)
+
+### Test Steps:
+1. Start the backend (Django) server.
+2. Open backend URL in browser.
+3. Verify Django default success page loads.
+4. Start the frontend server.
+5. Open frontend URL in browser.
+6. Verify placeholder page ("Orderly frontend working...") loads.
+7. Check browser console for critical errors.
+8. Check backend logs for runtime errors.
+
+### Expected Result:
+- Backend starts without crashes or tracebacks.
+- Django success page loads correctly.
+- Frontend starts without crashes.
+- Placeholder frontend page loads successfully.
+- No blocking console or server errors.
+
+### Actual Result:
+Backend and frontend both start successfully. Placeholder pages load as expected.
+
+### Status:
+Pass
+
+### Notes:
+Functional features are not yet implemented. Feature-level test cases remain blocked until implementation.
+
+---
+
+# Functional Test Cases (Prepared for Future Execution)
+
+---
+
+## TC-01 – Product Browsing Interface
 
 ### Test Case ID:
 TC-01
@@ -12,27 +74,29 @@ Product Browsing Interface
 As a customer, I want to browse available products or menu items so that I can decide what I want to order.
 
 ### Preconditions:
-- Application is running
 - User is logged in as customer
-- Product data exists (sample or seeded data)
+- Product data exists
 
 ### Test Steps:
-1. Navigate to the product browsing or catalog page
-2. View available products or menu items
+1. Navigate to product browsing page.
+2. View available products.
 
 ### Expected Result:
-- A list of products or menu items is displayed
-- Each item shows basic information (such as name and price)
-- No errors occur during page load
+- Product list is displayed.
+- Each product shows basic information (name, price).
+- No errors occur.
 
 ### Actual Result:
 
 ### Status:
-Pass / Fail
+Blocked – Feature not implemented in Sprint 1 baseline
 
 ### Notes:
+To be executed once product catalog is implemented.
 
 ---
+
+## TC-02 – Order Submission and Status Tracking
 
 ### Test Case ID:
 TC-02
@@ -44,28 +108,29 @@ Order Submission and Status Tracking
 As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed.
 
 ### Preconditions:
-- User is logged in as customer
+- User is logged in
 - At least one product is available
 
 ### Test Steps:
-1. Add a product to the order/cart
-2. Proceed to submit the order
-3. Observe the order status after submission
+1. Add product to order.
+2. Submit order.
+3. View order status.
 
 ### Expected Result:
-- Order is submitted successfully
-- A confirmation or status indicator is displayed
-- Order status is visible to the customer
+- Order submits successfully.
+- Confirmation/status is displayed.
 
 ### Actual Result:
 
 ### Status:
-Pass / Fail
+Blocked – Feature not implemented in Sprint 1 baseline
 
 ### Notes:
-- Status may be basic or simulated in Sprint 1
+To be executed once ordering functionality is implemented.
 
 ---
+
+## TC-03 – Role-Based Access Control
 
 ### Test Case ID:
 TC-03
@@ -74,28 +139,30 @@ TC-03
 Role-Based User Permissions
 
 ### User Story:
-As a system administrator, I want to restrict access based on user roles so that customers and business users can only access features relevant to them.
+As a system administrator, I want to restrict access based on user roles so that customers and business users can only access relevant features.
 
 ### Preconditions:
-- User is logged in as a customer
+- User logged in as customer
 
 ### Test Steps:
-1. Attempt to access an admin-only page (such as inventory management)
-2. Observe system behavior
+1. Attempt to access admin-only route.
+2. Observe system behavior.
 
 ### Expected Result:
-- Customer is prevented from accessing admin-only features
-- User is redirected or shown an authorization error
-- Admin functionality is not displayed
+- Access is denied or redirected.
+- Admin features are not accessible.
 
 ### Actual Result:
 
 ### Status:
-Pass / Fail
+Blocked – Feature not implemented in Sprint 1 baseline
 
 ### Notes:
+To be executed once authentication and RBAC are implemented.
 
 ---
+
+## TC-04 – Inventory Management
 
 ### Test Case ID:
 TC-04
@@ -107,22 +174,32 @@ Inventory Management
 As a business owner, I want to update inventory quantities in real time so that customers cannot order items that are out of stock.
 
 ### Preconditions:
-- User is logged in as a business owner or admin
-- Inventory management feature is accessible
+- User logged in as business owner/admin
+- Inventory feature available
 
 ### Test Steps:
-1. Navigate to the inventory management page
-2. Update the quantity of an existing product
-3. Save the inventory changes
+1. Navigate to inventory page.
+2. Modify product quantity.
+3. Save changes.
 
 ### Expected Result:
-- Inventory quantity is updated successfully
-- Updated quantity is reflected in the system
-- No errors occur during update
+- Inventory updates successfully.
+- Updated quantity is reflected.
 
 ### Actual Result:
 
 ### Status:
-Pass / Fail
+Blocked – Feature not implemented in Sprint 1 baseline
 
 ### Notes:
+To be executed once inventory feature is implemented.
+
+---
+
+# Sprint 1 Summary
+
+- Environment smoke testing completed successfully.
+- Codebase scaffold verified functional.
+- Functional test cases prepared for upcoming feature implementation.
+- No critical defects identified in baseline environment.
+
