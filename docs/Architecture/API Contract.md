@@ -68,7 +68,7 @@ Error respones use a consistent JSON structure:
 header
 
 http/1.1 200 Ok
-Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/refresh; Max-Age=604800
+Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/; Max-Age=604800
 Content-Type: application/json
 ```
 
@@ -147,7 +147,7 @@ body
 header
 
 http/1.1 201 Created
-Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/refresh; Max-Age=604800
+Set-Cookie: refreshToken=abc123...; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/; Max-Age=604800
 Content-Type: application/json
 Location: /api/v1/users/4001
 ```
@@ -225,17 +225,33 @@ body
 
 
 ## Logout
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `/api/v1/auth/logout`
+**Description:** Clears user refresh token, blacklists token on backend.
+**Authentication:** Refresh token (HTTP cookie)
+**Role:** Any
+**URL Parameters:** None
+**Request Parameters:** None
 #### Request
-**Header:**
+**Header:** `Content-Type: application/json`
 **Body:**
-**Rules:**
+```
+{}
+```
+**Rules:** None
 **Success Response (200 OK)**
+```
+header
+
+HTTP/1.1 200 OK
+Set-Cookie: refreshToken=; HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth/; Max-Age=0
+Content-Type: application/json
+```
+```
+body
+{
+    "message": "Successfully logged out"
+}
+```
 
 
 # Users
