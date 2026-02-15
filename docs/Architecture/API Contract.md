@@ -78,8 +78,8 @@ body
 {
     "accessToken": "dsTy5FtytVrtym897SsRv...",
     "expiresIn": 3600,
-    "tokenType": "bearer",
-    "user": {
+    "tokenType": "Bearer",
+    "customer": {
         "id": "5001",
         "email": "smith@email.com",
         "role": "customer"
@@ -156,8 +156,8 @@ body
 {
     "accessToken": "dsTy5FtytVrtym897SsRv...",
     "expiresIn": 3600,
-    "tokenType": "bearer",
-    "user": {
+    "tokenType": "Bearer",
+    "customer": {
         "id": 4001,
         "email": "smith@email.com",
         "role": "customer"
@@ -192,30 +192,37 @@ body
 ```
 
 ## Refresh
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<GET> /api/v1/auth/refresh`
+**Description:** When auth token has expired, use refresh token to request new auth token.
+**Authentication:** Refresh token (HTTP cookie)
+**Role:** None
+**URL Parameters:** None
+**Request Parameters:** None
 #### Request
-**Header:**
+**Header:** `Content-Type: application/json`
 **Body:**
-**Rules:**
+```
+{}
+```
+**Rules:** Automatically uses HTTP cookie token issued from login or register.
 **Success Response (200 OK)**
+```
+body
 
-## Guest
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-#### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK)**
+{
+    "accessToken": "dsTy5FtytVrtym897SsRv...",
+    "expiresIn": 3600,
+    "tokenType": "Bearer"
+}
+```
+**Unauthorized (401)**
+```
+{
+    "error": "INVALID_REFRESH_TOKEN",
+    "message": "Refresh token is invalid or expired"
+}
+```
+
 
 ## Logout
 **Endpoint:**
@@ -261,15 +268,15 @@ body
 # Orders API
 ## Create Order
 **Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+**Description:** 
+**Authentication:** `Bearer: <JWT>` (optional)
+**Role:** None
 **URL Parameters:**
 **Request Parameters:**
 #### Request
 **Header:**
 **Body:**
-**Rules:**
+**Rules:** If no JWT is present, require guest email
 **Success Response (200 OK)**
 
 ## Add item to Order

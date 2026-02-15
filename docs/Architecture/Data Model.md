@@ -3,22 +3,35 @@
 ## Entities
 
 ---
+### User
+Built-in Django user. Includes customers and business users
+##### Attributes:
++ UserID
++ Username
++ FirstName
++ LastName
++ Email
++ Password
++ IsStaff
+#### Table view
+| UserID | Username     | FirstName | LastName | Email                     | Password (Hashed)                           | IsStaff |
+|--------|--------------|-----------|----------|----------------------------|---------------------------------------------|---------|
+| 1      | alexj        | Alex      | Johnson  | alex@example.com     | pbkdf2_sha256$390000$abc123$hashedvalue... | False   |
+
 ### Customer
 Represents end users who place orders from the client business
 ##### Attributes:
 + CustomerID
-+ FirstName
-+ LastName
-+ Email
++ UserID
 + StreetAddress
 + City
 + State
 + Zipcode
 + Phone
 #### Table View
-| CustomerID | FirstName | LastName | Email              | StreetAddress     | City     | State | Zipcode | Phone        |
-|------------|-----------|----------|--------------------|-------------------|----------|-------|---------|--------------|
-| 1          | Alex      | Johnson  | alex@example.com   | 123 Main St       | Raleigh  | NC    | 27601   | 555-123-4567 |
+| CustomerID | UserID | StreetAddress   | City     | State | Zipcode | Phone        |
+|------------|--------|----------------|----------|-------|---------|--------------|
+| 101        | 1      | 123 Main St    | Raleigh  | NC    | 27601   | 919-555-1234 |
 
 ---
 
@@ -28,6 +41,7 @@ Represents a single customer transaction
 ##### Attributes:
 + OrderID
 + CustomerID
++ GuestEmail
 + OrderDate
 + OrderSubtotal
 + TaxAmount
