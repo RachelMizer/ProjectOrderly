@@ -10,9 +10,9 @@ Login and registration endpoints do not require authentication
 
 ## Common Conventions
 ### URLs
-All API endpoints are prefixed with `/api/`.
-Endpoints follow RESTful resource-based naming.
-Plural nouns are used for collections (`/orders`, `/products`).
+All API endpoints are prefixed with `/api/`.  
+Endpoints follow RESTful resource-based naming.  
+Plural nouns are used for collections (`/orders`, `/products`).  
 ### HTTP Methods
 + GET: Retrieve resources
 + POST: Create new resources
@@ -26,9 +26,9 @@ Plural nouns are used for collections (`/orders`, `/products`).
 + 403 Forbidden: Insufficient permissions
 + 404 Not Found: Resource does not exist
 ### Data Format
-All request and response bodies use JSON.
-Timestamps are returned in ISO 8601 format (UTC).
-Monetary values are represented as decimal numbers.
+All request and response bodies use JSON.  
+Timestamps are returned in ISO 8601 format (UTC).  
+Monetary values are represented as decimal numbers.  
 ### Errors
 Error respones use a consistent JSON structure:
 ```
@@ -43,16 +43,15 @@ Error respones use a consistent JSON structure:
 
 # Authentication
 ## Login
-**Endpoint:** `<POST> /api/v1/auth/login/`
-**Description:** Submit user credentials to login and receive authorization token
-**Authentication:** Not Required
-**Role:** All
-**URL Parameters:** None
-**Request Parameters:** Email & Password
+**Endpoint:** `<POST> /api/v1/auth/login/`  
+**Description:** Submit user credentials to login and receive authorization token  
+**Authentication:** Not Required  
+**Role:** All  
+**URL Parameters:** None  
+**Request Parameters:** Email & Password  
 #### Request:
 
-**Header:**
-`Content-Type: application/json`
+**Header:**`Content-Type: application/json`  
 **Body:**
 ```
 {
@@ -60,9 +59,9 @@ Error respones use a consistent JSON structure:
     "password": "wordPass1234"
 }
 ```
-**Rules:**
-`email` - required, string, valid format
-`password` - required, string
+**Rules:**  
+`email` - required, string, valid format  
+`password` - required, string  
 **Success Response (200 OK):**
 ```
 header
