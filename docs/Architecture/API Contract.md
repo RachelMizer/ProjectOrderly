@@ -49,7 +49,8 @@ Error respones use a consistent JSON structure:
 **Role:** All  
 **URL Parameters:** None  
 **Request Parameters:** Email & Password  
-#### Request:
+
+### Request:
 
 **Header:**`Content-Type: application/json`  
 **Body:**
