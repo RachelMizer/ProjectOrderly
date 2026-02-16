@@ -26,7 +26,7 @@
 
 1.11 Build Code Review Standards -- **Kenny B.**
 1.12 Create Sprint 1 Demo Script -- **Tyler R.**
-1.13 Sprint 1 Visual Documention -- **Tyler R.**
+1.13 Sprint 1 Visual Documentation -- **Tyler R.**
 Attend and participate in Sprint Review on 2.12.26 -- **Everyone**
 Attend and participate in Sprint Retrospective on 2.12.26 -- **Everyone**
 
@@ -58,8 +58,8 @@ Demonstrated work completed to team during sprint meeting -- **Tristin G., Rache
 Sent captured screen shots to presentation lead -- **Tristin G.**, **Kenny B.**
 Collaborated in support with another team member -- **Kim M.**, **Serina R.**
 Facilitate Sprint Review -- **Serina R.**
-Attend and particpate in sprint 1 review -- **Everyone**
-Faciliate Sprint Retrospective -- **Serina R.**
+Attend and participate in sprint 1 review -- **Everyone**
+Facilitate Sprint Retrospective -- **Serina R.**
 Attend and participate in sprint 1 retrospective -- **Everyone**
 Provided instructions on how to: clean your local git -- **Tristin G.**
 
