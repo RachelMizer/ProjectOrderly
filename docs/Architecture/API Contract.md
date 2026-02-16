@@ -255,7 +255,7 @@ body
 
 
 # Users
-## Get current Customer profile
+## Get current User profile
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -268,7 +268,7 @@ body
 **Rules:**
 **Success Response (200 OK)**
 
-## Update profile
+## Update User profile
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -280,6 +280,35 @@ body
 **Body:**
 **Rules:**
 **Success Response (200 OK)**
+
+## Get Users
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+#### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK)**
+
+## Get User/:id
+
+## Delete User
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+#### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK)**
+
 
 # Orders API
 ## Create Order
@@ -321,7 +350,7 @@ body
 **Rules:**
 **Success Response (200 OK)**
 
-## View Order
+## View Order/:id
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -347,7 +376,7 @@ body
 **Rules:**
 **Success Response (200 OK)**
 
-## List Orders
+## List Orders/:status
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -373,6 +402,18 @@ body
 **Rules:**
 **Success Response (200 OK)**
 
+## Cancel Order
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+#### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK)**
 
 # Menu API
 ## List Categories
