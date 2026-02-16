@@ -1,12 +1,12 @@
 # Overview
 ## Authentication & Authorization
 #### How do we prove identity and permissions?
-The API uses token-based authentication.
-JSON Web Tokens (JWT) are issued upon successful login.
-All authenticated requests must include the JWT in the Authorization header:
+The API uses token-based authentication.  
+JSON Web Tokens (JWT) are issued upon successful login.  
+All authenticated requests must include the JWT in the Authorization header:  
     ```Authorization: Bearer <token>```
-Tokens are stateless and validated on each request.
-Login and registration endpoints do not require authentication
+Tokens are stateless and validated on each request.  
+Login and registration endpoints do not require authentication  
 
 ## Common Conventions
 ### URLs
