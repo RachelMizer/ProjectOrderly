@@ -33,6 +33,9 @@ Attend and participate in Sprint Retrospective on 2.12.26 -- **Everyone**
 ### Tasks Completed This Week By Team Members:
 
 1.2.4 Document data model -- **Tristin G.**
+1.4.4 Layout structuring -- **Rachel M.**
+1.4.5 Customer UI concept wireframes -- **Rachel M.**
+1.4.6 Admin UI concept wireframes -- **Rachel M.**
 1.5 Set up codebase environment -- **Tristin G.**
 1.5.1 Document steps to initialize environment for developers -- **Tristin G.**
 1.8 Execute Sprint 1 testing -- **Kenny B.**
