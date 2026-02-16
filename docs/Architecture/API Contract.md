@@ -119,14 +119,14 @@ body
 ```
 
 ## Register
-**Endpoint:** `<POST> /api/v1/auth/register`
-**Description:** Submit user credentials to register new user and automatically login.
-**Authentication:** Not required
-**Role:** None
-**URL Parameters:** None
-**Request Parameters:** email, password, firstName, lastName
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `<POST> /api/v1/auth/register`  
+**Description:** Submit user credentials to register new user and automatically login.  
+**Authentication:** Not required  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** email, password, firstName, lastName  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:** 
 ```
 {
@@ -137,10 +137,10 @@ body
 }
 ```
 **Rules:** 
-`email` - required, string, valid format
-`password` - required, string, min 8 characters, not a common password, not only numeric characters, not too similar to username firstName lastName or email
-`firstName` - required, string
-`lastName` - required, string
+`email` - required, string, valid format  
+`password` - required, string, min 8 characters, not a common password, not only numeric characters, not too similar to username firstName lastName or email  
+`firstName` - required, string  
+`lastName` - required, string  
 
 **Success Response (201 CREATED)**
 ```
@@ -192,19 +192,19 @@ body
 ```
 
 ## Refresh
-**Endpoint:** `<GET> /api/v1/auth/refresh`
-**Description:** When auth token has expired, use refresh token to request new auth token.
-**Authentication:** Refresh token (HTTP cookie)
-**Role:** None
-**URL Parameters:** None
-**Request Parameters:** None
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `<GET> /api/v1/auth/refresh`  
+**Description:** When auth token has expired, use refresh token to request new auth token.  
+**Authentication:** Refresh token (HTTP cookie)  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:**
 ```
 {}
 ```
-**Rules:** Automatically uses HTTP cookie token issued from login or register.
+**Rules:** Automatically uses HTTP cookie token issued from login or register.  
 **Success Response (200 OK)**
 ```
 body
@@ -225,19 +225,19 @@ body
 
 
 ## Logout
-**Endpoint:** `/api/v1/auth/logout`
-**Description:** Clears user refresh token, blacklists token on backend.
-**Authentication:** Refresh token (HTTP cookie)
-**Role:** Any
-**URL Parameters:** None
-**Request Parameters:** None
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `/api/v1/auth/logout`  
+**Description:** Clears user refresh token, blacklists token on backend.  
+**Authentication:** Refresh token (HTTP cookie)  
+**Role:** Any  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:**
 ```
 {}
 ```
-**Rules:** None
+**Rules:** None  
 **Success Response (200 OK)**
 ```
 header
@@ -262,7 +262,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -275,7 +275,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -288,7 +288,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -303,7 +303,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -318,7 +318,7 @@ body
 **Role:** None
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:** If no JWT is present, require guest email
@@ -331,7 +331,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -344,7 +344,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -357,7 +357,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -370,7 +370,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -383,7 +383,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -396,7 +396,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -409,7 +409,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -423,7 +423,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -436,7 +436,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -449,7 +449,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -462,7 +462,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -475,7 +475,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -488,7 +488,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -501,7 +501,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -517,7 +517,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -530,7 +530,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -543,7 +543,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -556,7 +556,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
@@ -571,7 +571,7 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
