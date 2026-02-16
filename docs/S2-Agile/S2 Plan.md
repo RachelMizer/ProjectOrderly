@@ -342,23 +342,66 @@ As a *developer*, I want a design system with reusable components so that the ap
 
 ## Timing Expectations & Milestones
 
-### Week 1 (Feb 14 - Feb 20)
+### Week 1: Foundation & Infrastructure (Feb 16 - Feb 20)
 
-- Complete database schema design and migration scripts
-- Begin backend API development for registration and login
-- Start frontend component creation
-- **Team check-in:** Thursday, Feb 19 (MS Teams)
-- **Submit Sprint 2 Week 1 Status Update:** Friday, Feb 20
+**Focus:** Database, Authentication Backend, Navigation Structure, Design System
 
-### Week 2 (Feb 21 - Feb 27)
+**Key Deliverables:**
 
-- Complete all authentication features (registration, login, email verification, password reset)
-- Integrate frontend with backend API
-- Conduct manual testing and bug fixes
-- Complete API documentation
-- **Sprint Review:** Thursday, Feb 26 (MS Teams)
-- **Sprint Retrospective:** Thursday, Feb 26 (MS Teams)
-- **Submit Sprint 2 Week 2 Status Update:** Friday, Feb 27
+- Complete database schema design, implementation, and migration scripts
+- Complete seed data creation and population
+- Build backend API endpoints for authentication (registration, login, JWT tokens)
+- Create frontend authentication components (registration form, login form)
+- Set up application routing and navigation structure (customer & business sides)
+- Define design system basics (colors, typography, reusable components)
+- Connect frontend to backend API
+
+**Milestones:**
+
+- **Thursday 2/19 (7:00 PM):** Mid-Sprint Check-In - Demo progress, identify blockers
+- **Friday 2/20:** Submit Sprint 2 Week 1 Status Update
+
+**Week 1 Success Criteria:**
+
+- ✅ Database schema implemented with seed data
+- ✅ Users can register and login (full stack working)
+- ✅ Navigation structure exists (customer & business sides)
+- ✅ Design system basics defined (colors, typography, core components)
+- ✅ API endpoints documented
+
+------
+
+### Week 2: Page Shells, Polish & Testing (Feb 21 - Feb 25)
+
+**Focus:** Build all page shells, implement role-based access, test everything
+
+**Key Deliverables:**
+
+- Create all customer page shells (menu browsing, cart, order history, account)
+- Create all business admin page shells (dashboard, menu management, inventory, orders)
+- Implement role-based access control (query filters, API protection, route guards)
+- Apply responsive layout system across all pages
+- Complete database validation tests
+- Conduct comprehensive manual testing (desktop, tablet, mobile)
+- Update all documentation (README, API docs, setup instructions)
+- Prepare Sprint Review demo
+
+**Milestones:**
+
+- **Monday 2/23 (7:00 PM):** Final Sprint Check-In - Demo customer pages and role-based access
+- **Wednesday 2/25 (EOD):** Code freeze - all features complete, tested, and documented
+- **Thursday 2/26 (7:00 PM):** Sprint Review
+- **Thursday 2/26 (8:00 PM):** Sprint Retrospective
+- **Friday 2/27:** Submit Sprint 2 Week 2 Status Update
+
+**Week 2 Success Criteria:**
+
+- ✅ Can navigate entire customer flow
+- ✅ Can navigate entire business admin flow
+- ✅ All pages display seed data correctly
+- ✅ Role-based access prevents unauthorized access
+- ✅ Works on mobile and desktop
+- ✅ Everything is documented and ready to demo
 
 ------
 
