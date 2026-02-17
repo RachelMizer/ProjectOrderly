@@ -155,7 +155,7 @@ For Sprint 2, a feature or task is considered complete when:
 
 ## Features & User Stories from Product Backlog
 
-*The following items will be pulled from the Product Backlog and worked on during Sprint 2. Final selections and task assignments will be confirmed during the Sprint Planning meeting on February 15, 2026.*
+*Finalized during Sprint Planning on February 15, 2026*
 
 ### Feature 1: Database Foundation
 [ 3 user stories: 2.1, 2.2, 2.3 ]
@@ -164,110 +164,112 @@ For Sprint 2, a feature or task is considered complete when:
 
 As a *developer*, I want a properly structured database so that all application data is stored securely and efficiently.
 
-- **Size:** L (Large)
-- **Assigned to:** TBD
+- **Size:** M (Medium)
+- **Assigned to:** Kim Mayo
 
 **User Story 2.2: Database Validation**
 
 As a *developer*, I want to validate database constraints and relationships so that data integrity is maintained throughout the application.
 
-- **Size:** M (Medium)
-- **Assigned to:** TBD
+- **Size:** S (small)
+- **Assigned to:** Caleb Fowlkes
 
 **User Story 2.3: Role-Based Data Access Controls**
 
 As a *system administrator*, I want to implement role-based data access controls so that users can only access data appropriate to their role.
 
-- **Size:** M (Medium)
-- **Assigned to:** TBD
+As a *developer*, I want back-end API endpoints for business-facing features so that the admin dashboard and management tools can communicate with the database securely.
+
+- **Size:** S (small)
+- **Assigned to:** Kim Mayo (*pending refinement -- Kim, Tristin, and Serina to meet before work begins*)
 
 ---
 
 ### Feature 2: User Authentication System
-[ 3 user stories: 2.4, 2.5, 2.6 ]
+[ 4 user stories: 2.4, 2.5, 2.6, 2.7 ]
 
 **User Story 2.4: User Registration**
 
 As a *new user*, I want to create an account with my email and password so that I can access the application.
 
-- **Size:** M (Medium)
-- **Assigned to:** TBD
+- **Size:** S (Small)
+- **Assigned to:** Rachel Mizer
 
-**User Story 2.5: User Login**
+**User Story 2.5: Email Verification**
+
+As a *new user*, I want to receive a verification email after registering so that my account is confirmed and activated securely.
+
+- **Size:** M (Medium)
+- **Assigned to:** Caleb Fowlkes (*Rachel Mizer will provide textbook documentation to support implementation*)
+
+**User Story 2.6: User Login**
 
 As a *registered user*, I want to log in to my account so that I can access my personalized features.
 
-- **Size:** M (Medium)
-- **Assigned to:** TBD
+- **Size:** S (Small)
+- **Assigned to:** Tyler Royal
 
-**User Story 2.6: Role-Based Access Control**
+**User Story 2.7: Password Reset**
 
-As a *user*, I want the system to grant me access only to features appropriate for my role (customer or business admin) so that I have a secure and relevant experience.
+As a *registered user*, I want to reset my password via email so that I can regain access to my account if I forget my credentials.
 
-- **Size:** M (Medium)
-- **Assigned to:** TBD
+- **Size:** S/M
+- **Assigned to:** Tristin Gatt (*may fold into Rachel's registration work if covered by the same Django module*)
 
 ---
 
 ### Feature 3: Backend & Frontend Authentication Structure
-[ 2 user stories: 2.7, 2.8 ]
+[ 2 user stories: 2.8, 2.9 ]
 
-**User Story 2.7: Backend API Endpoints for Authentication**
+**User Story 2.8: Backend API Endpoints for Authentication**
 
 As a *frontend developer*, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
 
-- **Size:** L (Large)
-- **Assigned to:** TBD
+- **Size:** S (Small)
+- **Assigned to:** Tristin Gatt
 
-**User Story 2.8: Frontend Authentication Components**
+**User Story 2.9: Frontend Authentication Components**
 
 As a *user*, I want a user interface for registration and login so that I can create an account and access the application.
 
-- **Size:** L (Large)
+- **Size:** TBD (*pending refinement- Kim, Tristin, and Serina to meet; may be covered by 2.4 and 2.6*)
 - **Assigned to:** TBD
 
 ---
 
 ### Feature 4: Application Shell & Navigation
-[ 1 user story: 2.9 ]
+[ 1 user story: 2.10 ]
 
-**User Story 2.9: Application Routing & Navigation Structure**
+**User Story 2.10: UI & Back-end Communication Testing**
 
-As a *developer*, I want a complete routing structure with navigation components so that users can navigate between all major pages and role-based access is enforced.
+As a *developer*, I want to verify that the front end communicates correctly with back-end API endpoints so that authentication flows and data exchange work reliably end to end. 
 
-- **Size:** L (Large)
+- **Size:** TBD (*pending refinement — Kim, Tristan, and Serina to meet; intended as an end-of-sprint integration task*)
 - **Assigned to:** TBD
 
 ---
 
 ### Feature 5: Seed Data & Content
-[ 1 user story: 2.10 ]
+[ 1 user story: 2.11 ]
 
-**User Story 2.10: Comprehensive Seed Data Population**
+**User Story 2.11: Comprehensive Seed Data Population**
 
 As a *developer*, I want realistic seed data populated in the database so that I can test features with representative content and teammates can develop against consistent data.
 
 - **Size:** M (Medium)
-- **Assigned to:** TBD
+- **Assigned to:** Kim Mayo *(Rachel Mizer has already produced a dataset of 175 inventory items, a dummy store, and sample customer orders; to be uploaded to `/documents/data/`)*
 
 ---
 
 ### Feature 6: Page Shells
-[ 2 user stories: 2.11, 2.12 ]
+[ 1 user story: 2.12 ]
 
 **User Story 2.11: Customer-Side Page Shells**
 
-As a *developer*, I want placeholder pages for customer-facing features so that Sprint 3 developers can immediately build functionality into existing page structures.
+As a *developer*, I want placeholder pages for customer-facing and business admin features so that Sprint 3 developers can immediately build functionality into existing page structures.
 
-- **Size:** L (Large)
-- **Assigned to:** TBD
-
-**User Story 2.12: Business Admin Page Shells**
-
-As a *developer*, I want placeholder pages for business admin features so that Sprint 4 developers can immediately build functionality into existing page structures.
-
-- **Size:** L (Large)
-- **Assigned to:** TBD
+- **Size:** S(small)
+- **Assigned to:** Rachel Mizer  *(combines previously separate customer and admin shell tasks; Rachel will create a detailed implementation checklist)*
 
 ---
 
@@ -278,8 +280,8 @@ As a *developer*, I want placeholder pages for business admin features so that S
 
 As a *developer*, I want a design system with reusable components so that the application has consistent styling and teammates can build features faster.
 
-- **Size:** L (Large)
-- **Assigned to:** TBD
+- **Size:** S (Small)
+- **Assigned to:** Rachel Mizer *(mockups already completed; first step is coding the global layout)*
 
 ------
 
@@ -287,57 +289,60 @@ As a *developer*, I want a design system with reusable components so that the ap
 
 *Detailed task assignments will be finalized during Sprint Planning using Planning Poker. Below is the preliminary task structure.*
 
-| ID    | Task Description                                | User Story | Assigned To | Size | Status |
-| ----- | ----------------------------------------------- | ---------- | ----------- | ---- | ------ |
-| 2.1.1 | Design database schema (ERD)                    | 2.1        | TBD         | M    | To Do  |
-| 2.1.2 | Implement database models in Django             | 2.1        | TBD         | L    | To Do  |
-| 2.1.3 | Create database migration scripts               | 2.1        | TBD         | M    | To Do  |
-| 2.2.1 | Write database constraint tests                 | 2.2        | TBD         | M    | To Do  |
-| 2.2.2 | Validate foreign key relationships              | 2.2        | TBD         | S    | To Do  |
-| 2.2.3 | Test data integrity enforcement                 | 2.2        | TBD         | S    | To Do  |
-| 2.3.1 | Implement role-based query filters             | 2.3        | TBD         | M    | To Do  |
-| 2.3.2 | Add role checks to API endpoints                | 2.3        | TBD         | M    | To Do  |
-| 2.4.1 | Build user registration backend endpoint        | 2.4        | TBD         | M    | To Do  |
-| 2.4.2 | Implement password hashing                      | 2.4        | TBD         | S    | To Do  |
-| 2.4.3 | Create registration form UI                     | 2.4        | TBD         | M    | To Do  |
-| 2.5.1 | Build user login backend endpoint               | 2.5        | TBD         | M    | To Do  |
-| 2.5.2 | Implement JWT token generation                  | 2.5        | TBD         | M    | To Do  |
-| 2.5.3 | Create login form UI                            | 2.5        | TBD         | M    | To Do  |
-| 2.6.1 | Create role middleware for route protection     | 2.6        | TBD         | M    | To Do  |
-| 2.6.2 | Add role checks to frontend routing             | 2.6        | TBD         | S    | To Do  |
-| 2.7.1 | Design API endpoint structure                   | 2.7        | TBD         | S    | To Do  |
-| 2.7.2 | Implement all auth API endpoints                | 2.7        | TBD         | L    | To Do  |
-| 2.7.3 | Document API with request/response examples     | 2.7        | TBD         | S    | To Do  |
-| 2.8.1 | Set up React Router                             | 2.8        | TBD         | M    | To Do  |
-| 2.8.2 | Create base authentication components           | 2.8        | TBD         | L    | To Do  |
-| 2.8.3 | Connect frontend to backend API                 | 2.8        | TBD         | M    | To Do  |
-| 2.8.4 | Implement error handling in UI                  | 2.8        | TBD         | S    | To Do  |
-| 2.9.1 | Create landing page component                   | 2.9        | TBD         | S    | To Do  |
-| 2.9.2 | Build customer navigation bar                   | 2.9        | TBD         | M    | To Do  |
-| 2.9.3 | Build business admin sidebar                    | 2.9        | TBD         | M    | To Do  |
-| 2.9.4 | Configure routing with role-based guards        | 2.9        | TBD         | M    | To Do  |
-| 2.10.1| Write seed data script                          | 2.10       | TBD         | M    | To Do  |
-| 2.10.2| Create menu items seed data                     | 2.10       | TBD         | S    | To Do  |
-| 2.10.3| Create users and orders seed data               | 2.10       | TBD         | S    | To Do  |
-| 2.11.1| Create menu browsing page shell                 | 2.11       | TBD         | M    | To Do  |
-| 2.11.2| Create shopping cart page shell                 | 2.11       | TBD         | S    | To Do  |
-| 2.11.3| Create order history page shell                 | 2.11       | TBD         | S    | To Do  |
-| 2.11.4| Create account/profile page shell               | 2.11       | TBD         | S    | To Do  |
-| 2.12.1| Create admin dashboard page shell               | 2.12       | TBD         | M    | To Do  |
-| 2.12.2| Create menu management page shell               | 2.12       | TBD         | M    | To Do  |
-| 2.12.3| Create inventory management page shell          | 2.12       | TBD         | M    | To Do  |
-| 2.12.4| Create orders management page shell             | 2.12       | TBD         | S    | To Do  |
-| 2.13.1| Define color palette and typography             | 2.13       | TBD         | S    | To Do  |
-| 2.13.2| Create reusable Button component                | 2.13       | TBD         | S    | To Do  |
-| 2.13.3| Create reusable Form Input component            | 2.13       | TBD         | S    | To Do  |
-| 2.13.4| Create Card and Alert components                | 2.13       | TBD         | S    | To Do  |
-| 2.13.5| Implement responsive layout system              | 2.13       | TBD         | M    | To Do  |
-| 2.14  | Update Sprint 2 Status Reports                  | N/A        | Serina R.   | S    | To Do  |
+| ID     | Task Description                                | User Story | Assigned To | Size | Status |
+| ------ | ----------------------------------------------- | ---------- | ----------- | ---- | ------ |
+| 2.1.1  | Design database schema (ERD)                    | 2.1        | Kim M.      | M    | To Do  |
+| 2.1.2  | Implement database models in Django             | 2.1        | Kim M.      | M    | To Do  |
+| 2.1.3  | Create database migration scripts               | 2.1        | Kim M.      | S    | To Do  |
+| 2.2.1  | Write database constraint tests                 | 2.2        | Caleb F.    | S    | To Do  |
+| 2.2.2  | Validate foreign key relationships              | 2.2        | Caleb F.    | S    | To Do  |
+| 2.2.3  | Test data integrity enforcement                 | 2.2        | Caleb F.    | S    | To Do  |
+| 2.3.1  | Implement role-based query filters              | 2.3        | Kim M.      | M    | To Do  |
+| 2.3.2  | Add role checks to API endpoints                | 2.3        | Kim M.      | M    | To Do  |
+| 2.4.1  | Build user registration backend endpoint        | 2.4        | Rachel M.   | S    | To Do  |
+| 2.4.2  | Implement password hashing                      | 2.4        | Rachel M.   | S    | To Do  |
+| 2.4.3  | Create registration form UI                     | 2.4        | Rachel M.   | S    | To Do  |
+| 2.5.1  | Build email verification token generation       | 2.5        | Caleb F.    | M    | To Do  |
+| 2.5.2  | Create email verification send endpoint         | 2.5        | Caleb F.    | M    | To Do  |
+| 2.5.3  | Create email verification confirmation endpoint | 2.5        | Caleb F.    | S    | To Do  |
+| 2.5.4  | Design email verification template              | 2.5        | Caleb F.    | S    | To Do  |
+| 2.6.1  | Create role middleware for route protection     | 2.6        | Tyler R.    | S    | To Do  |
+| 2.6.2  | Add role checks to frontend routing             | 2.6        | Tyler R.    | S    | To Do  |
+| 2.6.3  | Create login form UI                            | 2.6        | Tyler R.    | S    | To Do  |
+| 2.7.1  | Build password reset request endpoint           | 2.7        | Tristin G.  | S    | To Do  |
+| 2.7.2  | Implement time-limited reset token generation   | 2.7        | Tristin G.  | S    | To Do  |
+| 2.7.3  | Build password reset confirmation endpoint      | 2.7        | Tristin G.  | S    | To Do  |
+| 2.8.1  | Design API endpoint structure                   | 2.8        | Tristin G.  | S    | To Do  |
+| 2.8.2  | Implement all auth API endpoints                | 2.8        | Tristin G.  | M    | To Do  |
+| 2.8.3  | Document API with request/response examples     | 2.8        | Tristin G.  | S    | To Do  |
+| 2.9.1  | Create landing page component                   | 2.9        | PENDING     | TBD  | To Do  |
+| 2.9.2  | Build customer navigation bar                   | 2.9        | PENDING     | TBD  | To Do  |
+| 2.9.3  | Build business admin sidebar                    | 2.9        | PENDING     | TBD  | To Do  |
+| 2.10.1 | Configure routing with role-based guards        | 2.9        | PENDING     | TBD  | To Do  |
+| 2.11.1 | Write seed data script                          | 2.10       | Kim M.      | M    | To Do  |
+| 2.11.2 | Create menu items seed data                     | 2.10       | Kim M.      | S    | To Do  |
+| 2.11.3 | Create users and orders seed data               | 2.10       | Kim M.      | S    | To Do  |
+| 2.12.1 | Create menu browsing page shell                 | 2.11       | Rachel M.   | M    | To Do  |
+| 2.12.2 | Create shopping cart page shell                 | 2.11       | Rachel M.   | S    | To Do  |
+| 2.12.3 | Create order history page shell                 | 2.11       | Rachel M.   | S    | To Do  |
+| 2.12.4 | Create account/profile page shell               | 2.11       | Rachel M.   | S    | To Do  |
+| 2.12.1 | Create admin dashboard page shell               | 2.12       | Rachel M.   | M    | To Do  |
+| 2.12.2 | Create menu management page shell               | 2.12       | Rachel M.   | M    | To Do  |
+| 2.12.3 | Create inventory management page shell          | 2.12       | Rachel M.   | M    | To Do  |
+| 2.12.4 | Create orders management page shell             | 2.12       | Rachel M.   | S    | To Do  |
+| 2.13.1 | Define color palette and typography             | 2.13       | Rachel M.   | S    | To Do  |
+| 2.13.2 | Create reusable Button component                | 2.13       | Rachel M.   | S    | To Do  |
+| 2.13.3 | Create reusable Form Input component            | 2.13       | Rachel M.   | S    | To Do  |
+| 2.13.4 | Create Card and Alert components                | 2.13       | Rachel M.   | S    | To Do  |
+| 2.13.5 | Implement responsive layout system              | 2.13       | Rachel M.   | M    | To Do  |
+| 2.14   | Update Sprint 2 Status Reports                  | N/A        | Serina R.   | S    | To Do  |
 
-**Total Tasks:** 42 tasks
-- 6 Large (L)
-- 22 Medium (M)
-- 14 Small (S)
+**Total Tasks:** 45 tasks
+
+- 0 Large (L)
+- 13 Medium (M)
+- 28 Small (S)
+- 4 To Be Determined pending refinement
 ------
 
 ## Timing Expectations & Milestones
@@ -487,4 +492,4 @@ As a *developer*, I want a design system with reusable components so that the ap
 
 ------
 
-*This plan will be updated following Sprint Planning on February 15, 2026.*
+*Last updated: February 16, 2026 -- reflects decisions made during Sprint Planning on February 16, 2026. Tasks 2.3, 2.9, and 2.10 will be updated following the Kim/Tristin/Serina refinement meeting.*
