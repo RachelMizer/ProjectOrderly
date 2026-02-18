@@ -1,0 +1,59 @@
+4. Test the code locally
+Run server
+python manage.py runserver
+
+
+Create a test user (if you don’t have one)
+python manage.py shell
+
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+User.objects.create_user(username="testuser", password="testpass", email="test@example.com")
+exit()
+
+
+Test login with curl
+curl -X POST http://127.0.0.1:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "testpass"}'
+
+
+Expected response:
+{
+  "token": "abc123...",
+  "user": {
+    "id": 1,
+    "username": "testuser",
+    "email": "test@example.com"
+  }
+}
+
+
+Test failure case:
+curl -X POST http://127.0.0.1:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "wrong"}'
+
+
+You should get a 400 with an error message.
+If your “5 checklist items” include things like:
+- Valid credentials → token returned
+- Invalid credentials → error
+- Disabled user → error
+- Token reused on subsequent logins
+- Response matches API Contract
+You can verify each with variations of the above.
+
+5. Commit and submit a pull request
+Stage and commit
+git status
+git add users/serializers.py users/views.py users/urls.py project/urls.py project/settings.py
+git commit -m "Implement user login endpoint with token authentication"
+
+
+Push branch
+git push -u origin user-login
+
+
+
