@@ -69,12 +69,11 @@ This document defines the Django app boundaries for Orderly’s backend. The goa
 ---
 
 ### `reporting` (Admin dashboards, analytics, exports)
-> NOTE: Do not name an app `admin` to avoid confusion with `django.contrib.admin`.
-
 **Owns:**
 - Reporting endpoints (sales reports, low-stock summaries, exports)
 - Aggregations across orders, inventory, suppliers
 - Admin-only reporting views/serializers/services
+- Stockable ProductVariants inventory levels in catalog/models.py: ProductVariants>StockQuantity
 
 **Does NOT own:**
 - Core data models like Order/Product/InventoryItem (those stay in their domain apps)
