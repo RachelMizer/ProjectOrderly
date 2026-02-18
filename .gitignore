@@ -12,6 +12,8 @@ venv/
 .venv/
 Orderly/venv/
 Orderly/.venv/
+venv/
+.venv/
 
 #######################################
 # Python Cache
