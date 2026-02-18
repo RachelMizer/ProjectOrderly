@@ -1,18 +1,18 @@
 # Overview
 ## Authentication & Authorization
 #### How do we prove identity and permissions?
-The API uses token-based authentication.
-JSON Web Tokens (JWT) are issued upon successful login.
-All authenticated requests must include the JWT in the Authorization header:
+The API uses token-based authentication.  
+JSON Web Tokens (JWT) are issued upon successful login.  
+All authenticated requests must include the JWT in the Authorization header:  
     ```Authorization: Bearer <token>```
-Tokens are stateless and validated on each request.
-Login and registration endpoints do not require authentication
+Tokens are stateless and validated on each request.  
+Login and registration endpoints do not require authentication  
 
 ## Common Conventions
 ### URLs
-All API endpoints are prefixed with `/api/`.
-Endpoints follow RESTful resource-based naming.
-Plural nouns are used for collections (`/orders`, `/products`).
+All API endpoints are prefixed with `/api/`.  
+Endpoints follow RESTful resource-based naming.  
+Plural nouns are used for collections (`/orders`, `/products`).  
 ### HTTP Methods
 + GET: Retrieve resources
 + POST: Create new resources
@@ -26,9 +26,9 @@ Plural nouns are used for collections (`/orders`, `/products`).
 + 403 Forbidden: Insufficient permissions
 + 404 Not Found: Resource does not exist
 ### Data Format
-All request and response bodies use JSON.
-Timestamps are returned in ISO 8601 format (UTC).
-Monetary values are represented as decimal numbers.
+All request and response bodies use JSON.  
+Timestamps are returned in ISO 8601 format (UTC).  
+Monetary values are represented as decimal numbers.  
 ### Errors
 Error respones use a consistent JSON structure:
 ```
@@ -43,16 +43,16 @@ Error respones use a consistent JSON structure:
 
 # Authentication
 ## Login
-**Endpoint:** `<POST> /api/v1/auth/login/`
-**Description:** Submit user credentials to login and receive authorization token
-**Authentication:** Not Required
-**Role:** All
-**URL Parameters:** None
-**Request Parameters:** Email & Password
-#### Request:
+**Endpoint:** `<POST> /api/v1/auth/login/`  
+**Description:** Submit user credentials to login and receive authorization token  
+**Authentication:** Not Required  
+**Role:** All  
+**URL Parameters:** None  
+**Request Parameters:** Email & Password  
 
-**Header:**
-`Content-Type: application/json`
+### Request:
+
+**Header:**`Content-Type: application/json`  
 **Body:**
 ```
 {
@@ -60,9 +60,9 @@ Error respones use a consistent JSON structure:
     "password": "wordPass1234"
 }
 ```
-**Rules:**
-`email` - required, string, valid format
-`password` - required, string
+**Rules:**  
+`email` - required, string, valid format  
+`password` - required, string  
 **Success Response (200 OK):**
 ```
 header
@@ -92,14 +92,14 @@ body
 + Passwords are hashed server-side
 + Tokens must be stored locally and sent on future requests as `Authorization: Bearer <accessToken>`
 
-**Unauthorized Response (401)**
+**Unauthorized Response (401):**
 ```
 {
     "error": "INVALID_CREDENTIALS",
     "message": "Email or password is incorrect"
 }
 ```
-**Missing / Invalid Fields (400)**
+**Missing / Invalid Fields (400):**
 ```
 {
     "error": "VALIDATION_ERROR",
@@ -110,7 +110,7 @@ body
     }
 }
 ```
-**Account Disabled / Locked (403 Forbidden)**
+**Account Disabled / Locked (403 Forbidden):**
 ```
 {
     "error": "ACCOUNT_DISABLED",
@@ -119,14 +119,14 @@ body
 ```
 
 ## Register
-**Endpoint:** `<POST> /api/v1/auth/register`
-**Description:** Submit user credentials to register new user and automatically login.
-**Authentication:** Not required
-**Role:** None
-**URL Parameters:** None
-**Request Parameters:** email, password, firstName, lastName
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `<POST> /api/v1/auth/register`  
+**Description:** Submit user credentials to register new user and automatically login.  
+**Authentication:** Not required  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** email, password, firstName, lastName  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:** 
 ```
 {
@@ -137,12 +137,12 @@ body
 }
 ```
 **Rules:** 
-`email` - required, string, valid format
-`password` - required, string, min 8 characters, not a common password, not only numeric characters, not too similar to username firstName lastName or email
-`firstName` - required, string
-`lastName` - required, string
+`email` - required, string, valid format  
+`password` - required, string, min 8 characters, not a common password, not only numeric characters, not too similar to username firstName lastName or email  
+`firstName` - required, string  
+`lastName` - required, string  
 
-**Success Response (201 CREATED)**
+**Success Response (201 CREATED):**
 ```
 header
 
@@ -170,7 +170,7 @@ body
 + Passwords are hashed server-side
 + Tokens must be stored locally and sent on future requests as `Authorization: Bearer <accessToken>`
   
-**Missing / Invalid Fields (400)**
+**Missing / Invalid Fields (400):**
 ```
 {
     "error": "VALIDATION_ERROR",
@@ -182,8 +182,15 @@ body
         "lastName": "required",
     }
 }
+
+or
+
+{
+    "error": "WEAK_PASSWORD",
+    "message": "password must meet all requirements"
+}
 ```
-**Conflict (409)**
+**Conflict (409):**
 ```
 {
     "error": "CONFLICT_ERROR",
@@ -192,20 +199,20 @@ body
 ```
 
 ## Refresh
-**Endpoint:** `<GET> /api/v1/auth/refresh`
-**Description:** When auth token has expired, use refresh token to request new auth token.
-**Authentication:** Refresh token (HTTP cookie)
-**Role:** None
-**URL Parameters:** None
-**Request Parameters:** None
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `<POST> /api/v1/auth/refresh`  
+**Description:** When auth token has expired, use refresh token to request new auth token.  
+**Authentication:** Refresh token (HTTP cookie)  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:**
 ```
 {}
 ```
-**Rules:** Automatically uses HTTP cookie token issued from login or register.
-**Success Response (200 OK)**
+**Rules:** Automatically uses HTTP cookie token issued from login or register.  
+**Success Response (200 OK):**
 ```
 body
 
@@ -215,7 +222,7 @@ body
     "tokenType": "Bearer"
 }
 ```
-**Unauthorized (401)**
+**Unauthorized (401):**
 ```
 {
     "error": "INVALID_REFRESH_TOKEN",
@@ -225,20 +232,20 @@ body
 
 
 ## Logout
-**Endpoint:** `/api/v1/auth/logout`
-**Description:** Clears user refresh token, blacklists token on backend.
-**Authentication:** Refresh token (HTTP cookie)
-**Role:** Any
-**URL Parameters:** None
-**Request Parameters:** None
-#### Request
-**Header:** `Content-Type: application/json`
+**Endpoint:** `<POST> /api/v1/auth/logout`  
+**Description:** Clears user refresh token, blacklists token on backend.  
+**Authentication:** Refresh token (HTTP cookie)  
+**Role:** Any  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request
+**Header:** `Content-Type: application/json`  
 **Body:**
 ```
 {}
 ```
-**Rules:** None
-**Success Response (200 OK)**
+**Rules:** None  
+**Success Response (200 OK):**
 ```
 header
 
@@ -253,33 +260,139 @@ body
 }
 ```
 
+## Request Password Reset
+**Endpoint:** `<POST> /api/v1/auth/password-reset`  
+**Description:** Requests an email to reset password  
+**Authentication:** None  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** email  
+### Request
+**Header:** `Content-Type: application/json`  
+**Body:**
+```
+{
+    "email": "smith@email.com"
+}
+```
+**Rules:** `email` - required, string, valid format  
+**Success Response (200 OK):**
+```
+body
+{
+    "message": "If email exists, will send password reset."
+}
+```
+**Invalid email (400):**
+```
+{
+    "error": "INVALID_EMAIL",
+    "message": "Not a valid email format"
+}
+```
+
+## Confirm New Password
+**Endpoint:** `<POST> /api/v1/auth/password-reset/confirm`  
+**Description:** Submits a new password.  
+**Authentication:** None  
+**Role:** Any  
+**URL Parameters:** None 
+**Request Parameters:** encoded UserID, New password, auth token
+### Request
+**Header:** `Content-Type: application/json`  
+**Body:**
+```
+{
+    "uid": "abc123",
+    "token": "xyz321",
+    "newPassword": "myNewerStrongerPassword"
+}
+```
+**Rules:**  
++ Reset link example: `/api/v1/auth/password-reset/confirm/?uid=abc123&token=xyz321` 
++ `uid` and `token` - strings. included password reset link.
++ `Password` - string. password hashed server-side.  
++ Token must valid and not expired
++ Token becomes invalid after reset
+
+**Success Response (200 OK):**  
+```
+body
+{
+    "message": "Successfully reset password"
+}
+```
+**Bad Request (400):**  
+```
+{
+    "error": "WEAK_PASSWORD",
+    "message": "password must meet all requirements"
+}
+
+or
+
+{
+    "error": "INVALID_TOKEN",
+    "message": "token is invalid or expired"
+}
+```
+   
 
 # Users
-## Get current Customer profile
+## Get current User profile
 **Endpoint:**
 **Description:**
 **Authentication:**
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
-## Update profile
+## Update User profile
 **Endpoint:**
 **Description:**
 **Authentication:**
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
+
+## Get Users
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Get User/:id
+
+## Delete User
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
 
 # Orders API
 ## Create Order
@@ -289,11 +402,11 @@ body
 **Role:** None
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:** If no JWT is present, require guest email
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Add item to Order
 **Endpoint:**
@@ -302,11 +415,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Update item quantity / modifiers
 **Endpoint:**
@@ -315,24 +428,24 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
-## View Order
+## View Order/:id
 **Endpoint:**
 **Description:**
 **Authentication:**
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Get Order Status
 **Endpoint:**
@@ -341,24 +454,24 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
-## List Orders
+## List Orders/:status
 **Endpoint:**
 **Description:**
 **Authentication:**
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Finalize Order
 **Endpoint:**
@@ -367,12 +480,24 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
+## Cancel Order
+**Endpoint:**
+**Description:**
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
 
 # Menu API
 ## List Categories
@@ -382,11 +507,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## List Products
 **Endpoint:**
@@ -395,11 +520,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Get Variants
 **Endpoint:**
@@ -408,11 +533,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Get Modifiers
 **Endpoint:**
@@ -421,11 +546,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Create/Update Product
 **Endpoint:**
@@ -434,11 +559,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Create/Update Variant
 **Endpoint:**
@@ -447,11 +572,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Create/Update Modifiers
 **Endpoint:**
@@ -460,11 +585,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 
 
@@ -476,11 +601,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Adjust inventory
 **Endpoint:**
@@ -489,11 +614,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## Low-stock report
 **Endpoint:**
@@ -502,11 +627,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 ## (Optional) Inventory usage
 **Endpoint:**
@@ -515,11 +640,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 
 # Reporting API
@@ -530,11 +655,11 @@ body
 **Role:**
 **URL Parameters:**
 **Request Parameters:**
-#### Request
+### Request
 **Header:**
 **Body:**
 **Rules:**
-**Success Response (200 OK)**
+**Success Response (200 OK):**
 
 
 ---

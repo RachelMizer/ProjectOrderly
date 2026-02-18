@@ -175,9 +175,9 @@ Trello serves as the primary project management tool, providing capabilities for
 	+ Stable Development Environment
 
 2. Sprint 2 (02/14-02/27): 
-	+ Prototype Design
-	+ User Accounts
-	+ Rough Backend, Frontend, and DB
+	+ Database Setup and Validation with Seed Data
+	+ User Accounts and Authentication (Registration, Login, Role-Based Access)
+	+ Application Shell & Navigation
 
 3. Sprint 3 (02/28-03/13): 
 	+ Deploy to cloud environment

@@ -1,0 +1,151 @@
+Order Number,Order Date,Purchaser,Order Total,Last Update,Order Status
+10234001,01/01/2026,Hopkins Attorney Office,$436.29,01/12/2026,Shipped
+10234002,01/01/2026,Tate County Public Schools,$2789.45,01/31/2026,Return Started
+10234003,01/01/2026,Anderson & Cole Logistics,$129.88,12/29/2025,In Progress
+10234004,01/02/2026,Greenview Apartments,$842.11,01/03/2026,Ready to Ship
+10234005,01/02/2026,Metroline Printing,$154.77,01/05/2026,Fulfilled
+10234006,01/02/2026,Jordan Ellis,$63.55,01/02/2026,Shipped
+10234007,01/03/2026,Silver Ridge Dental,$987.44,01/04/2026,Ready to Ship
+10234008,01/03/2026,Northstar Engineering,$2145.90,01/10/2026,Shipped
+10234009,01/03/2026,Emily Carter,$48.22,12/31/2025,In Progress
+10234010,01/04/2026,Blue Horizon Realty,$377.19,01/06/2026,Fulfilled
+10234011,01/04/2026,TriPoint Construction,$1688.00,01/08/2026,Shipped
+10234012,01/04/2026,Westlake Medical Group,$244.67,01/05/2026,Ready to Ship
+10234013,01/05/2026,Harper & Lane Law Firm,$1129.55,01/07/2026,Shipped
+10234014,01/05/2026,City of Raleigh Parks Dept,$322.10,01/05/2026,Fulfilled
+10234015,01/05/2026,Oakwood Senior Living,$578.44,12/30/2025,In Progress
+10234016,01/06/2026,Everett Coleman,$91.33,01/06/2026,Shipped
+10234017,01/06/2026,Redwood Accounting,$744.29,01/09/2026,Ready to Ship
+10234018,01/06/2026,Silverline Architects,$1883.77,01/12/2026,Shipped
+10234019,01/07/2026,Lexington Auto Group,$299.10,01/07/2026,Fulfilled
+10234020,01/07/2026,North Ridge HOA,$412.55,01/08/2026,Shipped
+10234021,01/07/2026,Carolina Freight Solutions,$1677.90,01/10/2026,Ready to Ship
+10234022,01/08/2026,Wake County Public Schools,$2899.44,01/15/2026,Shipped
+10234023,01/08/2026,Triangle Tech Repair,$144.22,12/28/2025,In Progress
+10234024,01/08/2026,Olivia Bennett,$55.90,01/08/2026,Fulfilled
+10234025,01/09/2026,Blue Harbor Insurance,$633.18,01/10/2026,Shipped
+10234026,01/09/2026,Capital City Bank,$188.44,01/11/2026,Ready to Ship
+10234027,01/09/2026,Evergreen Counseling,$322.77,01/09/2026,Fulfilled
+10234028,01/10/2026,Metroline Printing,$144.55,01/12/2026,Shipped
+10234029,01/10/2026,Anderson & Cole Logistics,$199.33,01/11/2026,Ready to Ship
+10234030,01/10/2026,Hopkins Attorney Office,$744.90,01/13/2026,Shipped
+10234031,01/11/2026,Greenview Apartments,$288.44,01/11/2026,Fulfilled
+10234032,01/11/2026,Northstar Engineering,$1999.10,01/15/2026,Shipped
+10234033,01/11/2026,Emily Carter,$44.12,12/30/2025,In Progress
+10234034,01/12/2026,Blue Horizon Realty,$377.55,01/12/2026,Shipped
+10234035,01/12/2026,TriPoint Construction,$1666.22,01/14/2026,Ready to Ship
+10234036,01/12/2026,Westlake Medical Group,$255.90,01/13/2026,Fulfilled
+10234037,01/13/2026,Harper & Lane Law Firm,$1188.44,01/15/2026,Shipped
+10234038,01/13/2026,City of Raleigh Parks Dept,$299.77,01/13/2026,Fulfilled
+10234039,01/13/2026,Oakwood Senior Living,$622.10,12/29/2025,In Progress
+10234040,01/14/2026,Everett Coleman,$88.55,01/14/2026,Shipped
+10234041,01/14/2026,Redwood Accounting,$799.33,01/16/2026,Ready to Ship
+10234042,01/14/2026,Silverline Architects,$1999.44,01/18/2026,Shipped
+10234043,01/15/2026,Lexington Auto Group,$310.22,01/15/2026,Fulfilled
+10234044,01/15/2026,North Ridge HOA,$455.90,01/16/2026,Shipped
+10234045,01/15/2026,Carolina Freight Solutions,$1777.55,01/17/2026,Ready to Ship
+10234046,01/16/2026,Wake County Public Schools,$2999.88,01/20/2026,Shipped
+10234047,01/16/2026,Triangle Tech Repair,$166.44,12/31/2025,In Progress
+10234048,01/16/2026,Olivia Bennett,$59.33,01/16/2026,Fulfilled
+10234049,01/17/2026,Blue Harbor Insurance,$655.22,01/18/2026,Shipped
+10234050,01/17/2026,Capital City Bank,$199.44,01/19/2026,Ready to Ship
+10234051,01/17/2026,Evergreen Counseling,$344.10,01/17/2026,Fulfilled
+10234052,01/18/2026,Metroline Printing,$188.44,01/19/2026,Shipped
+10234053,01/18/2026,Anderson & Cole Logistics,$299.77,01/20/2026,Ready to Ship
+10234054,01/18/2026,Hopkins Attorney Office,$744.55,01/21/2026,Shipped
+10234055,01/19/2026,Greenview Apartments,$255.90,01/19/2026,Fulfilled
+10234056,01/19/2026,Northstar Engineering,$2144.33,01/23/2026,Shipped
+10234057,01/19/2026,Emily Carter,$52.11,12/30/2025,In Progress
+10234058,01/20/2026,Blue Horizon Realty,$399.88,01/20/2026,Shipped
+10234059,01/20/2026,TriPoint Construction,$1777.44,01/22/2026,Ready to Ship
+10234060,01/20/2026,Westlake Medical Group,$266.55,01/21/2026,Fulfilled
+10234061,01/21/2026,Harper & Lane Law Firm,$1188.90,01/23/2026,Shipped
+10234062,01/21/2026,City of Raleigh Parks Dept,$322.44,01/21/2026,Fulfilled
+10234063,01/21/2026,Oakwood Senior Living,$588.33,12/29/2025,In Progress
+10234064,01/22/2026,Everett Coleman,$91.77,01/22/2026,Shipped
+10234065,01/22/2026,Redwood Accounting,$744.55,01/24/2026,Ready to Ship
+10234066,01/22/2026,Silverline Architects,$1999.88,01/26/2026,Shipped
+10234067,01/23/2026,Lexington Auto Group,$310.44,01/23/2026,Fulfilled
+10234068,01/23/2026,North Ridge HOA,$466.22,01/24/2026,Shipped
+10234069,01/23/2026,Carolina Freight Solutions,$1888.77,01/25/2026,Ready to Ship
+10234070,01/24/2026,Wake County Public Schools,$2999.10,01/28/2026,Shipped
+10234071,01/24/2026,Triangle Tech Repair,$166.88,12/31/2025,In Progress
+10234072,01/24/2026,Olivia Bennett,$61.44,01/24/2026,Fulfilled
+10234073,01/25/2026,Blue Harbor Insurance,$655.90,01/26/2026,Shipped
+10234074,01/25/2026,Capital City Bank,$211.55,01/27/2026,Ready to Ship
+10234075,01/25/2026,Evergreen Counseling,$344.77,01/25/2026,Fulfilled
+10234076,01/26/2026,Metroline Printing,$199.33,01/28/2026,Shipped
+10234077,01/26/2026,Anderson & Cole Logistics,$255.44,01/27/2026,Ready to Ship
+10234078,01/26/2026,Hopkins Attorney Office,$822.10,01/29/2026,Shipped
+10234079,01/27/2026,Greenview Apartments,$299.55,01/27/2026,Fulfilled
+10234080,01/27/2026,Northstar Engineering,$2144.99,01/30/2026,Shipped
+10234081,01/27/2026,Emily Carter,$49.88,12/30/2025,In Progress
+10234082,01/28/2026,Blue Horizon Realty,$399.22,01/28/2026,Shipped
+10234083,01/28/2026,TriPoint Construction,$1666.44,01/30/2026,Ready to Ship
+10234084,01/28/2026,Westlake Medical Group,$255.10,01/29/2026,Fulfilled
+10234085,01/29/2026,Harper & Lane Law Firm,$1199.55,01/31/2026,Shipped
+10234086,01/29/2026,City of Raleigh Parks Dept,$322.88,01/29/2026,Fulfilled
+10234087,01/29/2026,Oakwood Senior Living,$599.44,12/29/2025,In Progress
+10234088,01/30/2026,Everett Coleman,$88.90,01/30/2026,Shipped
+10234089,01/30/2026,Redwood Accounting,$799.55,01/31/2026,Ready to Ship
+10234090,01/30/2026,Silverline Architects,$1999.22,01/31/2026,Shipped
+10234091,01/31/2026,Lexington Auto Group,$322.44,01/31/2026,Fulfilled
+10234092,01/31/2026,North Ridge HOA,$455.10,01/31/2026,Shipped
+10234093,01/31/2026,Carolina Freight Solutions,$1888.33,01/31/2026,Ready to Ship
+10234094,01/31/2026,Wake County Public Schools,$2999.55,01/31/2026,Shipped
+10234095,01/31/2026,Triangle Tech Repair,$155.44,12/30/2025,In Progress
+10234096,01/31/2026,Olivia Bennett,$61.22,01/31/2026,Fulfilled
+10234097,01/31/2026,Blue Harbor Insurance,$655.44,01/31/2026,Shipped
+10234098,01/31/2026,Capital City Bank,$211.10,01/31/2026,Ready to Ship
+10234099,01/31/2026,Evergreen Counseling,$344.33,01/31/2026,Fulfilled
+10234100,01/31/2026,Metroline Printing,$199.88,01/31/2026,Shipped
+10234101,01/01/2026,Harper & Lane Law Firm,$1188.77,01/03/2026,Shipped
+10234102,01/01/2026,City of Raleigh Parks Dept,$322.55,01/02/2026,Fulfilled
+10234103,01/02/2026,Oakwood Senior Living,$599.10,12/30/2025,In Progress
+10234104,01/02/2026,Everett Coleman,$88.44,01/02/2026,Shipped
+10234105,01/02/2026,Redwood Accounting,$744.88,01/04/2026,Ready to Ship
+10234106,01/03/2026,Silverline Architects,$1999.55,01/06/2026,Shipped
+10234107,01/03/2026,Lexington Auto Group,$310.77,01/03/2026,Fulfilled
+10234108,01/03/2026,North Ridge HOA,$466.55,01/04/2026,Shipped
+10234109,01/04/2026,Carolina Freight Solutions,$1888.10,01/06/2026,Ready to Ship
+10234110,01/04/2026,Wake County Public Schools,$2999.22,01/08/2026,Shipped
+10234111,01/04/2026,Triangle Tech Repair,$155.99,12/29/2025,In Progress
+10234112,01/05/2026,Olivia Bennett,$61.88,01/05/2026,Fulfilled
+10234113,01/05/2026,Blue Harbor Insurance,$655.77,01/06/2026,Shipped
+10234114,01/05/2026,Capital City Bank,$211.33,01/07/2026,Ready to Ship
+10234115,01/06/2026,Evergreen Counseling,$344.55,01/06/2026,Fulfilled
+10234116,01/06/2026,Metroline Printing,$199.44,01/08/2026,Shipped
+10234117,01/06/2026,Anderson & Cole Logistics,$255.77,01/07/2026,Ready to Ship
+10234118,01/07/2026,Hopkins Attorney Office,$822.55,01/09/2026,Shipped
+10234119,01/07/2026,Greenview Apartments,$299.88,01/07/2026,Fulfilled
+10234120,01/07/2026,Northstar Engineering,$2144.55,01/10/2026,Shipped
+10234121,01/08/2026,Emily Carter,$49.55,12/30/2025,In Progress
+10234122,01/08/2026,Blue Horizon Realty,$399.44,01/08/2026,Shipped
+10234123,01/08/2026,TriPoint Construction,$1666.77,01/10/2026,Ready to Ship
+10234124,01/09/2026,Westlake Medical Group,$255.44,01/09/2026,Fulfilled
+10234125,01/09/2026,Harper & Lane Law Firm,$1199.22,01/11/2026,Shipped
+10234126,01/09/2026,City of Raleigh Parks Dept,$322.33,01/09/2026,Fulfilled
+10234127,01/10/2026,Oakwood Senior Living,$599.88,12/29/2025,In Progress
+10234128,01/10/2026,Everett Coleman,$88.22,01/10/2026,Shipped
+10234129,01/10/2026,Redwood Accounting,$799.10,01/12/2026,Ready to Ship
+10234130,01/11/2026,Silverline Architects,$1999.33,01/14/2026,Shipped
+10234131,01/11/2026,Lexington Auto Group,$322.10,01/11/2026,Fulfilled
+10234132,01/11/2026,North Ridge HOA,$455.44,01/12/2026,Shipped
+10234133,01/12/2026,Carolina Freight Solutions,$1888.55,01/14/2026,Ready to Ship
+10234134,01/12/2026,Wake County Public Schools,$2999.77,01/15/2026,Shipped
+10234135,01/12/2026,Triangle Tech Repair,$166.22,12/31/2025,In Progress
+10234136,01/13/2026,Olivia Bennett,$61.10,01/13/2026,Fulfilled
+10234137,01/13/2026,Blue Harbor Insurance,$655.33,01/14/2026,Shipped
+10234138,01/13/2026,Capital City Bank,$211.55,01/15/2026,Ready to Ship
+10234139,01/14/2026,Evergreen Counseling,$344.66,01/14/2026,Fulfilled
+10234140,01/14/2026,Metroline Printing,$199.55,01/16/2026,Shipped
+10234141,01/14/2026,Anderson & Cole Logistics,$255.22,01/15/2026,Ready to Ship
+10234142,01/15/2026,Hopkins Attorney Office,$822.33,01/17/2026,Shipped
+10234143,01/15/2026,Greenview Apartments,$299.44,01/15/2026,Fulfilled
+10234144,01/15/2026,Northstar Engineering,$2144.10,01/18/2026,Shipped
+10234145,01/16/2026,Emily Carter,$49.22,12/30/2025,In Progress
+10234146,01/16/2026,Blue Horizon Realty,$399.77,01/16/2026,Shipped
+10234147,01/16/2026,TriPoint Construction,$1666.55,01/18/2026,Ready to Ship
+10234148,01/17/2026,Westlake Medical Group,$255.33,01/17/2026,Fulfilled
+10234149,01/17/2026,Harper & Lane Law Firm,$1199.88,01/19/2026,Shipped
+10234150,01/17/2026,City of Raleigh Parks Dept,$322.66,01/17/2026,Fulfilled

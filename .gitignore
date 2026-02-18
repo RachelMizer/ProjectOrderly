@@ -8,8 +8,12 @@ Thumbs.db
 #######################################
 # Python Virtual Environment
 #######################################
+venv/
+.venv/
 Orderly/venv/
 Orderly/.venv/
+venv/
+.venv/
 
 #######################################
 # Python Cache
