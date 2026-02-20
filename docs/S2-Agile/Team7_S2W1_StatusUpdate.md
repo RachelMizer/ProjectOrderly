@@ -16,7 +16,7 @@
 
 ## Trello Board Capture:
 
-![S2W1_SprintBacklog](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S2W1_SprintBacklog.png)
+![S2W1_SprintBacklog](../../images/Sprint%20Backlog%20Captures/S2W1_SprintBacklog.png)
 
 ## Tasks Scheduled for this week:
 
