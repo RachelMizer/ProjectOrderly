@@ -1,6 +1,7 @@
-# Status Update: Sprint 1 - Week 1
+# Status Update: Sprint # - Week 1
 
-**Project Name:**  Orderly
+**Project Name:**  Orderly 
+**Date:** { insert date }
 **Team Number:**  Group 7
 **Team Lead/Scrum Master:**  Serina Rodriguez
 
@@ -19,7 +20,7 @@
 
 
 
-## Status Update Details:
+## Tasks Scheduled For This Week:
 
 #.# Task Name
 #.# Task Name

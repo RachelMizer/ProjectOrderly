@@ -2,8 +2,9 @@
 
 **Project Name:**     Orderly
 **Team Number:**    Group #7
-**Team PM/Scrum Master:** Serina Rodriguez
-**Team Members:** Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer, Tyler Royal
+**Team PM/Scrum Master:** Serina Rodriguez 
+**Product Owner:** Kim Mayo
+**Team Members:** Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Rachel Mizer, Tyler Royal
 
 ---
 
