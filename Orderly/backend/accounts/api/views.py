@@ -8,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import (
     RegisterSerializer,
@@ -126,8 +126,40 @@ class LoginView(APIView):
         return response
 
 
-# class LoginView(TokenObtainPairView):
-#    serializer_class = VerifiedTokenObtainPairSerializer
+class RefreshView(APIView):
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refreshToken")
+
+        if not refresh_token:
+            return Response(
+                {
+                    "error": "INVALID_REFRESH_TOKEN",
+                    "message": "Refresh token is invalid or expired",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+
+            return Response(
+                {
+                    "accessToken": access_token,
+                    "expiresIn": access_expires,
+                    "tokenType": "Bearer",
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except TokenError:
+            return Response(
+                {
+                    "error": "INVALID_REFRESH_TOKEN",
+                    "message": "Refresh token is invalid or expired",
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
 
 class VerifyEmailView(APIView):
