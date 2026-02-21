@@ -162,6 +162,27 @@ class RefreshView(APIView):
             )
 
 
+class LogoutView(APIView):
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refreshToken")
+
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            except TokenError:
+                pass  # Token already invalid.
+
+        response = Response(
+            {"message": "Successfully logged out"},
+            status=status.HTTP_200_OK,
+        )
+
+        response.delete_cookie(key="refreshToken", path="/api/v1/auth/", samesite="Lax")
+
+        return response
+
+
 class VerifyEmailView(APIView):
     def post(self, request):
         ser = VerifyEmailSerializer(data=request.data)
@@ -183,12 +204,6 @@ class ResendVerificationView(APIView):
         return Response(
             {"message": "If an account exists, a verification email has been sent."}
         )
-
-
-class LogoutView(APIView):
-    def post(self, request):
-        # JWT is stateless; frontend clears tokens.
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PasswordResetRequestView(APIView):
