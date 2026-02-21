@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth import get_user_model, password_validation, authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.encoding import force_str
@@ -51,6 +51,26 @@ class RegisterSerializer(serializers.Serializer):
         CustomerProfile.objects.create(user=user)
 
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attributes):
+        email = attributes.get("email", "").strip().lower()
+        password = attributes.get("password")
+
+        user = authenticate(username=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Email or password is incorrect")
+
+        if not user.is_active:
+            raise serializers.ValidationError("This account has been disabled")
+
+        attributes["user"] = user
+        return attributes
 
 
 class VerifyEmailSerializer(serializers.Serializer):
@@ -135,13 +155,3 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         user.set_password(self.validated_data["new_password"])
         user.save(update_fields=["password"])
         return user
-
-
-class VerifiedTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        if not self.user.is_active:
-            raise serializers.ValidationError(
-                {"detail": "Email not verified. Please verify your email first."}
-            )
-        return data

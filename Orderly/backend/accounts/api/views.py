@@ -17,10 +17,11 @@ from .serializers import (
     ResendVerificationSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
-    VerifiedTokenObtainPairSerializer,
+    LoginSerializer,
 )
 
-expires = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
+access_expires = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
+refresh_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
 
 
 def send_verification_email(user):
@@ -54,9 +55,7 @@ def send_password_reset_email(user):
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
-        serializer.is_valid(
-            raise_exception=True
-        )  # probably need to overwrite the default error message
+        serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
         refresh = RefreshToken.for_user(user)
@@ -65,7 +64,7 @@ class RegisterView(APIView):
         response = Response(
             {
                 "accessToken": access_token,
-                "expiresIn": expires,
+                "expiresIn": access_expires,
                 "tokenType": "Bearer",
                 "customer": {
                     "id": user.pk,
@@ -84,10 +83,51 @@ class RegisterView(APIView):
             secure=False,  # sets send over https only to false for development
             samesite="Lax",
             path="/api/v1/auth/",
-            max_age=604800,  # 7 days
+            max_age=refresh_age,
         )
 
         return response
+
+
+class LoginView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data["user"]
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        response = Response(
+            {
+                "accessToken": access_token,
+                "expiresIn": access_expires,
+                "tokenType": "Bearer",
+                "customer": {
+                    "id": user.pk,
+                    "email": user.email,
+                    "role": user.role.role_choice,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        response.set_cookie(
+            key="refreshToken",
+            value=str(refresh),
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/api/v1/auth",
+            max_age=refresh_age,
+        )
+
+        return response
+
+
+# class LoginView(TokenObtainPairView):
+#    serializer_class = VerifiedTokenObtainPairSerializer
 
 
 class VerifyEmailView(APIView):
@@ -111,10 +151,6 @@ class ResendVerificationView(APIView):
         return Response(
             {"message": "If an account exists, a verification email has been sent."}
         )
-
-
-class LoginView(TokenObtainPairView):
-    serializer_class = VerifiedTokenObtainPairSerializer
 
 
 class LogoutView(APIView):

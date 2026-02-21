@@ -82,7 +82,7 @@ body
     "customer": {
         "id": "5001",
         "email": "smith@email.com",
-        "role": "customer"
+        "role": "CUSTOMER"
     }
 }
 ```
@@ -160,7 +160,7 @@ body
     "customer": {
         "id": 4001,
         "email": "smith@email.com",
-        "role": "customer"
+        "role": "CUSTOMER"
     }
 }
 ```
