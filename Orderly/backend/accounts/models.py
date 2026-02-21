@@ -4,7 +4,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 
-class UserRole(models.TextChoices):
+class UserRoleChoices(models.TextChoices):
     CUSTOMER = "CUSTOMER", "Customer"
     BUSINESS = "BUSINESS", "Business User"
 
@@ -25,11 +25,12 @@ PHONE_VALIDATOR = RegexValidator(
 )
 
 
-class UserProfile(models.Model):
+class UserRole(models.Model):
     """
     Lightweight profile attached to every user.
     Stores role (customer vs business user).
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -37,8 +38,8 @@ class UserProfile(models.Model):
     )
     role = models.CharField(
         max_length=20,
-        choices=UserRole.choices,
-        default=UserRole.CUSTOMER,
+        choices=UserRoleChoices.choices,
+        default=UserRoleChoices.CUSTOMER,
     )
 
     def __str__(self) -> str:
@@ -54,6 +55,7 @@ class CustomerProfile(models.Model):
     """
     Customer-specific fields. Exists only for users with role=CUSTOMER.
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -65,7 +67,9 @@ class CustomerProfile(models.Model):
 
     # Keep these optional, but validate format if provided
     state = models.CharField(max_length=2, blank=True, validators=[STATE_VALIDATOR])
-    zipcode = models.CharField(max_length=10, blank=True, validators=[ZIPCODE_VALIDATOR])
+    zipcode = models.CharField(
+        max_length=10, blank=True, validators=[ZIPCODE_VALIDATOR]
+    )
 
     phone = models.CharField(
         max_length=20,
@@ -79,19 +83,23 @@ class CustomerProfile(models.Model):
     def clean(self):
         """
         Cross-field / cross-model validation:
-        CustomerProfile should only exist for users whose UserProfile.role == CUSTOMER.
+        CustomerProfile should only exist for users whose UserRole.role == CUSTOMER.
         """
         # If the user doesn't have a UserProfile yet, we can't validate role reliably.
         # (This can happen during initial object creation ordering.)
         profile = getattr(self.user, "profile", None)
         if profile and profile.role != UserRole.CUSTOMER:
             raise ValidationError(
-                {"user": "CustomerProfile can only be created for users with role=CUSTOMER."}
+                {
+                    "user": "CustomerProfile can only be created for users with role=CUSTOMER."
+                }
             )
 
         # Optional: prevent partial invalid address combos
         if self.state and not self.zipcode:
-            raise ValidationError({"zipcode": "Zipcode is required when state is provided."})
+            raise ValidationError(
+                {"zipcode": "Zipcode is required when state is provided."}
+            )
 
     def save(self, *args, **kwargs):
         # Makes sure clean() runs for programmatic saves too.
