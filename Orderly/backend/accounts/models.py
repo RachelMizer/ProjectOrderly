@@ -1,38 +1,40 @@
-
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
 
 
-class UserRole(models.TextChoices):
+class UserRoleChoices(models.TextChoices):
     CUSTOMER = "CUSTOMER", "Customer"
     BUSINESS = "BUSINESS", "Business User"
 
 
-class UserProfile(models.Model):
+class UserRole(models.Model):
     """
-    Lightweight profile attached to every user.
-    Stores role (customer vs business user).
+    Lightweight role attached to every user.
+    (Not a full 'profile' yet.)
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="profile",
+        related_name="role",
     )
-    role = models.CharField(
+
+    role_choice = models.CharField(
         max_length=20,
-        choices=UserRole.choices,
-        default=UserRole.CUSTOMER,
+        choices=UserRoleChoices.choices,
+        default=UserRoleChoices.CUSTOMER,
     )
 
     def __str__(self) -> str:
-        return f"{self.user.username} ({self.role})"
+        return f"{self.user.username} ({self.role_choice})"
 
 
 class CustomerProfile(models.Model):
     """
     Customer-specific fields. Exists only for users with role=CUSTOMER.
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -52,4 +54,3 @@ class CustomerProfile(models.Model):
 
     def __str__(self) -> str:
         return f"CustomerProfile for {self.user.username}"
-

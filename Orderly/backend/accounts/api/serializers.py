@@ -6,20 +6,23 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from accounts.models import UserProfile, CustomerProfile, UserRole
+from accounts.models import UserRoleChoices, CustomerProfile, UserRole
 
 User = get_user_model()
 
 
 class RegisterSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, min_length=8)
-    role = serializers.ChoiceField(choices=UserRole.choices, required=False)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, min_length=8, required=True)
+
+    # API Contract and standard convention is camelcase, source= converts to snakecase for  python convention.
+    firstName = serializers.CharField(source="first_name", required=True)
+    lastName = serializers.CharField(source="last_name", required=True)
 
     def validate_email(self, value: str) -> str:
         email = value.strip().lower()
         if User.objects.filter(email__iexact=email).exists():
-            raise serializers.ValidationError("A user with that email already exists.")
+            raise serializers.ValidationError("Email is already registered.")
         return email
 
     def validate_password(self, value: str) -> str:
@@ -32,20 +35,20 @@ class RegisterSerializer(serializers.Serializer):
     def create(self, validated_data):
         email = validated_data["email"]
         password = validated_data["password"]
-        role = validated_data.get("role") or UserRole.CUSTOMER
+        first_name = validated_data["first_name"]
+        last_name = validated_data["last_name"]
 
         # Default Django User needs username; use email as username
         user = User.objects.create_user(
             username=email,
             email=email,
             password=password,
-            is_active=False,  # must verify email to log in
+            first_name=first_name,
+            last_name=last_name,
         )
 
-        UserProfile.objects.create(user=user, role=role)
-
-        if role == UserRole.CUSTOMER:
-            CustomerProfile.objects.create(user=user)
+        UserRole.objects.create(user=user, role_choice=UserRoleChoices.CUSTOMER)
+        CustomerProfile.objects.create(user=user)
 
         return user
 

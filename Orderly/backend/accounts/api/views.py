@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     RegisterSerializer,
@@ -18,6 +19,8 @@ from .serializers import (
     PasswordResetConfirmSerializer,
     VerifiedTokenObtainPairSerializer,
 )
+
+expires = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
 
 
 def send_verification_email(user):
@@ -50,14 +53,41 @@ def send_password_reset_email(user):
 
 class RegisterView(APIView):
     def post(self, request):
-        ser = RegisterSerializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        user = ser.save()
-        send_verification_email(user)
-        return Response(
-            {"message": "Registration successful. Verification email sent."},
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(
+            raise_exception=True
+        )  # probably need to overwrite the default error message
+        user = serializer.save()
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        response = Response(
+            {
+                "accessToken": access_token,
+                "expiresIn": expires,
+                "tokenType": "Bearer",
+                "customer": {
+                    "id": user.pk,
+                    "email": user.email,
+                    "role": user.role.role_choice,
+                },
+            },
             status=status.HTTP_201_CREATED,
         )
+
+        # set refresh token as http cookie
+        response.set_cookie(
+            key="refreshToken",
+            value=str(refresh),
+            httponly=True,
+            secure=False,  # sets send over https only to false for development
+            samesite="Lax",
+            path="/api/v1/auth/",
+            max_age=604800,  # 7 days
+        )
+
+        return response
 
 
 class VerifyEmailView(APIView):
@@ -78,7 +108,9 @@ class ResendVerificationView(APIView):
         if user and not user.is_active:
             send_verification_email(user)
 
-        return Response({"message": "If an account exists, a verification email has been sent."})
+        return Response(
+            {"message": "If an account exists, a verification email has been sent."}
+        )
 
 
 class LoginView(TokenObtainPairView):
@@ -100,7 +132,9 @@ class PasswordResetRequestView(APIView):
         if user:
             send_password_reset_email(user)
 
-        return Response({"message": "If an account exists, a password reset email has been sent."})
+        return Response(
+            {"message": "If an account exists, a password reset email has been sent."}
+        )
 
 
 class PasswordResetConfirmView(APIView):
@@ -109,19 +143,20 @@ class PasswordResetConfirmView(APIView):
         ser.is_valid(raise_exception=True)
         ser.save()
         return Response({"message": "Password has been reset successfully."})
-    
+
 
 class MeView(APIView):
     """
     Returns authenticated user's basic profile information.
     Used by frontend to determine user identity and role.
     """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
         profile = getattr(user, "profile", None)
-        role = getattr(profile, "role", None) 
+        role = getattr(profile, "role", None)
         return Response(
             {
                 "id": user.id,
@@ -130,4 +165,3 @@ class MeView(APIView):
                 "role": role,
             }
         )
-
