@@ -9,26 +9,10 @@ class UserRoleChoices(models.TextChoices):
     BUSINESS = "BUSINESS", "Business User"
 
 
-STATE_VALIDATOR = RegexValidator(
-    regex=r"^[A-Z]{2}$",
-    message="State must be a 2-letter uppercase abbreviation (e.g., NC).",
-)
-
-ZIPCODE_VALIDATOR = RegexValidator(
-    regex=r"^\d{5}(-\d{4})?$",
-    message="Zipcode must be 5 digits or ZIP+4 (e.g., 27502 or 27502-1234).",
-)
-
-PHONE_VALIDATOR = RegexValidator(
-    regex=r"^[0-9+\-\s()]*$",
-    message="Enter a valid phone number.",
-)
-
-
 class UserRole(models.Model):
     """
     Lightweight role attached to every user.
-    Stores role (customer vs business user).
+    (Not a full 'profile' yet.)
     """
 
     user = models.OneToOneField(
@@ -36,14 +20,15 @@ class UserRole(models.Model):
         on_delete=models.CASCADE,
         related_name="role",
     )
-    role = models.CharField(
+
+    role_choice = models.CharField(
         max_length=20,
         choices=UserRoleChoices.choices,
         default=UserRoleChoices.CUSTOMER,
     )
 
     def __str__(self) -> str:
-        return f"{self.user.username} ({self.role})"
+        return f"{self.user.username} ({self.role_choice})"
 
     def save(self, *args, **kwargs):
         # Ensures role validation runs even if created/updated outside forms/admin.
