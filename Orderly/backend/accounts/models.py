@@ -27,14 +27,14 @@ PHONE_VALIDATOR = RegexValidator(
 
 class UserRole(models.Model):
     """
-    Lightweight profile attached to every user.
+    Lightweight role attached to every user.
     Stores role (customer vs business user).
     """
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="profile",
+        related_name="role",
     )
     role = models.CharField(
         max_length=20,
@@ -85,10 +85,10 @@ class CustomerProfile(models.Model):
         Cross-field / cross-model validation:
         CustomerProfile should only exist for users whose UserRole.role == CUSTOMER.
         """
-        # If the user doesn't have a UserProfile yet, we can't validate role reliably.
+        # If the user doesn't have a UserRole yet, we can't validate role reliably.
         # (This can happen during initial object creation ordering.)
-        profile = getattr(self.user, "profile", None)
-        if profile and profile.role != UserRole.CUSTOMER:
+        profile = getattr(self.user, "role", None)
+        if profile and profile.role != UserRoleChoices.CUSTOMER:
             raise ValidationError(
                 {
                     "user": "CustomerProfile can only be created for users with role=CUSTOMER."
