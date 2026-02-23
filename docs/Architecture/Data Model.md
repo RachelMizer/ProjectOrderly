@@ -47,7 +47,7 @@ Lightweight entity to track business role.
 | 1          | 1      | BUSINESS |
 | 2          | 2      | CUSTOMER |
 
-### Customer
+### CustomerProfile
 
 Represents end users who place orders from the client business
 
@@ -67,11 +67,13 @@ Represents end users who place orders from the client business
 
 + Phone
   
++ EmailVerified
+  
   #### Table View
   
-  | CustomerID | UserID | StreetAddress | City    | State | Zipcode | Phone        |
-  | ---------- | ------ | ------------- | ------- | ----- | ------- | ------------ |
-  | 101        | 1      | 123 Main St   | Raleigh | NC    | 27601   | 919-555-1234 |
+  | CustomerID | UserID | StreetAddress | City    | State | Zipcode | Phone        | EmailVerified |
+  | ---------- | ------ | ------------- | ------- | ----- | ------- | ------------ | ------------- |
+  | 101        | 1      | 123 Main St   | Raleigh | NC    | 27601   | 919-555-1234 | True          |
 
 ---
 
