@@ -41,6 +41,7 @@ class CustomerProfile(models.Model):
         related_name="customer_profile",
     )
 
+    email_verified = models.BooleanField(default=False)
     street_address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=2, blank=True)
