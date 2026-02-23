@@ -24,15 +24,15 @@ urlpatterns = [
         name="password_reset_request",
     ),
     path(
-        "password-reset/confirm",       
+        "password-reset/confirm",
         PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    path("verify-email/", VerifyEmailView.as_view(), name="verify-email"),
+    path("verify-email/", VerifyEmailView.as_view(), name="verify_email"),
     path(
         "resend-verification/",
         ResendVerificationView.as_view(),
-        name="resend-verification",
+        name="resend_verification",
     ),
     path("me/", MeView.as_view(), name="me"),
 ]
