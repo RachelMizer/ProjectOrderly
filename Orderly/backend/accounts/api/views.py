@@ -119,7 +119,7 @@ class LoginView(APIView):
             httponly=True,
             secure=False,
             samesite="Lax",
-            path="/api/v1/auth",
+            path="/api/v1/auth/",
             max_age=refresh_age,
         )
 
@@ -238,13 +238,14 @@ class MeView(APIView):
 
     def get(self, request):
         user = request.user
-        profile = getattr(user, "profile", None)
-        role = getattr(profile, "role", None)
+        role_obj = getattr(user, "role", None)  # OneToOne related_name='role'
+        role_choice = getattr(role_obj, "role_choice", None)
+
         return Response(
             {
                 "id": user.id,
                 "email": user.email,
                 "username": user.username,
-                "role": role,
+                "role": role_choice,
             }
         )
