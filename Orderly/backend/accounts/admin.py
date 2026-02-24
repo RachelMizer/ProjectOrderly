@@ -1,17 +1,18 @@
 from django.contrib import admin
-from .models import UserRole, CustomerProfile
+from .models import UserProfile, CustomerProfile
 
 
-@admin.register(UserRole)
-class UserRoleAdmin(admin.ModelAdmin):
-    list_display = ("user", "role_choice")
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "role")
+    list_select_related = ("user",)
     search_fields = ("user__username", "user__email")
-    list_filter = ("role_choice",)
+    list_filter = ("role",)
 
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "city", "state", "zipcode", "phone")
-    search_fields = ("user__username", "user__email", "city", "state", "zipcode")
+    list_select_related = ("user",)
+    search_fields = ("user__username", "user__email", "city", "state", "zipcode", "phone")
     list_filter = ("state",)
-
