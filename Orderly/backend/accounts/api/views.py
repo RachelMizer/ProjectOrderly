@@ -41,7 +41,7 @@ def send_verification_email(user):
 def send_password_reset_email(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    reset_link = f"http://localhost:3000/reset-password?uid={uid}&token={token}"
+    reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
 
     send_mail(
         subject="Password reset",
@@ -213,18 +213,19 @@ class PasswordResetRequestView(APIView):
         user = ser.get_user()
 
         if user:
-            send_password_reset_email(user)
+            try:
+                send_password_reset_email(user)
+            except Exception:
+                pass
 
-        return Response(
-            {"message": "If an account exists, a password reset email has been sent."}
-        )
+        return Response({"message": "If email exists, will send password reset."})
 
 
 class PasswordResetConfirmView(APIView):
     def post(self, request):
-        ser = PasswordResetConfirmSerializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        ser.save()
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response({"message": "Password has been reset successfully."})
 
 

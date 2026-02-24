@@ -1,10 +1,14 @@
 from django.contrib.auth import get_user_model, password_validation, authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.token_blacklist.models import (
+    OutstandingToken,
+    BlacklistedToken,
+)
 
 from accounts.models import UserRoleChoices, CustomerProfile, UserRole
 
@@ -142,10 +146,8 @@ class PasswordResetRequestSerializer(serializers.Serializer):
         return self._email
 
     def get_user(self):
-        try:
-            return User.objects.get(email__iexact=self._email)
-        except User.DoesNotExist:
-            return None
+        email = self.validated_data["email"]
+        return User.objects.filter(email__iexact=email, is_active=True).first()
 
 
 
@@ -158,7 +160,9 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     """
     uid = serializers.CharField()
     token = serializers.CharField()
-    newPassword = serializers.CharField(source="new_password", write_only=True, min_length=8)
+    newPassword = serializers.CharField(
+        source="new_password", write_only=True, min_length=8
+    )
 
     def validate_new_password(self, value):
         try:
@@ -167,21 +171,28 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError(list(e.messages))
         return value
 
-    def validate(self, attrs):
+    def validate(self, attributes):
         try:
-            uid = force_str(urlsafe_base64_decode(attrs["uid"]))
+            uid = force_str(urlsafe_base64_decode(attributes["uid"]))
             user = User.objects.get(pk=uid)
         except Exception:
             raise serializers.ValidationError({"detail": "Invalid reset link."})
 
-        if not default_token_generator.check_token(user, attrs["token"]):
+        if not default_token_generator.check_token(user, attributes["token"]):
             raise serializers.ValidationError({"detail": "Invalid or expired token."})
 
-        attrs["user"] = user
-        return attrs
+        attributes["user"] = user
+        return attributes
 
     def save(self, **kwargs):
         user = self.validated_data["user"]
+
         user.set_password(self.validated_data["new_password"])
         user.save(update_fields=["password"])
+
+        # blacklist oustanding refresh tokens
+        tokens = OutstandingToken.objects.filter(user=user)
+        for token in tokens:
+            BlacklistedToken.objects.get_or_create(token=token)
+
         return user

@@ -100,6 +100,8 @@ DATABASES = {
     }
 }
 
+# Frontend
+FRONTEND_URL = "http://localhost:3000"
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -163,3 +165,6 @@ CORS_ALLOW_CREDENTIALS = True
 # Email backend (dev/testing)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@orderly.local"
+
+# Django default token timeout. We use this for email link timeouts.
+PASSWORD_RESET_TIMEOUT = 3600
