@@ -23,13 +23,13 @@ Execution occurs **after feature completion and prior to Sprint Review**.
 
 ---
 
-## TC-04 – Database Schema Migration & Relational Integrity
+## TC-01 – Database Schema Migration & Relational Integrity
 
 ### Feature  
 Database Schema Implementation  
 
 ### User Story (2.1) 
-As a developer, I want the core database schema successfully migrated and relationally enforced so that the application can reliably store and retrieve structured data.
+As a developer, I want a properly structured database so that all application data is stored securely and efficiently.
 
 ### Preconditions
 - MySQL server running locally  
@@ -112,7 +112,63 @@ Duplicate product constraint correctly enforced.
 Confirms foundational database readiness required for all Sprint 2 features.
 
 ---
+## Test Case ID - TC-02
 
+### Feature
+Backend User Registration
+
+### User Story (2.4)
+As a new user, I want to create an account with my email and password so that I can access the application.
+
+### Preconditions
+- Django backend server is running
+- MySQL database connection is active
+- Accounts migrations are applied
+- Test email does not already exist in the database
+
+### Test Steps
+1. Send POST request to /api/v1/auth/register/
+2. Provide valid JSON payload including:
+   - email
+   - password
+   - role
+   - firstName
+   - lastName
+3. Verify HTTP response status indicates success (200 or 201)
+4. Verify response body confirms successful registration
+5. Query auth_user table to confirm user record exists
+6. Confirm username equals email
+
+### Expected Result
+- Registration request succeeds
+- New user record is created in auth_user table
+- Username is set equal to email
+- System returns structured success response
+- No server errors occur
+
+### Actual Result
+Registration succeeded.
+
+API Response:
+- accessToken returned
+- expiresIn = 3600
+- tokenType = Bearer
+- customer object returned with id, email, role
+
+Database Verification:
+- auth_user record created
+- username equals email
+- is_active = 1
+
+### Evidence
+
+### Status
+Pass
+
+### Notes
+- User account creation is functioning correctly.
+- User is able to receive accessToken immediately upon registration.
+---
 ## TC-05 – User Registration (Valid Input)
 
 ### Feature  
