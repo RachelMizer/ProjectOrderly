@@ -15,7 +15,13 @@ from accounts.models import UserRoleChoices, CustomerProfile, UserRole
 User = get_user_model()
 
 
+
 class RegisterSerializer(serializers.Serializer):
+    """
+    Validates and creates a new user account from email/password + first/last name (camelCase mapped to Django’s snake_case), enforcing unique email and Django password rules.
+    On success it creates the User, assigns the default CUSTOMER role, and creates the CustomerProfile.
+
+    """
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, min_length=8, required=True)
 
@@ -57,7 +63,13 @@ class RegisterSerializer(serializers.Serializer):
         return user
 
 
+
 class LoginSerializer(serializers.Serializer):
+    """
+    Validates login credentials by autenticating the user with email+password and rejecting invallid credentials or disabled accounts.
+    On success it returns the authenticated User, assigns the default CUSTOMER role, and creates the CustomerProfile.
+
+    """
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True)
 
@@ -77,7 +89,12 @@ class LoginSerializer(serializers.Serializer):
         return attributes
 
 
+
 class VerifyEmailSerializer(serializers.Serializer):
+    """
+    Validates a verfication uid+token pair(from the email verification link) and activates the user account if valid. Rejects invalid or expired tokens.
+
+    """
     uid = serializers.CharField()
     token = serializers.CharField()
 
@@ -115,7 +132,13 @@ class ResendVerificationSerializer(serializers.Serializer):
             return None
 
 
+
 class PasswordResetRequestSerializer(serializers.Serializer):
+    """
+    Normalizes an email address and provides a helper method to retrieve the associated user for password reset.
+    It's seaprated from the resend-verification to keep credential recovery logic distinct from account verfication.
+
+    """
     email = serializers.EmailField()
 
     def validate_email(self, value):
@@ -127,7 +150,14 @@ class PasswordResetRequestSerializer(serializers.Serializer):
         return User.objects.filter(email__iexact=email, is_active=True).first()
 
 
+
+
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    """
+    Validates a reset uid+token and validtes the new password, ensuring it meets Django's password rules. 
+    On success it resets the user's password. Rejects invalid/expired tokens or invalid passwords.
+    
+    """
     uid = serializers.CharField()
     token = serializers.CharField()
     newPassword = serializers.CharField(
