@@ -13,8 +13,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import (
     RegisterSerializer,
-    VerifyEmailSerializer,
-    ResendVerificationSerializer,
+    EmailVerificationRequestSerializer,
+    EmailVerificationConfirmSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
     LoginSerializer,
@@ -27,7 +27,7 @@ refresh_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
 def send_verification_email(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    verify_link = f"http://localhost:3000/verify-email?uid={uid}&token={token}"
+    verify_link = f"{settings.FRONTEND_URL}/verify-email?uid={uid}&token={token}"
 
     send_mail(
         subject="Verify your email",
@@ -183,34 +183,34 @@ class LogoutView(APIView):
         return response
 
 
-class VerifyEmailView(APIView):
+class EmailVerificationRequestView(APIView):
     def post(self, request):
-        ser = VerifyEmailSerializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        ser.save()
-        return Response({"message": "Email verified successfully."})
+        serializer = EmailVerificationRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.get_user()
+
+        if user:
+            try:
+                send_verification_email(user)
+            except:
+                pass
+
+        return Response({"message": "If email exists, will send email verification"})
 
 
-class ResendVerificationView(APIView):
+class EmailVerificationConfirmView(APIView):
     def post(self, request):
-        ser = ResendVerificationSerializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        user = ser.get_user()
-
-        # avoid enumeration: always return same message
-        if user and not user.is_active:
-            send_verification_email(user)
-
-        return Response(
-            {"message": "If an account exists, a verification email has been sent."}
-        )
+        serializer = EmailVerificationConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "email verified"})
 
 
 class PasswordResetRequestView(APIView):
     def post(self, request):
-        ser = PasswordResetRequestSerializer(data=request.data)
-        ser.is_valid(raise_exception=True)
-        user = ser.get_user()
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.get_user()
 
         if user:
             try:
