@@ -336,8 +336,75 @@ or
     "message": "token is invalid or expired"
 }
 ```
-   
 
+## Request Email Verification
+**Endpoint:** `<POST> /api/v1/auth/email-verification`
+**Description:** Requests an email verification sent via email. High trust tasks locked for unverified users.
+**Authentication:** None
+**Role:** Any
+**URL Parameters:** None
+**Request Parameters:** email
+### Request 
+**Header:** `Content-Type: application/json`
+**Body:**
+```
+{
+    "email": "test@example.com"
+}
+```
+**Rules:** `email` - required, string, valid format
+**Success Response (200 OK):**
+```
+body
+{
+    "message": "If email exists, will send email verification."
+}
+```
+**Invalid email (400):**
+```
+{
+    "error": "INVALID_EMAIL",
+    "message": "Not a valid email format"
+}
+```
+
+## Confirm Email Verification
+**Endpoint:** `<POST> /api/v1/auth/email-verification/confirm`
+**Description:** Verifies email
+**Authentication:** None
+**Role:** Any
+**URL Parameters:** None
+**Request Parameters:** encoded UserID, auth token 
+### Request
+**Header:** `Content-Type: application/json`
+**Body:**
+```
+{
+    "uid": "abc123",
+    "token": "xyz321"
+}
+```
+**Rules:**
++ Reset link example: `/api/v1/auth/email-verification/confirm/?uid=abc123&token=xyz321` 
++ `uid` and `token` - strings. included in verification link.
++ Token must valid and not expired
++ Token becomes invalid after verification
++ If email is already verified, endpoint will still return a success
+**Success Response (200 OK):**
+```
+body
+{
+    "message": "email verified"
+}
+```
+
+**Bad Request (400)**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "token is invalid or expired"
+}
+```
 # Users
 ## Get current User profile
 **Endpoint:**
