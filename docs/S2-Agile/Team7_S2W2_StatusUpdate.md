@@ -16,9 +16,9 @@
 
 ## Trello Board Capture:
 
-{ Insert screen capture here }
+![S2W2_SprintBacklog_1](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S2W2_SprintBacklog_1.png)
 
-
+![S2W2_SprintBacklog_2](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S2W2_SprintBacklog_2.png)
 
 ## Tasks Scheduled For This Week:
 
@@ -30,8 +30,8 @@
 2.7 Backend password reset
 2.8 Backend API endpoints for authentication
 2.9 Frontend authentication components
-
-2.102.11 Comprehensive seed data population
+2.10 Sprint 2 Demo Materials
+2.11 Comprehensive seed data population
 2.12 UI & admin page shells
 2.13 UI design system and component library
 2.14 Expand API contract
@@ -39,7 +39,40 @@
 
 ## Tasks Completed This Week By Team Members:
 
-#.# Task Name
+2.2 Database validation (Debugged, Currently in Testing) -- **Caleb F.**
+2.2.1 Validation for Accounts -- **Caleb F.**
+2.2.2 Valdiation for orders -- **Caleb F.**
+2.2.3 Validation for inventory -- **Caleb F.**
+2.2.4 Validation for supplies -- **Caleb F. **
+2.4 User registration -- **Kim M., Tristin G.**
+2.5 Email verification -- **Kim M., Tristin G.**
+2.6 Backend user login -- **Kim M., Tristin G.**
+2.6.1 Implement URL -- **Tristin G.**
+2.6.2 Implement serializer -- **Tristin G.**
+2.6.3 Implement view -- **Tristin G.**
+2.7 Backend password reset -- **Kim M.**
+2.7.1 Implement URL -- **Kim M.**
+2.7.2 Implement serialzier -- **Kim M.**
+2.7.3 Implement view -- **Kim M.**
+2.8 Backend API endpoints for authentication (Currently in testing) -- **Tristin G.**
+2.10 Sprint 2 demo materials preparation -- **Tyler R.**
+2.10.1 Collect screenshots from team members -- **Tyler R.**
+2.10.2 Upload screenshots to repository -- **Tyler R.**
+2.10.3 Create demo order document -- **Tyler R.**
+2.10.4 Create visual summary document -- **Tyler R.**
+2.10.5 Confirm team access and review -- **Tyler R.**
+2.11 Comprehensive seed data population -- **Caleb F.**
+2.13 UI design system and component library -- **Rachel M.**
+2.13.1 Global layout elements -- **Rachel M.**
+2.13.2 Mock-up Creation Checklist -- **Rachel M.**
+2.15 Sprint 2 QA execution -- **Kenny B.**
+2.15.1 Database schema -- **Kenny B.**
+2.15.2 Database validaiton -- **Kenny B.**
+2.15.4 User registration -- **Kenny B.**
+2.15.5 Email verification -- **Kenny B.**
+2.15.6 Backend user login-- **Kenny B.**
+2.15.7 Backend password reset -- **Kenny B.**
+
 #.# Task Name
 
 ---
