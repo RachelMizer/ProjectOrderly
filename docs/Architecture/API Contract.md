@@ -12,7 +12,8 @@ Login and registration endpoints do not require authentication
 ### URLs
 All API endpoints are prefixed with `/api/`.  
 Endpoints follow RESTful resource-based naming.  
-Plural nouns are used for collections (`/orders`, `/products`).  
+Plural nouns are used for collections (`/orders`, `/products`). 
+URL parameters follow this format `api/v1/users?key=value&key=value&...` 
 ### HTTP Methods
 + GET: Retrieve resources
 + POST: Create new resources
@@ -207,7 +208,7 @@ or
 **Request Parameters:** None  
 ### Request
 **Header:** `Content-Type: application/json`  
-**Body:**
+**Body:** 
 ```
 {}
 ```
@@ -240,7 +241,7 @@ body
 **Request Parameters:** None  
 ### Request
 **Header:** `Content-Type: application/json`  
-**Body:**
+**Body:** 
 ```
 {}
 ```
@@ -350,13 +351,9 @@ or
 **Header:** 
 ```
 Authorization: Bearer <accessToken>
-Content-Type: application/json
 ```
 
-**Body:**
-```
-{}
-```
+**Body:** None
 **Rules:** Token must not be expired. If expired, frontend should refresh the token gracefully.
 **Success Response (200 OK):**
 ```
@@ -365,7 +362,7 @@ body
 {
     "firstName": "John",
     "lastName": "Smith",
-    "email": "superSmith@example.com",
+    "email": "supersmith@example.com",
     "streetAddress": "123 river lane",
     "city": "New York",
     "state": "NY",
@@ -441,34 +438,170 @@ Content-Type: application/json
 }
 ```
 
-## Get Customers
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+## Get All Customers
+**Endpoint:** `<GET> /api/v1/users`, `<GET> /api/v1/users?page=4&pageSize=20`, `<GET> /api/v1/users?search=john` 
+**Description:** Returns a list of customer profiles. Excludes street address.
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business owner
 **URL Parameters:**
-**Request Parameters:**
++ page (optional)
++ pageSize (optional. default pageSize is 25, max is 200)
++ search (optional. searches name fields and email)
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
-**Rules:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** 
++ Endpoint only available to users with the business role
++ Returns number of returned objects
++ Returns next and previous page urls
++ Returns a collection of users
 **Success Response (200 OK):**
+```
+body
 
-## Get User/:id
+{
+    "count": 3,
+    "next": "/api/v1/users?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "firstName": "John",
+            "lastName": "Smith",
+            "email": "supersmith@example.com",
+            "phone": "123-555-0000"
+        },
+        {
+            "id": 2,
+            "firstName": "Jane",
+            "lastName": "Doe",
+            "email": "doerocks@example.com",
+            "phone": "123-555-4321"
+        },
+        {
+            "id": 3,
+            "firstName": "Jacob",
+            "lastName": "Mills",
+            "email": "jmills@example.com",
+            "phone": "555-333-2222"
+        }
+    ]
+}
+```
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## Get Customer by ID
+**Endpoint:** `<GET> /api/v1/users/{id}`
+**Description:** Returns a full customer profile
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business
+**URL Parameters:** id = [integer]
+**Request Parameters:** None
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** Must include positive integer in url
+**Success Response (200 OK):**
+```
+body
+
+{
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "supersmith@example.com",
+    "emailVerified": true,
+    "streetAddress": "123 river lane",
+    "city": "New York",
+    "state": "NY",
+    "zipcode": "12345",
+    "phone": "123-555-0000"
+}
+```
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "user not found"
+}
+```
 
 ## Delete Customer
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<DELETE> /api/v1/users/{id}`
+**Description:** Deactivates a user.
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business or customer if id matches
+**URL Parameters:** id = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** 
++ Token must verify either a business user or the customer deactivated
++ If a customer is deactivating their account, frontend should then call logout
+  
+**Successfully Deleted (204 OK):** No body
 
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "user not found"
+}
+```
 
 # Orders API
 ## Create Order
