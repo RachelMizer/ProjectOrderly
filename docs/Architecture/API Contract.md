@@ -46,7 +46,7 @@ Error respones use a consistent JSON structure:
 **Endpoint:** `<POST> /api/v1/auth/login/`  
 **Description:** Submit user credentials to login and receive authorization token  
 **Authentication:** Not Required  
-**Role:** All  
+**Role:** None  
 **URL Parameters:** None  
 **Request Parameters:** Email & Password  
 
@@ -338,34 +338,110 @@ or
 ```
    
 
-# Users
-## Get current User profile
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+# Customers
+## Get current Customer profile
+**Endpoint:** `<GET> /api/v1/users/me`
+**Description:** Get current customer information
+**Authentication:** `Bearer <accessToken>`
+**Role:** Customer
+**URL Parameters:** None
+**Request Parameters:** None
+### Request
+**Header:** 
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+
+**Body:**
+```
+{}
+```
+**Rules:** Token must not be expired. If expired, frontend should refresh the token gracefully.
+**Success Response (200 OK):**
+```
+body
+
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "superSmith@example.com",
+    "streetAddress": "123 river lane",
+    "city": "New York",
+    "state": "NY",
+    "zipcode": "12345",
+    "phone": "123-555-0000"
+}
+```
+**Unauthorized (401)**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+
+## Update Customer profile
+**Endpoint:** `<PATCH> /api/v1/users/me`
+**Description:** Update the current customer's information
+**Authentication:** `Bearer <accessToken>`
+**Role:** Customer
+**URL Parameters:** None
+**Request Parameters:** firstName, lastName, streetAddress, city, state, zipcode, and/or phone
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "streetAddress": "321 lake road",
+    "city": "Raleigh",
+    "state": "NC",
+    "zipcode": "54321"
+}
+```
 **Rules:**
-**Success Response (200 OK):**
++ All fields are strings
++ 10-15 digit phone number with optional '+ country code"
++ Zipcode must be 5 digits or 5 digits dash 4 digits
++ State must be 2 uppercase code
 
-## Update User profile
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
 **Success Response (200 OK):**
+```
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "streetAddress": "321 lake road",
+    "city": "Raleigh",
+    "state": "NC",
+    "zipcode": "54321",
+    "phone": "123-555-0000"
+}
+```
+**Bad Input (400)**
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "incorrect input format",
+    "fields": {
+        "phone": "invalid format"
+    }
+}
+```
 
-## Get Users
+**Unauthorized (401)**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+## Get Customers
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -380,7 +456,7 @@ or
 
 ## Get User/:id
 
-## Delete User
+## Delete Customer
 **Endpoint:**
 **Description:**
 **Authentication:**
@@ -398,7 +474,7 @@ or
 ## Create Order
 **Endpoint:**
 **Description:** 
-**Authentication:** `Bearer: <JWT>` (optional)
+**Authentication:** `Bearer <accessToken>` (optional)
 **Role:** None
 **URL Parameters:**
 **Request Parameters:**
