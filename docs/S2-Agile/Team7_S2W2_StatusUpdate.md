@@ -16,9 +16,9 @@
 
 ## Trello Board Capture:
 
-![S2W2_SprintBacklog_1](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S2W2_SprintBacklog_1.png)
+![S2W2_SprintBacklog_1](../../images/Sprint%20Backlog%20Captures/S2W2_SprintBacklog_1.png)
 
-![S2W2_SprintBacklog_2](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S2W2_SprintBacklog_2.png)
+![S2W2_SprintBacklog_2](../../images/Sprint%20Backlog%20Captures/S2W2_SprintBacklog_2.png)
 
 ## Tasks Scheduled For This Week:
 
@@ -86,6 +86,9 @@
 **Status:** Resolved ✅ *(All required screenshots were received prior to the Sprint Review on February 26)*
 
 **Description:** Scrum Master faced personal and health-related challenges mid-sprint that impacted capacity. A commitment made during the 2/23 check-in to begin the S2W2 status update template that evening was not fulfilled as a result. **Status:** Resolved ✅ *(Status update completed prior to submission deadline; no sprint deliverables were impacted)*
+
+**Description:** A dedicated QA Testing List was added to the sprint workflow mid-sprint to formally integrate testing as a tracked phase within the Trello board. Prior to this, testing activities were being performed but not systematically captured in sprint reporting. 
+**Status:** Resolved ✅ *(QA Testing List established in Trello; individual test execution tasks added under 2.15 and assigned to Kenny B. This structure will carry forward into Sprint 3 as a standard part of the sprint workflow.)*
 
 **Description:** Limited time available for Sprint 3 planning given end-of-sprint workload, with team members expressing a desire to be better prepared going into the planning meeting. 
 **Status:** Resolved ✅ *(Sprint 3 backlog drafted and uploaded to repository; posted as a GitHub Issue for collective team review and feedback prior to planning meeting)*
