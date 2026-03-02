@@ -73,16 +73,20 @@
 2.15.6 Backend user login-- **Kenny B.**
 2.15.7 Backend password reset -- **Kenny B.**
 
-#.# Task Name
-
 ---
 
 ## Problems/Challenges/Roadblocks:
 
+**Description:** Several team members faced competing priorities between sprint deliverables and midterm exams during Week 2, impacting pace and availability. **Status:** Not Resolved ❎ *(Team is aware; workload will be monitored going into Sprint 3)*
 
-**Description:** { Short description of Issue }
-**Status**:  {Resolved ✅ | Not Resolved ❎}
+**Description:** A team member experienced unforeseen personal circumstances during Week 2, impacting availability and real-time communication of task progress. 
+**Status:** Ongoing ⚠️ *(Member is aware and working to maintain contributions; Scrum Master is monitoring and providing support)*
 
-**Description:** Example ONLY: Cloning of Github Repo to Local Machine
-**Status**:  Resolved ✅
+**Description:** Screenshot captures of completed work were requested throughout the sprint but were not received until late in Week 2 due to work still being in progress or awaiting testing. This created a downstream blocker for Sprint Review planning and demo preparation. 
+**Status:** Resolved ✅ *(All required screenshots were received prior to the Sprint Review on February 26)*
+
+**Description:** Scrum Master faced personal and health-related challenges mid-sprint that impacted capacity. A commitment made during the 2/23 check-in to begin the S2W2 status update template that evening was not fulfilled as a result. **Status:** Resolved ✅ *(Status update completed prior to submission deadline; no sprint deliverables were impacted)*
+
+**Description:** Limited time available for Sprint 3 planning given end-of-sprint workload, with team members expressing a desire to be better prepared going into the planning meeting. 
+**Status:** Resolved ✅ *(Sprint 3 backlog drafted and uploaded to repository; posted as a GitHub Issue for collective team review and feedback prior to planning meeting)*
 
