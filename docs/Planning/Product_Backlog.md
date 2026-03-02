@@ -43,7 +43,6 @@
 | 2.14     |Expand API Contract (Users & Orders)                    | As a developer, I want the API contract to define the Users and Orders endpoints so that frontend and backend development can proceed in Sprint 2 without ambiguity about requests, responses, and error handling. | Must            | Not Started |
 |         | Create separate authentication flow for business administrators | As a business owner, I want to log into a secure admin panel so that I can manage my inventory and view sales data. | Must            | Not Started |
 |         | User Profile Management                                      | As a customer, I want to update my profile information so that my contact details and preferences stay current. | Must            | Not started |
-
 |         | Product browsing interface                                   | As a customer, I want to browse available products or menu items so that I can decide what I want to order. | Must            | Not Started |
 |         | Shopping Cart System                                         | As a customer, I want to add multiple items to a cart before checkout so that I can review and modify my order before submitting. | Must            | Not started |
 |         | Order item customization                                     | As a customer, I want to customize my order with extras or modifications so that I can get exactly what I want. | Must            | Not Started |

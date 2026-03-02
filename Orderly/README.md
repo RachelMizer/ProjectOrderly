@@ -55,6 +55,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 ```
 To start backend server, run: `python manage.py runserver`
+*Note: Navigate to `/Orderly/backend/` before starting backend server.*
 
 ## Database
 Go to https://www.mysql.com Downloads > MySQL Community (GPL) Downloads > MySQL Community Server.

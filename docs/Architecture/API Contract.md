@@ -12,7 +12,8 @@ Login and registration endpoints do not require authentication
 ### URLs
 All API endpoints are prefixed with `/api/`.  
 Endpoints follow RESTful resource-based naming.  
-Plural nouns are used for collections (`/orders`, `/products`).  
+Plural nouns are used for collections (`/orders`, `/products`). 
+URL parameters follow this format `api/v1/users?key=value&key=value&...` 
 ### HTTP Methods
 + GET: Retrieve resources
 + POST: Create new resources
@@ -46,7 +47,7 @@ Error respones use a consistent JSON structure:
 **Endpoint:** `<POST> /api/v1/auth/login/`  
 **Description:** Submit user credentials to login and receive authorization token  
 **Authentication:** Not Required  
-**Role:** All  
+**Role:** None  
 **URL Parameters:** None  
 **Request Parameters:** Email & Password  
 
@@ -207,7 +208,7 @@ or
 **Request Parameters:** None  
 ### Request
 **Header:** `Content-Type: application/json`  
-**Body:**
+**Body:** 
 ```
 {}
 ```
@@ -240,7 +241,7 @@ body
 **Request Parameters:** None  
 ### Request
 **Header:** `Content-Type: application/json`  
-**Body:**
+**Body:** 
 ```
 {}
 ```
@@ -337,234 +338,766 @@ or
 }
 ```
 
-## Request Email Verification
-**Endpoint:** `<POST> /api/v1/auth/email-verification`
-**Description:** Requests an email verification sent via email. High trust tasks locked for unverified users.
-**Authentication:** None
-**Role:** Any
+# Customers
+## Get current Customer profile
+**Endpoint:** `<GET> /api/v1/users/me`
+**Description:** Get current customer information
+**Authentication:** `Bearer <accessToken>`
+**Role:** Customer
 **URL Parameters:** None
-**Request Parameters:** email
-### Request 
-**Header:** `Content-Type: application/json`
-**Body:**
-```
-{
-    "email": "test@example.com"
-}
-```
-**Rules:** `email` - required, string, valid format
-**Success Response (200 OK):**
-```
-body
-{
-    "message": "If email exists, will send email verification."
-}
-```
-**Invalid email (400):**
-```
-{
-    "error": "INVALID_EMAIL",
-    "message": "Not a valid email format"
-}
-```
-
-## Confirm Email Verification
-**Endpoint:** `<POST> /api/v1/auth/email-verification/confirm`
-**Description:** Verifies email
-**Authentication:** None
-**Role:** Any
-**URL Parameters:** None
-**Request Parameters:** encoded UserID, auth token 
+**Request Parameters:** None
 ### Request
-**Header:** `Content-Type: application/json`
-**Body:**
+**Header:** 
 ```
-{
-    "uid": "abc123",
-    "token": "xyz321"
-}
+Authorization: Bearer <accessToken>
 ```
-**Rules:**
-+ Reset link example: `/api/v1/auth/email-verification/confirm/?uid=abc123&token=xyz321` 
-+ `uid` and `token` - strings. included in verification link.
-+ Token must valid and not expired
-+ Token becomes invalid after verification
-+ If email is already verified, endpoint will still return a success
+
+**Body:** None
+**Rules:** Token must not be expired. If expired, frontend should refresh the token gracefully.
 **Success Response (200 OK):**
 ```
 body
+
 {
-    "message": "email verified"
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "supersmith@example.com",
+    "streetAddress": "123 river lane",
+    "city": "New York",
+    "state": "NY",
+    "zipcode": "12345",
+    "phone": "123-555-0000"
 }
 ```
-
-**Bad Request (400)**
+**Unauthorized (401)**
 ```
 {
     "error": "INVALID_TOKEN",
-    "message": "token is invalid or expired"
+    "message": "invalid or expired token"
 }
 ```
-# Users
-## Get current User profile
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+
+
+## Update Customer profile
+**Endpoint:** `<PATCH> /api/v1/users/me`
+**Description:** Update the current customer's information
+**Authentication:** `Bearer <accessToken>`
+**Role:** Customer
+**URL Parameters:** None
+**Request Parameters:** firstName, lastName, streetAddress, city, state, zipcode, and/or phone
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "streetAddress": "321 lake road",
+    "city": "Raleigh",
+    "state": "NC",
+    "zipcode": "54321"
+}
+```
 **Rules:**
-**Success Response (200 OK):**
++ All fields are strings
++ 10-15 digit phone number with optional '+ country code"
++ Zipcode must be 5 digits or 5 digits dash 4 digits
++ State must be 2 uppercase code
 
-## Update User profile
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+**Success Response (200 OK):**
+```
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "streetAddress": "321 lake road",
+    "city": "Raleigh",
+    "state": "NC",
+    "zipcode": "54321",
+    "phone": "123-555-0000"
+}
+```
+**Bad Input (400)**
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "incorrect input format",
+    "fields": {
+        "phone": "invalid format"
+    }
+}
+```
+
+**Unauthorized (401)**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+## Get All Customers
+**Endpoint:** `<GET> /api/v1/users`, `<GET> /api/v1/users?page=4&pageSize=20`, `<GET> /api/v1/users?search=john` 
+**Description:** Returns a list of customer profiles. Excludes street address.
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business owner
 **URL Parameters:**
-**Request Parameters:**
++ page (optional)
++ pageSize (optional. default pageSize is 25, max is 200)
++ search (optional. searches name fields and email)
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
-**Rules:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** 
++ Endpoint only available to users with the business role
++ Returns number of returned objects
++ Returns next and previous page urls
++ Returns a collection of users
 **Success Response (200 OK):**
+```
+body
 
-## Get Users
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+{
+    "count": 3,
+    "next": "/api/v1/users?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "firstName": "John",
+            "lastName": "Smith",
+            "email": "supersmith@example.com",
+            "phone": "123-555-0000"
+        },
+        {
+            "id": 2,
+            "firstName": "Jane",
+            "lastName": "Doe",
+            "email": "doerocks@example.com",
+            "phone": "123-555-4321"
+        },
+        {
+            "id": 3,
+            "firstName": "Jacob",
+            "lastName": "Mills",
+            "email": "jmills@example.com",
+            "phone": "555-333-2222"
+        }
+    ]
+}
+```
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## Get Customer by ID
+**Endpoint:** `<GET> /api/v1/users/{id}`
+**Description:** Returns a full customer profile
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business
+**URL Parameters:** id = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
-**Rules:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** Must include positive integer in url
 **Success Response (200 OK):**
+```
+body
 
-## Get User/:id
+{
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "supersmith@example.com",
+    "emailVerified": true,
+    "streetAddress": "123 river lane",
+    "city": "New York",
+    "state": "NY",
+    "zipcode": "12345",
+    "phone": "123-555-0000"
+}
+```
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
 
-## Delete User
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "user not found"
+}
+```
+
+## Delete Customer
+**Endpoint:** `<DELETE> /api/v1/users/{id}`
+**Description:** Deactivates a user.
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business or customer if id matches
+**URL Parameters:** id = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** 
++ Token must verify either a business user or the customer deactivated
++ If a customer is deactivating their account, frontend should then call logout
+  
+**Successfully Deleted (204 OK):** No body
 
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Wrong Permissions (403):**
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "user not found"
+}
+```
 
 # Orders API
 ## Create Order
-**Endpoint:**
-**Description:** 
-**Authentication:** `Bearer: <JWT>` (optional)
+**Endpoint:** `<POST> /api/v1/orders`
+**Description:** Creates a new, empty order. Returns order id
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)
 **Role:** None
-**URL Parameters:**
-**Request Parameters:**
+**URL Parameters:** None
+**Request Parameters:** guestEmail if no accessToken in header
 ### Request
 **Header:**
-**Body:**
-**Rules:** If no JWT is present, require guest email
-**Success Response (200 OK):**
+```
+Authorization: Bearer <accessToken> (OPTIONAL)
+Content-Type: application/json
+```
+**Body:** 
+```
+{
+    "guestEmail": "test@example.com"
+}
+or if accessToken in header,
+{}
+```
+**Rules:** If no JWT is present, requires a guest email
+**Success Response (201 Created):**
+```
+body
+{
+    "id": 1
+}
+```
+**Bad Request (400):**
+```
+body
+{
+    "error": "MISSING_INPUT",
+    "message": "missing access token or guest email"
+}
+```
 
 ## Add item to Order
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<POST> /api/v1/orders/items`
+**Description:** Adds an order item to a customer's order draft
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)
+**Role:** Owner of order
+**URL Parameters:** None
+**Request Parameters:** variantId, quantity, orderId
 ### Request
 **Header:**
+```
+Content-Type: application/json
+```
 **Body:**
-**Rules:**
-**Success Response (200 OK):**
+```
+{
+    "guestEmail": "test@example.com" (OPTIONAL)
+    "variantId": 507,
+    "quantity": 2
+}
+```
+**Rules:** 
++ Customer must have an order in a draft state
++ Quantity must be greater than 0
++ Order and variant must exist
++ If not accessToken in header, must provide a guest email with a drafted order
+  
+**Success Response (201 Created):**
+```
+{
+    "message": "order updated",
+    "orderId": 1,
+    "orderItemId: 1
+}
+```
+**Bad Request (400):**
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "order or variant does not exist or bad quantity"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NO_ORDER",
+    "message": "customer does not have a draft order"
+}
+```
 
-## Update item quantity / modifiers
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+## Update orderItem quantity
+**Endpoint:** `<PATCH> /api/v1/orders/items/{orderItemId}`
+**Description:** Update quantity of an orderItem
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)
+**Role:** Owner of order
+**URL Parameters:** orderItemId = [integer]
+**Request Parameters:** quantity and optional guestEmail
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "guestEmail": "test@example.com" (OPTIONAL),
+    "quantity": 2
+}
+```
 **Rules:**
++ Customer must have an order in a draft state
++ Must include guest email if no accessToken in header
++ OrderItem must exist
++ Quantity represents final quantity (if quantity equals 2, item quantity on order will be set to 2)
++ Quantity must be equal to or greater than 0
++ Zero quantity removes the item from the order
+  
 **Success Response (200 OK):**
+```
+{
+    "message": "quantity updated",
+    "orderId": 1,
+    "orderItemId: 1
+}
+or
+{
+    "message": "item removed",
+    "orderId" : 1
+}
+```
+**Bad Request (400):**
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "Bad quantity or no draft order"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "BAD_ITEM",
+    "message": "order item does not exist"
+}
+```
 
-## View Order/:id
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+## Add item modifer
+**Endpoint:** `<POST> /api/v1/orders/items/{orderItemId}/modifiers`
+**Description:** add modifier to an order item
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)
+**Role:** Owner of order
+**URL Parameters:** orderItemId = [integer]
+**Request Parameters:** optional guestEmail
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "guestEmail": "test@example.com" (OPTIONAL),
+    "modiferId": 1
+}
+```
 **Rules:**
++ Customer must have an order in a draft state
++ Must include guest email if no accessToken in header
++ OrderItem must exist
++ Modifer must exist and belong to the product variant
+  
+**Success Response (201 Created):**
+```
+{
+    "message": "order updated",
+    "orderId": 1,
+    "orderItemId: 1,
+    "orderModifierId": 1
+}
+```
+**Bad Request (400):**
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "bad modifierId"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NO_ORDER",
+    "message": "customer does not have a draft order or no matching order item"
+}
+```
+
+## Get Order/:id
+**Endpoint:** `<GET> /api/v1/orders/{orderId}`
+**Description:** Returns order information
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business or order owner
+**URL Parameters:** orderId = [integer]
+**Request Parameters:** None
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
+**Rules:** 
++ Customers can view their orders
++ Business can view any order
+  
 **Success Response (200 OK):**
+{
+    "id": 1,
+    "date": "2026-04-18T14:30:00Z",
+    "orderSubtotal": 20.32,
+    "taxAmount": 1.42,
+    "totalDue": 21.74,
+    "status": "COMPLETED",
+    "createdAt": "2026-04-18T14:26:23Z",
+    "updatedAt": "2026-04-18T14:30:00Z",
+    "variants": [
+        {
+            "id"; 302,
+            "variantName": "large_shirt_black",
+            modifiers: [
+                "id": 3,
+                "groupId": 2
+            ]
+        },
+        ...
+    ]
+}
+
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NO_ORDER",
+    "message": "customer does not have a draft order or no matching order item"
+}
+```
 
 ## Get Order Status
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<GET> /api/v1/orders/{orderId}/status`
+**Description:** Returns only order status
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business or order owner
+**URL Parameters:** orderId = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
 **Rules:**
-**Success Response (200 OK):**
++ Customers can view their orders
++ Business can view any order
 
-## List Orders/:status
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+**Success Response (200 OK):**
+{
+    "status": "PENDING",
+}
+
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NO_ORDER",
+    "message": "customer does not have a draft order or no matching order item"
+}
+```
+
+## List Orders
+**Endpoint:** `<GET> /api/v1/orders`, `<GET> /api/v1/orders?page=2&pageSize=20`, `<GET> /api/v1/orders?dateCreated=YYYY-MM-DD`, `<GET> /api/v1/orders?status=pending`
+**Description:** Returns a list of orders
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business owner
 **URL Parameters:**
-**Request Parameters:**
++ page (optional)
++ pageSize (optional. default pageSize is 25, max is 200)
++ dateCreated (optional. only returns orders created on the matching day)
++ status (optional. only returns orders with matching status)
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None
 **Rules:**
++ Endpoint only available to users with the business role
++ Returns number of returned objects
++ Returns next and previous page urls
++ Returns a collection of orders
++ URL parameters can be combined with &
+  
 **Success Response (200 OK):**
+```
+{
+    "count": 3,
+    "next": "/api/v1/orders?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 10,
+            "customerId": 1,
+            "date": "2026-04-18T14:30:00Z",
+            "subtotal": 10.00,
+            "taxAmount": 0.07,
+            "totalDue": 10.07,
+            "status": "COMPLETED",
+            "createdAt": "2026-04-18T14:30:00Z",
+            "updatedAt": "2026-04-18T14:30:00Z",
+        },
+        {
+            "id": 11,
+            "customerId": 9,
+            "date": "2026-04-18T14:30:00Z",
+            "subtotal": 20.00,
+            "taxAmount": 0.14,
+            "totalDue": 20.14,
+            "status": "PENDING",
+            "createdAt": "2026-04-18T14:30:00Z",
+            "updatedAt": "2026-04-18T14:30:00Z",
+        },
+        ...
+    ]
+}
+```
+
+## Submit Order
+**Endpoint:** `<PATCH> /api/v1/orders/{orderId}/submit`
+**Description:** Set an order to pending status
+**Authentication:** `Bearer <accessToken>`
+**Role:** Order owner
+**URL Parameters:** orderId = [integer]
+**Request Parameters:** None
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{}
+```
+**Rules:**
++ Customers can submit their own order
++ Order must exist and be in draft state
++ Order must have at least one variant
+  
+**Success Response (200 OK):**
+```
+body
+{
+    "id": 6,
+    "status": "PENDING"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "order does not exist"
+}
+```
 
 ## Finalize Order
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<PATCH> /api/v1/orders/{orderId}/complete`
+**Description:** Set an order to completed status
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business
+**URL Parameters:** orderId = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{}
+```
 **Rules:**
++ Must be business user
++ Order must not be completed or draft
+  
 **Success Response (200 OK):**
+```
+body
+{
+    "id": 1,
+    "status": "COMPLETED"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "order does not exist"
+}
+```
 
 ## Cancel Order
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `{PATCH} /api/v1/orders/{orderId}/cancel`
+**Description:** Sets an order's status to cancelled
+**Authentication:** `Bearer <accessToken>`
+**Role:** Business or order owner
+**URL Parameters:** orderId = [integer]
+**Request Parameters:** None
 ### Request
 **Header:**
-**Body:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:** 
+```
+{}
+```
 **Rules:**
++ Business users can cancel any order that is not a draft, completed, or cancelled
++ Customers can only cancel their draft or pending orders
++ Guest users should contact a business owner
++ The order must exist and not be cancelled
+
 **Success Response (200 OK):**
+{
+    "id": 1
+    "message": "order cancelled"
+}
+**Forbidden (403):**
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "order does not exist"
+}
+```
 
 # Menu API
 ## List Categories
