@@ -169,6 +169,247 @@ Pass
 - User account creation is functioning correctly.
 - User is able to receive accessToken immediately upon registration.
 ---
+---
+
+# Authentication & Security – API Test Cases (US 2.5–2.7)
+
+---
+
+## TC-12 – Email Verification Flow (US 2.5)
+
+### Feature
+Email Verification
+
+### User Story (2.5)
+As a user, I want my email verified so that my account is confirmed and secure.
+
+### Preconditions
+- Backend server running
+- Console email backend enabled
+- Test user successfully registered
+- Unique test email generated
+
+### Test Steps
+
+#### Step A – Request Verification Email
+1. Send POST request to `/api/v1/auth/email-verification`
+2. Provide JSON payload:
+   - email
+
+**Expected Result**
+- Generic response returned
+- No indication whether email exists
+- No server errors
+
+---
+
+#### Step B – Capture Verification Link
+1. Observe backend console output
+2. Locate verification email
+3. Extract `uid` and `token`
+
+**Expected Result**
+- Verification link displayed in console
+- Token generated successfully
+
+---
+
+#### Step C – Confirm Verification (Valid Token)
+1. Send POST request to `/api/v1/auth/email-verification/confirm`
+2. Provide:
+   - uid
+   - token
+
+**Expected Result**
+- HTTP 200 returned
+- "email verified" message
+- CustomerProfile.email_verified set to True
+
+---
+
+#### Step D – Confirm Verification (Invalid Token)
+1. Repeat confirmation with invalid token
+
+**Expected Result**
+- HTTP 400 returned
+- INVALID_TOKEN error
+- No changes to user record
+
+---
+
+### Actual Result
+Verification email successfully generated via manual trigger.
+Valid token confirmed email successfully.
+Invalid token properly rejected.
+
+### Status
+PASS
+
+---
+
+## TC-13 – JWT Login & Protected Endpoint (US 2.6)
+
+### Feature
+User Login & Authentication Enforcement
+
+### User Story (2.6)
+As a registered user, I want to log in so that I can access protected features.
+
+### Preconditions
+- Registered and verified user exists
+- Known valid password
+
+### Test Steps
+
+#### Step A – Valid Login
+1. Send POST request to `/api/v1/auth/login`
+2. Provide:
+   - email
+   - password
+
+**Expected Result**
+- HTTP 200 returned
+- accessToken provided
+- refreshToken set in HttpOnly cookie
+- customer object returned
+
+---
+
+#### Step B – Invalid Password
+1. Send login request with incorrect password
+
+**Expected Result**
+- HTTP 400 returned
+- "Email or password is incorrect"
+- No token issued
+
+---
+
+#### Step C – Protected Endpoint Without Token
+1. Send GET request to `/api/v1/auth/me/` without Authorization header
+
+**Expected Result**
+- HTTP 401 Unauthorized
+- Access denied
+
+---
+
+#### Step D – Protected Endpoint With Bearer Token
+1. Send GET request to `/api/v1/auth/me/`
+2. Include header:
+   - Authorization: Bearer <accessToken>
+
+**Expected Result**
+- HTTP 200 returned
+- User id, email, username, and role returned
+
+---
+
+#### Step E – Refresh Token
+1. Use stored refresh cookie
+2. Send POST request to `/api/v1/auth/refresh`
+
+**Expected Result**
+- HTTP 200 returned
+- New accessToken issued
+
+---
+
+#### Step F – Logout
+1. Send POST request to `/api/v1/auth/logout`
+2. Attempt refresh again
+
+**Expected Result**
+- Logout returns success message
+- Refresh token invalidated
+- Subsequent refresh returns 401
+
+---
+
+### Actual Result
+Login successful.
+Authentication enforcement confirmed.
+Refresh and logout flow validated successfully.
+
+### Status
+PASS
+
+---
+
+## TC-14 – Password Reset End-to-End (US 2.7)
+
+### Feature
+Password Reset & Credential Recovery
+
+### User Story (2.7)
+As a registered user, I want to reset my password so that I can regain access if forgotten.
+
+### Preconditions
+- Registered user exists
+- Console email backend enabled
+
+### Test Steps
+
+#### Step A – Request Password Reset
+1. Send POST request to `/api/v1/auth/password-reset`
+2. Provide:
+   - email
+
+**Expected Result**
+- Generic response returned
+- Reset email generated in console
+
+---
+
+#### Step B – Capture Reset Link
+1. Extract `uid` and `token` from console email
+
+**Expected Result**
+- Valid reset link generated
+
+---
+
+#### Step C – Confirm Password Reset
+1. Send POST request to `/api/v1/auth/password-reset/confirm`
+2. Provide:
+   - uid
+   - token
+   - newPassword
+
+**Expected Result**
+- HTTP 200 returned
+- "Password has been reset successfully"
+- Password updated in database
+
+---
+
+#### Step D – Validate Old Password Fails
+1. Attempt login using old password
+
+**Expected Result**
+- Login rejected
+- HTTP 400 returned
+
+---
+
+#### Step E – Validate New Password Works
+1. Attempt login using new password
+
+**Expected Result**
+- HTTP 200 returned
+- Tokens issued successfully
+
+---
+
+### Actual Result
+Password reset flow executed successfully.
+Old password invalidated.
+New password validated and login successful.
+
+### Status
+PASS
+
+---
 ## TC-05 – User Registration (Valid Input)
 
 ### Feature  
