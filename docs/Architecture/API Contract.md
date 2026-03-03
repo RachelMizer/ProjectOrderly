@@ -340,15 +340,15 @@ or
    
 
 # Customers
-## Get current Customer profile
-**Endpoint:** `<GET> /api/v1/users/me`
-**Description:** Get current customer information
-**Authentication:** `Bearer <accessToken>`
-**Role:** Customer
-**URL Parameters:** None
-**Request Parameters:** None
-### Request
-**Header:** 
+## Get current Customer profile  
+**Endpoint:** `<GET> /api/v1/users/me`  
+**Description:** Get current customer information  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Customer  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request  
+**Header:**  
 ```
 Authorization: Bearer <accessToken>
 ```
