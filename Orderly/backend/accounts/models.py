@@ -1,4 +1,3 @@
-
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import models
@@ -14,6 +13,7 @@ class UserRole(models.Model):
     Lightweight role attached to every user.
     (Not a full 'profile' yet.)
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -34,12 +34,14 @@ class CustomerProfile(models.Model):
     """
     Customer-specific fields. Exists only for users with role=CUSTOMER.
     """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="customer_profile",
     )
 
+    email_verified = models.BooleanField(default=False)
     street_address = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=2, blank=True)
@@ -53,4 +55,3 @@ class CustomerProfile(models.Model):
 
     def __str__(self) -> str:
         return f"CustomerProfile for {self.user.username}"
-

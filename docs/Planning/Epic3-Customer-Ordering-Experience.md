@@ -29,46 +29,57 @@ Create UI for browsing products.
 - Product list page
 - Display:
   - name
-  - price
-  - description
+  - variant name <!-- New -->
+  - unit price <!-- Changed -->
+  - description <-- This field does not currently exit. It's something we need to figure out -->
+  - availability <!-- New -->
 - "Add to Cart" button
 - Load products from API
 
 ### Acceptance Criteria
 
 - Products displayed correctly
+- Prices displayed correctly <!-- New -->
+- Availability displayed correctly <!-- New -->
 - Buttons visible
 - Products loaded from backend API
-- Each product can be added to cart
+- Each variant can be added to cart <!-- Changed -->
 
 ---
 
 ## B3.1.2 – Product Browsing API (Backend)
 
 ### Description
-Create API endpoints that allow customers to retrieve product information.
+Create API endpoints that allow customers to retrieve product and variant information. <!-- Changed -->
 
 ### Tasks
 
 - Create Product serializer
+- Create variant serializer <!-- New -->
 - Create product list endpoint
 
 Return:
 
-- product_id
-- name
-- price
-- description
-- availability
+- productId
+- productName
+- categoryName <!-- New -->
+- variants <!-- New -->
+    - variantId
+    - variantName
+    - unitPrice
+    - availability
 
-- Filter out unavailable products
+- Availability rules: <!-- New -->
+    - stock_quantity is NULL = available
+    - stock_quantity > 0 = available
+    - otherwise unavailable
 
 ### Acceptance Criteria
 
 - `GET /api/v1/products`
-- Each product includes a unique `product_id`
-- Returns JSON product list
-- Only available products returned
+- Each variant includes a unique variantId <!-- Changed -->
+- Returns JSON product list with variants <!-- Changed -->
+- Only available variants returned <!-- Changed -->
 - Tested with Postman
 
 ---
@@ -111,46 +122,59 @@ Create UI for managing cart.
 
 ---
 
-## B3.2.2 – Shopping Cart API (Backend)
+## B3.2.2 – Draft Order API (Backend) <!-- Changed -->
 
 ### Description
-Create backend support for storing customer carts.
+Create backend support for storing and updating a customer draft order (cart). <!-- Changed -->
 
 ### Tasks
 
-- Create Cart model
-- Create CartItem model
-- Link cart to authenticated user
-- Load cart for logged-in user
+- Get-or-create the authenticated customer’s single DRAFT order <!-- Changed -->
+- Load DRAFT order for logged-in user <!-- Changed -->
+- Add/update/remove items on the draft order. <!-- New -->
 - Save cart changes immediately
+- Recalculate totals after each change
 
-Return full cart contents including:
 
-- product id
-- name
-- quantity
-- price
-- subtotal
+Return full DRAFT order contents including: <!-- Changed -->
+
+- orderId <!-- New -->
+- items <!-- New -->
+    - itemId
+    - variantId
+    - productName
+    - variantName
+    - quantity
+    - unitPriceCharged
+    - itemTotal
+    - modifiers:
+        - optionId
+        - name
+        - priceAdjustmentCharged
+- totals: <!-- New -->
+    - subtotal
+    - taxAmount
+    - totalPaymentDue
 
 Create endpoints:
-- GET/cart
-- POST/cart/add
-- POST/cart/update
-- POST/cart/remove
+- GET /api/v1/orders?status=DRAFT <!-- Changed -->
+- POST /api/v1/orders/{orderId}/items <!-- Changed -->
+- PATCH /api/v1/orders/{orderId}/items/{itemId} <!-- Changed -->
+- DELETE /api/v1/orders/{orderId}/items/{itemId} <!-- Changed -->
 
 
-### Acceptance Criteria
+### Acceptance Criteria <!-- Changed -->
 
-- Customer cart stored in database
+- Uses order(status=DRAFT) as the cart
+- Only the owner can access/modify the draft order
 - Items can be added
 - Items can be removed
 - Quantities update correctly
-- Cart persists after logout/login
 - Cart persists after refresh
-- Each user has only one active cart
-- `GET /cart` returns current cart contents
-- Cart returns correct totals and subtotals
-
+- One active DRAFT order per customer
+- Totals returned are correct
+- Adding/updating items does not change inventory quantities
+- Responses use contract error structure
 ---
 
 # Order Submission and Status Tracking
@@ -184,30 +208,34 @@ Create order submission UI.
 
 ---
 
-## B3.3.2 – Order Creation API (Backend)
+## B3.3.2 – Finalize Order API (Backend) <!-- Changed -->
 
 ### Description
-Allow customers to submit orders.
+Allow customers to finalize DRAFT orders. <!-- Changed -->
 
-### Tasks
+### Tasks <!-- Changed -->
 
-- Create Order model
-- Create OrderItem model
-- Convert cart items into OrderItems
-- Clear cart after order submission
+- Locate customer DRAFT order
+- Validate order has at least 1 item
+- Validate order identity: customer XOR guest_email
+- Validate availability
+- Perform payment simulation:
+    - If required fields present = pass
+    - If required fields missing = fail
+- Lock pricing field
+- Transition status DRAFT to PENDING
 
 Create submit endpoint:
-- POST /orders
+- POST /api/v1/orders/{orderId}/finalize
 
 
-### Acceptance Criteria
+### Acceptance Criteria <!-- Changed -->
 
-- Order stored in database
-- OrderItems stored
-- Order assigned to user
-- Default status = Pending
-- OrderItems created from cart
-- Cart emptied after order submission
+- Order status becomes PENDING
+- Finalize fails if required information missing
+- Finalize fails if order empty
+- Availability validated before finalize
+- Failed finalize leaves order in DRAFT
 
 ---
 
@@ -252,7 +280,7 @@ Allow customers to view order status.
 ### Tasks
 
 Create endpoint:
-- GET /orders/{id}
+- GET /api/v1/orders/{id}
 
 
 ### Acceptance Criteria
@@ -302,7 +330,7 @@ Allow customers to retrieve past orders.
 ### Tasks
 
 Create endpoint:
-- GET /orders/history
+- GET /api/v1/orders/history
 
 
 ### Acceptance Criteria
@@ -310,6 +338,7 @@ Create endpoint:
 - Returns only logged-in user orders
 - Sorted newest first
 - Users can only access their own orders
+- DRAFT orders excluded <!-- New -->
 
 ---
 
@@ -377,8 +406,199 @@ Create endpoints:
 
 As a customer, I want to customize items (extras or notes) so that my order matches my preferences.
 
-### Product Owner Decision
+---
 
-This story is currently **out of scope** for Sprint 3.
+## F3.7.1 – Item Customization Page (Frontend) <!-- New -->
 
-If time permits, it may be added later.
+### Description
+
+Create UI that allows customers to select modifier options for a product variant before adding it to the cart.
+
+### Tasks
+
+- Display modifier groups for selected variant
+- Display modifier options for each group
+- Show price adjustments for options
+- Allow option selection
+- Show updated item price dynamically
+- Submit selected options when adding item to cart
+
+### Acceptance Criteria
+
+- Modifier groups display correctly
+- Modifier options display correctly
+- Required groups enforced
+- Min/max selections enforced
+- Price updates when options selected
+- Selected options sent to backend
+- Variant without modifiers skips customization page
+
+---
+
+## B3.7.2 – Modifier Retrieval API (Backend) <!-- New -->
+
+### Description
+
+Provide endpoints to retrieve modifier information for a variant.
+### Tasks
+
+Return:
+
+- variantId
+- modifierGroups:
+    - groupId
+    - name
+    - required
+    - minSelections
+    - maxSelections
+
+    - options:
+        - optionId
+        - name
+        - priceAdjustment
+
+Create endpoints:
+- GET /api/v1/variants/{variantId}/modifiers
+
+
+
+### Acceptance Criteria
+
+- Returns modifier groups for variant
+- Returns modifier options
+- Required flag returned
+- Min/max values returned
+- Returns empty list if variant has no modifiers
+- Only valid variantId accepted
+- Tested with Postman
+
+---
+
+## B3.7.3 – Add Item with Modifiers API (Backend) <!-- New -->
+
+### Description
+
+Extend cart item creation endpoint to support modifier selections.
+### Tasks
+
+Implement:
+
+-validate:
+    - Options belong to variant
+    - Required groups satisfied
+    - Min selections satisfied
+    - Max selections not exceeded
+ 
+- Create:
+    - OrderItem
+    - OrderItemModifier records
+    
+- Recalculate:
+    - itemTotal
+    - subtotal
+    - totalPaymentDue
+
+Create endpoints:
+- POST /api/v1/orders/{orderId}/items
+
+
+
+### Acceptance Criteria
+
+- Items can be added with modifiers
+- OrderItemModifier records created
+- Invalid modifiers rejected
+- Required groups enforced
+- Min/max enforced
+- Prices calculated correctly
+- Totals updated correctly
+
+---
+
+# B3.7.4 – Update Item Modifiers API <!-- New -->
+
+## Description
+
+Allow modification of selected options on existing cart items.
+
+## Tasks
+
+Endpoint:
+
+PATCH /api/v1/orders/{orderId}/items/{itemId}
+
+
+Actions:
+
+- Update OrderItem quantity
+- Replace OrderItemModifier records
+- Recalculate totals
+
+## Acceptance Criteria
+
+- Modifiers update correctly
+- Old modifiers removed
+- New modifiers saved
+- Totals recalculated
+- Validation enforced
+
+---
+
+# F3.7.5 – Cart Display of Customizations <!-- New -->
+
+## Description
+
+Display modifier selections on the cart page.
+
+## Tasks
+
+Show modifier selections under each item:
+
+Example:
+
+Large Pizza  
+- Pepperoni  
+- Extra Cheese  
+
+## Acceptance Criteria
+
+- Modifiers visible in cart
+- Correct modifiers shown
+- Price reflects modifiers
+
+---
+
+# B3.7.6 – Draft Order API Modifier Support <!-- New -->
+
+## Description
+
+Extend draft order retrieval to include modifier selections.
+
+Existing endpoint:
+
+GET /api/v1/orders?status=DRAFT
+
+## Tasks
+
+Return modifiers with each item:
+
+- items:
+
+  - itemId
+  - variantName
+
+  - modifiers:
+    - optionId
+    - name
+    - priceAdjustmentCharged
+
+## Acceptance Criteria
+
+- Modifiers returned for each item
+- Empty list returned if none selected
+- Names returned for UI display
+- Prices match stored values
+
+### Product Owner Decision <!-- Changed -->
+
+Although I think this may be out of scope for this sprint, I have added backlog items for it so we can see what it would require.

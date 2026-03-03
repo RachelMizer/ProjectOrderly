@@ -14,4 +14,3 @@ class CustomerProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "city", "state", "zipcode", "phone")
     search_fields = ("user__username", "user__email", "city", "state", "zipcode")
     list_filter = ("state",)
-
