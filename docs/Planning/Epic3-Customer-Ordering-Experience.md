@@ -57,6 +57,7 @@ Create API endpoints that allow customers to retrieve product and variant inform
 - Create Product serializer
 - Create variant serializer <!-- New -->
 - Create product list endpoint
+- Create product endpoint <! -- SR -- >
 
 Return:
 
@@ -392,7 +393,8 @@ Create endpoints:
 
 - Only logged-in users can access profile
 - User can update:
-  - name
+  - name (first, last) <!-- sr -- >
+  - address <!-- SR -->
   - email
   - phone
 
