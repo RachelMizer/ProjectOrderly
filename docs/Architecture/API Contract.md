@@ -835,6 +835,7 @@ Authorization: Bearer <accessToken>
 + Business can view any order
   
 **Success Response (200 OK):**  
+```
 {
     "id": 1,
     "date": "2026-04-18T14:30:00Z",
@@ -856,7 +857,7 @@ Authorization: Bearer <accessToken>
         ...
     ]
 }
-
+```
 **Forbidden (403):**  
 ```
 {
