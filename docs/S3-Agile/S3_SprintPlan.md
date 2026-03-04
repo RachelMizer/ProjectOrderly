@@ -16,6 +16,38 @@
 
 Deliver a functional end-to-end customer ordering experience: browsing products, customizing items, managing a cart, and submitting an order with confirmation — built on the foundation established in Sprint 2.
 
+---
+
+------
+
+## Expected Outcomes
+
+By the end of Sprint 3, the team will deliver:
+
+- A functional end-to-end customer ordering experience: 
+  browsing → cart → checkout → confirmation
+- Product browsing interface displaying products, variants, prices, and availability wired to a live backend API
+- Persistent shopping cart backed by a DRAFT order, surviving page refresh
+- Item customization flow with modifier groups, options, live price updates, and selections carried through to the cart
+- Order submission with payment simulation transitioning orders from DRAFT → PENDING
+- Order confirmation page displaying receipt details after successful submission
+- Extended seed data with products, variants, and modifiers supporting Sprint 3 development and testing
+- All Sprint 3 features tested and verified by Kenny before Sprint Review
+- Carry-over items from Sprint 2 (2.2, 2.8, 2.9, 2.11) closed out early in the sprint
+
+------
+
+## Features this Sprint:
+
+1. Product Browsing
+2. Shopping Cart System
+3. Order Submission & Confirmation
+4. Order Item Customization
+5. Order History
+6. User Profile Management
+7. Seed Data & Content
+8. Demo & Documentation
+
 ------
 
 ## What We're Building
@@ -34,6 +66,10 @@ The sprint is organized into three waves based on what blocks what.
 > Tristin's Wave 1 backend work (B3.1.2) is the blocker for everything else. If it slips past Saturday 3/7, Wave 2 compresses and Wave 3 is at risk.
 
 ------
+
+
+
+
 
 ## Sprint #3 Backlog
 
