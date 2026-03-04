@@ -461,6 +461,8 @@ Authorization: Bearer <accessToken>
 + Returns number of returned objects
 + Returns next and previous page urls
 + Returns a collection of users
++ Returns customers in alphabetic order, using first name then last name
+
 **Success Response (200 OK):**
 ```
 body
@@ -473,7 +475,7 @@ body
     "results": [
         {
             "id": 1,
-            "firstName": "John",
+            "firstName": "Jacob",
             "lastName": "Smith",
             "email": "supersmith@example.com",
             "phone": "123-555-0000"
@@ -487,7 +489,7 @@ body
         },
         {
             "id": 3,
-            "firstName": "Jacob",
+            "firstName": "John",
             "lastName": "Mills",
             "email": "jmills@example.com",
             "phone": "555-333-2222"
@@ -933,6 +935,7 @@ Authorization: Bearer <accessToken>
 + Returns all customer orders EXCEPT draft order  
 + If the customer has no orders, returns an empty collection 
 + Returns orders in createdAt descending order 
+  
 **Success Response (200 OK):**  
 ```
 {
@@ -983,6 +986,7 @@ Authorization: Bearer <accessToken>
 + pageSize (optional. default pageSize is 25, max is 200)
 + dateCreated (optional. only returns orders created on the matching day)
 + status (optional. only returns orders with matching status)
++ returns orders in createdAt descending order
 
 **Request Parameters:** None  
 ### Request  
@@ -1009,13 +1013,13 @@ Authorization: Bearer <accessToken>
         {
             "id": 10,
             "customerId": 1,
-            "date": "2026-04-18T14:30:00Z",
+            "date": "2026-04-18T15:00:00Z",
             "subtotal": 10.00,
             "taxAmount": 0.07,
             "totalDue": 10.07,
             "status": "COMPLETED",
-            "createdAt": "2026-04-18T14:30:00Z",
-            "updatedAt": "2026-04-18T14:30:00Z",
+            "createdAt": "2026-04-18T14:45:00Z",
+            "updatedAt": "2026-04-18T15:00:00Z",
         },
         {
             "id": 11,
@@ -1146,10 +1150,13 @@ Content-Type: application/json
 + The order must exist and not be cancelled
 
 **Success Response (200 OK):**  
+```
+body
 {
     "id": 1
     "message": "order cancelled"
 }
+```
 **Forbidden (403):**  
 ```
 {
@@ -1167,30 +1174,86 @@ Content-Type: application/json
 
 # Menu API
 ## List Categories
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
+**Endpoint:** `<GET> /api/v1/categories`  
+**Description:** Returns a collection of categories   
+**Authentication:** None  
+**Role:** Any  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request  
+**Header:**  
+**Body:**  
+**Rules:**  
++ Returns a collection of category objects
++ ImageUrl will be null if no image exists
+  
 **Success Response (200 OK):**
+```
+body
+{
+    "results": [
+        {
+            "id": 1,
+            "name": "Apparel",
+            "imageUrl": "https://storename.com/media/categories/apparel.png"
+        },
+        {
+            "id": 2,
+            "name": "Groceries",
+            "imageUrl": "https://storename.com/media/categories/groceries.png"
+        },
+        {
+            "id": 3,
+            "name": "Toys and Games",
+            "imageUrl": "https://storename.com/media/categories/toys_and_games.png"
+        },
+        ...
+    ]
+}
+```
 
 ## List Products
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+**Endpoint:** `<GET> /api/v1/prodcts`, `<GET> /api/v1/products?categoryId=1`, `<GET> /api/v1/products?page=1&pageSize=50`  
+**Description:** Returns a collection of all products or products by category  
+**Authentication:** None  
+**Role:** Any  
 **URL Parameters:**
-**Request Parameters:**
++ categoryId
++ page (defaults to 1)
++ pageSize (defaults to 50)
+
+**Request Parameters:** None  
 ### Request
-**Header:**
-**Body:**
+**Header:** None  
+**Body:** None  
 **Rules:**
++ Returns products in alphabetical order  
++ For each product, returns if the product has variants and has modifiers as a boolean value  
+
 **Success Response (200 OK):**
+```
+{
+    "count": 500,
+    "pageSize": 50,
+    "next": "/api/v1/products&page2",
+    "previous": /api/v1/products&page3",
+    "results": [
+        {
+            "id": ,
+            "name": ,
+            "hasVariants": ,
+            "hasModifiers": ,
+            "minPrice": ,
+            "imageUrl": ,
+        },
+        {
+
+        },
+        ...
+    ]
+
+}
+```
 
 ## Get Variants
 **Endpoint:**
