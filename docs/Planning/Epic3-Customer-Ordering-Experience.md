@@ -621,3 +621,127 @@ Return modifiers with each item:
 ### Product Owner Decision <!-- Changed -->
 
 Although I think this may be out of scope for this sprint, I have added backlog items for it so we can see what it would require.
+
+# Seed Data & Content
+
+## Original User Story
+
+**US3.8**
+
+As a developer, I want extended seed data so the team can develop and test Sprint 3 features against realistic content.
+
+---
+
+## US3.8 — Extend Seed Data: Products, Variants & Modifiers
+
+### Description
+
+Extend the existing Happydesk dataset to include products, variants, and modifiers for Sprint 3 development and testing.
+
+### Tasks
+
+- Extend existing seed data to include products and variants
+- Add modifier groups and options to seed data
+- Verify seed scripts run cleanly from a clean database
+- Confirm all team members can reproduce the dataset locally
+
+### Acceptance Criteria
+
+- Seed data includes products, variants, and modifiers
+- Scripts load without errors
+- Dataset is reproducible locally by all team members
+
+---
+
+# Sprint 3 Demo Materials
+
+## Original User Story
+
+**US3.9**
+
+As the Presentation Lead, I need to prepare a demo script and structured visual summary for the Sprint 3 Review so that stakeholders can follow along and the team has a professional run of show.
+
+---
+
+## US3.9 — Sprint 3 Demo Materials
+
+### Description
+
+Prepare all visual and scripted materials for the Sprint 3 Review.
+
+### Tasks
+
+**Deliverable 1 — Demo Script**
+
+- Draft step-by-step run of show (name, what they show, order they go in)
+- Share with Serina by Friday 3/14 for review
+
+**Deliverable 2 — Screenshots**
+
+- Collect screenshots from each team member
+- Instruct team members to name and label their own screenshots
+- Organize into labeled folders — one per person
+- Upload to repository with clear filenames
+
+**Deliverable 3 — Visual Summary Document**
+
+Build section by section, one section per team member:
+
+1. **Header** — Team member's name and role
+2. **Description** — 1–2 sentences on what they worked on this sprint
+3. **Stories completed** — List each user story by ID and name *(e.g. US3.2 — Shopping Cart System)*
+4. **Screenshots** — Place supporting screenshots directly under the story they belong to
+
+### Acceptance Criteria
+
+- Visual summary follows the section structure for every team member
+- Demo script shared with Serina by Friday 3/14
+- Screenshots uploaded and organized by team member before Sprint Review
+- All materials committed to repository and ready by Saturday 3/14
+
+---
+
+# QA Execution
+
+## Original User Story
+
+**US3.10**
+
+As a QA Lead, I want to track my testing progress across all Sprint 3 user stories so that every feature is tested and verified before the Sprint Review.
+
+---
+
+## US3.10 — Sprint 3 QA Execution
+
+### Description
+
+Track and execute testing across all Sprint 3 user stories before the Sprint Review.
+
+### Tasks
+
+- Create `Sprint3_Test_Cases.md`
+- Create `Sprint3_Testing_Matrix.md`
+- Validate end-to-end customer ordering flow via UI navigation testing
+- Update testing matrix as each story is tested
+- Flag and log any critical or high-severity defects
+- Confirm all stories verified before Sprint Review
+
+### Stories to Test
+
+- [ ] US3.1 — Product Browsing (B3.1.2 + F3.1.1)
+- [ ] US3.2 — Shopping Cart (B3.2.2 + F3.2.1)
+- [ ] US3.3 — Order Submission (B3.3.2 + F3.3.1)
+- [ ] US3.4 — Order Confirmation (B3.4.2 + F3.4.1)
+- [ ] US3.5 — Order History (B3.5.2 + F3.5.1)
+- [ ] US3.6 — User Profile Management (B3.6.2 + F3.6.1)
+- [ ] US3.7 — Order Item Customization (B3.7.2 + B3.7.3/4 + F3.7.1 + F3.7.5)
+- [ ] US3.8 — Seed Data
+
+### Acceptance Criteria
+
+- Test cases and testing matrix referenced in card description
+- All stories checked off as testing is completed
+- No critical or high-severity defects remain open before stories move to Done
+- QA execution completed before Sprint Review
+
+> **QA support available:** Caleb Fowlkes, Serina Rodriguez, and Kim Mayo are all available to run tests once Kenny has them written. Kenny to share his queue early so work can be distributed.
