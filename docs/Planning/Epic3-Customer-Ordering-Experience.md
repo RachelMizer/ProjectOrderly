@@ -35,6 +35,9 @@ Create UI for browsing products.
   - availability <!-- New -->
 - "Add to Cart" button
 - Load products from API
+- Display "out of stock"
+- Filter options
+- Categories ist view and product list view
 
 ### Acceptance Criteria
 
@@ -106,7 +109,7 @@ Create UI for managing cart.
 
 ### Tasks
 
-- Cart page
+- Cart page and navigation
 - Quantity controls
 - Remove buttons
 - Cart total
@@ -195,10 +198,19 @@ Create order submission UI.
 
 ### Tasks
 
-- Checkout button
-- Submit order button
+- Buttons:
+    - checkout
+    - submit order
+    - submit payment
+- Can't submit an empty cart
 - Display cart contents
 - Display order total
+- Display final order review
+- Simulated payment fields:
+    - name
+    - address, city, state, zip
+    - phone
+    - payment type
 
 ### Acceptance Criteria
 
@@ -313,8 +325,9 @@ Display past orders.
 
 ### Tasks
 
-- Order list
+- Display order details
 - Click order to view
+- Sort and filter options
 
 ### Acceptance Criteria
 
@@ -361,8 +374,12 @@ Allow profile editing.
 
 ### Tasks
 
-- Profile form
-- Save button
+- Profile information displayed
+- Profile update form
+    - Name
+    - address
+    - phone
+    - email
 
 ### Acceptance Criteria
 
@@ -418,11 +435,11 @@ Create UI that allows customers to select modifier options for a product variant
 
 ### Tasks
 
-- Display modifier groups for selected variant
-- Display modifier options for each group
+- Add modifiers to product page
+- Separate modifiers by group ( toppings, color, size, etc.)
+- Show group options ( pepperoni, ham, white black, etc.)
 - Show price adjustments for options
-- Allow option selection
-- Show updated item price dynamically
+- - Show updated item price dynamically
 - Submit selected options when adding item to cart
 
 ### Acceptance Criteria
