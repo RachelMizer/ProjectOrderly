@@ -11,6 +11,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "state", "zipcode", "phone", "email_verified")
-    search_fields = ("user__username", "user__email", "phone", "zipcode")
-    # no raw_id_fields -> dropdown remains
+    list_display = ("user", "city", "state", "zipcode", "phone")
+    search_fields = ("user__username", "user__email", "city", "state", "zipcode")
+    list_filter = ("state",)

@@ -28,7 +28,12 @@ class UserRole(models.TextChoices):
     CUSTOMER = "CUSTOMER", "Customer"
 
 
-class UserProfile(models.Model):
+class UserRole(models.Model):
+    """
+    Lightweight role attached to every user.
+    (Not a full 'profile' yet.)
+    """
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -58,8 +63,11 @@ class CustomerProfile(models.Model):
         related_name="customer_profile",
     )
 
-    # Fix for tester bug: DB has NOT NULL; ensure model has it with default
     email_verified = models.BooleanField(default=False)
+    street_address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    zipcode = models.CharField(max_length=10, blank=True)
 
     street_address = models.CharField(max_length=255, blank=True, default="")
     city = models.CharField(max_length=120, blank=True, default="")
@@ -105,4 +113,4 @@ class CustomerProfile(models.Model):
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f"CustomerProfile: {self.user.username}"
+        return f"CustomerProfile for {self.user.username}"

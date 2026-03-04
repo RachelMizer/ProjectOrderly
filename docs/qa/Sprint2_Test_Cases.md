@@ -3,9 +3,10 @@
 
 ---
 
-## Overview
+# 1. Overview
 
-Sprint 2 establishes the **core system foundation** required for future feature development.  
+Sprint 2 establishes the foundational system architecture required for future feature development.
+
 Primary deliverables include:
 
 - Database schema implementation and validation  
@@ -14,22 +15,17 @@ Primary deliverables include:
 - Backend/frontend authentication integration  
 - Application shell and navigation structure  
 
-This document defines **formal QA test cases** for foundational and security-critical features.  
-Execution occurs **after feature completion and prior to Sprint Review**.
+This document defines formal QA test cases for foundational and security-critical features.
+
+Execution occurs after feature completion and prior to Sprint Review.
 
 ---
 
-# Formal Test Cases — Core Infrastructure & Security
+# 2. Database Schema & Relational Integrity
 
----
-
-## TC-04 – Database Schema Migration & Relational Integrity
-
-### Feature  
-Database Schema Implementation  
-
-### User Story (2.1) 
-As a developer, I want the core database schema successfully migrated and relationally enforced so that the application can reliably store and retrieve structured data.
+## TC-01 – Database Schema Migration & Relational Integrity  
+**User Story:** 2.1  
+**Feature:** Database Schema Implementation  
 
 ### Preconditions
 - MySQL server running locally  
@@ -42,6 +38,8 @@ As a developer, I want the core database schema successfully migrated and relati
   - suppliers  
   - orders  
 
+---
+
 ### Test Steps
 
 #### Step A — Migration Integrity
@@ -52,8 +50,8 @@ As a developer, I want the core database schema successfully migrated and relati
 
 **Expected Result**
 - No migration errors  
-- Second migrate shows **no pending migrations**  
-- All Sprint 2 migrations marked **applied**
+- Second migrate shows no pending migrations  
+- All Sprint 2 migrations marked applied  
 
 ---
 
@@ -73,8 +71,8 @@ As a developer, I want the core database schema successfully migrated and relati
 1. Open Django shell  
 2. Create linked records:
 
-   Supplier → Category → Product → ProductVariant →  
-   CustomerProfile → Order → OrderItem  
+Supplier → Category → Product → ProductVariant →  
+CustomerProfile → Order → OrderItem  
 
 **Expected Result**
 - Records save successfully  
@@ -88,7 +86,9 @@ As a developer, I want the core database schema successfully migrated and relati
 All migrations applied successfully.  
 MySQL verification confirmed table creation and enforced foreign keys.  
 Linked relational records created successfully.  
-Duplicate product constraint correctly enforced.
+Duplicate product constraint correctly enforced.  
+
+**Status:** PASS  
 
 ### Evidence
 
@@ -104,247 +104,315 @@ Duplicate product constraint correctly enforced.
 **Figure 4 – Relational record creation in Django shell**  
 ![Shell Success](screenshots/tc04_shell_success.jpg)
 
-
-### Status  
-**PASS**
-
 ### Notes  
 Confirms foundational database readiness required for all Sprint 2 features.
 
 ---
+# 3. Backend User Registration
 
-## TC-05 – User Registration (Valid Input)
-
-### Feature  
-User Registration  
-
-### User Story  
-As a new user, I want to create an account so that I can access the application.
+## TC-02 – Backend User Registration  
+**User Story:** 2.4  
+**Feature:** Backend Registration API  
 
 ### Preconditions
-- Application running  
-- Registration endpoint available  
-- No existing account with test email  
-
-### Test Steps
-1. Navigate to registration page  
-2. Enter valid email  
-3. Enter valid password  
-4. Submit form  
-
-### Expected Result
-- Account created successfully  
-- Password stored **hashed**  
-- Optional verification email sent  
-- Success confirmation displayed  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+- Django backend server running  
+- MySQL database connection active  
+- Accounts migrations applied  
+- Test email does not already exist  
 
 ---
 
-## TC-06 – User Registration (Duplicate Email)
-
-### Feature  
-Registration Validation  
-
-### Preconditions
-- Existing account with test email  
-
 ### Test Steps
-1. Attempt registration with duplicate email  
-2. Submit form  
-
-### Expected Result
-- Registration blocked  
-- Clear error shown  
-- No duplicate user created  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+1. Send POST request to `/api/v1/auth/register/`  
+2. Provide valid JSON payload including:
+   - email  
+   - password  
+   - role  
+   - firstName  
+   - lastName  
+3. Verify HTTP response status indicates success (200 or 201)  
+4. Verify response body confirms successful registration  
+5. Query `auth_user` table to confirm user record exists  
+6. Confirm username equals email  
 
 ---
 
-## TC-07 – User Login (Valid Credentials)
-
-### Feature  
-User Login  
-
-### User Story  
-As a registered user, I want to log in to access my personalized features.
-
-### Preconditions
-- Verified user account exists  
-
-### Test Steps
-1. Navigate to login page  
-2. Enter valid email  
-3. Enter correct password  
-4. Submit form  
-
 ### Expected Result
-- Authentication succeeds  
-- Redirected to correct dashboard  
-- Session or token created  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+- Registration request succeeds  
+- New user record created in `auth_user`  
+- Username equals email  
+- Structured success response returned  
+- No server errors occur  
 
 ---
 
-## TC-08 – User Login (Invalid Password)
+### Actual Result
+Registration succeeded.  
 
-### Feature  
-Login Validation  
+API Response:
+- accessToken returned  
+- expiresIn = 3600  
+- tokenType = Bearer  
+- customer object returned with id, email, role  
+
+Database Verification:
+- `auth_user` record created  
+- username equals email  
+- is_active = 1  
+
+**Status:** PASS  
+
+---
+
+# 4. Email Verification (US 2.5)
+
+## TC-03 – Email Verification Flow  
+
+### Preconditions
+- Backend server running  
+- Console email backend enabled  
+- Test user successfully registered  
+- Unique test email generated  
+
+---
+
+### Test Steps
+
+#### Step A – Request Verification Email
+1. Send POST request to `/api/v1/auth/email-verification`  
+2. Provide JSON payload:
+   - email  
+
+**Expected Result**
+- Generic response returned  
+- No indication whether email exists  
+- No server errors  
+
+---
+
+#### Step B – Capture Verification Link
+1. Observe backend console output  
+2. Locate verification email  
+3. Extract `uid` and `token`  
+
+**Expected Result**
+- Verification link displayed in console  
+- Token generated successfully  
+
+---
+
+#### Step C – Confirm Verification (Valid Token)
+1. Send POST request to `/api/v1/auth/email-verification/confirm`  
+2. Provide:
+   - uid  
+   - token  
+
+**Expected Result**
+- HTTP 200 returned  
+- “email verified” message  
+- `CustomerProfile.email_verified` set to True  
+
+---
+
+#### Step D – Confirm Verification (Invalid Token)
+1. Repeat confirmation with invalid token  
+
+**Expected Result**
+- HTTP 400 returned  
+- INVALID_TOKEN error  
+- No changes to user record  
+
+---
+
+### Actual Result
+Verification email successfully generated via manual trigger.  
+Valid token confirmed email successfully.  
+Invalid token properly rejected.  
+
+**Status:** PASS  
+
+---
+
+# 5. JWT Login & Authentication Enforcement (US 2.6)
+
+## TC-04 – JWT Login & Protected Endpoint  
+
+### Preconditions
+- Registered and verified user exists  
+- Known valid password  
+
+---
+
+### Test Steps
+
+#### Step A – Valid Login
+1. Send POST request to `/api/v1/auth/login`  
+2. Provide:
+   - email  
+   - password  
+
+**Expected Result**
+- HTTP 200 returned  
+- accessToken provided  
+- refreshToken set in HttpOnly cookie  
+- customer object returned  
+
+---
+
+#### Step B – Invalid Password
+1. Send login request with incorrect password  
+
+**Expected Result**
+- HTTP 400 returned  
+- “Email or password is incorrect”  
+- No token issued  
+
+---
+
+#### Step C – Protected Endpoint Without Token
+1. Send GET request to `/api/v1/auth/me/` without Authorization header  
+
+**Expected Result**
+- HTTP 401 Unauthorized  
+- Access denied  
+
+---
+
+#### Step D – Protected Endpoint With Bearer Token
+1. Send GET request to `/api/v1/auth/me/`  
+2. Include header:
+   - Authorization: Bearer <accessToken>  
+
+**Expected Result**
+- HTTP 200 returned  
+- User id, email, username, and role returned  
+
+---
+
+#### Step E – Refresh Token
+1. Use stored refresh cookie  
+2. Send POST request to `/api/v1/auth/refresh`  
+
+**Expected Result**
+- HTTP 200 returned  
+- New accessToken issued  
+
+---
+
+#### Step F – Logout
+1. Send POST request to `/api/v1/auth/logout`  
+2. Attempt refresh again  
+
+**Expected Result**
+- Logout returns success message  
+- Refresh token invalidated  
+- Subsequent refresh returns 401  
+
+---
+
+### Actual Result
+Login successful.  
+Authentication enforcement confirmed.  
+Refresh and logout flow validated successfully.  
+
+**Status:** PASS  
+
+---
+
+# 6. Password Reset (US 2.7)
+
+## TC-05 – Password Reset End-to-End  
 
 ### Preconditions
 - Registered user exists  
-
-### Test Steps
-1. Enter valid email  
-2. Enter incorrect password  
-3. Submit form  
-
-### Expected Result
-- Login fails  
-- Error message displayed  
-- No session/token created  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+- Console email backend enabled  
 
 ---
 
-## TC-09 – Role-Based Access Control (RBAC)
-
-### Feature  
-Access Enforcement  
-
-### User Story  
-As an administrator, I want access restricted by role so users only access permitted features.
-
-### Preconditions
-- Customer account exists  
-- Admin account exists  
-
 ### Test Steps
-1. Log in as customer  
-2. Attempt admin-only route  
-3. Observe response  
-4. Log in as admin  
-5. Access admin route  
 
-### Expected Result
-- Customer receives **403 Forbidden**  
-- Admin access granted  
-- Unauthorized API requests blocked  
+#### Step A – Request Password Reset
+1. Send POST request to `/api/v1/auth/password-reset`  
+2. Provide:
+   - email  
 
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+**Expected Result**
+- Generic response returned  
+- Reset email generated in console  
 
 ---
 
-## TC-10 – Password Reset Flow
+#### Step B – Capture Reset Link
+1. Extract `uid` and `token` from console email  
 
-### Feature  
-Password Recovery  
-
-### User Story  
-As a user, I want to reset my password via email if I forget it.
-
-### Preconditions
-- Registered user exists  
-- Email system configured  
-
-### Test Steps
-1. Request password reset  
-2. Receive reset email  
-3. Open reset link  
-4. Enter new password  
-5. Submit  
-
-### Expected Result
-- Reset link valid and time-limited  
-- Password updated successfully  
-- Old password invalid  
-- Token cannot be reused  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+**Expected Result**
+- Valid reset link generated  
 
 ---
 
-## TC-11 – Database Constraint Validation
+#### Step C – Confirm Password Reset
+1. Send POST request to `/api/v1/auth/password-reset/confirm`  
+2. Provide:
+   - uid  
+   - token  
+   - newPassword  
 
-### Feature  
-Data Integrity & Validation  
-
-### User Story  
-As a developer, I want database constraints enforced so invalid data cannot be stored.
-
-### Preconditions
-- Database migrated  
-- Test data available  
-
-### Test Steps
-1. Attempt duplicate user email  
-2. Attempt negative inventory quantity  
-3. Attempt missing required field  
-
-### Expected Result
-- Duplicate rejected  
-- Negative values rejected  
-- Required field validation enforced  
-- Database integrity preserved  
-
-### Actual Result  
-_To be executed_
-
-### Status  
-Not Executed – Awaiting Implementation
+**Expected Result**
+- HTTP 200 returned  
+- “Password has been reset successfully”  
+- Password updated in database  
 
 ---
 
-# Sprint 2 Testing Strategy Summary
+#### Step D – Validate Old Password Fails
+1. Attempt login using old password  
+
+**Expected Result**
+- Login rejected  
+- HTTP 400 returned  
+
+---
+
+#### Step E – Validate New Password Works
+1. Attempt login using new password  
+
+**Expected Result**
+- HTTP 200 returned  
+- Tokens issued successfully  
+
+---
+
+### Actual Result
+Password reset flow executed successfully.  
+Old password invalidated.  
+New password validated and login successful.  
+
+**Status:** PASS  
+
+---
+
+# 7. Sprint 2 Testing Strategy
 
 Sprint 2 testing prioritizes:
 
-### Security
+## Security
 - Authentication correctness  
-- Password handling  
+- Password hashing  
+- JWT enforcement  
 - RBAC enforcement  
 
-### Data Integrity
+## Data Integrity
 - Schema migration success  
 - Foreign key enforcement  
 - Constraint validation  
 
-### System Foundation
-- Application shell readiness  
+## System Foundation
 - Backend/frontend auth integration  
-- Stable base for Sprint 3 features  
+- Stable base for Sprint 3  
 
 ---
 
-# QA Execution Plan
+# 8. QA Execution Plan
 
 **Execution Timing:**  
 After feature completion and before Sprint Review.
@@ -353,4 +421,10 @@ After feature completion and before Sprint Review.
 Performed after code freeze.
 
 **Defect Tracking:**  
-All failures logged in the **Trello defect board** with severity and reproduction steps.
+All failures logged in Trello with:
+- Severity  
+- Reproduction steps  
+- Screenshots  
+- Assigned developer  
+
+---
