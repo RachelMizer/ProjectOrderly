@@ -507,7 +507,7 @@ Implement:
     - Required groups satisfied
     - Min selections satisfied
     - Max selections not exceeded
- 
+
 - Create:
     - OrderItem
     - OrderItemModifier records
@@ -620,7 +620,7 @@ Return modifiers with each item:
 
 ### Product Owner Decision <!-- Changed -->
 
-Although I think this may be out of scope for this sprint, I have added backlog items for it so we can see what it would require.
+Although I think this may be out of scope for this sprint, I have added backlog items for it so we can see what it would require. "Capacity Permitting"
 
 # Seed Data & Content
 
@@ -673,14 +673,19 @@ Prepare all visual and scripted materials for the Sprint 3 Review.
 
 **Deliverable 1 — Demo Script**
 
+Demo Order List: A step-by-step run of show for the Sprint Review in a markdown file.
+
 - Draft step-by-step run of show (name, what they show, order they go in)
 - Share with Serina by Friday 3/14 for review
+- Share with Team by Saturday 3/14 for review.
 
 **Deliverable 2 — Screenshots**
 
+Screenshot Collection: watch Trello cards. When a card arrives in `🎉 Done`, request screenshots for that card from card owner and save into their folder.
+
 - Collect screenshots from each team member
 - Instruct team members to name and label their own screenshots
-- Organize into labeled folders — one per person
+- Organize into labeled folders — one per person >> `/docs/s3-agile/s3-review/teamMembersName`
 - Upload to repository with clear filenames
 
 **Deliverable 3 — Visual Summary Document**
