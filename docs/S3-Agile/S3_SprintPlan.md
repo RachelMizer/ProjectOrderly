@@ -24,7 +24,7 @@ Everything in this sprint flows through one pipeline:
 		**🍏 products → 🛒 cart → 🛍️ checkout** 
 The sprint is organized into three waves based on what blocks what.
 
-| Wave   | Focus                                          | Hard Deadline                                  |
+| 🌊Wave  | Focus                                          | Hard Deadline                                  |
 | ------ | ---------------------------------------------- | ---------------------------------------------- |
 | Wave 1 | Product API, Modifier API, Seed Data           | Saturday 3/7                                   |
 | Wave 2 | Product page, cart, customization UI + backend | Wednesday 3/11                                 |
@@ -35,152 +35,368 @@ The sprint is organized into three waves based on what blocks what.
 
 ------
 
-## User Stories & Assignments
+## Sprint #3 Backlog
 
-### US3.1 — Product Browsing Interface
+### 🌊 Wave 1 — Foundation
 
-*As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order.*
+> Goal by Thursday 3/5 — hard deadline Saturday 3/7
 
-| Task                           | Owner      | Wave |
-| ------------------------------ | ---------- | ---- |
-| B3.1.2 — Product Browsing API  | Tristin G. | 1    |
-| F3.1.1 — Product Browsing Page | Rachel M.  | 2    |
+#### B3.1.2 — Product Browsing API
 
-**Backend delivers:** 
-`GET /api/v1/products` — returns products with variants (variantId, variantName, unitPrice, availability). Availability: `stock_quantity IS NULL` or `> 0` = available. 
+**Owner:** Tristin G.
+**US3.1:** As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order. (1/2)
 
-**Frontend delivers:** 
-Product list with name, variant name, price, availability, and "Add to Cart" per variant.
+**Delivers:** 
+`GET /api/v1/products` — returns products with variants (variantId, variantName, unitPrice, availability). 
 
-------
-
-### US3.2 — Shopping Cart System
-
-*As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically so I can prepare my order without losing my selections.*
-
-| Task                        | Owner      | Wave |
-| --------------------------- | ---------- | ---- |
-| B3.2.2 — Draft Order API    | Tristin G. | 2    |
-| F3.2.1 — Shopping Cart Page | Rachel M.  | 2    |
-
-**Backend delivers:** 
-DRAFT order as cart. One active DRAFT per customer. Endpoints: `GET /api/v1/orders?status=DRAFT`, `POST /api/v1/orders/{orderId}/items`, `PATCH /api/v1/orders/{orderId}/items/{itemId}`, `DELETE /api/v1/orders/{orderId}/items/{itemId}`. Returns full order with items, modifiers, and totals. Adding/updating items does not affect inventory. 
-
-**Frontend delivers:** Cart page with quantity controls, remove buttons, running total, persistent across refresh.
+Availability rule: `stock_quantity IS NULL` or `> 0` = available; otherwise unavailable.
 
 ------
 
-### US3.3 — Order Submission
+#### B3.7.2 — Modifier Retrieval API
 
-*As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed.*
+**Owner:** Tristin G.
+**US3.7:** As a customer, I want to customize items (extras or options) so that my order matches my preferences. (1/5)
 
-| Task                        | Owner      | Wave |
-| --------------------------- | ---------- | ---- |
-| B3.3.2 — Finalize Order API | Tristin G. | 3    |
-| F3.3.1 — Checkout Page      | Rachel M.  | 3    |
+**Delivers:** 
+`GET /api/v1/variants/{variantId}/modifiers` — returns modifier groups with options, required flag, and min/max selections. 
 
-**Backend delivers:** 
-`POST /api/v1/orders/{orderId}/finalize` — validates order has items, validates availability, runs payment simulation (required fields present = pass), locks pricing, transitions DRAFT → PENDING. Failed finalize leaves order in DRAFT. 
+Returns empty list if variant has no modifiers.
 
-**Frontend delivers:** Checkout page showing cart contents and total, submit button, cart clears on success.
+> Depends on B3.1.2 — variants must exist first.
 
 ------
 
-### US3.4 — Order Confirmation with Receipt
+#### US3.8 — Extend Seed Data — Products, Variants & Modifiers
 
-*As a customer, I want to see a confirmation screen with my receipt after placing an order so that I have immediate proof of my purchase.*
+**Owner:** Caleb F. *(Kim M. on backup)*
+**US3.8:** As a developer, I want extended seed data so the team can develop and test Sprint 3 features against realistic content.
 
-| Task                             | Owner      | Wave |
-| -------------------------------- | ---------- | ---- |
-| B3.4.2 — Order Status API        | Tristin G. | 3    |
-| F3.4.1 — Order Confirmation Page | Rachel M.  | 3    |
+**Delivers:** 
 
-**Backend delivers:** 
-`GET /api/v1/orders/{id}` — returns status, items, total, date. Users can only access their own orders. 
+- Extend Rachel's existing Happydesk dataset to include products, variants, and modifiers. 
 
-**Frontend delivers:** 
-Confirmation page showing order number, items, total, date, and status.
+- Seed scripts load without errors and are reproducible locally by all team members.
+
+> Wave 1 dependency — must be ready alongside B3.1.2 so Kenny can begin testing as soon as endpoints are live.
+
+
 
 ------
 
-### US3.5 — Order History
+---
 
-*As a customer, I want to view my previous orders so that I can reorder my favorites quickly.*
+###  🌊 Wave 2 — Core Ordering Flow
 
-| Task                        | Owner      | Wave     |
-| --------------------------- | ---------- | -------- |
-| B3.5.2 — Order History API  | Tristin G. | Flexible |
-| F3.5.1 — Order History Page | Rachel M.  | Flexible |
+> Goal by Monday 3/9 — hard deadline Tuesday 3/10 Frontend and backend can move in parallel once Wave 1 is testable.
 
-**Backend delivers:** 
-`GET /api/v1/orders/history` — logged-in user's orders only, sorted newest first, DRAFT orders excluded. 
+#### F3.1.1 — Product Browsing Page
 
-**Frontend delivers:** 
-Order list; click to view detail.
+**Owner:** Rachel M.
+**US3.1:** As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order. (2/2)
+
+**Delivers:** 
+Product list displaying name, variant name, price, and availability with an "Add to Cart" button per variant. 
+
+Wired to `GET /api/v1/products`.
+
+> Depends on B3.1.2 (Wave 1).
+
+------
+
+#### B3.2.2 — Draft Order API
+
+**Owner:** Tristin G.
+**US3.2:** As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically so I can prepare my order without losing my selections. (1/2)
+
+**Delivers:** 
+
+- DRAFT order as cart. One active DRAFT per customer. 
+- Endpoints: 
+  - `GET /api/v1/orders?status=DRAFT` 
+  - `POST /api/v1/orders/{orderId}/items`
+  - `PATCH /api/v1/orders/{orderId}/items/{itemId}`
+  - `DELETE /api/v1/orders/{orderId}/items/{itemId}` 
+
+Returns full order with items, modifiers, and totals. Adding or updating items does not affect inventory.
+
+------
+
+#### B3.7.3/4 — Add/Update Item with Modifiers API
+
+**Owner:** Tristin G.
+**US3.7:** As a customer, I want to customize items (extras or options) so that my order matches my preferences. (2/5)
+
+**Delivers:** 
+`POST /api/v1/orders/{orderId}/items` — supports modifier selections, validates required groups and min/max, creates OrderItemModifier records, recalculates totals. 
+
+B3.7.3 and B3.7.4 rolled into one card per Tristin's notes.
+
+> Depends on B3.2.2 — draft order must exist before items can be added. **Stretch goal:** The update-modifiers path on existing cart items can be deprioritized if time is tight — it does not break the core customer flow.
+
+------
+
+#### F3.7.1 — Item Customization Page
+
+**Owner:** Rachel M.
+**US3.7:** As a customer, I want to customize items (extras or options) so that my order matches my preferences. (3/5)
+
+**Delivers:** 
+
+- Customization page shown before add-to-cart: 
+  - displays modifier groups and options, live price updates as options are selected, enforces required groups and min/max selections. 
+  - Selected options are sent to the backend on add.
+
+> Depends on B3.7.2 and B3.7.3/4.
+
+------
+
+#### F3.2.1 — Shopping Cart Page
+
+**Owner:** Rachel M.
+**US3.2:** As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically so I can prepare my order without losing my selections. (2/2)
+
+**Delivers:** 
+Cart page with quantity controls, remove buttons, and running total. 
+Persistent across page refresh.
+
+> Depends on B3.2.2.
+
+------
+
+#### F3.7.5 — Cart Display of Customizations
+
+**Owner:** Rachel M.
+**US3.7:** As a customer, I want to customize items (extras or options) so that my order matches my preferences. (4/5)
+
+**Delivers:** 
+Modifier selections displayed under each cart item with correct pricing reflected in the item total.
+
+> Depends on F3.2.1.
+
+
+
+------
+
+---
+
+### 🌊 Wave 3 — Checkout & Confirmation
+
+> Goal by Wednesday 3/11 — code freeze Saturday 3/14
+
+#### B3.3.2 — Finalize Order API
+
+**Owner:** Tristin G.
+**US3.3:** As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed. (1/2)
+
+**Delivers:** 
+`POST /api/v1/orders/{orderId}/finalize` — validates order has at least one item, validates availability, runs payment simulation (required fields present = pass), locks pricing, transitions DRAFT → PENDING.
+
+Failed finalize leaves order in DRAFT.
+
+> Depends on B3.2.2.
+
+------
+
+#### F3.3.1 — Checkout Page
+
+**Owner:** Rachel M.
+**US3.3:** As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed. (2/2)
+
+**Delivers:** 
+Checkout page showing cart contents and order total, submit button. 
+Cart clears on successful submission.
+
+> Depends on B3.3.2.
+
+------
+
+#### B3.4.2 — Order Status API
+
+**Owner:** Tristin G.
+**US3.4:** As a customer, I want to see a confirmation screen with my receipt after placing an order so that I have immediate proof of my purchase. (1/2)
+
+**Delivers:**
+`GET /api/v1/orders/{id}` — returns status, items, total, and date. 
+Users can only access their own orders.
+
+> Depends on B3.3.2 — finalized orders must exist.
+
+------
+
+#### F3.4.1 — Order Confirmation Page
+
+**Owner:** Rachel M.
+**US3.4:** As a customer, I want to see a confirmation screen with my receipt after placing an order so that I have immediate proof of my purchase. (2/2)
+
+**Delivers:** 
+Confirmation page displaying order number, items, total, date, and status.
+
+> Depends on B3.4.2.
+
+
+
+---
+
+---
+
+
+
+### 🔄 Flexible — Slot In Anytime
+
+#### B3.5.2 — Order History API
+
+**Owner:** Tristin G.
+**US3.5:** As a customer, I want to view my previous orders so that I can reorder my favorites quickly. (1/2)
+
+**Delivers:** 
+`GET /api/v1/orders/history` — returns logged-in user's orders only, sorted newest first, DRAFT orders excluded.
 
 > Not blocking anything else — slot in late Wave 2 or Wave 3 as capacity allows.
 
 ------
 
-### US3.6 — User Profile Management
+#### F3.5.1 — Order History Page
 
-*As a customer, I want to update my profile information so that my contact details stay current.*
+**Owner:** Rachel M.
+**US3.5:** As a customer, I want to view my previous orders so that I can reorder my favorites quickly. (2/2)
 
-| Task                  | Owner  | Wave     |
-| --------------------- | ------ | -------- |
-| B3.6.2 — Profile API  | Kim M. | Flexible |
-| F3.6.1 — Profile Page | Kim M. | Flexible |
+**Delivers:** 
+Order list page. 
+Customer can click an order to view its detail.
 
-**Backend delivers:**
- `GET /profile`, `PUT /profile` — authenticated users can update name, address, email, phone. 
-
-**Frontend delivers:** 
-Profile form with save button.
-
-> Fully independent of the ordering pipeline. Kim owns this end-to-end and can work it at any point without blocking or being blocked.
+> Depends on B3.5.2.
 
 ------
 
-### US3.7 — Order Item Customization
+#### B3.6.2 — Profile Management API
 
-*As a customer, I want to customize items (extras or options) so that my order matches my preferences.*
+**Owner:** Kim M.
+**US3.6:** As a customer, I want to update my profile information so that my contact details stay current. (1/2)
 
-| Task                                          | Owner      | Wave |
-| --------------------------------------------- | ---------- | ---- |
-| B3.7.2 — Modifier Retrieval API               | Tristin G. | 1    |
-| B3.7.3/4 — Add/Update Item with Modifiers API | Tristin G. | 2    |
-| F3.7.1 — Item Customization Page              | Rachel M.  | 2    |
-| F3.7.5 — Cart Display of Customizations       | Rachel M.  | 2    |
+**Delivers:** 
+`GET /profile`, `PUT /profile` — authenticated users can update name, address, email, and phone.
 
-**Backend delivers:** 
-`GET /api/v1/variants/{variantId}/modifiers` — returns modifier groups with options, required flag, min/max. `POST /api/v1/orders/{orderId}/items` — supports modifier selections, validates required groups and min/max, creates OrderItemModifier records, recalculates totals. B3.7.3 and B3.7.4 rolled into one card per Tristin's notes. 
-
-**Frontend delivers:** 
-Customization page before add-to-cart showing modifier groups, live price updates, required group enforcement. Cart displays modifier selections under each item.
-
-> **Stretch goal:** The update-modifiers path on existing cart items can be deprioritized if time is tight — it does not break the core customer flow.
+> Fully independent of the ordering pipeline. Kim can work this at any point without blocking or being blocked.
 
 ------
 
-### Seed Data
+#### F3.6.1 — Profile Page
 
-*As a developer, I want extended seed data so the team can develop and test Sprint 3 features against realistic content.*
+**Owner:** Kim M.
+**US3.6:** As a customer, I want to update my profile information so that my contact details stay current. (2/2)
 
-| Task                                             | Owner                         | Wave |
-| ------------------------------------------------ | ----------------------------- | ---- |
-| Extend seed data — products, variants, modifiers | Caleb F. *(Kim M. on backup)* | 1    |
+**Delivers:** 
+Profile form with a save button. Updates submit successfully.
 
-Extend Rachel's existing Happydesk dataset to include variants and modifiers. Wave 1 dependency — must be ready alongside B3.1.2 so Kenny can begin testing as soon as endpoints are live.
+> Depends on B3.6.2.
+
+
+
+---
+
+---
+
+### 📋 Process & Documentation
+
+#### US3.10 — Sprint 3 QA Execution
+
+**Owner:** Kenny B.
+**US3.10:** As a QA Lead, I want to track my testing progress across all Sprint 3 user stories so that I can ensure every feature is tested and verified before the Sprint Review.
+
+**Deliverables:**
+
+- `Sprint3_Test_Cases.md`
+- `Sprint3_Testing_Matrix.md`
+- UI Navigation Validation — end-to-end customer ordering flow
+
+**Stories to test:**
+
+- [ ] US3.1 — Product Browsing (B3.1.2 + F3.1.1)
+- [ ] US3.2 — Shopping Cart (B3.2.2 + F3.2.1)
+- [ ] US3.3 — Order Submission (B3.3.2 + F3.3.1)
+- [ ] US3.4 — Order Confirmation (B3.4.2 + F3.4.1)
+- [ ] US3.5 — Order History (B3.5.2 + F3.5.1)
+- [ ] US3.6 — User Profile Management (B3.6.2 + F3.6.1)
+- [ ] US3.7 — Order Item Customization (B3.7.2 + B3.7.3/4 + F3.7.1 + F3.7.5)
+- [ ] US3.8 — Seed Data
+
+**QA Admin:**
+
+- [ ] Link `Sprint3_Test_Cases.md` to card description
+- [ ] Link `Sprint3_Testing_Matrix.md` to card description
+- [ ] Update testing matrix as each story is tested
+- [ ] Flag and log any critical or high-severity defects
+- [ ] Confirm all stories verified before Sprint Review
+
+**Acceptance Criteria:**
+
+- Test cases and testing matrix are referenced in the card description
+- All stories checked off as testing is completed
+- No critical or high-severity defects remain open before stories move to Done
+- QA execution completed before Sprint Review
+
+> **QA support available:** Kim Mayo, Caleb Fowlkes, and Serina Rodriguez all have SQA backgrounds and are available to run tests once Kenny has them written. Kenny to share his queue early so work can be distributed.
 
 ------
 
-### Sprint 3 Demo Materials
+#### US3.9 — Sprint 3 Demo Materials
 
-| Task                            | Owner    |
-| ------------------------------- | -------- |
-| Prepare Sprint 3 demo materials | Tyler R. |
+**Owner:** Tyler R.
+**US3.9:** As the Presentation Lead, I need to prepare a demo script and a structured visual summary for the Sprint 3 Review so that stakeholders can follow along clearly and the team has a professional, organized run of show.
+
+**Deliverable 1 — Demo Script**
+
+A step-by-step run of show for the Sprint Review. For each team member, write:
+
+- Their name
+- What they will show
+- What order they go in
+
+Share with Serina by Friday 3/14 for review.
 
 ------
+
+**Deliverable 2 — Screenshots**
+
+- Collect screenshots from each team member. Instruct them to properly name and label their own screenshots.
+- Organize into labeled folders — one folder per person. 
+- Upload to the repository with clear filenames.
+
+------
+
+**Deliverable 3 — Visual Summary Document**
+
+A structured document presenting what the team built this sprint. Build it section by section, one section per team member:
+
+1. **Header** — Team member's name and role
+2. **Description** — 1–2 sentences about what they worked on this sprint
+3. **Stories completed** — List each user story by ID and name *(example: US3.5 — Shopping Cart System)*
+4. **Screenshots** — Place supporting screenshots directly under the story they belong to
+
+**Example of one completed section:**
+
+> **Rachel Mizer — Frontend Development Lead** Rachel built the customer-facing ordering interface this sprint, including the product browsing page, shopping cart, and item customization flow.
+>
+> *US3.4 — Product Browsing Page* [screenshot]
+>
+> *US3.5 — Shopping Cart System* [screenshot]
+
+Repeat this format for every team member.
+
+**Acceptance Criteria:**
+
+- [ ] Visual summary follows the section structure above for every team member
+- [ ] Demo script shared with Serina by Friday 3/14
+- [ ] Screenshots uploaded and organized by team member before Sprint Review
+- [ ] Visual summary committed to the repository before Sprint Review
+- [ ] All materials ready by Saturday 3/14
+
+------
+
+## 
+
+
 
 ## Sprint Timeline
 
@@ -188,16 +404,19 @@ Extend Rachel's existing Happydesk dataset to include variants and modifiers. Wa
 | ------------------- | ------------------------------------- |
 | Mon 3/3             | Sprint Planning ✅                     |
 | Wed 3/4 – Thu 3/5   | Wave 1 target                         |
+| Thu 3/5             | Sprint Health Check (7:00 – 8:00 PM)  |
 | Sat 3/7             | Wave 1 hard deadline                  |
 | Fri 3/6 – Mon 3/9   | Wave 2 target                         |
 | Mon 3/9             | Week 1 Status Update due (11:59 AM)   |
+| Mon 3/9             | Sprint Health Check (7:00 – 8:00 PM)  |
 | Tue 3/10            | Wave 2 hard deadline                  |
 | Tue 3/10 – Wed 3/11 | Wave 3 target                         |
-| Thu 3/12            | Sprint Health Check (7:00 – 8:00 PM)  |
+| Thu 3/12            | Sprint Health Check (7:00 – 7:30 PM)  |
+| Thu 3/12            | Sprint Retrospective (7:30 – 8:00 PM) |
 | Sat 3/14            | Code Freeze                           |
 | Sat 3/14 – Sun 3/15 | Final QA pass                         |
 | Sun 3/15            | Sprint Review (2:00 – 3:00 PM)        |
-| Sun 3/15            | Sprint Retrospective (3:00 – 3:30 PM) |
+|                     |                                       |
 
 ------
 
@@ -205,9 +424,9 @@ Extend Rachel's existing Happydesk dataset to include variants and modifiers. Wa
 
 Kenny leads testing this sprint. The following team members have SQA backgrounds and are available to run tests once Kenny has them written:
 
-- **Kim Mayo**
 - **Caleb Fowlkes**
 - **Serina Rodriguez**
+- **Kim Mayo** -- *does not have specific SQA experience but is willing to support!*
 
 > Kenny to share his test queue early so work can be distributed.
 
@@ -215,7 +434,7 @@ Kenny leads testing this sprint. The following team members have SQA backgrounds
 
 ## Definition of Done
 
-A story is done when:
+A task is done when:
 
 - [ ] Code reviewed and merged to main per branching strategy
 - [ ] All acceptance criteria met
@@ -235,4 +454,4 @@ A story is done when:
 
 ------
 
-*Last updated: March 4, 2026 — initial draft*
+*Last updated: March 4, 2026 — reorganized by task within wave structure; original user story numbers preserved; US3.8 (seed data), US3.9 (demo materials), US3.10 (QA execution) added; US3.7 tasks distributed across waves per dependency order*
