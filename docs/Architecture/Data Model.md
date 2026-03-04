@@ -169,11 +169,13 @@ Organizes products for browsing, filtering, reporting
 
 + CategoryName
   
++ CategoryImage
+  
   #### Table View
   
-  | CategoryID | CategoryName |
-  | ---------- | ------------ |
-  | 10         | Food         |
+  | CategoryID | CategoryName | CategoryImage |
+  | ---------- | ------------ | ------------- |
+  | 10         | Food         | media/category/food.png |
 
 ---
 
@@ -194,12 +196,14 @@ Represents an abstract item or service offered by the client business
 + HasVariants - Indicates whether multiple SKUs exist under this product. Even if 'No', the product will have one default product variant
 
 + HasModifiers - indicates if customization is available
+
++ ProductImage 
   
   #### Table View
   
-  | ProductID | SupplierID | ProductName | CategoryID | HasVariants | HasModifiers |
-  | --------- | ---------- | ----------- | ---------- | ----------- | ------------ |
-  | 100       | 900        | Pizza       | 10         | Yes         | Yes          |
+  | ProductID | SupplierID | ProductName | CategoryID | HasVariants | HasModifiers | ProductImage |
+  | --------- | ---------- | ----------- | ---------- | ----------- | ------------ | ------------ |
+  | 100       | 900        | Pizza       | 10         | Yes         | Yes          | media/product/pizza.png |
 
 ---
 
@@ -222,13 +226,15 @@ Used for products that are sold as discrete units. individual SKUs
 + StockQuantity
 
 + ReorderLevel
+
++ VariantImage 
   
   #### Table View
   
-  | VariantID | ProductID | VariantName      | SKU        | UnitPrice | StockQuantity | ReorderLevel |
-  | --------- | --------- | ---------------- | ---------- | --------- | ------------- | ------------ |
-  | 2001      | 100       | Large Pizza      | PIZ-LRG-01 | 12.50     | NULL          | NULL         |
-  | 2002      | 101       | T-Shirt (Red, L) | TSH-RED-L  | 19.99     | 15            | 5            |
+  | VariantID | ProductID | VariantName      | SKU        | UnitPrice | StockQuantity | ReorderLevel | VariantImage |
+  | --------- | --------- | ---------------- | ---------- | --------- | ------------- | ------------ | ------------ |
+  | 2001      | 100       | Large Pizza      | PIZ-LRG-01 | 12.50     | NULL          | NULL         | media/product/pizza.png |
+  | 2002      | 101       | T-Shirt (Red, L) | TSH-RED-L  | 19.99     | 15            | 5            | media/variant/red_shirt.png |
 
 ---
 
@@ -295,12 +301,14 @@ Defines an individual selectable customization
 + OptionName
 
 + PriceAdjustment
+
++ ModifierOptionImage
   
   #### Table View
   
-  | ModifierOptionID | ModifierGroupID | OptionName | PriceAdjustment |
-  | ---------------- | --------------- | ---------- | --------------- |
-  | 3001             | 4001            | Pepperoni  | 1.50            |
+  | ModifierOptionID | ModifierGroupID | OptionName | PriceAdjustment | ModifierOptionImage |
+  | ---------------- | --------------- | ---------- | --------------- | ------------------- |
+  | 3001             | 4001            | Pepperoni  | 1.50            | media/modifiers/pepperoni.png |
 
 ---
 

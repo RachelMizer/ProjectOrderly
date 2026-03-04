@@ -384,7 +384,7 @@ body
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Customer  
 **URL Parameters:** None  
-**Request Parameters:** firstName, lastName, streetAddress, city, state, zipcode, and/or phone  
+**Request Parameters:** firstName, lastName, email, streetAddress, city, state, zipcode, and/or phone  
 ### Request  
 **Header:**  
 ```
@@ -401,10 +401,13 @@ Content-Type: application/json
 }
 ```
 **Rules:**  
++ Only submitted fields will be updated
 + All fields are strings
 + 10-15 digit phone number with optional '+ country code"
 + Zipcode must be 5 digits or 5 digits dash 4 digits
 + State must be 2 uppercase code
++ Changing email requires email_verified=true
++ if changing email, email_verified is set to false and a new verification is sent.
 
 **Success Response (200 OK):**  
 ```
@@ -463,7 +466,8 @@ Authorization: Bearer <accessToken>
 body
 
 {
-    "count": 3,
+    "count": 100,
+    "pageSize": 25,
     "next": "/api/v1/users?page=2",
     "previous": null,
     "results": [
@@ -910,6 +914,65 @@ Authorization: Bearer <accessToken>
 }
 ```
 
+## Get my order history
+**Endpoint:** `<GET> /api/v1/orders/me`, `<GET> /api/v1/orders/me?page=1&pageSize=10` 
+**Description:** Returns all order objects owned by user  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Customer  
+**URL Parameters:**  
++ page (defaults to 1)
++ pageSize (defaults to 25)
+**Request Parameters:** None
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**  
++ Returns all customer orders EXCEPT draft order  
++ If the customer has no orders, returns an empty collection 
++ Returns orders in createdAt descending order 
+**Success Response (200 OK):**  
+```
+{
+    "count": 100, 
+    "pageSize": 10,
+    "next": "/api/v1/orders/me?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 28,
+            "date": "2026-06-21T14:30:00Z",
+            "subtotal": 10.00,
+            "taxAmount": 0.07,
+            "totalDue": 10.07,
+            "status": "PENDING",
+            "createdAt": "2026-06-20T14:30:00Z",
+            "updatedAt": "2026-06-21T14:30:00Z",
+        },
+        {
+            "id": 15,
+            "date": "2026-04-18T14:30:00Z",
+            "subtotal": 10.00,
+            "taxAmount": 0.07,
+            "totalDue": 10.07,
+            "status": "COMPLETED",
+            "createdAt": "2026-04-18T14:30:00Z",
+            "updatedAt": "2026-04-18T14:30:00Z",
+        },
+        ...
+    ]
+}
+```
+**Unauthorized (401):**  
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "bad token"
+}
+```
+
 ## List Orders  
 **Endpoint:** `<GET> /api/v1/orders`, `<GET> /api/v1/orders?page=2&pageSize=20`, `<GET> /api/v1/orders?dateCreated=YYYY-MM-DD`, `<GET> /api/v1/orders?status=pending`  
 **Description:** Returns a list of orders  
@@ -938,7 +1001,8 @@ Authorization: Bearer <accessToken>
 **Success Response (200 OK):**  
 ```
 {
-    "count": 3,
+    "count": 100, 
+    "pageSize": 25,
     "next": "/api/v1/orders?page=2",
     "previous": null,
     "results": [
