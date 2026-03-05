@@ -794,6 +794,7 @@ Content-Type: application/json
   
 **Success Response (201 Created):**  
 ```
+body
 {
     "message": "order updated",
     "orderId": 1,
@@ -898,7 +899,7 @@ Authorization: Bearer <accessToken>
 
 **Success Response (200 OK):**  
 {
-    "status": "PENDING",
+    "status": "PENDING"
 }
 
 **Forbidden (403):**  
@@ -952,7 +953,7 @@ Authorization: Bearer <accessToken>
             "totalDue": 10.07,
             "status": "PENDING",
             "createdAt": "2026-06-20T14:30:00Z",
-            "updatedAt": "2026-06-21T14:30:00Z",
+            "updatedAt": "2026-06-21T14:30:00Z"
         },
         {
             "id": 15,
@@ -962,7 +963,7 @@ Authorization: Bearer <accessToken>
             "totalDue": 10.07,
             "status": "COMPLETED",
             "createdAt": "2026-04-18T14:30:00Z",
-            "updatedAt": "2026-04-18T14:30:00Z",
+            "updatedAt": "2026-04-18T14:30:00Z"
         },
         ...
     ]
@@ -1019,7 +1020,7 @@ Authorization: Bearer <accessToken>
             "totalDue": 10.07,
             "status": "COMPLETED",
             "createdAt": "2026-04-18T14:45:00Z",
-            "updatedAt": "2026-04-18T15:00:00Z",
+            "updatedAt": "2026-04-18T15:00:00Z"
         },
         {
             "id": 11,
@@ -1030,7 +1031,7 @@ Authorization: Bearer <accessToken>
             "totalDue": 20.14,
             "status": "PENDING",
             "createdAt": "2026-04-18T14:30:00Z",
-            "updatedAt": "2026-04-18T14:30:00Z",
+            "updatedAt": "2026-04-18T14:30:00Z"
         },
         ...
     ]
@@ -1228,10 +1229,12 @@ body
 **Body:** None  
 **Rules:**
 + Returns products in alphabetical order  
-+ For each product, returns if the product has variants and has modifiers as a boolean value  
++ For each product, returns if the product has variants and has modifiers as a boolean value 
++ Every product has at least one variant. Get Variants should be called to retrieve specific details such as unit price 
 
 **Success Response (200 OK):**
 ```
+body
 {
     "count": 500,
     "pageSize": 50,
@@ -1239,15 +1242,20 @@ body
     "previous": /api/v1/products&page3",
     "results": [
         {
-            "id": ,
-            "name": ,
-            "hasVariants": ,
-            "hasModifiers": ,
-            "minPrice": ,
-            "imageUrl": ,
+            "id": 1,
+            "name": "Sweater",
+            "hasVariants": true,
+            "hasModifiers": false,
+            "minPrice": 20.00,
+            "imageUrl": "https://storename.com/media/variants/sweater_red.png"
         },
         {
-
+            "id": 2,
+            "name": "Television",
+            "hasVariants": true,
+            "hasModifiers": true,
+            "minPrice": 389.99,
+            "imageUrl": "https://storename.com/media/products/television.png"
         },
         ...
     ]
@@ -1255,31 +1263,143 @@ body
 }
 ```
 
-## Get Variants
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+## List Variants
+**Endpoint:** `<GET> /api/v1/products/{productId}/variants`  
+**Description:** Returns a collection of all variants related to a specific product  
+**Authentication:** None  
+**Role:** Any  
+**URL Parameters:** productId = [integer]  
+**Request Parameters:** None  
 ### Request
-**Header:**
-**Body:**
+**Header:** None  
+**Body:** None  
 **Rules:**
++ Must include a productId
++ That product must exist
++ Returns a collection even if only one variant exists
++ Results returned in aplphabetical order
++ Remember, variantIds do not reset per product
+
 **Success Response (200 OK):**
+```
+body
+{
+    "count": 3,
+    "results": [
+        {
+            "id": 2,
+            "name": "Sweater, blue",
+            "unitPrice": 20.99,
+            "stockQuantity": 13,
+            "imageUrl": "https://storename.com/media/variants/sweater_blue.png"
+        },
+        {
+            "id": 3,
+            "name": "Sweater, green",
+            "unitPrice": 20.99,
+            "stockQuantity": 15,
+            "imageUrl": "https://storename.com/media/variants/sweater_green.png"
+        },
+        {
+            "id": 1,
+            "name": "Sweater, red",
+            "unitPrice": 21.99,
+            "stockQuantity": 9,
+            "imageUrl": "https://storename.com/media/variants/sweater_red.png"
+        }
+    ]
+}
+```
+
+**Not Found (404):**  
+```
+{
+    "error": "NO_PRODUCT",
+    "message": "no product with matching id"
+}
+```
+
 
 ## Get Modifiers
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Endpoint:** `<GET> /api/v1/products/{productId}/variants/{variantId}/modifiers`  
+**Description:** Returns a collection of modifier groups for a specific variant. Each group contains a collection of modifier options  
+**Authentication:** None  
+**Role:** Any  
+**URL Parameters:**  
++ productId = [integer]  
++ variantId = [integer]  
+**Request Parameters:** None  
 ### Request
-**Header:**
-**Body:**
+**Header:** None  
+**Body:** None  
 **Rules:**
++ Must include a product and variant ID
++ Product and variant must exist
++ Results are returned in alphabetic order
++ Remember, optionIds do not reset per group
+
 **Success Response (200 OK):**
+```
+body
+{
+    "count": 2,
+    "groups": [
+        {
+            "id": 2,
+            "name": "Sauce",
+            "required": true,
+            "minSelections": 1,
+            "maxSelections": 1,
+            "count": 2,
+            "options": [
+                {
+                    "id": 4,
+                    "name": "alfredo",
+                    "priceAdjustment": 0.00,
+                    "imageUrl": null
+                },
+                {
+                    "id": 3,
+                    "name": "pizza sauce",
+                    "priceAdjustment": 0.00,
+                    "imageUrl": null
+                }
+                
+            ]
+        },
+        {
+            "id": 1,
+            "name": "Toppings",
+            "required": false,
+            "minSelections": 0,
+            "maxSelections": 99,
+            "count": 2,
+            "options": [
+                {
+                    "id": 2,
+                    "name": "mushrooms",
+                    "priceAdjustment": 0.75,
+                    "imageUrl": null
+                },
+                {
+                    "id": 1,
+                    "name": "pepperoni",
+                    "priceAdjustment": 0.75,
+                    "imageUrl": null
+                }
+            ]
+        }
+    ]
+}
+```
+
+**Not Found (404):**  
+```
+{
+    "error": "NO_PRODUCT_OR_VARIANT",
+    "message": "no product or variant with matching id"
+}
+```
 
 ## Create/Update Product
 **Endpoint:**
