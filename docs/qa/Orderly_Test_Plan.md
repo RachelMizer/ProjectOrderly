@@ -9,6 +9,7 @@ Testing will be performed incrementally throughout Agile SCRUM sprint cycles, wi
 
 ## 2. Testing Objectives
 The objectives of testing are to:
+
 - Verify that all **Must** and applicable **Should** requirements are implemented correctly
 - Validate critical customer-facing and business-owner workflows
 - Detect defects early and provide fast feedback during sprint development
@@ -21,132 +22,213 @@ The objectives of testing are to:
 
 ### 3.1 In Scope
 
-**Customer Functionality**
-- Product/menu catalog browsing
+Customer Functionality
+- Product browsing and catalog display
 - Order creation, customization, and submission
-- Order status visibility (including basic status timeline display if implemented)
+- Shopping cart functionality
+- Order confirmation and receipt display
+- Order history retrieval
 - Basic input validation and error handling
 - Responsive behavior across desktop, tablet, and mobile screen sizes
-- Order cancellation while **Pending** (if implemented)
 
-**Business / Admin Functionality**
+Business / Admin Functionality
 - Product and menu management
 - Inventory management and stock updates
-- Low-stock notifications/indicators (if implemented)
+- Low-stock notifications or indicators (if implemented)
 - Basic sales summary reporting
 - Prototype supplier order management workflows
 - Restricted access to admin-only features
 
-**System & Security**
+System & Security
 - User authentication and session handling
 - Role-based access control (Customer vs Business)
-- Protected routes / secure access patterns (token/session handling)
-- Session timeout / session expiration behavior (if implemented)
+- Protected routes and secure API access patterns
+- Session expiration behavior (if implemented)
 - Simulated payment processing flow
 - Basic usability, navigation, and validation messaging
 
+### 3.2 Core End-to-End Workflow Validation
+
+Testing will validate the primary customer ordering workflow:
+
+1. Browse products
+2. Select product variant
+3. Customize item with modifiers
+4. Add item to cart
+5. Modify quantities or remove items
+6. Submit order at checkout
+7. View order confirmation
+8. View order history
+
 ---
 
-### 3.2 Out of Scope
-The following items are explicitly excluded from testing for this project phase, per the PDP:
-- Integration with real payment gateways (e.g., Stripe, PayPal)
-- Load, stress, or performance testing at scale
+## 3.3 Out of Scope
+
+The following items are explicitly excluded from testing for this project phase:
+
+- Integration with real payment gateways (Stripe, PayPal)
+- Load or stress testing at production scale
 - Native mobile application testing
 - Advanced analytics or AI-based recommendations
-- External POS system integrations
+- External POS integrations
 - Real supplier API integrations
-- Multi-language and multi-currency support
+- Multi-language or multi-currency support
 
 ---
 
 ## 4. Test Approach
 
 ### 4.1 Testing Methodology
-Testing will follow an **Agile, iterative SCRUM approach** aligned with sprint development. Test scenarios and test cases will be created alongside backlog items and refined as features evolve. Testing will begin as soon as features become testable and continue throughout each sprint.
+
+Testing will follow an **Agile iterative SCRUM approach** aligned with sprint development.
+
+Test scenarios and test cases will be created alongside backlog items and refined as features evolve. Testing will begin as soon as features become testable and continue throughout each sprint.
 
 ### 4.2 Test Types
-- Manual Functional Testing (primary method)
-- Smoke Testing for foundational features and sprint readiness
-- Regression Testing for impacted features after changes
-- Exploratory Testing during sprint demos and reviews
 
-Automated testing may be considered in later sprints if time and scope permit but is not required for Sprint 1 or early prototype validation.
+Manual Functional Testing
+- Primary testing method for validating user-facing features and business workflows.
+
+Smoke Testing
+- Performed after new builds to ensure the system is stable enough for deeper testing.
+
+Regression Testing
+- Performed after code changes to ensure existing functionality continues to work.
+
+Exploratory Testing
+- Conducted during sprint demos and QA review sessions to uncover unexpected issues.
+
+API Endpoint Testing
+- Backend REST endpoints will be tested using Postman or PowerShell.
+- Responses will be validated for:
+  - Correct HTTP status codes
+  - Correct JSON structure
+  - Validation rules
+  - Authentication requirements
+
+End-to-End Workflow Testing
+- Full user workflows will be validated through both API and UI interaction.
 
 ---
 
 ## 5. Test Environment
-Testing will be conducted in a simulated development environment using:
-- Local and/or cloud-hosted development servers
-- Web browsers: Chrome (primary), Edge and Safari (secondary)
-- Seeded or mock test data
-- Simulated payment workflows
-- Django / SQLite-based backend environment
 
-No production-level environments or live services will be used.
+Testing will be conducted in a simulated development environment using:
+
+- Local development servers
+- Django REST backend
+- MySQL database
+- Seeded test data for users, products, and orders
+- Web browsers:
+  - Chrome (primary)
+  - Edge (secondary)
+- API testing tools:
+  - Postman
+  - PowerShell REST commands
+- Simulated payment workflows
+
+The system will run locally using the Django development server.
+
+No production environment will be used.
 
 ---
 
 ## 6. Roles and Responsibilities
 
-### Testing Lead / QA
-- Define and maintain the test plan, test scenarios, and test cases
-- Execute manual testing for sprint backlog items
+Testing Lead / QA
+- Define and maintain the test plan
+- Create sprint test cases and testing matrices
+- Execute manual testing
 - Log, track, and verify defects
 - Report testing status during stand-ups and sprint reviews
 
-### Developers
+Developers
 - Implement features and resolve reported defects
-- Support defect investigation and clarification
+- Support defect investigation
 - Notify QA when features are ready for testing
 
-### Scrum Master
+Scrum Master
 - Ensure testing activities are included in sprint planning
-- Track testing progress, risks, and blockers
+- Track testing progress and blockers
 - Facilitate communication between QA and development
 
-### Team Members
+Team Members
 - Participate in exploratory testing during sprint reviews
-- Assist in validating completed features when needed
+- Assist with validation when additional testing capacity is needed
 
 ---
 
 ## 7. Test Deliverables
-The following testing artifacts will be produced throughout the project:
+
+Project-Level Artifacts
 - Test Plan document
-- Sprint-based test scenarios
-- Detailed test cases
-- Defect/bug reports
-- Sprint testing summaries
-- Final testing and quality summary for project submission
+
+Sprint-Level Artifacts
+- Sprint test cases
+- Sprint testing matrices
+- Sprint testing execution summaries
+
+Examples:
+
+- Sprint2_Test_Cases.md
+- Sprint2_Testing_Matrix.md
+- Sprint3_Test_Cases.md
+- Sprint3_Testing_Matrix.md
+
+Defect Tracking
+- Defect reports logged on Trello cards
+- Retesting results documented in test cases
 
 ---
 
 ## 8. Entry and Exit Criteria
 
 ### 8.1 Entry Criteria
+
 Testing may begin when:
+
 - Feature implementation is available in the development environment
-- Acceptance criteria are defined or agreed upon
-- Required test data is available
+- Acceptance criteria are defined
+- Required seed or test data is available
 
 ### 8.2 Exit Criteria
+
 A feature is considered test-complete when:
-- All defined acceptance criteria are met
-- Critical and high-severity defects are resolved or documented
+
+- All acceptance criteria are verified
+- Critical or high severity defects are resolved or documented
 - Feature is stable and demo-ready
-- Test results are recorded and communicated
+- Test results are recorded
 
 ---
 
 ## 9. Defect Management
-Defects will be tracked using the team’s agreed-upon tool (Trello). Each defect report will include:
+
+Defects will be tracked using the team's Trello board.
+
+Each defect report will include:
+
 - Summary and description
 - Steps to reproduce
-- Expected vs. actual results
+- Expected vs actual results
 - Severity level
 - Current status
 
-Defects will be reviewed regularly during stand-ups and sprint reviews.
+Severity Levels
+
+Critical
+- System crash
+- Data loss
+- Core workflow blocked
+
+High
+- Major functionality does not work correctly
+
+Medium
+- Feature works but has incorrect behavior
+
+Low
+- Cosmetic or minor UI issues
 
 ---
 
@@ -154,34 +236,39 @@ Defects will be reviewed regularly during stand-ups and sprint reviews.
 
 | Risk | Mitigation |
 |-----|-----------|
-| Incomplete or evolving requirements | Clarify during sprint planning and backlog refinement |
-| Limited testing time | Prioritize **Must** requirements and core workflows |
+| Incomplete or evolving requirements | Clarify during sprint planning |
+| Limited testing time | Prioritize Must requirements and core workflows |
 | Late feature changes | Perform focused regression testing |
-| Environment instability | Maintain consistent setup and document configuration |
-| Over-scoping features | Align testing strictly to PDP in-scope items |
+| Environment instability | Maintain consistent setup and documentation |
+| Over-scoping features | Align testing to defined sprint scope |
 
 ---
 
-## 11. Feature Stubs / Future Coverage (Planned Scenarios)
-The following items are included in developer documentation and may be scheduled for future sprints. Test scenarios and cases will be created when these items are added to active sprint scope:
-- Email verification for new accounts (if adopted)
-- Password reset / forgot password flow (if adopted)
-- CSV import/export for inventory or reporting (if adopted)
-- Report export options (PDF/CSV) (if adopted)
-- Accessibility improvements (keyboard navigation, contrast, ARIA labels) (if adopted)
-- Enhanced admin dashboards and advanced reporting (if adopted)
+## 11. Future Testing Coverage
+
+The following features may be tested in future sprints if implemented:
+
+- Email verification for new accounts
+- Password reset functionality
+- CSV import/export features
+- Report export options
+- Accessibility improvements
+- Advanced reporting dashboards
 
 ---
 
 ## 12. Test Schedule
-Testing activities will align with the sprint schedule defined in the PDP:
-- Test scenarios drafted during sprint planning
-- Continuous manual testing during development
-- Test status reviewed before sprint demos
+
+Testing activities align with the sprint schedule:
+
+- Test cases drafted during sprint planning
+- Continuous testing during development
+- Testing status reviewed before sprint demos
 - Regression testing during later sprints
-- Final testing and validation before project presentation
+- Final validation before project presentation
 
 ---
 
 ## 13. Approval and Maintenance
-This Test Plan is a **living document** and will be reviewed and updated as requirements, scope, sprint goals, and development progress evolve throughout the project lifecycle.
+
+This Test Plan is a living document and will be updated as project scope, sprint goals, and development progress evolve.
