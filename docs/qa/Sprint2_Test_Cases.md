@@ -390,6 +390,371 @@ New password validated and login successful.
 **Status:** PASS  
 
 ---
+# US2.8 Authentication API Test Cases
+
+---
+
+### Test Case ID:
+TC-US28-01
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- Backend API server running
+- No Authorization header provided
+
+### Test Steps:
+1. Send GET request to `/api/v1/auth/me/`
+2. Do not include an Authorization header
+
+### Expected Result:
+- System rejects request
+- Response returns **401 Unauthorized**
+- Error indicates authentication credentials are required
+
+### Actual Result:
+Endpoint returned **401 Unauthorized** as expected when no authentication token was provided.
+
+### Status:
+Pass
+
+### Notes:
+Confirms protected endpoints reject unauthorized requests.
+
+---
+
+### Test Case ID:
+TC-US28-02
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- Backend server running
+- Test email not previously registered
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/register`
+2. Provide required fields: email, password, firstName, lastName
+
+### Expected Result:
+- Response returns **201 Created**
+- Access token generated
+- Refresh token cookie created
+- User information returned
+
+### Actual Result:
+Registration succeeded. API returned **201 Created**, access token was generated, and refresh token cookie was set.
+
+### Status:
+Pass
+
+### Notes:
+Confirms registration endpoint functions correctly.
+
+---
+
+### Test Case ID:
+TC-US28-03
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- A user account already exists with the test email
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/register`
+2. Use an email that already exists
+
+### Expected Result:
+- Response returns **400 Bad Request**
+- Error message indicates email already registered
+
+### Actual Result:
+API returned **400 Bad Request** with validation error stating email is already registered.
+
+### Status:
+Pass
+
+### Notes:
+Confirms duplicate email validation is enforced.
+
+---
+
+### Test Case ID:
+TC-US28-04
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User account exists
+- Valid credentials available
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/login`
+2. Provide valid email and password
+
+### Expected Result:
+- Response returns **200 OK**
+- Access token returned
+- Refresh token cookie set
+- User information returned
+
+### Actual Result:
+Login successful. API returned **200 OK**, access token issued, and refresh token cookie set.
+
+### Status:
+Pass
+
+### Notes:
+Confirms authentication login flow works correctly.
+
+---
+
+### Test Case ID:
+TC-US28-05
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User account exists
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/login`
+2. Use incorrect password
+
+### Expected Result:
+- Response returns **400**
+- Error message indicates invalid credentials
+
+### Actual Result:
+API returned **400** with error message indicating incorrect credentials.
+
+### Status:
+Pass
+
+### Notes:
+Confirms incorrect login credentials are rejected.
+
+---
+
+### Test Case ID:
+TC-US28-06
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User logged in
+- Valid access token obtained
+
+### Test Steps:
+1. Send GET request to `/api/v1/auth/me/`
+2. Include header:
+   Authorization: Bearer <accessToken>
+
+### Expected Result:
+- Response returns **200 OK**
+- User profile information returned
+
+### Actual Result:
+API returned **200 OK** with correct user information including id, email, username, and role.
+
+### Status:
+Pass
+
+### Notes:
+Confirms protected endpoint works with valid authentication.
+
+---
+
+### Test Case ID:
+TC-US28-07
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User logged in
+- Refresh token cookie exists
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/refresh`
+
+### Expected Result:
+- Response returns **200 OK**
+- New access token returned
+
+### Actual Result:
+Refresh request returned **200 OK** and generated a new access token.
+
+### Status:
+Pass
+
+### Notes:
+Confirms refresh token flow functions properly.
+
+---
+
+### Test Case ID:
+TC-US28-08
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User logged in
+- Refresh token cookie exists
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/logout`
+
+### Expected Result:
+- Response returns **200 OK**
+- Logout confirmation message returned
+- Refresh token cookie removed
+
+### Actual Result:
+Logout successful. API returned **200 OK** and refresh token cookie was removed.
+
+### Status:
+Pass
+
+### Notes:
+Confirms logout invalidates refresh token.
+
+---
+
+### Test Case ID:
+TC-US28-09
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User logged out
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/refresh`
+
+### Expected Result:
+- Response returns **401 Unauthorized**
+- Error indicates invalid refresh token
+
+### Actual Result:
+API returned **401 Unauthorized** indicating the refresh token was invalid after logout.
+
+### Status:
+Pass
+
+### Notes:
+Confirms refresh tokens cannot be reused after logout.
+
+---
+
+### Test Case ID:
+TC-US28-10
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- User account exists
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/password-reset`
+2. Provide registered email
+
+### Expected Result:
+- Response returns **200 OK**
+- Reset request message returned
+
+### Actual Result:
+API returned **200 OK** with message indicating reset instructions will be sent if email exists.
+
+### Status:
+Pass
+
+### Notes:
+Console email backend displayed reset link.
+
+---
+
+### Test Case ID:
+TC-US28-11
+
+### Feature:
+Authentication API
+
+### User Story:
+As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
+### Preconditions:
+- Password reset token available
+
+### Test Steps:
+1. Send POST request to `/api/v1/auth/password-reset/confirm`
+2. Provide uid, token, and newPassword
+3. Attempt login with old password
+4. Attempt login with new password
+
+### Expected Result:
+- Password reset succeeds
+- Old password rejected
+- New password login succeeds
+
+### Actual Result:
+Password reset successful. Old password no longer worked, and login with new password succeeded.
+
+### Status:
+Pass
+
+### Notes:
+Confirms password reset flow works correctly.
+
+---
+
+# Final Test Execution Status
+
+All authentication test cases executed successfully.
+
+All endpoints returned correct responses and status codes according to acceptance criteria.
+
+**QA Result: PASS**
 
 # 7. Sprint 2 Testing Strategy
 
