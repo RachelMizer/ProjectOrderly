@@ -1320,7 +1320,7 @@ body
 ```
 
 
-## Get Modifiers
+## List Modifiers
 **Endpoint:** `<GET> /api/v1/products/{productId}/variants/{variantId}/modifiers`  
 **Description:** Returns a collection of modifier groups for a specific variant. Each group contains a collection of modifier options  
 **Authentication:** None  
