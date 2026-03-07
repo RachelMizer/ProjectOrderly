@@ -1,33 +1,21 @@
-# Sprint 2 Test Cases – Orderly  
-**Sprint 2 Scope:** Database, Authentication, RBAC & Application Shell  
+# Sprint 2 Test Cases
+Project: **Orderly**
+Sprint: **Sprint 2 — Backend Foundations & Authentication**
 
 ---
 
-# 1. Overview
+## US2.1 — Database Schema
 
-Sprint 2 establishes the foundational system architecture required for future feature development.
+### Test Case ID:
+TC-2.1-01
 
-Primary deliverables include:
+### Feature:
+Database Schema
 
-- Database schema implementation and validation  
-- User authentication (registration, login, password reset)  
-- Role-Based Access Control (RBAC)  
-- Backend/frontend authentication integration  
-- Application shell and navigation structure  
+### User Story:
+As a developer, I want a properly structured database so that all application data is stored securely and efficiently.
 
-This document defines formal QA test cases for foundational and security-critical features.
-
-Execution occurs after feature completion and prior to Sprint Review.
-
----
-
-# 2. Database Schema & Relational Integrity
-
-## TC-01 – Database Schema Migration & Relational Integrity  
-**User Story:** 2.1  
-**Feature:** Database Schema Implementation  
-
-### Preconditions
+### Preconditions:
 - MySQL server running locally  
 - Clean database available  
 - Django configured for MySQL  
@@ -38,9 +26,7 @@ Execution occurs after feature completion and prior to Sprint Review.
   - suppliers  
   - orders  
 
----
-
-### Test Steps
+### Test Steps:
 
 #### Step A — Migration Integrity
 1. Run `python manage.py makemigrations`  
@@ -53,8 +39,6 @@ Execution occurs after feature completion and prior to Sprint Review.
 - Second migrate shows no pending migrations  
 - All Sprint 2 migrations marked applied  
 
----
-
 #### Step B — Physical Schema Verification
 1. Connect to MySQL  
 2. Execute `SHOW TABLES;`  
@@ -64,8 +48,6 @@ Execution occurs after feature completion and prior to Sprint Review.
 - Core domain tables exist  
 - Django system tables exist  
 - Foreign key constraints enforced across apps  
-
----
 
 #### Step C — Relational Usability (Happy Path)
 1. Open Django shell  
@@ -80,15 +62,12 @@ CustomerProfile → Order → OrderItem
 - Duplicate product constraint enforced  
 - No ORM or database integrity errors  
 
----
 
-### Actual Result
+### Actual Result:
 All migrations applied successfully.  
 MySQL verification confirmed table creation and enforced foreign keys.  
 Linked relational records created successfully.  
 Duplicate product constraint correctly enforced.  
-
-**Status:** PASS  
 
 ### Evidence
 
@@ -104,692 +83,418 @@ Duplicate product constraint correctly enforced.
 **Figure 4 – Relational record creation in Django shell**  
 ![Shell Success](screenshots/tc04_shell_success.jpg)
 
-### Notes  
+### Status:
+PASS
+
+### Notes:
 Confirms foundational database readiness required for all Sprint 2 features.
 
 ---
-# 3. Backend User Registration
 
-## TC-02 – Backend User Registration  
-**User Story:** 2.4  
-**Feature:** Backend Registration API  
-
-### Preconditions
-- Django backend server running  
-- MySQL database connection active  
-- Accounts migrations applied  
-- Test email does not already exist  
-
----
-
-### Test Steps
-1. Send POST request to `/api/v1/auth/register/`  
-2. Provide valid JSON payload including:
-   - email  
-   - password  
-   - role  
-   - firstName  
-   - lastName  
-3. Verify HTTP response status indicates success (200 or 201)  
-4. Verify response body confirms successful registration  
-5. Query `auth_user` table to confirm user record exists  
-6. Confirm username equals email  
-
----
-
-### Expected Result
-- Registration request succeeds  
-- New user record created in `auth_user`  
-- Username equals email  
-- Structured success response returned  
-- No server errors occur  
-
----
-
-### Actual Result
-Registration succeeded.  
-
-API Response:
-- accessToken returned  
-- expiresIn = 3600  
-- tokenType = Bearer  
-- customer object returned with id, email, role  
-
-Database Verification:
-- `auth_user` record created  
-- username equals email  
-- is_active = 1  
-
-**Status:** PASS  
-
----
-
-# 4. Email Verification (US 2.5)
-
-## TC-03 – Email Verification Flow  
-
-### Preconditions
-- Backend server running  
-- Console email backend enabled  
-- Test user successfully registered  
-- Unique test email generated  
-
----
-
-### Test Steps
-
-#### Step A – Request Verification Email
-1. Send POST request to `/api/v1/auth/email-verification`  
-2. Provide JSON payload:
-   - email  
-
-**Expected Result**
-- Generic response returned  
-- No indication whether email exists  
-- No server errors  
-
----
-
-#### Step B – Capture Verification Link
-1. Observe backend console output  
-2. Locate verification email  
-3. Extract `uid` and `token`  
-
-**Expected Result**
-- Verification link displayed in console  
-- Token generated successfully  
-
----
-
-#### Step C – Confirm Verification (Valid Token)
-1. Send POST request to `/api/v1/auth/email-verification/confirm`  
-2. Provide:
-   - uid  
-   - token  
-
-**Expected Result**
-- HTTP 200 returned  
-- “email verified” message  
-- `CustomerProfile.email_verified` set to True  
-
----
-
-#### Step D – Confirm Verification (Invalid Token)
-1. Repeat confirmation with invalid token  
-
-**Expected Result**
-- HTTP 400 returned  
-- INVALID_TOKEN error  
-- No changes to user record  
-
----
-
-### Actual Result
-Verification email successfully generated via manual trigger.  
-Valid token confirmed email successfully.  
-Invalid token properly rejected.  
-
-**Status:** PASS  
-
----
-
-# 5. JWT Login & Authentication Enforcement (US 2.6)
-
-## TC-04 – JWT Login & Protected Endpoint  
-
-### Preconditions
-- Registered and verified user exists  
-- Known valid password  
-
----
-
-### Test Steps
-
-#### Step A – Valid Login
-1. Send POST request to `/api/v1/auth/login`  
-2. Provide:
-   - email  
-   - password  
-
-**Expected Result**
-- HTTP 200 returned  
-- accessToken provided  
-- refreshToken set in HttpOnly cookie  
-- customer object returned  
-
----
-
-#### Step B – Invalid Password
-1. Send login request with incorrect password  
-
-**Expected Result**
-- HTTP 400 returned  
-- “Email or password is incorrect”  
-- No token issued  
-
----
-
-#### Step C – Protected Endpoint Without Token
-1. Send GET request to `/api/v1/auth/me/` without Authorization header  
-
-**Expected Result**
-- HTTP 401 Unauthorized  
-- Access denied  
-
----
-
-#### Step D – Protected Endpoint With Bearer Token
-1. Send GET request to `/api/v1/auth/me/`  
-2. Include header:
-   - Authorization: Bearer <accessToken>  
-
-**Expected Result**
-- HTTP 200 returned  
-- User id, email, username, and role returned  
-
----
-
-#### Step E – Refresh Token
-1. Use stored refresh cookie  
-2. Send POST request to `/api/v1/auth/refresh`  
-
-**Expected Result**
-- HTTP 200 returned  
-- New accessToken issued  
-
----
-
-#### Step F – Logout
-1. Send POST request to `/api/v1/auth/logout`  
-2. Attempt refresh again  
-
-**Expected Result**
-- Logout returns success message  
-- Refresh token invalidated  
-- Subsequent refresh returns 401  
-
----
-
-### Actual Result
-Login successful.  
-Authentication enforcement confirmed.  
-Refresh and logout flow validated successfully.  
-
-**Status:** PASS  
-
----
-
-# 6. Password Reset (US 2.7)
-
-## TC-05 – Password Reset End-to-End  
-
-### Preconditions
-- Registered user exists  
-- Console email backend enabled  
-
----
-
-### Test Steps
-
-#### Step A – Request Password Reset
-1. Send POST request to `/api/v1/auth/password-reset`  
-2. Provide:
-   - email  
-
-**Expected Result**
-- Generic response returned  
-- Reset email generated in console  
-
----
-
-#### Step B – Capture Reset Link
-1. Extract `uid` and `token` from console email  
-
-**Expected Result**
-- Valid reset link generated  
-
----
-
-#### Step C – Confirm Password Reset
-1. Send POST request to `/api/v1/auth/password-reset/confirm`  
-2. Provide:
-   - uid  
-   - token  
-   - newPassword  
-
-**Expected Result**
-- HTTP 200 returned  
-- “Password has been reset successfully”  
-- Password updated in database  
-
----
-
-#### Step D – Validate Old Password Fails
-1. Attempt login using old password  
-
-**Expected Result**
-- Login rejected  
-- HTTP 400 returned  
-
----
-
-#### Step E – Validate New Password Works
-1. Attempt login using new password  
-
-**Expected Result**
-- HTTP 200 returned  
-- Tokens issued successfully  
-
----
-
-### Actual Result
-Password reset flow executed successfully.  
-Old password invalidated.  
-New password validated and login successful.  
-
-**Status:** PASS  
-
----
-# US2.8 Authentication API Test Cases
-
----
+## US2.2 — Database Validation
 
 ### Test Case ID:
-TC-US28-01
+TC-2.2-01
 
 ### Feature:
-Authentication API
+Database Validation
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+As a developer, I want to validate database constraints and relationships so that data integrity is maintained throughout the application.
 
 ### Preconditions:
-- Backend API server running
-- No Authorization header provided
+
+- Application is running locally.
+- Database migrations have been successfully applied.
+- Django Admin is accessible.
+- A superuser account exists.
+- Test users exist with different roles (e.g., CUSTOMER and BUSINESS).
+- Backend API endpoints are accessible.
 
 ### Test Steps:
-1. Send GET request to `/api/v1/auth/me/`
-2. Do not include an Authorization header
+
+1. Log in to Django Admin as a superuser.
+
+2. Navigate to Customer Profiles.
+
+3. Attempt to create a CustomerProfile with missing required fields.
+
+4. Attempt to create a CustomerProfile with an invalid state format.
+
+5. Attempt to create a CustomerProfile with an invalid ZIP code format.
+
+6. Attempt to create a CustomerProfile for a user whose role is BUSINESS.
+
+7. Attempt to create multiple CustomerProfiles for the same user.
+
+8. Attempt to register two users through the API using the same email address.
+
+9. Verify relationships between User and CustomerProfile enforce referential integrity.
+
+10. Attempt to save each invalid entry.
 
 ### Expected Result:
-- System rejects request
-- Response returns **401 Unauthorized**
-- Error indicates authentication credentials are required
+- Required field validation prevents incomplete records from being saved.
+
+- Invalid state or ZIP code formats are rejected.
+
+- Duplicate records violating unique constraints are rejected.
+
+- Cross-field validation prevents CustomerProfiles from being created for non-CUSTOMER users.
+
+- Referential integrity ensures CustomerProfiles must reference a valid User.
+
+- API validation prevents duplicate user email registrations.
 
 ### Actual Result:
-Endpoint returned **401 Unauthorized** as expected when no authentication token was provided.
+All validation rules executed correctly. Invalid data was rejected through both Django Admin and API endpoints. Required, unique, and format constraints were enforced. Cross-field validation prevented CustomerProfiles from being created for users without the CUSTOMER role. Referential integrity was maintained.
+
+### Evidence:
+**Figure 1 – User Required**  
+![User Required](screenshots/2.2/User_required.jpg)
 
 ### Status:
-Pass
+PASS
 
 ### Notes:
-Confirms protected endpoints reject unauthorized requests.
+During testing, BUSINESS users appeared in the Django Admin dropdown when selecting a user for CustomerProfile creation. However, model validation correctly prevented the record from being saved, so data integrity requirements for US2.2 were still satisfied.
 
 ---
+
+## US2.4 — User Registration
 
 ### Test Case ID:
-TC-US28-02
+TC-2.4-01
 
 ### Feature:
-Authentication API
+User Registration
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- Backend server running
-- Test email not previously registered
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/register`
-2. Provide required fields: email, password, firstName, lastName
+
 
 ### Expected Result:
-- Response returns **201 Created**
-- Access token generated
-- Refresh token cookie created
-- User information returned
+
 
 ### Actual Result:
-Registration succeeded. API returned **201 Created**, access token was generated, and refresh token cookie was set.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms registration endpoint functions correctly.
+
 
 ---
+
+## US2.5 — Email Verification
 
 ### Test Case ID:
-TC-US28-03
+TC-2.5-01
 
 ### Feature:
-Authentication API
+Email Verification
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- A user account already exists with the test email
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/register`
-2. Use an email that already exists
+
 
 ### Expected Result:
-- Response returns **400 Bad Request**
-- Error message indicates email already registered
+
 
 ### Actual Result:
-API returned **400 Bad Request** with validation error stating email is already registered.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms duplicate email validation is enforced.
+
 
 ---
+
+## US2.6 — Backend User Login
 
 ### Test Case ID:
-TC-US28-04
+TC-2.6-01
 
 ### Feature:
-Authentication API
+Backend User Login
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User account exists
-- Valid credentials available
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/login`
-2. Provide valid email and password
+
 
 ### Expected Result:
-- Response returns **200 OK**
-- Access token returned
-- Refresh token cookie set
-- User information returned
+
 
 ### Actual Result:
-Login successful. API returned **200 OK**, access token issued, and refresh token cookie set.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms authentication login flow works correctly.
+
 
 ---
+
+## US2.7 — Backend Password Reset
 
 ### Test Case ID:
-TC-US28-05
+TC-2.7-01
 
 ### Feature:
-Authentication API
+Backend Password Reset
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User account exists
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/login`
-2. Use incorrect password
+
 
 ### Expected Result:
-- Response returns **400**
-- Error message indicates invalid credentials
+
 
 ### Actual Result:
-API returned **400** with error message indicating incorrect credentials.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms incorrect login credentials are rejected.
+
 
 ---
+
+## US2.8 — Backend API Endpoints for Authentication
 
 ### Test Case ID:
-TC-US28-06
+TC-2.8-01
 
 ### Feature:
-Authentication API
+Backend API Endpoints for Authentication
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User logged in
-- Valid access token obtained
+
 
 ### Test Steps:
-1. Send GET request to `/api/v1/auth/me/`
-2. Include header:
-   Authorization: Bearer <accessToken>
+
 
 ### Expected Result:
-- Response returns **200 OK**
-- User profile information returned
+
 
 ### Actual Result:
-API returned **200 OK** with correct user information including id, email, username, and role.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms protected endpoint works with valid authentication.
+
 
 ---
+
+## US2.9 — Frontend Authentication Components
 
 ### Test Case ID:
-TC-US28-07
+TC-2.9-01
 
 ### Feature:
-Authentication API
+Frontend Authentication Components
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User logged in
-- Refresh token cookie exists
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/refresh`
+
 
 ### Expected Result:
-- Response returns **200 OK**
-- New access token returned
+
 
 ### Actual Result:
-Refresh request returned **200 OK** and generated a new access token.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms refresh token flow functions properly.
+
 
 ---
+
+## US2.10 — Sprint 2 Visual Compilation
 
 ### Test Case ID:
-TC-US28-08
+TC-2.10-01
 
 ### Feature:
-Authentication API
+Sprint 2 Visual Compilation
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User logged in
-- Refresh token cookie exists
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/logout`
+
 
 ### Expected Result:
-- Response returns **200 OK**
-- Logout confirmation message returned
-- Refresh token cookie removed
+
 
 ### Actual Result:
-Logout successful. API returned **200 OK** and refresh token cookie was removed.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms logout invalidates refresh token.
+
 
 ---
+
+## US2.11 — Comprehensive Seed Data Population
 
 ### Test Case ID:
-TC-US28-09
+TC-2.11-01
 
 ### Feature:
-Authentication API
+Comprehensive Seed Data Population
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User logged out
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/refresh`
+
 
 ### Expected Result:
-- Response returns **401 Unauthorized**
-- Error indicates invalid refresh token
+
 
 ### Actual Result:
-API returned **401 Unauthorized** indicating the refresh token was invalid after logout.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms refresh tokens cannot be reused after logout.
+
 
 ---
+
+## US2.12 — UI & Admin
 
 ### Test Case ID:
-TC-US28-10
+TC-2.12-01
 
 ### Feature:
-Authentication API
+UI & Admin
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- User account exists
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/password-reset`
-2. Provide registered email
+
 
 ### Expected Result:
-- Response returns **200 OK**
-- Reset request message returned
+
 
 ### Actual Result:
-API returned **200 OK** with message indicating reset instructions will be sent if email exists.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Console email backend displayed reset link.
+
 
 ---
+
+## US2.13 — UI Design System & Component Library
 
 ### Test Case ID:
-TC-US28-11
+TC-2.13-01
 
 ### Feature:
-Authentication API
+UI Design System & Component Library
 
 ### User Story:
-As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI.
+
 
 ### Preconditions:
-- Password reset token available
+
 
 ### Test Steps:
-1. Send POST request to `/api/v1/auth/password-reset/confirm`
-2. Provide uid, token, and newPassword
-3. Attempt login with old password
-4. Attempt login with new password
+
 
 ### Expected Result:
-- Password reset succeeds
-- Old password rejected
-- New password login succeeds
+
 
 ### Actual Result:
-Password reset successful. Old password no longer worked, and login with new password succeeded.
+
 
 ### Status:
-Pass
+
 
 ### Notes:
-Confirms password reset flow works correctly.
+
 
 ---
 
-# Final Test Execution Status
+## US2.14 — Core Design System & Component Library
 
-All authentication test cases executed successfully.
+### Test Case ID:
+TC-2.14-01
 
-All endpoints returned correct responses and status codes according to acceptance criteria.
+### Feature:
+Core Design System & Component Library
 
-**QA Result: PASS**
+### User Story:
 
-# 7. Sprint 2 Testing Strategy
 
-Sprint 2 testing prioritizes:
+### Preconditions:
 
-## Security
-- Authentication correctness  
-- Password hashing  
-- JWT enforcement  
-- RBAC enforcement  
 
-## Data Integrity
-- Schema migration success  
-- Foreign key enforcement  
-- Constraint validation  
+### Test Steps:
 
-## System Foundation
-- Backend/frontend auth integration  
-- Stable base for Sprint 3  
 
----
+### Expected Result:
 
-# 8. QA Execution Plan
 
-**Execution Timing:**  
-After feature completion and before Sprint Review.
+### Actual Result:
 
-**Regression Testing:**  
-Performed after code freeze.
 
-**Defect Tracking:**  
-All failures logged in Trello with:
-- Severity  
-- Reproduction steps  
-- Screenshots  
-- Assigned developer  
+### Status:
 
----
+
+### Notes:
