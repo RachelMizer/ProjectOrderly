@@ -3,156 +3,127 @@
 ## Sprint Scope
 Sprint 2 focuses on:
 
-- Database foundation & validation
-- User authentication system
-- Role-based access control (RBAC)
-- Backend/Frontend authentication integration
-- Application shell & navigation
-- Seed data population
-- Design system basics
+- Database foundation & validation  
+- User authentication system  
+- Backend/Frontend authentication integration  
+- Application shell & navigation  
+- Seed data population  
+- Design system foundation  
 
-This matrix defines the level of testing required for each Sprint 2 feature.
+This matrix reflects **actual testing performed during Sprint 2**.
 
 ---
 
 # Testing Level Definitions
 
 | Level | Type | Description |
-|-------|------|------------|
-| **L1 – Formal Test Cases** | High Risk / Security / Core Logic | Structured test cases with positive, negative, and edge cases |
-| **L2 – Structured Checklist** | Functional / UI / Integration | Documented validation steps; lighter-weight manual verification |
-| **L3 – Verification / Review** | Configuration / Documentation / Visual | Confirm functionality or consistency without formal case documentation |
+|------|------|-------------|
+| L1 – Formal Test Cases | High Risk / Security / Core Logic | Structured test cases with positive, negative, and edge cases |
+| L2 – Structured Checklist | Functional / UI / Integration | Documented validation steps; lighter-weight manual verification |
+| L3 – Verification / Review | Configuration / Documentation / Visual | Confirm functionality or consistency without formal case documentation |
 
 ---
 
 # Feature 1 – Database Foundation
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.1 | Database Schema Implementation | L1 | Validate tables, relationships, migrations |
-| 2.2 | Database Validation | L1 | Test constraints (unique email, non-null, non-negative values) |
-| 2.3 | Role-Based Data Access Controls | L1 | Validate authorized vs unauthorized queries |
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.1 | Database Schema Implementation | L1 | Validate migrations, tables, foreign keys, ORM relationships | PASS |
+| 2.2 | Database Validation | L1 | Test constraints, validation rules, referential integrity | PASS |
 
-**Primary Risks:**
-- Data integrity violations
-- Improper foreign key relationships
-- Unauthorized data access
+**Primary Risks**
+
+- Data integrity violations  
+- Broken relationships between tables  
+- Invalid data entering the system  
 
 ---
 
 # Feature 2 – User Authentication System
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.4 | User Registration | L1 | Valid/invalid registration scenarios |
-| 2.5 | Email Verification | L1 | Token validation, expiration, reuse prevention |
-| 2.6 | User Login | L1 | Valid login, invalid password, unverified user |
-| 2.7 | Password Reset | L1 | Reset flow, token expiration, old password rejection |
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.4 | User Registration | L1 | Valid/invalid registration scenarios and database verification | PASS |
+| 2.5 | Email Verification | L1 | Token validation, invalid token rejection, verification confirmation | PASS |
+| 2.6 | Backend User Login | L1 | Authentication validation, protected endpoint access, token refresh/logout | PASS |
+| 2.7 | Backend Password Reset | L1 | Password reset flow, token validation, login with new password | PASS |
 
-**Primary Risks:**
-- Password stored in plain text
-- Authentication bypass
-- Token reuse or improper expiration
-- Improper role assignment
+**Primary Risks**
+
+- Authentication bypass  
+- Improper credential handling  
+- Token reuse or expiration issues  
 
 ---
 
-# Feature 3 – Backend & Frontend Authentication Structure
+# Feature 3 – Backend & Frontend Authentication Integration
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.8 | Backend API Endpoints | L2 | Validate status codes, request/response structure |
-| 2.9 | Frontend Authentication Components | L2 | Validate form behavior, error handling, API connectivity |
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.8 | Backend API Endpoints for Authentication | L1 | Validate endpoint responses, authentication enforcement, and status codes | PASS |
+| 2.9 | Frontend Authentication Components | L2 | Manual UI validation and API integration testing | PENDING |
 
-**Focus Areas:**
-- Correct status codes (200, 400, 401, 403)
-- Clear frontend error messages
-- No console/runtime errors
+**Focus Areas**
+
+- Correct HTTP status codes (200, 400, 401, 403)  
+- Clear frontend error messages  
+- Proper API integration  
 
 ---
 
 # Feature 4 – Application Shell & Navigation
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.10 | UI & Backend Communication Testing | L2 | End-to-end login → redirect → route protection validation |
-
-**Checklist Validation Includes:**
-- Customer cannot access `/admin/*`
-- Business user redirected appropriately
-- Navigation links function correctly
-- Browser back/forward works properly
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.10 | Sprint 2 Visual Compilation | L3 | Visual review of integrated UI components and layout consistency | PASS |
 
 ---
 
 # Feature 5 – Seed Data & Content
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.11 | Comprehensive Seed Data Population | L2 | Validate record counts, relationships, realistic data |
-
-**Validation Includes:**
-- 10+ menu items
-- 2+ users per role
-- Sample orders linked correctly
-- Inventory linked to products
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.11 | Comprehensive Seed Data Population | L1 | Execute seed script, validate records, confirm relational data | PASS |
 
 ---
 
-# Feature 6 – Page Shells
+# Feature 6 – UI & Admin Interface
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.12 | Customer & Admin Page Shells | L2 | Manual rendering & navigation checklist |
-
-**Validation Includes:**
-- Pages render without error
-- Consistent navigation
-- Seed data displayed correctly
-- Responsive behavior verified
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.12 | UI & Admin | L3 | Manual verification of admin interface and UI shell rendering | PASS |
 
 ---
 
-# Feature 7 – Design System Basics
+# Feature 7 – Design System
 
-| User Story | Description | Test Level | Testing Approach |
-|------------|------------|------------|------------------|
-| 2.13 | Core Design System & Components | L3 | Visual consistency & component reuse review |
-
-**Validation Includes:**
-- Consistent color palette
-- Reusable components function
-- Responsive breakpoints applied
+| User Story | Description | Test Level | Testing Approach | Status |
+|------------|------------|------------|------------------|--------|
+| 2.13 | UI Design System & Component Library | L3 | Visual review of UI components and styling consistency | PASS |
+| 2.14 | Core Design System & Component Library | L3 | Verification of shared design components and layout standards | PASS |
 
 ---
 
 # QA Effort Summary
 
-| Testing Level | Number of Stories | Effort Level |
-|---------------|------------------|--------------|
-| L1 – Formal Test Cases | 7 | High |
-| L2 – Checklist Validation | 4 | Medium |
-| L3 – Verification/Review | 1 | Low |
+| Testing Level | Stories | Count |
+|---------------|--------|------|
+| L1 – Formal Test Cases | 2.1, 2.2, 2.4, 2.5, 2.6, 2.7, 2.8, 2.11 | 8 |
+| L2 – Checklist Validation | 2.9 | 1 |
+| L3 – Verification / Review | 2.10, 2.12, 2.13, 2.14 | 4 |
 
 ---
 
-# Sprint 2 QA Strategy
+# Sprint 2 QA Outcome
 
-1. Execute all L1 tests before code freeze.
-2. Complete L2 checklist validation during Week 2.
-3. Perform regression testing after full integration.
-4. Log and prioritize defects before Sprint Review.
-5. Confirm Definition of Done criteria are met before marking stories as complete.
-
----
-
-# Definition of Done – QA Validation Gate
-
-A Sprint 2 story cannot move to **Done** unless:
-
-- All acceptance criteria are met.
-- Assigned test level validation completed.
-- No open critical or high-severity defects remain.
-- QA review completed.
+| Result | Count |
+|------|------|
+| Passed | 12 |
+| Pending | 1 |
+| Failed | 0 |
 
 ---
+
+# QA Validation Summary
+
+Sprint 2 successfully validated the core backend infrastructure of the Orderly application. Database schema integrity, validation rules, authentication mechanisms, API endpoint security, and seed data population were all tested through formal test cases and confirmed to function correctly. UI structure and design system components were reviewed through manual verification and visual inspection. One remaining item, Frontend Authentication Components (US2.9), remains pending full validation once frontend integration testing is completed.
