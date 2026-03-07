@@ -1244,6 +1244,7 @@ body
         {
             "id": 1,
             "name": "Sweater",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": false,
             "minPrice": 20.00,
@@ -1252,6 +1253,7 @@ body
         {
             "id": 2,
             "name": "Television",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": true,
             "minPrice": 389.99,
