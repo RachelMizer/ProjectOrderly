@@ -50,7 +50,7 @@ def test_seed_command_creates_customer_profiles_with_default_values():
         assert profile.city == "Raleigh"
         assert profile.state == "NC"
         assert profile.zipcode == "27601"
-        assert profile.phone == "919-555-0101"
+        assert profile.phone == "9195550101"
 
 
 @pytest.mark.django_db
