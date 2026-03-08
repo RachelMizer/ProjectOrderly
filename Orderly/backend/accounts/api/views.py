@@ -69,7 +69,7 @@ class RegisterView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_201_CREATED,
@@ -107,7 +107,7 @@ class LoginView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_200_OK,
@@ -239,8 +239,8 @@ class MeView(APIView):
 
     def get(self, request):
         user = request.user
-        role_obj = getattr(user, "role", None)  # OneToOne related_name='role'
-        role_choice = getattr(role_obj, "role_choice", None)
+        role_obj = getattr(user,"profile", None)  # OneToOne related_name='role'
+        role_choice = getattr(role_obj, "role", None)
 
         return Response(
             {
