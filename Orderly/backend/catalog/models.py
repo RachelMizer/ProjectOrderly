@@ -33,6 +33,9 @@ class Product(models.Model):
     )
     name = models.CharField(max_length=200)
 
+    # Added description field for better product details
+    description = models.TextField(blank=True, help_text="Detailed product description")
+
     has_variants = models.BooleanField(
         default=True,
         help_text="If false, product should still have one default variant.",
