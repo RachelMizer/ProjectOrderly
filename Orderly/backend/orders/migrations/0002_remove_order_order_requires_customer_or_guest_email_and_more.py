@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(models.Q(('customer__isnull', False), ('guest_email__isnull', True)), models.Q(('customer__isnull', True), ('guest_email__isnull', False)), _connector='OR'), name='order_customer_xor_guest_email'),
+            constraint=models.CheckConstraint(check=models.Q(models.Q(('customer__isnull', False), ('guest_email__isnull', True)), models.Q(('customer__isnull', True), ('guest_email__isnull', False)), _connector='OR'), name='order_customer_xor_guest_email'),
         ),
     ]

@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(('customer__isnull', False), ('guest_email__isnull', False), _connector='OR'), name='order_requires_customer_or_guest_email'),
+            constraint=models.CheckConstraint(check=models.Q(('customer__isnull', False), ('guest_email__isnull', False), _connector='OR'), name='order_requires_customer_or_guest_email'),
         ),
         migrations.AddIndex(
             model_name='orderitem',

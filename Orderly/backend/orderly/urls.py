@@ -20,6 +20,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Auth API
+
+    # Authentication endpoints
     path("api/v1/auth/", include("accounts.api.urls")),
+
+    # User profile endpoints (GET/PATCH /api/v1/users/me)
+    path("api/v1/users/", include("accounts.api.urls")),
 ]

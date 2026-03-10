@@ -18,6 +18,7 @@ from .serializers import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
     LoginSerializer,
+    MeSerializer,
 )
 
 access_expires = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
@@ -69,7 +70,7 @@ class RegisterView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_201_CREATED,
@@ -107,7 +108,7 @@ class LoginView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_200_OK,
@@ -192,7 +193,7 @@ class EmailVerificationRequestView(APIView):
         if user:
             try:
                 send_verification_email(user)
-            except:
+            except Exception:
                 pass
 
         return Response({"message": "If email exists, will send email verification"})
@@ -231,22 +232,33 @@ class PasswordResetConfirmView(APIView):
 
 class MeView(APIView):
     """
-    Returns authenticated user's basic profile information.
-    Used by frontend to determine user identity and role.
+    GET /api/v1/users/me
+    PATCH /api/v1/users/me
+
+    Returns and updates the authenticated customer's profile.
     """
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        role_obj = getattr(user, "role", None)  # OneToOne related_name='role'
-        role_choice = getattr(role_obj, "role_choice", None)
+        serializer = MeSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(
-            {
-                "id": user.id,
-                "email": user.email,
-                "username": user.username,
-                "role": role_choice,
-            }
+    def patch(self, request):
+        old_email = request.user.email
+
+        serializer = MeSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
         )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        if user.email != old_email:
+            try:
+                send_verification_email(user)
+            except Exception:
+                pass
+
+        return Response(MeSerializer(user).data, status=status.HTTP_200_OK)

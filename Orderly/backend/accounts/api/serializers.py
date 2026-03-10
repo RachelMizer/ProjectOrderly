@@ -31,6 +31,8 @@ class RegisterSerializer(serializers.Serializer):
 
     def validate_email(self, value: str) -> str:
         email = value.strip().lower()
+        user = self.instance # Prevents possible NoneType issue
+        
         if User.objects.filter(email__iexact=email).exists():
             raise serializers.ValidationError("Email is already registered.")
         return email
@@ -57,7 +59,7 @@ class RegisterSerializer(serializers.Serializer):
             last_name=last_name,
         )
 
-        UserRole.objects.create(user=user, role_choice=UserRoleChoices.CUSTOMER)
+        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER) # Changed to match API contract and default role assignment
         CustomerProfile.objects.create(user=user)
 
         return user
@@ -193,4 +195,94 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         for token in tokens:
             BlacklistedToken.objects.get_or_create(token=token)
 
+        return user
+    
+class MeSerializer(serializers.Serializer):
+    firstName = serializers.CharField(source="first_name", required=False)
+    lastName = serializers.CharField(source="last_name", required=False)
+    email = serializers.EmailField(required=False)
+    streetAddress = serializers.CharField(
+        source="customer_profile.street_address",
+        required=False,
+        allow_blank=True,
+    )
+    city = serializers.CharField(
+        source="customer_profile.city",
+        required=False,
+        allow_blank=True,
+    )
+    state = serializers.CharField(
+        source="customer_profile.state",
+        required=False,
+        allow_blank=True,
+    )
+    zipcode = serializers.CharField(
+        source="customer_profile.zipcode",
+        required=False,
+        allow_blank=True,
+    )
+    phone = serializers.CharField(
+        source="customer_profile.phone",
+        required=False,
+        allow_blank=True,
+    )
+
+    def validate_email(self, value):
+        email = value.strip().lower()
+        user = self.instance
+        if User.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError("Email is already registered.")
+        return email
+
+    def to_representation(self, user):
+        profile = getattr(user, "customer_profile", None)
+
+        return {
+            "firstName": user.first_name,
+            "lastName": user.last_name,
+            "email": user.email,
+            "streetAddress": profile.street_address if profile else "",
+            "city": profile.city if profile else "",
+            "state": profile.state if profile else "",
+            "zipcode": profile.zipcode if profile else "",
+            "phone": profile.phone if profile else "",
+        }
+
+    def update(self, user, validated_data):
+        profile_data = validated_data.pop("customer_profile", {})
+
+        if "first_name" in validated_data:
+            user.first_name = validated_data["first_name"]
+
+        if "last_name" in validated_data:
+            user.last_name = validated_data["last_name"]
+
+        if "email" in validated_data:
+            new_email = validated_data["email"]
+            if new_email != user.email:
+                user.email = new_email
+                user.username = new_email
+                profile = user.customer_profile
+                profile.email_verified = False
+
+        user.save()
+
+        profile = user.customer_profile
+
+        if "street_address" in profile_data:
+            profile.street_address = profile_data["street_address"]
+
+        if "city" in profile_data:
+            profile.city = profile_data["city"]
+
+        if "state" in profile_data:
+            profile.state = profile_data["state"]
+
+        if "zipcode" in profile_data:
+            profile.zipcode = profile_data["zipcode"]
+
+        if "phone" in profile_data:
+            profile.phone = profile_data["phone"]
+
+        profile.save()
         return user

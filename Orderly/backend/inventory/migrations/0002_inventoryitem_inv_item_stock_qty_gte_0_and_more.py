@@ -13,22 +13,22 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddConstraint(
             model_name='inventoryitem',
-            constraint=models.CheckConstraint(condition=models.Q(('stock_quantity__gte', 0)), name='inv_item_stock_qty_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('stock_quantity__gte', 0)), name='inv_item_stock_qty_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='inventoryitem',
-            constraint=models.CheckConstraint(condition=models.Q(('reorder_level__isnull', True), ('reorder_level__gte', 0), _connector='OR'), name='inv_item_reorder_level_gte_0_or_null'),
+            constraint=models.CheckConstraint(check=models.Q(('reorder_level__isnull', True), ('reorder_level__gte', 0), _connector='OR'), name='inv_item_reorder_level_gte_0_or_null'),
         ),
         migrations.AddConstraint(
             model_name='inventoryitem',
-            constraint=models.CheckConstraint(condition=models.Q(('reorder_level__isnull', True), ('stock_quantity__gte', models.F('reorder_level')), _connector='OR'), name='inv_item_stock_qty_gte_reorder_level'),
+            constraint=models.CheckConstraint(check=models.Q(('reorder_level__isnull', True), ('stock_quantity__gte', models.F('reorder_level')), _connector='OR'), name='inv_item_stock_qty_gte_reorder_level'),
         ),
         migrations.AddConstraint(
             model_name='modifierinventoryusage',
-            constraint=models.CheckConstraint(condition=models.Q(('quantity_used__gt', 0)), name='modifier_usage_qty_used_gt_0'),
+            constraint=models.CheckConstraint(check=models.Q(('quantity_used__gt', 0)), name='modifier_usage_qty_used_gt_0'),
         ),
         migrations.AddConstraint(
             model_name='variantinventoryusage',
-            constraint=models.CheckConstraint(condition=models.Q(('quantity_used__gt', 0)), name='variant_usage_qty_used_gt_0'),
+            constraint=models.CheckConstraint(check=models.Q(('quantity_used__gt', 0)), name='variant_usage_qty_used_gt_0'),
         ),
     ]

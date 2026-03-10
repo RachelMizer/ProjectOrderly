@@ -15,38 +15,38 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(('subtotal__gte', 0)), name='order_subtotal_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('subtotal__gte', 0)), name='order_subtotal_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(('tax_amount__gte', 0)), name='order_tax_amount_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('tax_amount__gte', 0)), name='order_tax_amount_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(('total_payment_due__gte', 0)), name='order_total_payment_due_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('total_payment_due__gte', 0)), name='order_total_payment_due_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='order',
-            constraint=models.CheckConstraint(condition=models.Q(('total_payment_due', django.db.models.expressions.CombinedExpression(models.F('subtotal'), '+', models.F('tax_amount')))), name='order_total_equals_subtotal_plus_tax'),
+            constraint=models.CheckConstraint(check=models.Q(('total_payment_due', django.db.models.expressions.CombinedExpression(models.F('subtotal'), '+', models.F('tax_amount')))), name='order_total_equals_subtotal_plus_tax'),
         ),
         migrations.AddConstraint(
             model_name='orderitem',
-            constraint=models.CheckConstraint(condition=models.Q(('unit_price_charged__gte', 0)), name='order_item_unit_price_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('unit_price_charged__gte', 0)), name='order_item_unit_price_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='orderitem',
-            constraint=models.CheckConstraint(condition=models.Q(('item_total__gte', 0)), name='order_item_total_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('item_total__gte', 0)), name='order_item_total_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='orderitem',
-            constraint=models.CheckConstraint(condition=models.Q(('item_total', django.db.models.expressions.CombinedExpression(models.F('quantity'), '*', models.F('unit_price_charged')))), name='order_item_total_equals_qty_times_unit_price'),
+            constraint=models.CheckConstraint(check=models.Q(('item_total', django.db.models.expressions.CombinedExpression(models.F('quantity'), '*', models.F('unit_price_charged')))), name='order_item_total_equals_qty_times_unit_price'),
         ),
         migrations.AddConstraint(
             model_name='orderitemmodifier',
-            constraint=models.CheckConstraint(condition=models.Q(('price_adjustment_charged__gte', 0)), name='order_item_modifier_price_adj_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('price_adjustment_charged__gte', 0)), name='order_item_modifier_price_adj_gte_0'),
         ),
         migrations.AddConstraint(
             model_name='payment',
-            constraint=models.CheckConstraint(condition=models.Q(('total__gte', 0)), name='payment_total_gte_0'),
+            constraint=models.CheckConstraint(check=models.Q(('total__gte', 0)), name='payment_total_gte_0'),
         ),
     ]

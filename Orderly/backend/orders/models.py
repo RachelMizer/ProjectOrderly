@@ -62,7 +62,7 @@ class Order(models.Model):
         constraints = [
             # XOR: Either customer OR guest_email must be set, but not both.
             models.CheckConstraint(
-                condition=(
+                check=(
                     (Q(customer__isnull=False) & Q(guest_email__isnull=True))
                     | (Q(customer__isnull=True) & Q(guest_email__isnull=False))
                 ),
@@ -70,20 +70,20 @@ class Order(models.Model):
             ),
             # Money fields must be >= 0
             models.CheckConstraint(
-                condition=Q(subtotal__gte=0),
+                check=Q(subtotal__gte=0),
                 name="order_subtotal_gte_0",
             ),
             models.CheckConstraint(
-                condition=Q(tax_amount__gte=0),
+                check=Q(tax_amount__gte=0),
                 name="order_tax_amount_gte_0",
             ),
             models.CheckConstraint(
-                condition=Q(total_payment_due__gte=0),
+                check=Q(total_payment_due__gte=0),
                 name="order_total_payment_due_gte_0",
             ),
             # Total must equal subtotal + tax (DB-level integrity)
             models.CheckConstraint(
-                condition=Q(total_payment_due=F("subtotal") + F("tax_amount")),
+                check=Q(total_payment_due=F("subtotal") + F("tax_amount")),
                 name="order_total_equals_subtotal_plus_tax",
             ),
         ]
@@ -167,16 +167,16 @@ class OrderItem(models.Model):
         ]
         constraints = [
             models.CheckConstraint(
-                condition=Q(unit_price_charged__gte=0),
+                check=Q(unit_price_charged__gte=0),
                 name="order_item_unit_price_gte_0",
             ),
             models.CheckConstraint(
-                condition=Q(item_total__gte=0),
+                check=Q(item_total__gte=0),
                 name="order_item_total_gte_0",
             ),
             # item_total must equal quantity * unit_price_charged
             models.CheckConstraint(
-                condition=Q(item_total=F("quantity") * F("unit_price_charged")),
+                check=Q(item_total=F("quantity") * F("unit_price_charged")),
                 name="order_item_total_equals_qty_times_unit_price",
             ),
         ]
@@ -236,7 +236,7 @@ class OrderItemModifier(models.Model):
                 name="uniq_modifier_option_per_order_item",
             ),
             models.CheckConstraint(
-                condition=Q(price_adjustment_charged__gte=0),
+                check=Q(price_adjustment_charged__gte=0),
                 name="order_item_modifier_price_adj_gte_0",
             ),
         ]
@@ -275,7 +275,7 @@ class Payment(models.Model):
         ]
         constraints = [
             models.CheckConstraint(
-                condition=Q(total__gte=0),
+                check=Q(total__gte=0),
                 name="payment_total_gte_0",
             ),
         ]

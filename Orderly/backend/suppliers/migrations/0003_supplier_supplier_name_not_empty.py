@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddConstraint(
             model_name='supplier',
-            constraint=models.CheckConstraint(condition=models.Q(('name', ''), _negated=True), name='supplier_name_not_empty'),
+            constraint=models.CheckConstraint(check=models.Q(('name', ''), _negated=True), name='supplier_name_not_empty'),
         ),
     ]
