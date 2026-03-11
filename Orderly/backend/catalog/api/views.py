@@ -47,7 +47,7 @@ class ProductsView(APIView):
         page_size = int(request.query_params.get("pageSize", 50))
 
         products = Product.objects.annotate(
-            minPrice=Min("productvariant__unit_price")
+            minPrice=Min("variants__unit_price")
         ).order_by("name")
 
         if category_id is not None:
