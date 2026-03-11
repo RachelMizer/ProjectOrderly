@@ -234,6 +234,48 @@ class MeSerializer(serializers.Serializer):
             raise serializers.ValidationError("Email is already registered.")
         return email
 
+    def validate_state(self, value):
+        value = value.strip().upper()
+
+        if value == "":
+            return value
+
+        if len(value) != 2 or not value.isalpha():
+            raise serializers.ValidationError(
+                "State must be a 2-letter uppercase code (e.g., NC)."
+            )
+
+        return value
+
+    def validate_zipcode(self, value):
+        value = value.strip()
+
+        if value == "":
+            return value
+
+        import re
+        if not re.fullmatch(r"\d{5}(-\d{4})?", value):
+            raise serializers.ValidationError(
+                "Enter a valid ZIP code (e.g., 12345 or 12345-6789)."
+            )
+
+        return value
+
+    def validate_phone(self, value):
+        value = value.strip()
+
+        if value == "":
+            return value
+
+        import re
+        if not re.fullmatch(r"^\+?1?\d{10,15}$", value):
+            raise serializers.ValidationError(
+                "Enter a valid phone number (10–15 digits, optional +country code)."
+            )
+
+        return value
+    
+    # Adding better validation for state, zipcode, and phone to ensure data integrity and provide clearer error messages for users.
     def to_representation(self, user):
         profile = getattr(user, "customer_profile", None)
 
@@ -262,8 +304,7 @@ class MeSerializer(serializers.Serializer):
             if new_email != user.email:
                 user.email = new_email
                 user.username = new_email
-                profile = user.customer_profile
-                profile.email_verified = False
+                user.customer_profile.email_verified = False
 
         user.save()
 
@@ -284,5 +325,9 @@ class MeSerializer(serializers.Serializer):
         if "phone" in profile_data:
             profile.phone = profile_data["phone"]
 
-        profile.save()
+        try:
+            profile.save()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
+
         return user

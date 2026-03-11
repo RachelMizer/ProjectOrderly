@@ -18,7 +18,7 @@ class Supplier(models.Model):
         constraints = [
             # Prevent empty supplier names at DB level
             models.CheckConstraint(
-                check=~Q(name=""),
+                condition=~Q(name=""),
                 name="supplier_name_not_empty",
             ),
         ]

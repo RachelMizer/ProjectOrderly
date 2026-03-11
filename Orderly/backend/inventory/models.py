@@ -30,16 +30,16 @@ class InventoryItem(models.Model):
         ordering = ["name"]
         constraints = [
             models.CheckConstraint(
-                check=models.Q(stock_quantity__gte=0),
+                condition=models.Q(stock_quantity__gte=0),
                 name="inv_item_stock_qty_gte_0",
             ),
             models.CheckConstraint(
-                check=models.Q(reorder_level__isnull=True)
+                condition=models.Q(reorder_level__isnull=True)
                 | models.Q(reorder_level__gte=0),
                 name="inv_item_reorder_level_gte_0_or_null",
             ),
             models.CheckConstraint(
-                check=models.Q(reorder_level__isnull=True)
+                condition=models.Q(reorder_level__isnull=True)
                 | models.Q(stock_quantity__gte=models.F("reorder_level")),
                 name="inv_item_stock_qty_gte_reorder_level",
             ),
@@ -103,7 +103,7 @@ class VariantInventoryUsage(models.Model):
                 name="uniq_inventory_item_per_variant_recipe",
             ),
             models.CheckConstraint(
-                check=models.Q(quantity_used__gt=0),
+                condition=models.Q(quantity_used__gt=0),
                 name="variant_usage_qty_used_gt_0",
             ),
         ]
@@ -145,7 +145,7 @@ class ModifierInventoryUsage(models.Model):
                 name="uniq_inventory_item_per_modifier_option",
             ),
             models.CheckConstraint(
-                check=models.Q(quantity_used__gt=0),
+                condition=models.Q(quantity_used__gt=0),
                 name="modifier_usage_qty_used_gt_0",
             ),
         ]
