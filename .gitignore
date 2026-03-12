@@ -87,4 +87,3 @@ logs/
 *.pem
 *.key
 *.crt
-Orderly/frontend/package-lock.json
