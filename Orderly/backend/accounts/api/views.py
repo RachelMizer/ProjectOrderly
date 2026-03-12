@@ -69,7 +69,7 @@ class RegisterView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_201_CREATED,
@@ -107,7 +107,7 @@ class LoginView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.role.role_choice,
+                    "role": user.profile.role,
                 },
             },
             status=status.HTTP_200_OK,
