@@ -1,0 +1,74 @@
+name: Orderly CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  # -------------------------------------------------------
+  # BACKEND — Django + pytest
+  # -------------------------------------------------------
+  backend:
+    name: Backend Tests (Django / pytest)
+    runs-on: ubuntu-latest
+
+    env:
+      SECRET_KEY: ci-insecure-key-for-testing-only
+      DEBUG: "True"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        working-directory: Orderly
+        run: pip install -r requirements.txt
+
+      - name: Run migrations
+        working-directory: Orderly/backend
+        run: python manage.py migrate --no-input. # avoids any interactive prompts during migration
+
+      - name: Run pytest
+        working-directory: Orderly/backend
+        run: pytest --tb=short -v
+
+  # -------------------------------------------------------
+  # FRONTEND — React / Node
+  # -------------------------------------------------------
+  frontend:
+    name: Frontend Checks (React / Node)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Orderly/frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Orderly/frontend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: Orderly/frontend
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: Orderly/frontend
+        run: npm test -- --watchAll=false
+        continue-on-error: true # flip flag to false once confirmed front-end testing is stable in CI
