@@ -60,7 +60,7 @@ jobs:
 
       - name: Run pytest
         working-directory: Orderly/backend
-        run: pytest --tb=short -v || true # FLIP FLAG once test files are added to repo
+        run: pytest --tb=short -v 
 
   # -------------------------------------------------------
   # FRONTEND — React / Node
