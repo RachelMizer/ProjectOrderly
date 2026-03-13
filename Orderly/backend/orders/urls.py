@@ -11,6 +11,7 @@ from orders.views import (
     DraftOrderView,
     DraftOrderItemCreateView,
     DraftOrderItemUpdateView,
+    SubmitOrderView,
 )
 
 urlpatterns = [
@@ -36,5 +37,13 @@ urlpatterns = [
         "items/<int:orderItemId>",
         DraftOrderItemUpdateView.as_view(),
         name="draft-order-item-update",
+    ),
+
+    # Submit draft order
+    # PATCH /api/v1/orders/{orderId}/submit
+    path(
+        "<int:orderId>/submit",
+        SubmitOrderView.as_view(),
+        name="submit-order",
     ),
 ]
