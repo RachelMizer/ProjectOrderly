@@ -169,7 +169,7 @@ def test_logout_returns_200_and_clears_cookie(api_client, user_with_password):
 
 @pytest.mark.django_db
 def test_me_requires_auth(api_client):
-    response = api_client.get("/api/v1/auth/me/")
+    response = api_client.get("/api/v1/users/me/")
 
     assert response.status_code == 401
 
@@ -178,13 +178,12 @@ def test_me_requires_auth(api_client):
 def test_me_returns_authenticated_user(api_client, user_with_password):
     api_client.force_authenticate(user=user_with_password)
 
-    response = api_client.get("/api/v1/auth/me/")
+    response = api_client.get("/api/v1/users/me/")
 
     assert response.status_code == 200
-    assert response.data["id"] == user_with_password.id
+    assert response.data["firstName"] == "Test"
+    assert response.data["lastName"] == "User"
     assert response.data["email"] == "user@test.com"
-    assert response.data["username"] == "user@test.com"
-    assert "role" in response.data
 
 
 @pytest.mark.django_db
