@@ -15,9 +15,9 @@ from orders.views import (
 
 urlpatterns = [
     # Retrieve the customer's draft order (cart)
-    # GET /api/v1/orders?status=DRAFT
+    # POST /api/v1/orders/draft
     path(
-        "",
+        "draft",
         DraftOrderView.as_view(),
         name="draft-order",
     ),

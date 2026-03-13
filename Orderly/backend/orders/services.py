@@ -18,7 +18,7 @@ Key responsibilities implemented here include:
 
 These helpers are used by the following endpoints:
 
-    GET    /api/v1/orders?status=DRAFT
+    POST   /api/v1/orders/draft
     POST   /api/v1/orders/items
     PATCH  /api/v1/orders/items/{orderItemId}
 
