@@ -82,7 +82,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: Orderly/frontend
-        run: npm ci
+        run: npm install # WAS CI but does not work with current caching strategy for package-lock.json
 
       - name: Run linter
         working-directory: Orderly/frontend
