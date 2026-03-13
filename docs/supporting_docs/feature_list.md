@@ -68,3 +68,4 @@
 
 *   User help / FAQ page
 *   Onboarding or guidance for new users (optional but mentioned)
+*   Help & Support is currently out of scope, but can be explored further along in development

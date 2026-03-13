@@ -159,33 +159,344 @@ As a customer, I want to view my previous orders so that I can reorder my favori
 
 ---
 
-## US3.6 — User Profile Management
+## US3.6.2 — User Profile Management
 
-### Test Case ID:
-TC-3.6-01
+### Feature
+Customer Profile Management
 
-### Feature:
-User Profile Management
-
-### User Story:
+### User Story
 As a customer, I want to update my profile information so that my contact details stay current.
 
-### Preconditions:
+### Endpoints Tested
+- GET `/api/v1/users/me/`
+- PATCH `/api/v1/users/me/`
 
 
-### Test Steps:
+### TC-3.6.2-01 – Authenticated User Can View Profile
+
+### Preconditions
+- Customer account exists
+- User is authenticated
+- CustomerProfile record exists
+
+### Test Steps
+1. Send GET request to `/api/v1/users/me/`
+2. Include Authorization header
+
+    Authorization: Bearer <access_token>
+
+3. Submit request
+
+### Expected Result
+- API returns **200 OK**
+- Response contains user profile information including:
+  - first_name
+  - last_name
+  - email
+  - phone
+  - address fields
+
+### Actual Result
+Profile data returned successfully.
+
+### Evidence
+**View Profile Endpoint**  
+![View Profile](Screenshots/3.6.2/user_can_view_profile.jpg)
+
+### Status
+Pass
 
 
-### Expected Result:
+### TC-3.6.2-02 – Unauthorized User Cannot View Profile
+
+### Preconditions
+- API server running
+
+### Test Steps
+1. Send GET request to `/api/v1/users/me/`
+2. Do **not** include Authorization header
+
+### Expected Result
+- API returns **401 Unauthorized**
+
+### Actual Result
+Unauthorized access correctly rejected.
+
+### Status
+Pass
+
+### TC-3.6.2-03 – User Can Update Name
+
+### Preconditions
+- Authenticated user
+- Existing CustomerProfile record
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Include Authorization header
+3. Request body:
+
+    {
+      "firstName": "John",
+      "lastName": "Doe"
+    }
+
+4. Submit request
+
+### Expected Result
+- API returns **200 OK**
+- User name is updated
+
+### Actual Result
+Name updated successfully.
+
+### Evidence
+**Update Name**  
+![Update Name](Screenshots/3.6.2/update_name.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-04 – User Can Update Address
+
+### Preconditions
+- Authenticated user
+- Existing CustomerProfile record
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Include Authorization header
+3. Request body:
+
+    {
+      "address": "123 Test Street"
+    }
+
+4. Submit request
+
+### Expected Result
+- API returns **200 OK**
+- Address updated successfully
+
+### Actual Result
+Address updated successfully.
+
+### Evidence
+**Update Address**  
+![Update Address](Screenshots/3.6.2/update_address.jpg)
+
+### Status
+Pass
 
 
-### Actual Result:
+### TC-3.6.2-05 – User Can Update Email
+
+### Preconditions
+- Authenticated user
+- Existing CustomerProfile record
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Include Authorization header
+3. Request body:
+
+    {
+      "email": "newemail@test.com"
+    }
+
+4. Submit request
+
+### Expected Result
+- API returns **200 OK**
+- Email updated successfully
+- Email verification triggered if required
+
+### Actual Result
+Email updated successfully.
+
+### Evidence
+**Update Email**  
+![Update Email](Screenshots/3.6.2/update_email.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-06 – User Can Update Phone Number
+
+### Preconditions
+- Authenticated user
+- Existing CustomerProfile record
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Include Authorization header
+3. Request body:
+
+    {
+      "phone": "9195551234"
+    }
+
+4. Submit request
+
+### Expected Result
+- API returns **200 OK**
+- Phone number updated successfully
+
+### Actual Result
+Phone updated successfully.
+
+### Evidence
+**Update Phone**  
+![Update Phone](Screenshots/3.6.2/update_phone.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-07 – Partial Profile Update Works
+
+### Preconditions
+- Authenticated user
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Include Authorization header
+3. Request body:
+
+    {
+      "phone": "9195559999"
+    }
+
+### Expected Result
+- API returns **200 OK**
+- Only phone field updates
+- Other profile fields remain unchanged
+
+### Actual Result
+Partial update works correctly.
+
+### Evidence
+**Partial Profile Update**  
+![Partial Update](Screenshots/3.6.2/partial_update.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-08 – Duplicate Email Validation
+
+### Preconditions
+- Two users exist in system
+
+### Test Steps
+1. Send PATCH request to `/api/v1/users/me/`
+2. Attempt to update email to an existing user email
+
+    {
+      "email": "existing@email.com"
+    }
+
+### Expected Result
+- API returns **400 Bad Request**
+- Validation error indicating email already exists
+
+### Actual Result
+Duplicate email correctly rejected.
+
+### Evidence
+**Duplicate Email Validation**  
+![Duplicate Email](Screenshots/3.6.2/duplicate_email.jpg)
+
+### Status
+Pass
 
 
-### Status:
+### TC-3.6.2-09 – Invalid Phone Validation
 
+### Test Steps
+Send request body:
 
-### Notes:
+    {
+      "phone": "abc123"
+    }
+
+### Expected Result
+- API returns **400 Bad Request**
+- Phone validation error
+
+### Actual Result
+Validation error returned correctly.
+
+### Evidence
+**Invalid Phone Input**  
+![Invalid Phone](Screenshots/3.6.2/invalid_phone.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-10 – Invalid State Validation
+
+### Test Steps
+Send request body:
+
+    {
+      "state": "North Carolina"
+    }
+
+### Expected Result
+- API returns **400 Bad Request**
+- Validation error indicating state must be two-letter code
+
+### Actual Result
+Validation error returned correctly.
+
+### Evidence
+**Invalid State Input**  
+![Invalid State](Screenshots/3.6.2/invalid_state.jpg)
+
+### Status
+Pass
+
+### TC-3.6.2-11 – Invalid Zipcode Validation
+
+### Test Steps
+Send request body:
+
+    {
+      "zipcode": "27"
+    }
+
+### Expected Result
+- API returns **400 Bad Request**
+- Validation error indicating invalid zipcode format
+
+### Actual Result
+Validation error returned correctly.
+
+### Evidence
+**Invalid Zipcode Input**  
+![Invalid Zipcode](Screenshots/3.6.2/invalid_zipcode.jpg)
+
+### Status
+Pass
+
+### Test Summary
+
+| Test Case | Description | Result |
+|----------|-------------|--------|
+| TC-3.6.2-01 | View profile | Pass |
+| TC-3.6.2-02 | Unauthorized access | Pass |
+| TC-3.6.2-03 | Update name | Pass |
+| TC-3.6.2-04 | Update address | Pass |
+| TC-3.6.2-05 | Update email | Pass |
+| TC-3.6.2-06 | Update phone | Pass |
+| TC-3.6.2-07 | Partial update | Pass |
+| TC-3.6.2-08 | Duplicate email validation | Pass |
+| TC-3.6.2-09 | Invalid phone validation | Pass |
+| TC-3.6.2-10 | Invalid state validation | Pass |
+| TC-3.6.2-11 | Invalid zipcode validation | Pass |
+
+### Overall Result
+All acceptance criteria for **US3.6 – Customer Profile Update** were successfully validated.  
+Profile viewing, profile updates, authentication protection, and input validation all function as expected.
 
 
 ---

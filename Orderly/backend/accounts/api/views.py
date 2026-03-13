@@ -241,8 +241,9 @@ class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = MeSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user = request.user
+        role_obj = getattr(user,"profile", None)  # OneToOne related_name='role'
+        role_choice = getattr(role_obj, "role", None)
 
     def patch(self, request):
         old_email = request.user.email

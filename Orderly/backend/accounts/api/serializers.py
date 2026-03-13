@@ -59,7 +59,7 @@ class RegisterSerializer(serializers.Serializer):
             last_name=last_name,
         )
 
-        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER) # Changed to match API contract and default role assignment
+        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER)
         CustomerProfile.objects.create(user=user)
 
         return user
