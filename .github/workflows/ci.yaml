@@ -15,29 +15,45 @@ jobs:
   backend:
     name: Backend Tests (Django / pytest)
     runs-on: ubuntu-latest
-
+ 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: orderly
+          MYSQL_USER: orderly_user
+          MYSQL_PASSWORD: localdevpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+ 
     env:
       SECRET_KEY: ci-insecure-key-for-testing-only
       DEBUG: "True"
-
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+ 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
-
+ 
       - name: Install dependencies
         working-directory: Orderly
         run: pip install -r requirements.txt
-
+ 
       - name: Run migrations
         working-directory: Orderly/backend
         run: python manage.py migrate --noinput # avoids any interactive prompts during migration
-
+ 
       - name: Run pytest
         working-directory: Orderly/backend
         run: pytest --tb=short -v
