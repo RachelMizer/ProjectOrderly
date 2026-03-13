@@ -54,6 +54,10 @@ jobs:
         working-directory: Orderly/backend
         run: python manage.py migrate --noinput # avoids any interactive prompts during migration
  
+        # Hard coding pytest. Need to add to requirements.txt and remove this step once done
+      - name: Install pytest
+        run: pip install pytest pytest-django
+
       - name: Run pytest
         working-directory: Orderly/backend
         run: pytest --tb=short -v
