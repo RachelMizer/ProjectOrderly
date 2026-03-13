@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         # --- core models (always present) ---
         User = get_user_model()
-        UserProfile = safe_model("accounts", "UserProfile")
+        UserRole = safe_model("accounts", "UserRole")
         CustomerProfile = safe_model("accounts", "CustomerProfile")
 
         # Optional models (may exist depending on team progress)
@@ -85,9 +85,9 @@ class Command(BaseCommand):
 
         # --- 2) Create business + customer users and profiles ---
         def ensure_profile(user, role_value: str):
-            if not UserProfile:
+            if not UserRole:
                 return
-            UserProfile.objects.get_or_create(user=user, defaults={"role": role_value})
+            UserRole.objects.get_or_create(user=user, defaults={"role": role_value})
 
         def ensure_customer_profile(user):
             if not CustomerProfile:
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     "city": "Raleigh",
                     "state": "NC",
                     "zipcode": "27601",
-                    "phone": "919-555-0101",
+                    "phone": "9195550101",
                 },
             )
 
@@ -186,28 +186,50 @@ class Command(BaseCommand):
             # These field names might vary by your team's catalog models.
             # We try common patterns and skip gracefully if mismatched.
             def make_variant(product, name, price):
+                field_names = [f.name for f in ProductVariant._meta.fields]
+
                 kwargs = {}
+                defaults = {}
+
+                # variant display/name field
+                variant_name_field = None
                 for field in ["name", "variant_name", "label", "title"]:
-                    if field in [f.name for f in ProductVariant._meta.fields]:
+                    if field in field_names:
+                        variant_name_field = field
                         kwargs[field] = name
                         break
-                # price field guess
+
+                # price field
                 for field in ["price", "base_price", "unit_price"]:
-                    if field in [f.name for f in ProductVariant._meta.fields]:
-                        kwargs[field] = money(price)
+                    if field in field_names:
+                        defaults[field] = money(price)
                         break
 
-                # required FK to product guess
+                # required FK to product
                 fk_name = None
                 for f in ProductVariant._meta.fields:
                     if getattr(f, "related_model", None) == Product:
                         fk_name = f.name
                         break
-                if not fk_name:
+
+                if not fk_name or not variant_name_field:
                     return None
 
                 kwargs[fk_name] = product
-                obj, _ = ProductVariant.objects.get_or_create(**kwargs)
+
+                # unique SKU if model has sku field
+                if "sku" in field_names:
+                    sku = f"{product.name}-{name}".upper().replace(" ", "-")
+                    defaults["sku"] = sku
+
+                # optional stock quantity if your model uses it
+                if "stock_quantity" in field_names:
+                    defaults.setdefault("stock_quantity", 10)
+
+                obj, _ = ProductVariant.objects.get_or_create(
+                    **kwargs,
+                    defaults=defaults,
+                )
                 return obj
 
             for (prod, vname, price) in [

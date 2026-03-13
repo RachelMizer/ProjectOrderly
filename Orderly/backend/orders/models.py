@@ -291,7 +291,7 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"Payment #{self.id} — Order #{self.order_id} — {self.total}"
