@@ -36,7 +36,7 @@ jobs:
 
       - name: Run migrations
         working-directory: Orderly/backend
-        run: python manage.py migrate --no-input. # avoids any interactive prompts during migration
+        run: python manage.py migrate --noinput # avoids any interactive prompts during migration
 
       - name: Run pytest
         working-directory: Orderly/backend
