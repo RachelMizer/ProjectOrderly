@@ -24,6 +24,9 @@ urlpatterns = [
     # Auth API
     path("api/v1/auth/", include("accounts.api.urls")),
 
+    # User profile API
+    path("api/v1/users/", include("accounts.api.urls")),
+
     # Orders API
     path("api/v1/orders/", include("orders.urls")),
 ]

@@ -139,3 +139,65 @@ to start the frontend server:
 ```
 npm start
 ```
+
+---
+
+## CI/CD Pipeline
+
+Every pull request to `main` runs two automated checks via GitHub Actions:
+
+| Check               | What Runs                                                    |
+| ------------------- | ------------------------------------------------------------ |
+| **Backend Tests**   | Spins up MySQL 8.0, runs migrations, installs pytest, runs full pytest suite |
+| **Frontend Checks** | Installs dependencies, runs linter, runs test suite          |
+
+Both checks must pass before a PR is eligible to merge.
+
+---
+
+### Viewing Results
+
+After pushing, open your pull request on GitHub. Check statuses appear near the bottom of the PR page. Click **Details** on any check to see the full log output.
+
+---
+
+### Running Checks Locally Before Pushing
+
+**Backend:**
+
+```bash
+# From Orderly/backend
+pip install -r ../requirements.txt
+python manage.py migrate --noinput
+pytest --tb=short -v
+```
+
+**Frontend:**
+
+```bash
+# From Orderly/frontend
+npm install
+npm run lint
+npm test
+```
+
+---
+
+### Active Workarounds
+
+The following are temporary — see PR comments for full context:
+
+| Workaround                                | Owner      | Action Required                                              |
+| ----------------------------------------- | ---------- | ------------------------------------------------------------ |
+| `pytest \|\| true` — no tests collected   | Kenny B.   | Commit test files to repo                                    |
+| `pytest` installed manually in workflow   | Tristin G. | Add `pytest` and `pytest-django` to `requirements.txt`       |
+| Hardcoded DB credentials in `settings.py` | Tristin G. | Migrate to environment variables                             |
+| `npm install` instead of `npm ci`         | Rachel M.  | Run `npm install` locally, commit updated `package-lock.json` |
+| `continue-on-error` on lint               | Rachel M.  | Add `lint` script to `package.json`                          |
+| `continue-on-error` on tests              | Rachel M.  | Add `test` script to `package.json`                          |
+
+Once all workarounds are resolved, remove them and CI will fully enforce quality gates on every PR.
+
+---
+
+See [CONTRIBUTING.md](../docs/StandardsAndProcedures/CONTRIBUTING.md) for the full workflow.
