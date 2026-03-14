@@ -647,6 +647,58 @@ body
 }
 ```
 
+## Get Draft Order
+**Endpoint:** `POST /api/v1/orders/draft`  
+**Description:** Returns the customer's active draft order. if none exists, creates a new draft order and returns it  
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)  
+**Role:** None  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:**
+```
+{
+    "guestEmail": "test@example.com"
+}
+or if access token in header,
+{}
+```
+**Rules:**
++ If accessToken is present, identify the customer from token
++ If no accessToken, guestEmail is required
++ If found, returns draft order
++ If not found, creates draft and returns it
+
+**Success Response (200 OK):**  
+```
+draft found
+{
+    "id": 42,
+    "created": false
+}
+```
+
+**Success Response (201 Created):**  
+```
+draft not found
+{
+    "id": 42,
+    "created": true
+}
+```
+z
+**Bad Request (400):**
+```
+{
+    "error": "MISSING_INPUT",
+    "message": "missing access token or guest email"
+}
+```
+
 ## Add item to Order  
 **Endpoint:** `<POST> /api/v1/orders/items`  
 **Description:** Adds an order item to a customer's order draft  

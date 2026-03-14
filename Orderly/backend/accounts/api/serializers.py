@@ -59,7 +59,7 @@ class RegisterSerializer(serializers.Serializer):
             last_name=last_name,
         )
 
-        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER)
+        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER) # Changed to match API contract and default role assignment
         CustomerProfile.objects.create(user=user)
 
         return user
@@ -67,7 +67,7 @@ class RegisterSerializer(serializers.Serializer):
 
 class LoginSerializer(serializers.Serializer):
     """
-    Validates login credentials by autenticating the user with email+password and rejecting invallid credentials or disabled accounts.
+    Validates login credentials by authenticating the user with email+password and rejecting invalid credentials or disabled accounts.
     On success it returns the authenticated User, assigns the default CUSTOMER role, and creates the CustomerProfile.
 
     """
