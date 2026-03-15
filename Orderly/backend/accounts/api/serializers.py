@@ -66,7 +66,7 @@ class RegisterSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     """
     Validates login credentials by autenticating the user with email+password and rejecting invallid credentials or disabled accounts.
-    On success it returns the authenticated User, assigns the default CUSTOMER role, and creates the CustomerProfile.
+    On success it returns the authenticated User.
 
     """
 
