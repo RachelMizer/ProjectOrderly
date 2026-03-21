@@ -34,7 +34,8 @@ class InventoryItem(models.Model):
                 name="inv_item_stock_qty_gte_0",
             ),
             models.CheckConstraint(
-                condition=models.Q(reorder_level__isnull=True) | models.Q(reorder_level__gte=0),
+                condition=models.Q(reorder_level__isnull=True)
+                | models.Q(reorder_level__gte=0),
                 name="inv_item_reorder_level_gte_0_or_null",
             ),
             models.CheckConstraint(
@@ -45,17 +46,21 @@ class InventoryItem(models.Model):
         ]
 
     def clean(self):
-        # Range + cross-field rules (application-level)
         if self.stock_quantity is not None and self.stock_quantity < 0:
-            raise ValidationError({"stock_quantity": "Stock quantity cannot be negative."})
+            raise ValidationError(
+                {"stock_quantity": "Stock quantity cannot be negative."}
+            )
 
         if self.reorder_level is not None:
             if self.reorder_level < 0:
-                raise ValidationError({"reorder_level": "Reorder level cannot be negative."})
+                raise ValidationError(
+                    {"reorder_level": "Reorder level cannot be negative."}
+                )
             if self.stock_quantity is not None and self.reorder_level > self.stock_quantity:
-                raise ValidationError({"reorder_level": "Reorder level cannot exceed stock quantity."})
+                raise ValidationError(
+                    {"reorder_level": "Reorder level cannot exceed stock quantity."}
+                )
 
-        # Prevent unit changes if referenced by recipes/usages
         if not self.pk:
             return
 
@@ -63,7 +68,11 @@ class InventoryItem(models.Model):
         if old.unit_of_measure != self.unit_of_measure:
             if self.variant_usages.exists() or self.modifier_usages.exists():
                 raise ValidationError(
-                    {"unit_of_measure": "Cannot change unit_of_measure while this item is used in recipes."}
+                    {
+                        "unit_of_measure": (
+                            "Cannot change unit_of_measure while this item is used in recipes."
+                        )
+                    }
                 )
 
     def save(self, *args, **kwargs):
@@ -101,7 +110,9 @@ class VariantInventoryUsage(models.Model):
 
     def clean(self):
         if self.quantity_used is None or self.quantity_used <= 0:
-            raise ValidationError({"quantity_used": "Quantity used must be greater than 0."})
+            raise ValidationError(
+                {"quantity_used": "Quantity used must be greater than 0."}
+            )
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -141,7 +152,9 @@ class ModifierInventoryUsage(models.Model):
 
     def clean(self):
         if self.quantity_used is None or self.quantity_used <= 0:
-            raise ValidationError({"quantity_used": "Quantity used must be greater than 0."})
+            raise ValidationError(
+                {"quantity_used": "Quantity used must be greater than 0."}
+            )
 
     def save(self, *args, **kwargs):
         self.full_clean()

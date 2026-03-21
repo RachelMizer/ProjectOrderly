@@ -86,6 +86,12 @@ class Order(models.Model):
                 condition=Q(total_payment_due=F("subtotal") + F("tax_amount")),
                 name="order_total_equals_subtotal_plus_tax",
             ),
+            # Only one DRAFT order per customer
+        models.UniqueConstraint(
+            fields=["customer"],
+            condition=Q(status=OrderStatus.DRAFT),
+            name="uniq_draft_order_per_customer",
+        ),
         ]
 
     def clean(self):
@@ -291,7 +297,7 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f"Payment #{self.id} — Order #{self.order_id} — {self.total}"
