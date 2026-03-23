@@ -1,25 +1,28 @@
 """
 Views for the Orders API.
 
-These endpoints implement draft-order (cart) functionality used by
-customers while building an order.
+These endpoints implement draft-order (cart) functionality and
+draft order submission for customers.
 
 Endpoints implemented here:
 
 POST   /api/v1/orders/draft
 POST   /api/v1/orders/items
 PATCH  /api/v1/orders/items/{orderItemId}
+PATCH  /api/v1/orders/{orderId}/submit
 """
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import CustomerProfile
-from orders.models import OrderItem
+from orders.models import Order, OrderItem, OrderStatus
 from orders.serializers import (
     AddDraftOrderItemSerializer,
+    SubmitOrderSerializer,
     UpdateDraftOrderItemSerializer,
 )
 from orders.services import (
@@ -27,7 +30,11 @@ from orders.services import (
     get_or_create_draft_order,
     order_item_belongs_to_customer,
     recalculate_order_totals,
+    submit_order,
     update_order_item_quantity,
+    validate_order_availability,
+    validate_order_has_items,
+    validate_order_identity,
 )
 
 
@@ -236,6 +243,105 @@ class DraftOrderItemUpdateView(APIView):
                 "message": "quantity updated",
                 "orderId": draft_order.id,
                 "orderItemId": updated_item.id,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class SubmitOrderView(APIView):
+    """
+    Submit a customer's DRAFT order.
+
+    Endpoint:
+        PATCH /api/v1/orders/{orderId}/submit
+
+    Behavior:
+        - verifies authenticated customer ownership
+        - validates order has at least one item
+        - validates customer XOR guest_email
+        - validates availability
+        - simulates payment by validating required fields
+        - recalculates totals
+        - transitions DRAFT -> PENDING
+
+    If validation fails, the order remains in DRAFT status.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_customer_profile(self, request):
+        """
+        Retrieve the authenticated user's CustomerProfile.
+
+        Returns None if the user does not have a customer profile.
+        """
+        try:
+            return request.user.customer_profile
+        except CustomerProfile.DoesNotExist:
+            return None
+
+    def patch(self, request, orderId):
+        """
+        Handle submit-order requests.
+        """
+        customer_profile = self.get_customer_profile(request)
+
+        if not customer_profile:
+            return Response(
+                {
+                    "error": "NOT_AUTHORIZED",
+                    "message": "Authenticated user does not have a customer profile.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        order = get_object_or_404(
+            Order.objects.prefetch_related("items__variant__product"),
+            pk=orderId,
+        )
+
+        if order.customer_id != customer_profile.id:
+            return Response(
+                {
+                    "error": "NOT_AUTHORIZED",
+                    "message": "You do not have permission to submit this order.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if order.status != OrderStatus.DRAFT:
+            return Response(
+                {
+                    "error": "INVALID_INPUT",
+                    "message": "Only DRAFT orders can be submitted.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = SubmitOrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            validate_order_has_items(order)
+            validate_order_identity(order)
+            validate_order_availability(order)
+            order = submit_order(order)
+        except DjangoValidationError as exc:
+            error_value = (
+                exc.message_dict if hasattr(exc, "message_dict") else exc.messages
+            )
+            return Response(
+                {
+                    "error": "INVALID_INPUT",
+                    "message": error_value,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "id": order.id,
+                "status": order.status,
             },
             status=status.HTTP_200_OK,
         )
