@@ -31,7 +31,7 @@ All request and response bodies use JSON.
 Timestamps are returned in ISO 8601 format (UTC).  
 Monetary values are represented as decimal numbers.  
 ### Errors
-Error respones use a consistent JSON structure:
+Error responses use a consistent JSON structure:
 ```
     {
         "error": "ERROR_TYPE",
@@ -1296,6 +1296,7 @@ body
         {
             "id": 1,
             "name": "Sweater",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": false,
             "minPrice": 20.00,
@@ -1304,6 +1305,7 @@ body
         {
             "id": 2,
             "name": "Television",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": true,
             "minPrice": 389.99,

@@ -9,6 +9,7 @@ Used primarily by the Draft Order (cart) API endpoints:
 GET    /api/v1/orders?status=DRAFT
 POST   /api/v1/orders/items
 PATCH  /api/v1/orders/items/{orderItemId}
+PATCH  /api/v1/orders/{orderId}/submit
 """
 
 from rest_framework import serializers
@@ -109,6 +110,7 @@ class DraftOrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             "orderId",
+            "status",
             "items",
             "totals",
         ]
@@ -167,3 +169,47 @@ class UpdateDraftOrderItemSerializer(serializers.Serializer):
     """
 
     quantity = serializers.IntegerField(min_value=0)
+
+
+
+class SubmitOrderSerializer(serializers.Serializer):
+    """
+    Validate the minimum payment information required to submit
+    a draft order.
+
+    Payment simulation rules:
+    - CASH requires only paymentType
+    - CREDIT_CARD requires cardLast4
+    - OTHER requires otherDetails
+    """
+
+    paymentType = serializers.ChoiceField(
+        choices=["CREDIT_CARD", "CASH", "OTHER"]
+    )
+    cardLast4 = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        max_length=4,
+    )
+    otherDetails = serializers.CharField(
+        required=False,
+        allow_blank=False,
+    )
+
+    def validate(self, attrs):
+        """
+        Validate payment simulation requirements based on payment type.
+        """
+        payment_type = attrs.get("paymentType")
+
+        if payment_type == "CREDIT_CARD" and not attrs.get("cardLast4"):
+            raise serializers.ValidationError(
+                {"cardLast4": "cardLast4 is required when paymentType is CREDIT_CARD."}
+            )
+
+        if payment_type == "OTHER" and not attrs.get("otherDetails"):
+            raise serializers.ValidationError(
+                {"otherDetails": "otherDetails is required when paymentType is OTHER."}
+            )
+
+        return attrs
