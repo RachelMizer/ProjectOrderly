@@ -6,8 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_userrole_delete_userprofile'),
+        ("accounts", "0002_userrole_delete_userprofile"),
     ]
 
-    operations = [
-    ]
+    operations = []

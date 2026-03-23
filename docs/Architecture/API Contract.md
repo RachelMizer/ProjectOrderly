@@ -1266,7 +1266,7 @@ body
 ```
 
 ## List Products
-**Endpoint:** `<GET> /api/v1/prodcts`, `<GET> /api/v1/products?categoryId=1`, `<GET> /api/v1/products?page=1&pageSize=50`  
+**Endpoint:** `<GET> /api/v1/products`, `<GET> /api/v1/products?categoryId=1`, `<GET> /api/v1/products?page=1&pageSize=50`  
 **Description:** Returns a collection of all products or products by category  
 **Authentication:** None  
 **Role:** Any  
@@ -1296,6 +1296,7 @@ body
         {
             "id": 1,
             "name": "Sweater",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": false,
             "minPrice": 20.00,
@@ -1304,6 +1305,7 @@ body
         {
             "id": 2,
             "name": "Television",
+            "description": "",
             "hasVariants": true,
             "hasModifiers": true,
             "minPrice": 389.99,
