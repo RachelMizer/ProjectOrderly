@@ -37,31 +37,108 @@ As a customer, I want to view a list of products with names, prices, and availab
 
 ## US3.2 — Shopping Cart System (Draft Order)
 
-### Test Case ID:
-TC-3.2-01
+### Test Case ID:  
+TC-3.2.2  
 
-### Feature:
-Shopping Cart System
+### Feature:  
+Draft Order (Cart Management)  
 
-### User Story:
-As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically so I can prepare my order without losing my selections.
-
-### Preconditions:
+### User Story:  
+As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically so I can prepare my order without losing my selections.  
 
 
-### Test Steps:
+### Preconditions:  
+- User is logged in with a valid customer account  
+- Second customer account exists for authorization testing  
+- A user without a CustomerProfile exists  
+- Product variants exist in the database (seed data loaded)  
+- API is running and accessible  
+- Authorization token is available  
 
 
-### Expected Result:
+### Test Steps:  
+
+1. Send `POST /api/v1/orders/draft` with valid authentication  
+2. Verify draft order is created  
+
+3. Send `POST /api/v1/orders/draft` again  
+4. Verify the same draft order is returned (no duplicate created)  
+
+5. Send `POST /api/v1/orders/items` with valid `variantId` and quantity  
+6. Verify item is added to the draft order  
+
+7. Send `POST /api/v1/orders/items` again with the same `variantId`  
+8. Verify quantity is merged into existing item  
+
+9. Send `PATCH /api/v1/orders/items/{orderItemId}` with updated quantity  
+10. Verify quantity updates correctly  
+
+11. Send `PATCH /api/v1/orders/items/{orderItemId}` with quantity = 0  
+12. Verify item is removed from cart  
+
+13. Attempt `POST /api/v1/orders/draft` without authentication  
+14. Verify request is rejected  
+
+15. Attempt `POST /api/v1/orders/items` without authentication  
+16. Verify request is rejected  
+
+17. Attempt cart access with user without CustomerProfile  
+18. Verify request is rejected with NOT_AUTHORIZED  
+
+19. Send `POST /api/v1/orders/items` with invalid `variantId`  
+20. Verify validation error is returned  
+
+21. Send `POST /api/v1/orders/items` with invalid quantity (0)  
+22. Verify validation error is returned  
 
 
-### Actual Result:
+### Expected Result:  
+
+- Draft order is created and persists per customer  
+- Only one active DRAFT order exists per customer  
+- Items can be added to the cart  
+- Adding the same variant updates quantity instead of creating duplicates  
+- Quantities update correctly  
+- Items are removed when quantity is set to zero  
+- Unauthorized users cannot access or modify cart  
+- Users without CustomerProfile cannot access cart  
+- Invalid inputs return proper validation errors  
+- Inventory quantities remain unchanged  
+- Cart state persists across multiple requests  
 
 
-### Status:
+### Actual Result:  
+
+All operations executed successfully. Draft order creation, item addition, quantity updates, and item removal behaved as expected. Authorization and validation checks correctly blocked invalid and unauthorized requests. Cart persistence and quantity merging worked correctly. No issues observed during testing.  
 
 
-### Notes:
+### Evidence:  
+
+![Draft Order Created](Screenshots/draft_order_created.jpg)
+
+![One Active Draft Per Customer](Screenshots/one_active_draft_per_customer.jpg)
+
+![Item Added](Screenshots/item_added.jpg)
+
+![Item Added to Existing Draft](Screenshots/item_added_existing_draft.jpg)
+
+![Invalid Variant](Screenshots/invalid_variant.jpg)
+
+![Invalid Quantity](Screenshots/invalid_quantity.jpg)
+
+![Draft Requires Authentication](Screenshots/draft_requires_authentication.jpg)
+
+![Non-Customer Cannot Access Cart](Screenshots/noncustomer_cannot_access_cart.jpg)
+
+![No User Cannot Add Item](Screenshots/nonuser_cannot_add_item.jpg)
+
+
+### Status:  
+Pass  
+
+
+### Notes:  
+
 
 
 ---
