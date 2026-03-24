@@ -171,6 +171,13 @@ class UpdateDraftOrderItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=0)
 
 
+class AddDraftOrderItemModifierSerializer(serializers.Serializer):
+    pass
+
+
+class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
+    pass
+
 
 class SubmitOrderSerializer(serializers.Serializer):
     """

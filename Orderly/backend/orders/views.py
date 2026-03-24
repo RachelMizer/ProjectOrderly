@@ -247,6 +247,12 @@ class DraftOrderItemUpdateView(APIView):
             status=status.HTTP_200_OK,
         )
 
+class DraftOrderItemModifierCreateView(APIView):
+    pass
+
+class DraftOrderItemModifierUpdateView(APIView):
+    pass
+
 
 class SubmitOrderView(APIView):
     """
