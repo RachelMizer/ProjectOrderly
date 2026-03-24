@@ -145,32 +145,91 @@ Pass
 
 ## US3.3 — Order Submission (Checkout)
 
-### Test Case ID:
-TC-3.3-01
+### Test Case ID:  
+TC-3.3.2  
 
-### Feature:
-Order Submission
+### Feature:  
+Order Submission / Checkout  
 
-### User Story:
-As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed.
+### User Story:  
+As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed.  
 
-### Preconditions:
+### Preconditions:  
+- User is registered and logged in with a valid customer account  
+- User has a valid JWT token for authentication  
+- System is connected to the database  
+- Product variants exist in the system  
+- User can create and access a DRAFT order  
 
+### Test Steps:  
+1. Register and log in as a customer  
+2. Create or retrieve a DRAFT order using `/api/v1/orders/draft`  
+3. Add a valid item to the draft order using `/api/v1/orders/items`  
+4. Submit the order using `/api/v1/orders/{orderId}/submit` with valid request body  
+5. Verify order status updates to `PENDING`  
+6. Attempt to submit the same order again  
+7. Create a new user and attempt to submit an empty draft order  
+8. Submit an order with missing required request body fields  
+9. Attempt to submit another user’s order  
+10. Attempt to submit an order without authentication  
 
-### Test Steps:
+### Expected Result:  
+- Valid draft order submission returns `200` and status changes to `PENDING`  
+- Submitting a non-DRAFT order returns `400 INVALID_INPUT`  
+- Submitting an empty order returns `400 INVALID_INPUT`  
+- Missing required fields return validation errors  
+- Unauthorized user receives `403 NOT_AUTHORIZED`  
+- Unauthenticated user receives `401`  
+- Failed submissions do not change order status (remains `DRAFT`)  
 
+### Actual Result:  
+- Valid draft order successfully submitted and status updated to `PENDING`  
+- Re-submitting the same order returned `400 INVALID_INPUT` with message indicating only DRAFT orders can be submitted  
+- Submitting an empty draft returned `400 INVALID_INPUT`  
+- Missing required request body fields returned validation errors  
+- Unauthorized user attempting to submit another user’s order returned `403 NOT_AUTHORIZED`  
+- Unauthenticated request returned `401`  
+- Failed submissions correctly left orders in `DRAFT` status  
 
-### Expected Result:
+### Evidence:  
 
+**Valid Draft Order Submission**  
+![Valid Draft Order](Screenshots/3.3.2/valid_draft_order.jpg)
 
-### Actual Result:
+**Draft Add + Submit Flow**  
+![Draft Add Submit](Screenshots/3.3.2/draft_add_submit_order.jpg)
 
+**Add Item to Draft Order**  
+![Add Item](Screenshots/3.3.2/add_order_todraft.jpg)
 
-### Status:
+**Empty Draft Submission Failure**  
+![Empty Draft Error](Screenshots/3.3.2/empty_draft_error.jpg)
 
+**Empty Order Failure**  
+![Empty Order Failure](Screenshots/3.3.2/empty_order_failure.jpg)
 
-### Notes:
+**Missing Required Info Error**  
+![Missing Info](Screenshots/3.3.2/missing_info_error.jpg)
 
+**Unauthorized User Error**  
+![Unauthorized](Screenshots/3.3.2/unauthorized_user_order_error.jpg)
+
+**Unauthenticated User Error**  
+![Unauthenticated](Screenshots/3.3.2/unauthenticated_user.jpg)
+
+**Re-submitting Same Order Failure**  
+![Same Order Fail](Screenshots/3.3.2/same_order_fail.jpg)
+
+**Failed Submit Leaves Order in DRAFT**  
+![Failed Submit](Screenshots/3.3.2/failed_submit_leaves_order.jpg)
+
+### Status:  
+Pass ✅  
+
+### Notes:  
+- Endpoint requires `paymentType` despite API contract not specifying request parameters (potential mismatch to log)  
+- All validation paths and error handling behaved as expected  
+- Manual testing performed via PowerShell and validated against automated test results  
 
 ---
 
