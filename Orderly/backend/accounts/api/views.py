@@ -47,7 +47,7 @@ def send_password_reset_email(user):
 
     email = EmailMessage(
         subject="Password reset",
-        message=f"Reset your password using: {reset_link}",
+        body=f"Reset your password using: {reset_link}",
         from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@orderly.local"),
         to=[user.email],
     )
