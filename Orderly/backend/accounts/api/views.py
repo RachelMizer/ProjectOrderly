@@ -39,6 +39,12 @@ def send_verification_email(user):
     email.content_subtype = "plain"
     email.send()
 
+    # For DEV/Testing purposes only:
+    # Print the verification link in the console.
+    # In production, this should be sent as an email to the user.
+    if settings.DEBUG:
+        print(f"\n[DEV] Email Verification Link: {verify_link}\n")
+
 
 def send_password_reset_email(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -53,6 +59,12 @@ def send_password_reset_email(user):
     )
     email.content_subtype = "plain"
     email.send()
+
+    # For DEV/Testing purposes only:
+    # Print the reset link in the console.
+    # In production, this should be sent as an email to the user.
+    if settings.DEBUG:
+        print(f"\n[DEV] Password Reset Link: {reset_link}\n")
 
 
 class RegisterView(APIView):
