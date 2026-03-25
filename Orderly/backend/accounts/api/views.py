@@ -46,7 +46,10 @@ def send_password_reset_email(user):
 
     send_mail(
         subject="Password reset",
-        message=f"Reset your password using: {reset_link}",
+        message=f"""Reset your password using the link below:
+
+{reset_link}
+""",
         from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@orderly.local"),
         recipient_list=[user.email],
         fail_silently=False,
