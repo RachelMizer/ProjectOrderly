@@ -128,26 +128,21 @@ export async function login(form) {
 // Route: /api/v1/auth/logout
 // -------------------------
 export async function logout() {
-  let data = {};
+  const response = await fetch(`${API_BASE}logout`, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: "include",
+    body: JSON.stringify({}),
+  });
 
-  try {
-    const response = await fetch(`${API_BASE}logout`, {
-      method: "POST",
-      headers: JSON_HEADERS,
-      credentials: "include",
-      body: JSON.stringify({}),
-    });
+  const data = await parseJson(response);
 
-    data = await parseJson(response);
-
-    if (!response.ok) {
-      throw buildError("Logout failed", response, data);
-    }
-
-    return data;
-  } finally {
-    clearStoredAccessToken();
+  if (!response.ok) {
+    throw buildError("Logout failed", response, data);
   }
+
+  clearStoredAccessToken();
+  return data;
 }
 
 // -------------------------
