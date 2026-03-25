@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.conf import settings
@@ -30,13 +30,14 @@ def send_verification_email(user):
     token = default_token_generator.make_token(user)
     verify_link = f"{settings.FRONTEND_URL}/verify-email?uid={uid}&token={token}"
 
-    send_mail(
+    email = EmailMessage(
         subject="Verify your email",
-        message=f"Verify your email by clicking: {verify_link}",
+        body=f"Verify your email by clicking: {verify_link}",
         from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@orderly.local"),
-        recipient_list=[user.email],
-        fail_silently=False,
+        to=[user.email],
     )
+    email.content_subtype = "plain"
+    email.send()
 
 
 def send_password_reset_email(user):
@@ -44,13 +45,14 @@ def send_password_reset_email(user):
     token = default_token_generator.make_token(user)
     reset_link = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
 
-    send_mail(
+    email = EmailMessage(
         subject="Password reset",
-        message=f"Reset your password using: {reset_link}",
+        body=f"Reset your password using: {reset_link}",
         from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@orderly.local"),
-        recipient_list=[user.email],
-        fail_silently=False,
+        to=[user.email],
     )
+    email.content_subtype = "plain"
+    email.send()
 
 
 class RegisterView(APIView):
