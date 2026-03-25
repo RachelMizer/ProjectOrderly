@@ -186,7 +186,7 @@ Trello serves as the primary project management tool, providing capabilities for
 
 **COLLEGE CLOSED - Break (03/16-03/20)**
 
-4. Sprint 4 (03/31-04/03): 
+4. Sprint 4 (03/21-04/03): 
 	+ Security
 	+ Remaining User and Business Features
 	+ Finalize UI
@@ -195,11 +195,11 @@ Trello serves as the primary project management tool, providing capabilities for
 	+ Test and Iterate UX for Desktop and Mobile
 	+ Determine and Solve Critical Bugs
 
-6. Sprint 6 (04/18-05/01): 
+6. Sprint 6 (04/18-04/24): 
 	+ Finalize Application
 	+ Project Documentation Release
 	+ Final Sprint 5 Retrospective
-	+ Presentation
+	+ Presentation -- **April 30th, 2026 at 6:05pm**
 	+ Evaluation
 
 **Progress Tracking:**
