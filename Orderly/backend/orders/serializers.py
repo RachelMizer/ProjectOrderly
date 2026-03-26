@@ -11,9 +11,9 @@ POST   /api/v1/orders/items
 PATCH  /api/v1/orders/items/{orderItemId}
 PATCH  /api/v1/orders/{orderId}/submit
 """
-
+from django.db.models import Sum
 from rest_framework import serializers
-from catalog.models import ProductVariant
+from catalog.models import ProductVariant, ModifierOption, ModifierGroup
 from orders.models import Order, OrderItem, OrderItemModifier
 
 
@@ -172,11 +172,178 @@ class UpdateDraftOrderItemSerializer(serializers.Serializer):
 
 
 class AddDraftOrderItemModifierSerializer(serializers.Serializer):
-    pass
+    # Currently does not validate order ownership
+
+    guestEmail = serializers.EmailField(required=False)
+    modifierId = serializers.IntegerField()
+
+    def validate(self, data):
+        request = self.context.get("request")
+        order_item_id = self.context.get("orderItemId")
+
+        modifier_id = data.get("modiferId")
+        guest_email = data.get("guestEmail")
+
+        user = request.user if request else None
+
+        if not user or not user.is_authenticated:
+            if not guest_email:
+                raise serializers.ValidationError({
+                    "error": "INVALID_INPUT",
+                    "message": "guestEmail required if not authenticated"
+                })
+            
+        try:
+            order_item = OrderItem.objects.select_related("order", "variant").get(id=order_item_id)
+        except OrderItem.DoesNotExist:
+            raise serializers.ValidationError({
+                "error": "NO_ORDER",
+                "message": "customer does not have a draft order or no matching order item"
+            })
+        
+        order = order_item.order
+        if order.status != "DRAFT":
+            raise serializers.ValidationError({
+                "error": "NO_ORDER",
+                "message": "customer does not have a draft order or no matching order item"
+            })
+        
+        try:
+            modifier = ModifierOption.objects.select_related("modifer_group").get(id=modifier_id)
+        except ModifierOption.DoesNotExist:
+            raise serializers.ValidationError({
+                "error": "INVALID_INPUT",
+                "message": "bad modifierId"
+            })
+        
+        if modifier.modifier_group.variant_id != order_item.variant_id:
+            raise serializers.ValidationError({
+                "error": "INVALI_INPUT",
+                "message": "modifier does not belong to this product"
+            })
+        
+        data["order_item"] = order_item
+        data["modifier"] = modifier
+
+        return data
+    
+    def create(self, validated_data):
+        order_item = validated_data["order_item"]
+        modifier = validated_data["modifier"]
+
+        order_modifier = OrderItemModifier.objects.create(
+            order_item=order_item,
+            modifier_option=modifier,
+            price_adjustment_charged=modifier.price_adjustment,
+        )
+
+        return {
+            "message": "order updated",
+            "orderId": order_item.order.id,
+            "orderItemId": order_item.id,
+            "orderModifierId": order_modifier.id
+        }
 
 
 class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
-    pass
+    # Currently does not validate order ownership
+
+    guestEmail = serializers.EmailField(required=False)
+    quantity = serializers.IntegerField()
+
+    def validate(self, data):
+        request = self.context.get("request")
+        order_modifier_id = self.context.get("orderModifierId")
+
+        quantity = data.get("quantity")
+        guest_email = data.get("guestEmail")
+
+        user = request.user if request else None
+
+        if not user or not user.is_authenticated:
+            if not guest_email:
+                raise serializers.ValidationError({
+                    "error": "INVALID_INPUT",
+                    "message": "guestEmail required if not authenticated"
+                })
+            
+        if quantity is None or quantity < 0:
+            raise serializers.ValidationError({
+                "error": "INVALID_INPUT",
+                "message": "bad quantity"
+            })
+        
+        try:
+            order_modifier = OrderItemModifier.objects.select_related(
+                "order_item__order",
+                "modifier_option__modifer_group"
+            ).get(id=order_modifier_id)
+        except OrderItemModifier.DoesNotExist:
+            raise serializers.ValidationError({
+                "error": "BAD_MODIFIER",
+                "message": "order modifier does not exist"
+            })
+        
+        order = order_modifier.order_item.order
+
+        if order.status != "DRAFT":
+            raise serializers.ValidationError({
+                "error": "INVALID_INPUT",
+                "message": "no draft order"
+            })
+        
+        data["order_modifier"] = order_modifier
+
+        return data
+    
+    def update(self, instance, validated_data):
+        quantity = validated_data["quantity"]
+
+        if quantity == 0:
+            order_id = instance.order_item.order.id
+            order_item_id = instance.order_item.id
+
+            instance.delete()
+
+            return {
+                "message": "modifier removed",
+                "orderId": order_id,
+                "orderItemId": order_item_id
+            }
+        
+        group = instance.modifier_option.modifier_group
+        max_selections = group.max_selections
+
+        at_max = False
+
+        #possible bug in this block
+        if max_selections is not None:
+            existing_total = OrderItemModifier.objects.filter(
+                order_item=order_item,
+                modifier_option__modifier_group=group
+            ).exclude(id=instance.id).aggregate(
+                total=Sum("quantity")
+            )["total"] or 0
+
+            if existing_total + quantity > max_selections:
+                quantity = max_selections - existing_total
+                at_max = True
+
+        instance.quantity = quantity
+        instance.save()
+
+        response = {
+            "message": "quantity updated",
+            "orderId": instance.order_item.order.id,
+            "orderItemId": instance.order_item.id,
+            "atMaxSelections": at_max
+        }
+
+        if at_max:
+            response["modifierQuantiy"] = quantity
+
+        return response
+
 
 
 class SubmitOrderSerializer(serializers.Serializer):

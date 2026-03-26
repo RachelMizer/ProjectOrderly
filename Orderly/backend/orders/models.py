@@ -233,6 +233,7 @@ class OrderItemModifier(models.Model):
         on_delete=models.PROTECT,
         related_name="order_item_modifiers",
     )
+    quantity = models.IntegerField(default=1)
     price_adjustment_charged = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:

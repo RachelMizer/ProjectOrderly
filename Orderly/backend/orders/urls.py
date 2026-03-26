@@ -12,6 +12,8 @@ from orders.views import (
     DraftOrderItemCreateView,
     DraftOrderItemUpdateView,
     SubmitOrderView,
+    DraftOrderItemModifierCreateView,
+    DraftOrderItemModifierUpdateView
 )
 
 urlpatterns = [
@@ -46,4 +48,21 @@ urlpatterns = [
         SubmitOrderView.as_view(),
         name="submit-order",
     ),
+    
+
+    # Add Modifier to draft order
+    # POST /api/v1/orders/items/{orderItemId}/modifiers
+    path (
+        "items/<int:orderItemId>/modifiers", 
+        DraftOrderItemModifierCreateView,
+        name="draft-order-modifier-create"
+    ),
+
+    # Update or remove modifer from draft order
+    # POST /api/v1/orders/items/{orderModifierId}
+    path (
+        "items/<int:orderModifierId>",
+        DraftOrderItemModifierUpdateView,
+        name="draft-order-modifier-update"
+    )
 ]
