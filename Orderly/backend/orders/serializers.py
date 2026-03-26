@@ -259,3 +259,49 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "createdAt",
             "updatedAt",
         ]
+
+class OrderHistoryItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for GET /api/v1/orders/me.
+
+    Returns a summary of past (non-draft) orders.
+    """
+
+    id = serializers.IntegerField(read_only=True)
+    date = serializers.DateTimeField(source="order_date", read_only=True)
+
+    subtotal = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+
+    taxAmount = serializers.DecimalField(
+        source="tax_amount",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+
+    totalDue = serializers.DecimalField(
+        source="total_payment_due",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+
+    createdAt = serializers.DateTimeField(source="created_at", read_only=True)
+    updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "date",
+            "subtotal",
+            "taxAmount",
+            "totalDue",
+            "status",
+            "createdAt",
+            "updatedAt",
+        ]

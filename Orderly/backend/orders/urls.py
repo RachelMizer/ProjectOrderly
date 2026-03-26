@@ -14,6 +14,7 @@ from orders.views import (
     SubmitOrderView,
     OrderDetailView,
     OrderStatusView,
+    OrderHistoryView,
 )
 
 urlpatterns = [
@@ -63,5 +64,13 @@ urlpatterns = [
         "<int:orderId>/status",
         OrderStatusView.as_view(),
         name="order-status",
+    ),
+
+    # Retrieve authenticated customer's order history
+    # GET /api/v1/orders/me
+    path(
+        "me",
+        OrderHistoryView.as_view(),
+        name="order-history",
     ),
 ]

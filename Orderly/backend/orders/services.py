@@ -251,3 +251,14 @@ def get_order_for_customer(order_id, customer_profile):
         raise PermissionDenied("You do not have permission to view this order.")
 
     return order
+
+def get_order_history_for_customer(customer_profile):
+    """
+    Return the customer's non-draft orders, newest first.
+    """
+
+    return (
+        Order.objects.filter(customer=customer_profile)
+        .exclude(status=OrderStatus.DRAFT)
+        .order_by("-created_at")
+    )
