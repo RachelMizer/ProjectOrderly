@@ -54,7 +54,7 @@ urlpatterns = [
     # POST /api/v1/orders/items/{orderItemId}/modifiers
     path (
         "items/<int:orderItemId>/modifiers", 
-        DraftOrderItemModifierCreateView,
+        DraftOrderItemModifierCreateView.as_view(),
         name="draft-order-modifier-create"
     ),
 
@@ -62,7 +62,7 @@ urlpatterns = [
     # POST /api/v1/orders/items/{orderModifierId}
     path (
         "items/<int:orderModifierId>",
-        DraftOrderItemModifierUpdateView,
+        DraftOrderItemModifierUpdateView.as_view(),
         name="draft-order-modifier-update"
     )
 ]

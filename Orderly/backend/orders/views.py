@@ -24,6 +24,8 @@ from orders.serializers import (
     AddDraftOrderItemSerializer,
     SubmitOrderSerializer,
     UpdateDraftOrderItemSerializer,
+    AddDraftOrderItemModifierSerializer,
+    UpdateDraftOrderItemModifierSerializer
 )
 from orders.services import (
     add_item_to_order,
@@ -248,7 +250,22 @@ class DraftOrderItemUpdateView(APIView):
         )
 
 class DraftOrderItemModifierCreateView(APIView):
-    pass
+    def post(self, request, orderItemId):
+        serializer = AddDraftOrderItemModifierSerializer(
+            data=request.data,
+            context={
+                "request": request,
+                "orderItemId": orderItemId
+            }
+        )
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        result = serializer.save()
+
+        return Response(result, status=status.HTTP_201_CREATED)
+
 
 class DraftOrderItemModifierUpdateView(APIView):
     pass
