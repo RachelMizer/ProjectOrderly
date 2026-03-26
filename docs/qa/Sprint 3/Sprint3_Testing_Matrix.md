@@ -15,7 +15,7 @@ Rows will be updated as testing begins and stories move through execution.
 |------------|--------------|--------------|--------|-----------|-----------|-------------|--------|------|
 | US3.1 | B3.1.2 | F3.1.1 | Product Browsing | TC-3.1-01 | | | | |
 | US3.2 | B3.2.2 | F3.2.1 | Shopping Cart System | TC-3.2-01 |Kenny |3/14 |3.2.2 Pass | |
-| US3.3 | B3.3.2 | F3.3.1 | Order Submission | TC-3.3-01 | | | | |
+| US3.3 | B3.3.2 | F3.3.1 | Order Submission | TC-3.3-01 | Kenny|3/23 |3.3.2 Pass | |
 | US3.4 | B3.4.2 | F3.4.1 | Order Confirmation | TC-3.4-01 | | | | |
 | US3.5 | B3.5.2 | F3.5.1 | Order History | TC-3.5-01 | | | | |
 | US3.6 | B3.6.2 | F3.6.1 | User Profile Management | TC-3.6-01 |Kenny | 3.6.2 - 3/11|3.6.2 - Pass | |
