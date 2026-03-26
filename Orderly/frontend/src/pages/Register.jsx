@@ -1,10 +1,8 @@
-// src/pages/Register.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/auth";
 
-export default function Register() {
+export default function Register({ setLoggedIn }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -40,9 +38,9 @@ export default function Register() {
     try {
       await register(form);
 
-      // Keep US2.9 scoped to registration/login only.
-      // Send user to login page instead of profile.
-      navigate("/login");
+      // ✅ Auto-login behavior per API contract
+      setLoggedIn(true);
+      navigate("/");
     } catch (err) {
       const backend = err?.response?.data || {};
 
@@ -98,73 +96,75 @@ export default function Register() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="firstName">First Name</label>
-          <br />
-          <input
-            id="firstName"
-            type="text"
-            name="firstName"
-            value={form.firstName}
-            onChange={handleChange}
-            required
-          />
-          {errors.firstName && (
-            <div style={{ color: "red" }}>{errors.firstName}</div>
-          )}
-        </div>
+        <fieldset disabled={submitting}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="firstName">First Name</label>
+            <br />
+            <input
+              id="firstName"
+              type="text"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              required
+            />
+            {errors.firstName && (
+              <div style={{ color: "red" }}>{errors.firstName}</div>
+            )}
+          </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="lastName">Last Name</label>
-          <br />
-          <input
-            id="lastName"
-            type="text"
-            name="lastName"
-            value={form.lastName}
-            onChange={handleChange}
-            required
-          />
-          {errors.lastName && (
-            <div style={{ color: "red" }}>{errors.lastName}</div>
-          )}
-        </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="lastName">Last Name</label>
+            <br />
+            <input
+              id="lastName"
+              type="text"
+              name="lastName"
+              value={form.lastName}
+              onChange={handleChange}
+              required
+            />
+            {errors.lastName && (
+              <div style={{ color: "red" }}>{errors.lastName}</div>
+            )}
+          </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="email">Email</label>
-          <br />
-          <input
-            id="email"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-          {errors.email && (
-            <div style={{ color: "red" }}>{errors.email}</div>
-          )}
-        </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="email">Email</label>
+            <br />
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            {errors.email && (
+              <div style={{ color: "red" }}>{errors.email}</div>
+            )}
+          </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="password">Password</label>
-          <br />
-          <input
-            id="password"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && (
-            <div style={{ color: "red" }}>{errors.password}</div>
-          )}
-        </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="password">Password</label>
+            <br />
+            <input
+              id="password"
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            {errors.password && (
+              <div style={{ color: "red" }}>{errors.password}</div>
+            )}
+          </div>
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Creating Account..." : "Create Account"}
-        </button>
+          <button type="submit">
+            {submitting ? "Creating Account..." : "Create Account"}
+          </button>
+        </fieldset>
       </form>
     </div>
   );

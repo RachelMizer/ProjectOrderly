@@ -1,75 +1,40 @@
-// src/pages/ResetPassword.jsx
-
 import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { confirmPasswordReset } from "../api/auth";
 
 export default function ResetPassword() {
-  const [params] = useSearchParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const uid = params.get("uid");
-  const token = params.get("token");
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
 
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     setErrors({});
-    setMessage("");
-
-    if (!uid || !token) {
-      setErrors({
-        general: "Invalid or missing reset link.",
-      });
-      setSubmitting(false);
-      return;
-    }
 
     try {
-      await confirmPasswordReset({
-        uid,
-        token,
-        newPassword: password,
-      });
+      await confirmPasswordReset({ uid, token, newPassword: password });
 
-      setMessage("Password reset successful! Redirecting to login...");
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      alert("Password successfully reset.");
+      navigate("/login");
     } catch (err) {
       const backend = err?.response?.data || {};
 
-      const extractedFieldErrors = {
+      setErrors({
         password: Array.isArray(backend.newPassword)
           ? backend.newPassword[0]
-          : Array.isArray(backend.password)
-          ? backend.password[0]
-          : backend.newPassword || backend.password,
-      };
-
-      const hasFieldErrors = extractedFieldErrors.password;
-
-      if (backend) {
-        setErrors({
-          ...extractedFieldErrors,
-          general:
-            backend.message ||
-            backend.detail ||
-            (!hasFieldErrors
-              ? "Password reset failed. The link may be invalid or expired."
-              : null),
-        });
-      } else {
-        setErrors({
-          general: "Password reset failed. Please try again.",
-        });
-      }
+          : backend.newPassword,
+        general:
+          backend.message ||
+          backend.detail ||
+          "Password reset failed.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -77,7 +42,7 @@ export default function ResetPassword() {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Set New Password</h1>
+      <h1>Reset Password</h1>
 
       {errors.general && (
         <div style={{ color: "red", marginBottom: "1rem" }}>
@@ -85,39 +50,34 @@ export default function ResetPassword() {
         </div>
       )}
 
-      {message && (
-        <div style={{ color: "green", marginBottom: "1rem" }}>
-          {message}
-        </div>
-      )}
-
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "1rem" }}>
-          <label htmlFor="password">New Password</label>
-          <br />
-          <input
-            id="password"
-            type="password"
-            name="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setErrors((prev) => ({
-                ...prev,
-                password: null,
-                general: null,
-              }));
-            }}
-            required
-          />
-          {errors.password && (
-            <div style={{ color: "red" }}>{errors.password}</div>
-          )}
-        </div>
+        <fieldset disabled={submitting}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="password">New Password</label>
+            <br />
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors((prev) => ({
+                  ...prev,
+                  password: null,
+                  general: null,
+                }));
+              }}
+              required
+            />
+            {errors.password && (
+              <div style={{ color: "red" }}>{errors.password}</div>
+            )}
+          </div>
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Resetting..." : "Reset Password"}
-        </button>
+          <button type="submit">
+            {submitting ? "Resetting..." : "Reset Password"}
+          </button>
+        </fieldset>
       </form>
     </div>
   );
