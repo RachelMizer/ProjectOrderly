@@ -268,7 +268,23 @@ class DraftOrderItemModifierCreateView(APIView):
 
 
 class DraftOrderItemModifierUpdateView(APIView):
-    pass
+    def patch(self, request, orderModifierId):
+        serializer = UpdateDraftOrderItemModifierSerializer(
+            data=request.data,
+            context={
+                "request": request,
+                "orderModifierId": orderModifierId
+            }
+        )
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        instance = serializer.validated_data["order_modifier"]
+
+        result = serializer.update(instance, serializer.validated_data)
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class SubmitOrderView(APIView):
