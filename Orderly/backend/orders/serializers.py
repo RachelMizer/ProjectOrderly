@@ -176,6 +176,7 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
 
     guestEmail = serializers.EmailField(required=False)
     modifierId = serializers.IntegerField()
+    quantity = serializers.IntegerField(min_value=1)
 
     def validate(self, data):
         request = self.context.get("request")
@@ -223,14 +224,14 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
             })
         
         try:
-            modifier = ModifierOption.objects.select_related("modifier_group").get(id=modifier_id)
+            modifier = ModifierOption.objects.select_related("group").get(id=modifier_id)
         except ModifierOption.DoesNotExist:
             raise serializers.ValidationError({
                 "error": "INVALID_INPUT",
                 "message": "bad modifierId"
             })
         
-        group = modifier.modifier_group
+        group = modifier.group
         if group.variant_id != order_item.variant_id:
             raise serializers.ValidationError({
                 "error": "INVALID_INPUT",
@@ -242,7 +243,7 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
         if max_selections is not None:
             existing_total = OrderItemModifier.objects.filter(
                 order_item=order_item,
-                modifier_option__modifier_group=group
+                modifier_option__group=group
             ).aggregate(total=Sum("quantity"))["total"] or 0
 
             if existing_total + 1 > max_selections:
@@ -312,7 +313,7 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
         try:
             order_modifier = OrderItemModifier.objects.select_related(
                 "order_item__order",
-                "modifier_option__modifier_group"
+                "modifier_option__group"
             ).get(id=order_modifier_id)
         except OrderItemModifier.DoesNotExist:
             raise serializers.ValidationError({
@@ -343,7 +344,7 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
         quantity = validated_data["quantity"]
         order_item = instance.order_item
         
-        group = instance.modifier_option.modifier_group
+        group = instance.modifier_option.group
         max_selections = group.max_selections
 
         at_max = False
@@ -351,7 +352,7 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
         if max_selections is not None:
             existing_total = OrderItemModifier.objects.filter(
                 order_item=order_item,
-                modifier_option__modifier_group=group
+                modifier_option__group=group
             ).exclude(id=instance.id).aggregate(
                 total=Sum("quantity")
             )["total"] or 0

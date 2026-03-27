@@ -265,7 +265,7 @@ class DraftOrderItemModifierCreateView(APIView):
         result = serializer.save()
 
         # Recalculate after modifier is created
-        order_item = serializer.context["order_item"]
+        order_item = OrderItem.objects.get(pk=orderItemId)
         recalculate_order_totals(order_item.order)
 
         return Response(result, status=status.HTTP_201_CREATED)
