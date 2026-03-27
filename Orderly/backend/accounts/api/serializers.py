@@ -164,7 +164,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         source="new_password", write_only=True, min_length=8
     )
 
-    def validate_new_password(self, value):
+    def validate_newPassword(self, value):
         try:
             password_validation.validate_password(value)
         except DjangoValidationError as e:
