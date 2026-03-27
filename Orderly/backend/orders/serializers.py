@@ -53,11 +53,9 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
     """
 
     itemId = serializers.IntegerField(source="id", read_only=True)
-
     variantId = serializers.IntegerField(source="variant.id", read_only=True)
     productName = serializers.CharField(source="variant.product.name", read_only=True)
     variantName = serializers.CharField(source="variant.name", read_only=True)
-
     quantity = serializers.IntegerField(read_only=True)
 
     unitPriceCharged = serializers.DecimalField(
@@ -101,9 +99,7 @@ class DraftOrderSerializer(serializers.ModelSerializer):
     """
 
     orderId = serializers.IntegerField(source="id", read_only=True)
-
     items = DraftOrderItemSerializer(many=True, read_only=True)
-
     totals = serializers.SerializerMethodField()
 
     class Meta:
@@ -149,7 +145,6 @@ class AddDraftOrderItemSerializer(serializers.Serializer):
         The resolved variant object is stored in serializer context
         so views can use it without querying the database again.
         """
-
         try:
             variant = ProductVariant.objects.select_related("product").get(pk=value)
         except ProductVariant.DoesNotExist as exc:
@@ -169,7 +164,6 @@ class UpdateDraftOrderItemSerializer(serializers.Serializer):
     """
 
     quantity = serializers.IntegerField(min_value=0)
-
 
 
 class SubmitOrderSerializer(serializers.Serializer):
@@ -213,3 +207,55 @@ class SubmitOrderSerializer(serializers.Serializer):
             )
 
         return attrs
+
+
+class OrderStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializer for GET /api/v1/orders/{orderId}/status.
+
+    Returns only the current lifecycle status of the order.
+    """
+
+    class Meta:
+        model = Order
+        fields = ["status"]
+
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for GET /api/v1/orders/{orderId}.
+
+    Returns full order detail / receipt information.
+    """
+
+    orderId = serializers.IntegerField(source="id", read_only=True)
+    date = serializers.DateTimeField(source="order_date", read_only=True)
+    taxAmount = serializers.DecimalField(
+        source="tax_amount",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+    totalPaymentDue = serializers.DecimalField(
+        source="total_payment_due",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+    createdAt = serializers.DateTimeField(source="created_at", read_only=True)
+    updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+
+    items = DraftOrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            "orderId",
+            "date",
+            "status",
+            "items",
+            "taxAmount",
+            "totalPaymentDue",
+            "createdAt",
+            "updatedAt",
+        ]

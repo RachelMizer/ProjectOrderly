@@ -12,6 +12,8 @@ from orders.views import (
     DraftOrderItemCreateView,
     DraftOrderItemUpdateView,
     SubmitOrderView,
+    OrderDetailView,
+    OrderStatusView,
 )
 
 urlpatterns = [
@@ -45,5 +47,21 @@ urlpatterns = [
         "<int:orderId>/submit",
         SubmitOrderView.as_view(),
         name="submit-order",
+    ),
+
+    # Retrieve full order detail / receipt
+    # GET /api/v1/orders/{orderId}
+    path(
+        "<int:orderId>",
+        OrderDetailView.as_view(),
+        name="order-detail",
+    ),
+
+    # Retrieve order status only
+    # GET /api/v1/orders/{orderId}/status
+    path(
+        "<int:orderId>/status",
+        OrderStatusView.as_view(),
+        name="order-status",
     ),
 ]

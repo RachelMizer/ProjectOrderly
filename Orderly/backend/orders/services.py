@@ -17,6 +17,7 @@ Key responsibilities implemented here include:
 - Verifying that an order item belongs to the authenticated customer
 - Validating whether a draft order can be submitted
 - Transitioning an order from DRAFT to PENDING
+- Fetching a customer's order safely for read-only detail/status endpoints
 
 These helpers are used by the following endpoints:
 
@@ -24,6 +25,8 @@ These helpers are used by the following endpoints:
     POST   /api/v1/orders/items
     PATCH  /api/v1/orders/items/{orderItemId}
     PATCH  /api/v1/orders/{orderId}/submit
+    GET    /api/v1/orders/{orderId}S
+    GET    /api/v1/orders/{orderId}/status
 
 By centralizing this logic, the application maintains consistency
 across views and simplifies testing and future enhancements
@@ -31,9 +34,14 @@ across views and simplifies testing and future enhancements
 """
 
 from decimal import Decimal
+
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
+from rest_framework.exceptions import NotFound, PermissionDenied
+
+from accounts.models import CustomerProfile
 from orders.models import Order, OrderItem, OrderStatus
+from .exceptions import NotAuthorizedException
 
 
 def get_or_create_draft_order(customer_profile):
@@ -202,5 +210,45 @@ def submit_order(order):
 
     order.status = OrderStatus.PENDING
     order.save()
+
+    return order
+
+
+def get_customer_profile_for_user(user):
+    """
+    Return the CustomerProfile for the authenticated user.
+
+    Raises PermissionDenied if the user does not have a customer profile.
+    """
+
+    try:
+        return CustomerProfile.objects.get(user=user)
+    except CustomerProfile.DoesNotExist as exc:
+        raise PermissionDenied("You do not have permission to view orders.") from exc
+
+
+def get_order_for_customer(order_id, customer_profile):
+    """
+    Return an order if it exists and belongs to the given customer profile.
+
+    Raises:
+    - NotFound if the order does not exist
+    - PermissionDenied if the order belongs to a different customer
+    """
+
+    try:
+        order = (
+            Order.objects.select_related("customer")
+            .prefetch_related(
+                "items__variant__product",
+                "items__modifiers__modifier_option",
+            )
+            .get(pk=order_id)
+        )
+    except Order.DoesNotExist as exc:
+        raise NotFound("Order not found.") from exc
+
+    if order.customer_id != customer_profile.id:
+        raise NotAuthorizedException("You do not have permission to access this order.")
 
     return order

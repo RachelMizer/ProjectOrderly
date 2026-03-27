@@ -24,6 +24,8 @@ from orders.serializers import (
     AddDraftOrderItemSerializer,
     SubmitOrderSerializer,
     UpdateDraftOrderItemSerializer,
+    OrderStatusSerializer,
+    OrderDetailSerializer,
 )
 from orders.services import (
     add_item_to_order,
@@ -35,6 +37,8 @@ from orders.services import (
     validate_order_availability,
     validate_order_has_items,
     validate_order_identity,
+    get_customer_profile_for_user,
+    get_order_for_customer,
 )
 
 
@@ -345,3 +349,35 @@ class SubmitOrderView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+class OrderStatusView(APIView):
+    """
+    Return the current lifecycle status for a single order.
+
+    GET /api/v1/orders/{orderId}/status
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, orderId):
+        customer_profile = get_customer_profile_for_user(request.user)
+        order = get_order_for_customer(orderId, customer_profile)
+
+        serializer = OrderStatusSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderDetailView(APIView):
+    """
+    Return full order detail / receipt information for a single order.
+
+    GET /api/v1/orders/{orderId}
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, orderId):
+        customer_profile = get_customer_profile_for_user(request.user)
+        order = get_order_for_customer(orderId, customer_profile)
+
+        serializer = OrderDetailSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
