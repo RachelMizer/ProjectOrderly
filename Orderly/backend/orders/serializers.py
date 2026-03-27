@@ -296,6 +296,13 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
                     "message": "guestEmail required if not authenticated"
                 })
             
+            if order.guest_email.lower() != guest_email.lower():
+                raise serializers.ValidationError({
+                    "error": "NOT_AUTHORIZED",
+                    "message": "Guest email does not match order."
+                })
+        
+            
         if quantity is None or quantity < 0:
             raise serializers.ValidationError({
                 "error": "INVALID_INPUT",

@@ -49,7 +49,6 @@ urlpatterns = [
         name="submit-order",
     ),
     
-
     # Add Modifier to draft order
     # POST /api/v1/orders/items/{orderItemId}/modifiers
     path (
@@ -58,10 +57,10 @@ urlpatterns = [
         name="draft-order-modifier-create"
     ),
 
-    # Update or remove modifer from draft order
-    # POST /api/v1/orders/items/{orderModifierId}
+    # Update or remove modifier from draft order
+    # PATCH /api/v1/orders/items/{orderModifierId}
     path (
-        "items/<int:orderModifierId>",
+        "items/modifiers/<int:orderModifierId>", # Changed from orderItemId to orderModifierId for clarity
         DraftOrderItemModifierUpdateView.as_view(),
         name="draft-order-modifier-update"
     )
