@@ -7,12 +7,16 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ResetPasswordRequest from "./pages/ResetPasswordRequest";
 import ResetPassword from "./pages/ResetPassword";
+import StoreFront from "./pages/StoreFront";
 
 import { logout, isAuthenticated } from "./api/auth";
 
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const firstName = storedUser?.first_name || "";
 
   async function handleLogout() {
     try {
@@ -27,10 +31,16 @@ function AppContent() {
   }
 
   return (
-    <div>
-      <h1>Orderly frontend running...</h1>
+    <div className="wrapper">
+      <header>
+        <img src="/img/HDlogo.png" alt="Happy Desk Logo" />
+        <h3>Make your desk happy today</h3>
+      </header>
 
       <nav>
+
+        <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+
         <Link to="/">Home</Link>
 
         {!loggedIn && (
@@ -40,9 +50,11 @@ function AppContent() {
             {" | "}
             <Link to="/login">Login</Link>
             {" | "}
-            <Link to="/password-reset">Forgot Password</Link>
+            <img src="/img/ico_cart.png" alt="cart" /><p className="cart-PH" title="not an active link">Cart</p>
           </>
         )}
+
+      {/* <Link to="/password-reset">Forgot Password</Link> */}
 
         {loggedIn && (
           <>
@@ -53,15 +65,9 @@ function AppContent() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<h2>Home Page</h2>} />
-        <Route
-          path="/register"
-          element={<Register setLoggedIn={setLoggedIn} />}
-        />
-        <Route
-          path="/login"
-          element={<Login setLoggedIn={setLoggedIn} />}
-        />
+        <Route path="/" element={<StoreFront />} />
+        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

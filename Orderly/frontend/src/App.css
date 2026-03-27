@@ -1,38 +1,215 @@
-.App {
+.wrapper {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+/*    GLOBAL LAYOUT     */
+
+header {
+  margin-top: 0px;
+  padding: 10px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+header img {
+  width: 50%;
+  min-width: 500px;
+  max-width: 800px;
+  margin-top: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+header h3 {
+  text-transform: uppercase;
+  letter-spacing: .2rem;
+  transform: scale(1, .98);
+  font-weight: normal;
+  margin-bottom: 0px;
+  color: #839170;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+nav h3 {
+  text-align: center;
+  margin-top: 2px;
+  margin-bottom: 0px;
+  letter-spacing: .07rem;
+  font-weight: normal;
+}
+
+nav {
+  margin-top: 0px;
+  background-color: #839170;
+  color: white;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  column-gap: 20px;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 5px;
+}
+
+nav a, .LOlink {
   color: white;
+  text-decoration-line: none;
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  font-weight: bold;
 }
 
-.App-link {
-  color: #61dafb;
+nav p {
+  margin: 0px;
+  letter-spacing: .05rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+nav img {
+  width: 25px;
+  padding: 8px;
+  margin-right: 0px;
+  background-color: #f3ffe0;
+  border-radius: 10px;
+}
+
+nav .cart-PH {
+  margin-left: -15px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: .15rem;
+  font-size: 1rem;
+}
+
+nav .cart-PH:hover {
+  cursor: pointer;
+}
+
+/* TEMPORARY */
+nav .cart-PH::after {
+  content: "this link is just for show";
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+nav .cart-PH:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* END TEMPORARY */
+
+main {
+  margin-top: 0px;
+  color: #404754;
+}
+
+footer {
+  position: absolute;
+  bottom: 0px;
+  background-color: #839170;
+  width: 100%;
+}
+
+footer p {
+  margin: auto;
+  padding: 5px;
+  color: white;
+  text-align: center;
+}
+
+/*    LINK STYLES   */
+a {
+  text-decoration-line: none;
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  font-weight: bold;
+}
+
+main a {
+  color: #839170;
+}
+
+/*      HEADERS     */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0px;
+}
+
+
+/*      STORE PAGE    */
+
+.store {
+  width: 100%;
+  padding: 10px;
+  margin-top: 0px;
+  text-align: center;
+}
+
+.store h1 {
+  margin-top: 30px;
+  margin-bottom: 0px;
+}
+
+.store p {
+  margin-top: 0px;
+}
+
+.filter {
+  width: 200px;
+  margin: auto;
+  background-color: #f3efeb;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.filter h3 {
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  margin-bottom: 0px;
+  color: #3e4633;
+}
+
+.product-grid {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  max-width: 1200px;
+  margin: 40px auto;
+  background-color: #f3efeb;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.product-card {
+  width: 300px;
+}
+
+.product-card img {
+  width: 90%;
+  border-radius: 10px;
+}
+
+.out-of-stock {
+  font-size: .8rem;
+  font-style: italic;
+  color: gray;
+  margin-left: 10px;
+}
+
+.product-card p {
+  display: inline-block;
+  margin-left: 5px;
+  margin-right: 5px;
 }
