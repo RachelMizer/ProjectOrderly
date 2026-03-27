@@ -18,6 +18,21 @@ export default function Profile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const fieldLabels = {
+    firstName: "First Name",
+    lastName: "Last Name",
+    email: "Email",
+    streetAddress: "Street Address",
+    city: "City",
+    state: "State",
+    zipcode: "Zip Code",
+    phone: "Phone Number",
+    first_name: "First Name",
+    last_name: "Last Name",
+    street_address: "Street Address",
+    non_field_errors: "Error",
+  };
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -27,7 +42,13 @@ export default function Profile() {
           ...data,
         }));
       } catch (err) {
-        setError(err.message || "Failed to load profile");
+        const backend = err?.response?.data || {};
+        setError(
+          backend.message ||
+            backend.detail ||
+            err.message ||
+            "Failed to load profile"
+        );
       } finally {
         setLoading(false);
       }
@@ -43,6 +64,15 @@ export default function Profile() {
       ...prev,
       [name]: value,
     }));
+
+    setError("");
+    setMessage("");
+  }
+
+  function formatFieldError(field, value) {
+    return `${fieldLabels[field] || field}: ${
+      Array.isArray(value) ? value[0] : value
+    }`;
   }
 
   async function handleSubmit(e) {
@@ -60,7 +90,47 @@ export default function Profile() {
       setMessage("Profile updated successfully");
       setTimeout(() => setMessage(""), 3000);
     } catch (err) {
-      setError(err.message || "Update failed");
+      const backend = err?.response?.data || {};
+      let fieldErrorMessage = "";
+
+      if (backend.fields && typeof backend.fields === "object") {
+        const firstField = Object.keys(backend.fields)[0];
+        if (firstField) {
+          fieldErrorMessage = formatFieldError(
+            firstField,
+            backend.fields[firstField]
+          );
+        }
+      }
+
+      if (!fieldErrorMessage && backend.customer_profile) {
+        const nested = backend.customer_profile;
+        const firstNestedField = Object.keys(nested)[0];
+
+        if (firstNestedField) {
+          fieldErrorMessage = formatFieldError(
+            firstNestedField,
+            nested[firstNestedField]
+          );
+        }
+      }
+
+      if (!fieldErrorMessage) {
+        for (const field of Object.keys(fieldLabels)) {
+          if (backend[field]) {
+            fieldErrorMessage = formatFieldError(field, backend[field]);
+            break;
+          }
+        }
+      }
+
+      setError(
+        fieldErrorMessage ||
+          backend.message ||
+          backend.detail ||
+          err.message ||
+          "Failed to update profile"
+      );
     } finally {
       setSubmitting(false);
     }
@@ -109,6 +179,8 @@ export default function Profile() {
               />
             </div>
           </div>
+
+          <hr style={{ margin: "1.5rem 0" }} />
 
           <div style={{ marginBottom: "2rem" }}>
             <h2>Address</h2>
@@ -161,6 +233,8 @@ export default function Profile() {
               />
             </div>
           </div>
+
+          <hr style={{ margin: "1.5rem 0" }} />
 
           <div style={{ marginBottom: "2rem" }}>
             <h2>Contact</h2>
