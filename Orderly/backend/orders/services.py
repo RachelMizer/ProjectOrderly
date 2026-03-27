@@ -41,6 +41,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 
 from accounts.models import CustomerProfile
 from orders.models import Order, OrderItem, OrderStatus
+from .exceptions import NotAuthorizedException
 
 
 def get_or_create_draft_order(customer_profile):
@@ -248,6 +249,6 @@ def get_order_for_customer(order_id, customer_profile):
         raise NotFound("Order not found.") from exc
 
     if order.customer_id != customer_profile.id:
-        raise PermissionDenied("You do not have permission to view this order.")
+        raise NotAuthorizedException("You do not have permission to access this order.")
 
     return order
