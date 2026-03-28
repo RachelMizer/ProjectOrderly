@@ -24,8 +24,9 @@ from orders.serializers import (
     AddDraftOrderItemSerializer,
     SubmitOrderSerializer,
     UpdateDraftOrderItemSerializer,
-    AddDraftOrderItemModifierSerializer,
-    UpdateDraftOrderItemModifierSerializer
+    OrderStatusSerializer,
+    OrderDetailSerializer,
+    OrderHistoryItemSerializer,
 )
 from orders.services import (
     add_item_to_order,
@@ -37,6 +38,9 @@ from orders.services import (
     validate_order_availability,
     validate_order_has_items,
     validate_order_identity,
+    get_customer_profile_for_user,
+    get_order_for_customer,
+    get_order_history_for_customer,
 )
 
 
@@ -388,6 +392,99 @@ class SubmitOrderView(APIView):
             {
                 "id": order.id,
                 "status": order.status,
+            },
+            status=status.HTTP_200_OK,
+        )
+class OrderStatusView(APIView):
+    """
+    Return the current lifecycle status for a single order.
+
+    GET /api/v1/orders/{orderId}/status
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, orderId):
+        customer_profile = get_customer_profile_for_user(request.user)
+        order = get_order_for_customer(orderId, customer_profile)
+
+        serializer = OrderStatusSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderDetailView(APIView):
+    """
+    Return full order detail / receipt information for a single order.
+
+    GET /api/v1/orders/{orderId}
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, orderId):
+        customer_profile = get_customer_profile_for_user(request.user)
+        order = get_order_for_customer(orderId, customer_profile)
+
+        serializer = OrderDetailSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class OrderHistoryView(APIView):
+    """
+    Return the authenticated customer's non-draft orders, newest first.
+
+    GET /api/v1/orders/me
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        customer_profile = get_customer_profile_for_user(request.user)
+        orders = get_order_history_for_customer(customer_profile)
+
+        try:
+            page = int(request.query_params.get("page", 1))
+            page_size = int(request.query_params.get("pageSize", 25))
+        except ValueError:
+            return Response(
+                {
+                    "error": "INVALID_INPUT",
+                    "message": "page and pageSize must be integers.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if page < 1 or page_size < 1:
+            return Response(
+                {
+                    "error": "INVALID_INPUT",
+                    "message": "page and pageSize must be greater than 0.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        total_count = orders.count()
+        start_index = (page - 1) * page_size
+        end_index = start_index + page_size
+
+        paged_orders = orders[start_index:end_index]
+        serializer = OrderHistoryItemSerializer(paged_orders, many=True)
+
+        next_url = None
+        previous_url = None
+
+        if end_index < total_count:
+            next_url = f"/api/v1/orders/me?page={page + 1}&pageSize={page_size}"
+
+        if page > 1:
+            previous_url = f"/api/v1/orders/me?page={page - 1}&pageSize={page_size}"
+
+        return Response(
+            {
+                "count": total_count,
+                "pageSize": page_size,
+                "next": next_url,
+                "previous": previous_url,
+                "results": serializer.data,
             },
             status=status.HTTP_200_OK,
         )

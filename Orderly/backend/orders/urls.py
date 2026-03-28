@@ -12,8 +12,9 @@ from orders.views import (
     DraftOrderItemCreateView,
     DraftOrderItemUpdateView,
     SubmitOrderView,
-    DraftOrderItemModifierCreateView,
-    DraftOrderItemModifierUpdateView
+    OrderDetailView,
+    OrderStatusView,
+    OrderHistoryView,
 )
 
 urlpatterns = [
@@ -48,20 +49,28 @@ urlpatterns = [
         SubmitOrderView.as_view(),
         name="submit-order",
     ),
-    
-    # Add Modifier to draft order
-    # POST /api/v1/orders/items/{orderItemId}/modifiers
-    path (
-        "items/<int:orderItemId>/modifiers", 
-        DraftOrderItemModifierCreateView.as_view(),
-        name="draft-order-modifier-create"
+
+    # Retrieve full order detail / receipt
+    # GET /api/v1/orders/{orderId}
+    path(
+        "<int:orderId>",
+        OrderDetailView.as_view(),
+        name="order-detail",
     ),
 
-    # Update or remove modifier from draft order
-    # PATCH /api/v1/orders/items/{orderModifierId}
-    path (
-        "items/modifiers/<int:orderModifierId>", # Changed from orderItemId to orderModifierId for clarity
-        DraftOrderItemModifierUpdateView.as_view(),
-        name="draft-order-modifier-update"
-    )
+    # Retrieve order status only
+    # GET /api/v1/orders/{orderId}/status
+    path(
+        "<int:orderId>/status",
+        OrderStatusView.as_view(),
+        name="order-status",
+    ),
+
+    # Retrieve authenticated customer's order history
+    # GET /api/v1/orders/me
+    path(
+        "me",
+        OrderHistoryView.as_view(),
+        name="order-history",
+    ),
 ]
