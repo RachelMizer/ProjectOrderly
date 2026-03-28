@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.13.7 on win32)" generated="2026-03-28T16:07:18.158894" rpa="false" schemaversion="5">
+<suite id="s1" name="Profile" source="C:\Users\kenny\Documents\ProjectOrderly\Orderly\frontend\robot\tests\profile.robot">
+<test id="s1-t1" name="Logged Out User Should Not See Profile Link" line="7">
+<kw name="Open Browser To App" owner="keywords" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:18.323909" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:18.323659" elapsed="1.617035"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-03-28T16:07:19.941211" elapsed="0.056842"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2026-03-28T16:07:19.998299" elapsed="0.001511"/>
+</kw>
+<kw name="Set Selenium Speed" owner="SeleniumLibrary">
+<arg>0.2 seconds</arg>
+<doc>Sets the delay that is waited after each Selenium command.</doc>
+<status status="PASS" start="2026-03-28T16:07:20.000044" elapsed="0.000497"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:18.323069" elapsed="1.677748"/>
+</kw>
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:20.001717" level="INFO">Opening url 'http://localhost:3000'</msg>
+<arg>${BASE_URL}</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:20.001388" elapsed="0.283521"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Orderly frontend running...</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:20.285558" elapsed="0.228091"/>
+</kw>
+<kw name="Page Should Not Contain Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:20.928727" level="INFO">Current page does not contain link 'Profile'.</msg>
+<arg>Profile</arg>
+<doc>Verifies link identified by ``locator`` is not found from current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:20.514109" elapsed="0.414783"/>
+</kw>
+<kw name="Page Should Contain Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:21.354544" level="INFO">Current page contains link 'Login'.</msg>
+<arg>Login</arg>
+<doc>Verifies link identified by ``locator`` is found from current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:20.929393" elapsed="0.425321"/>
+</kw>
+<kw name="Page Should Contain Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:21.778236" level="INFO">Current page contains link 'Register'.</msg>
+<arg>Register</arg>
+<doc>Verifies link identified by ``locator`` is found from current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:21.355325" elapsed="0.423110"/>
+</kw>
+<kw name="Close Browser Session" owner="keywords" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:21.781405" elapsed="2.542887"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:21.780837" elapsed="2.543567"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:18.322098" elapsed="6.002722"/>
+</test>
+<test id="s1-t2" name="Logged In User Can View Profile Page" line="14">
+<kw name="Open Browser To App" owner="keywords" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:24.326491" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:24.326333" elapsed="2.263160"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-03-28T16:07:26.590018" elapsed="0.282154"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2026-03-28T16:07:26.872456" elapsed="0.203155"/>
+</kw>
+<kw name="Set Selenium Speed" owner="SeleniumLibrary">
+<arg>0.2 seconds</arg>
+<doc>Sets the delay that is waited after each Selenium command.</doc>
+<status status="PASS" start="2026-03-28T16:07:27.075842" elapsed="0.000249"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:24.326138" elapsed="2.750139"/>
+</kw>
+<kw name="Login As Test User" owner="keywords">
+<kw name="Go To Login Page" owner="keywords">
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:27.077603" level="INFO">Opening url 'http://localhost:3000/login'</msg>
+<arg>${BASE_URL}/login</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:27.077443" elapsed="0.321916"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>id=email</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:27.399694" elapsed="0.222653"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:27.077216" elapsed="0.545526"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:27.623718" level="INFO">Typing text 'test5@tester.com' into text field 'id=email'.</msg>
+<arg>id=email</arg>
+<arg>${TEST_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:27.623040" elapsed="0.731443"/>
+</kw>
+<kw name="Input Password" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:28.354995" level="INFO">Typing password into text field 'id=password'.</msg>
+<msg time="2026-03-28T16:07:28.811674" level="INFO">Temporally setting log level to: NONE</msg>
+<arg>id=password</arg>
+<arg>${TEST_PASSWORD}</arg>
+<doc>Types the given password into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:28.354715" elapsed="0.797589"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:29.152729" level="INFO">Clicking button 'xpath=//button[normalize-space()='Login']'.</msg>
+<arg>xpath=//button[normalize-space()='Login']</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:29.152514" elapsed="1.102628"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Home Page</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:30.255430" elapsed="1.456158"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:27.076877" elapsed="4.634865"/>
+</kw>
+<kw name="Page Should Contain Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:32.131756" level="INFO">Current page contains link 'Profile'.</msg>
+<arg>Profile</arg>
+<doc>Verifies link identified by ``locator`` is found from current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:31.712327" elapsed="0.419571"/>
+</kw>
+<kw name="Open Profile Page" owner="keywords">
+<kw name="Click Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:32.132806" level="INFO">Clicking link 'Profile'.</msg>
+<arg>Profile</arg>
+<doc>Clicks a link identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:32.132627" elapsed="0.770234"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>My Profile</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:32.903152" elapsed="0.217160"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:32.132329" elapsed="0.988159"/>
+</kw>
+<kw name="Page Should Contain" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:33.534433" level="INFO">Current page contains text 'My Profile'.</msg>
+<arg>My Profile</arg>
+<doc>Verifies that current page contains ``text``.</doc>
+<status status="PASS" start="2026-03-28T16:07:33.120964" elapsed="0.413692"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:33.764200" level="INFO">Current page contains element 'id=firstName'.</msg>
+<arg>id=firstName</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:33.535245" elapsed="0.229110"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:33.986334" level="INFO">Current page contains element 'id=lastName'.</msg>
+<arg>id=lastName</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:33.764955" elapsed="0.221536"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:34.200343" level="INFO">Current page contains element 'id=streetAddress'.</msg>
+<arg>id=streetAddress</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:33.986989" elapsed="0.213493"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:34.411768" level="INFO">Current page contains element 'id=city'.</msg>
+<arg>id=city</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:34.200976" elapsed="0.210934"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:34.624618" level="INFO">Current page contains element 'id=state'.</msg>
+<arg>id=state</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:34.412630" elapsed="0.212142"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:34.836307" level="INFO">Current page contains element 'id=zipcode'.</msg>
+<arg>id=zipcode</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:34.625550" elapsed="0.210904"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:35.046417" level="INFO">Current page contains element 'id=email'.</msg>
+<arg>id=email</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:34.836880" elapsed="0.209710"/>
+</kw>
+<kw name="Page Should Contain Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:35.257999" level="INFO">Current page contains element 'id=phone'.</msg>
+<arg>id=phone</arg>
+<doc>Verifies that element ``locator`` is found on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:35.047182" elapsed="0.210968"/>
+</kw>
+<kw name="Close Browser Session" owner="keywords" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:35.258979" elapsed="2.357993"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:35.258674" elapsed="2.358454"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:24.325698" elapsed="13.291664"/>
+</test>
+<test id="s1-t3" name="Email Field Should Be Disabled On Profile Page" line="28">
+<kw name="Open Browser To App" owner="keywords" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:37.619786" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:37.619482" elapsed="1.887468"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-03-28T16:07:39.507240" elapsed="0.266368"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2026-03-28T16:07:39.773864" elapsed="0.202067"/>
+</kw>
+<kw name="Set Selenium Speed" owner="SeleniumLibrary">
+<arg>0.2 seconds</arg>
+<doc>Sets the delay that is waited after each Selenium command.</doc>
+<status status="PASS" start="2026-03-28T16:07:39.976374" elapsed="0.000274"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:37.619076" elapsed="2.357672"/>
+</kw>
+<kw name="Login As Test User" owner="keywords">
+<kw name="Go To Login Page" owner="keywords">
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:39.977985" level="INFO">Opening url 'http://localhost:3000/login'</msg>
+<arg>${BASE_URL}/login</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:39.977790" elapsed="0.267257"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>id=email</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:40.245597" elapsed="0.227690"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:39.977527" elapsed="0.495923"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:40.473931" level="INFO">Typing text 'test5@tester.com' into text field 'id=email'.</msg>
+<arg>id=email</arg>
+<arg>${TEST_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:40.473622" elapsed="0.805343"/>
+</kw>
+<kw name="Input Password" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:41.279481" level="INFO">Typing password into text field 'id=password'.</msg>
+<msg time="2026-03-28T16:07:41.727350" level="INFO">Temporally setting log level to: NONE</msg>
+<arg>id=password</arg>
+<arg>${TEST_PASSWORD}</arg>
+<doc>Types the given password into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:41.279198" elapsed="0.722317"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:42.001990" level="INFO">Clicking button 'xpath=//button[normalize-space()='Login']'.</msg>
+<arg>xpath=//button[normalize-space()='Login']</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:42.001748" elapsed="1.081782"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Home Page</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:43.083766" elapsed="1.026525"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:39.977180" elapsed="4.133262"/>
+</kw>
+<kw name="Open Profile Page" owner="keywords">
+<kw name="Click Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:44.111613" level="INFO">Clicking link 'Profile'.</msg>
+<arg>Profile</arg>
+<doc>Clicks a link identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:44.111258" elapsed="0.755922"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>My Profile</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:44.867548" elapsed="0.213103"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:44.110880" elapsed="0.969926"/>
+</kw>
+<kw name="Element Should Be Disabled" owner="SeleniumLibrary">
+<arg>id=email</arg>
+<doc>Verifies that element identified by ``locator`` is disabled.</doc>
+<status status="PASS" start="2026-03-28T16:07:45.081155" elapsed="0.416885"/>
+</kw>
+<kw name="Close Browser Session" owner="keywords" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:45.499862" elapsed="2.411326"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:45.499222" elapsed="2.412184"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:37.618306" elapsed="10.293290"/>
+</test>
+<test id="s1-t4" name="Logged In User Can Update Profile" line="33">
+<kw name="Open Browser To App" owner="keywords" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:47.913114" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:47.912968" elapsed="2.237381"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-03-28T16:07:50.150554" elapsed="0.279582"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2026-03-28T16:07:50.430562" elapsed="0.204361"/>
+</kw>
+<kw name="Set Selenium Speed" owner="SeleniumLibrary">
+<arg>0.2 seconds</arg>
+<doc>Sets the delay that is waited after each Selenium command.</doc>
+<status status="PASS" start="2026-03-28T16:07:50.635555" elapsed="0.000832"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:47.912783" elapsed="2.723925"/>
+</kw>
+<kw name="Login As Test User" owner="keywords">
+<kw name="Go To Login Page" owner="keywords">
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:50.640294" level="INFO">Opening url 'http://localhost:3000/login'</msg>
+<arg>${BASE_URL}/login</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-03-28T16:07:50.639840" elapsed="0.562500"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>id=email</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:51.202588" elapsed="0.218885"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:50.639103" elapsed="0.782539"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:51.422118" level="INFO">Typing text 'test5@tester.com' into text field 'id=email'.</msg>
+<arg>id=email</arg>
+<arg>${TEST_EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:51.421812" elapsed="0.847899"/>
+</kw>
+<kw name="Input Password" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:52.270263" level="INFO">Typing password into text field 'id=password'.</msg>
+<msg time="2026-03-28T16:07:52.718718" level="INFO">Temporally setting log level to: NONE</msg>
+<arg>id=password</arg>
+<arg>${TEST_PASSWORD}</arg>
+<doc>Types the given password into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:52.269962" elapsed="0.762437"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:53.032861" level="INFO">Clicking button 'xpath=//button[normalize-space()='Login']'.</msg>
+<arg>xpath=//button[normalize-space()='Login']</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:53.032631" elapsed="1.098249"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Home Page</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:54.131109" elapsed="1.042032"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:50.637992" elapsed="4.535298"/>
+</kw>
+<kw name="Open Profile Page" owner="keywords">
+<kw name="Click Link" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:55.174273" level="INFO">Clicking link 'Profile'.</msg>
+<arg>Profile</arg>
+<doc>Clicks a link identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:55.174064" elapsed="0.748638"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>My Profile</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:07:55.923273" elapsed="0.213944"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:55.173727" elapsed="0.963685"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:56.138638" level="INFO">Clicking element 'id=firstName'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:56.138384" elapsed="0.507379"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:56.646624" level="INFO">Sending key(s) ('CTRL+a',) to id=firstName element.</msg>
+<msg time="2026-03-28T16:07:57.338831" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:07:57.338937" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:07:57.338986" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:56.646035" elapsed="0.905159"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:57.551894" level="INFO">Sending key(s) ('BACKSPACE',) to id=firstName element.</msg>
+<msg time="2026-03-28T16:07:58.231094" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:07:58.231262" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:57.551426" elapsed="0.891927"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:58.444188" level="INFO">Typing text 'Kenny' into text field 'id=firstName'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:58.443831" elapsed="0.700237"/>
+</kw>
+<arg>id=firstName</arg>
+<arg>${UPDATED_FIRST_NAME}</arg>
+<status status="PASS" start="2026-03-28T16:07:56.137887" elapsed="3.006352"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:59.145472" level="INFO">Clicking element 'id=lastName'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:07:59.145251" elapsed="0.455635"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:07:59.601554" level="INFO">Sending key(s) ('CTRL+a',) to id=lastName element.</msg>
+<msg time="2026-03-28T16:08:00.284472" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:00.284576" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:00.284620" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:07:59.601109" elapsed="0.897440"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:00.499613" level="INFO">Sending key(s) ('BACKSPACE',) to id=lastName element.</msg>
+<msg time="2026-03-28T16:08:01.185004" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:01.185231" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:00.498888" elapsed="0.913507"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:01.412924" level="INFO">Typing text 'Tester' into text field 'id=lastName'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:01.412627" elapsed="0.692997"/>
+</kw>
+<arg>id=lastName</arg>
+<arg>${UPDATED_LAST_NAME}</arg>
+<status status="PASS" start="2026-03-28T16:07:59.144835" elapsed="2.960958"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:02.107135" level="INFO">Clicking element 'id=streetAddress'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:02.106883" elapsed="0.489972"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:02.597536" level="INFO">Sending key(s) ('CTRL+a',) to id=streetAddress element.</msg>
+<msg time="2026-03-28T16:08:03.284953" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:03.285055" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:03.285108" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:02.597083" elapsed="0.915337"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:03.513128" level="INFO">Sending key(s) ('BACKSPACE',) to id=streetAddress element.</msg>
+<msg time="2026-03-28T16:08:04.206464" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:04.206600" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:03.512663" elapsed="0.907748"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:04.420946" level="INFO">Typing text '321 Lake Road' into text field 'id=streetAddress'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:04.420645" elapsed="0.706795"/>
+</kw>
+<arg>id=streetAddress</arg>
+<arg>${UPDATED_STREET}</arg>
+<status status="PASS" start="2026-03-28T16:08:02.106406" elapsed="3.021199"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:05.128665" level="INFO">Clicking element 'id=city'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:05.128456" elapsed="0.470840"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:05.599981" level="INFO">Sending key(s) ('CTRL+a',) to id=city element.</msg>
+<msg time="2026-03-28T16:08:06.289184" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:06.289301" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:06.289357" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:05.599528" elapsed="0.904837"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:06.504842" level="INFO">Sending key(s) ('BACKSPACE',) to id=city element.</msg>
+<msg time="2026-03-28T16:08:07.213561" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:07.213666" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:06.504535" elapsed="0.921532"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:07.426821" level="INFO">Typing text 'Raleigh' into text field 'id=city'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:07.426381" elapsed="0.772675"/>
+</kw>
+<arg>id=city</arg>
+<arg>${UPDATED_CITY}</arg>
+<status status="PASS" start="2026-03-28T16:08:05.128059" elapsed="3.071199"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:08.200346" level="INFO">Clicking element 'id=state'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:08.200128" elapsed="0.471847"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:08.672744" level="INFO">Sending key(s) ('CTRL+a',) to id=state element.</msg>
+<msg time="2026-03-28T16:08:09.347160" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:09.347296" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:09.347365" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:08.672241" elapsed="0.886999"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:09.559928" level="INFO">Sending key(s) ('BACKSPACE',) to id=state element.</msg>
+<msg time="2026-03-28T16:08:10.251542" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:10.251678" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:09.559472" elapsed="0.902574"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:10.462577" level="INFO">Typing text 'NC' into text field 'id=state'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:10.462272" elapsed="0.677528"/>
+</kw>
+<arg>id=state</arg>
+<arg>${UPDATED_STATE}</arg>
+<status status="PASS" start="2026-03-28T16:08:08.199742" elapsed="2.940161"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:11.140590" level="INFO">Clicking element 'id=zipcode'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:11.140387" elapsed="0.473618"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:11.614676" level="INFO">Sending key(s) ('CTRL+a',) to id=zipcode element.</msg>
+<msg time="2026-03-28T16:08:12.293485" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:12.293598" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:12.293646" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:11.614169" elapsed="0.892636"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:12.507492" level="INFO">Sending key(s) ('BACKSPACE',) to id=zipcode element.</msg>
+<msg time="2026-03-28T16:08:13.180396" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:13.180502" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:12.507035" elapsed="0.884900"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:13.392446" level="INFO">Typing text '27601' into text field 'id=zipcode'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:13.392159" elapsed="0.715195"/>
+</kw>
+<arg>id=zipcode</arg>
+<arg>${UPDATED_ZIP}</arg>
+<status status="PASS" start="2026-03-28T16:08:11.140154" elapsed="2.967438"/>
+</kw>
+<kw name="Clear And Type" owner="keywords">
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:14.109591" level="INFO">Clicking element 'id=phone'.</msg>
+<arg>${locator}</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:14.109243" elapsed="0.457960"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:14.567921" level="INFO">Sending key(s) ('CTRL+a',) to id=phone element.</msg>
+<msg time="2026-03-28T16:08:15.254332" level="INFO">Pressing special key CONTROL down.</msg>
+<msg time="2026-03-28T16:08:15.254419" level="INFO">Sending key a</msg>
+<msg time="2026-03-28T16:08:15.254450" level="INFO">Releasing special key CONTROL.</msg>
+<arg>${locator}</arg>
+<arg>CTRL+a</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:14.567433" elapsed="0.900431"/>
+</kw>
+<kw name="Press Keys" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:15.468334" level="INFO">Sending key(s) ('BACKSPACE',) to id=phone element.</msg>
+<msg time="2026-03-28T16:08:16.161524" level="INFO">Pressing special key BACKSPACE to element.</msg>
+<msg time="2026-03-28T16:08:16.161752" level="INFO">Releasing special key BACKSPACE.</msg>
+<arg>${locator}</arg>
+<arg>BACKSPACE</arg>
+<doc>Simulates the user pressing key(s) to an element or on the active browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:15.468029" elapsed="0.907414"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:16.375822" level="INFO">Typing text '9195551234' into text field 'id=phone'.</msg>
+<arg>${locator}</arg>
+<arg>${value}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:16.375616" elapsed="0.707853"/>
+</kw>
+<arg>id=phone</arg>
+<arg>${UPDATED_PHONE}</arg>
+<status status="PASS" start="2026-03-28T16:08:14.108579" elapsed="2.975064"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:17.084806" level="INFO">Clicking button 'xpath=//button[normalize-space()='Save']'.</msg>
+<arg>xpath=//button[normalize-space()='Save']</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2026-03-28T16:08:17.084507" elapsed="1.104154"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Profile updated successfully</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:08:18.189072" elapsed="0.209864"/>
+</kw>
+<kw name="Reload Page" owner="SeleniumLibrary">
+<doc>Simulates user reloading page.</doc>
+<status status="PASS" start="2026-03-28T16:08:18.399444" elapsed="0.245776"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>My Profile</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-03-28T16:08:18.645740" elapsed="0.211552"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:19.700536" level="INFO">Content of text field 'id=firstName' is 'Kenny'.</msg>
+<arg>id=firstName</arg>
+<arg>${UPDATED_FIRST_NAME}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:18.857938" elapsed="0.842747"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:20.537172" level="INFO">Content of text field 'id=lastName' is 'Tester'.</msg>
+<arg>id=lastName</arg>
+<arg>${UPDATED_LAST_NAME}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:19.701111" elapsed="0.836276"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:21.374604" level="INFO">Content of text field 'id=streetAddress' is '321 Lake Road'.</msg>
+<arg>id=streetAddress</arg>
+<arg>${UPDATED_STREET}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:20.537890" elapsed="0.836855"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:22.211255" level="INFO">Content of text field 'id=city' is 'Raleigh'.</msg>
+<arg>id=city</arg>
+<arg>${UPDATED_CITY}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:21.375390" elapsed="0.836019"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:23.044226" level="INFO">Content of text field 'id=state' is 'NC'.</msg>
+<arg>id=state</arg>
+<arg>${UPDATED_STATE}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:22.211938" elapsed="0.832434"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:23.886036" level="INFO">Content of text field 'id=zipcode' is '27601'.</msg>
+<arg>id=zipcode</arg>
+<arg>${UPDATED_ZIP}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:23.047583" elapsed="0.838643"/>
+</kw>
+<kw name="Textfield Value Should Be" owner="SeleniumLibrary">
+<msg time="2026-03-28T16:08:24.718225" level="INFO">Content of text field 'id=phone' is '9195551234'.</msg>
+<arg>id=phone</arg>
+<arg>${UPDATED_PHONE}</arg>
+<doc>Verifies text field ``locator`` has exactly text ``expected``.</doc>
+<status status="PASS" start="2026-03-28T16:08:23.886700" elapsed="0.831741"/>
+</kw>
+<kw name="Close Browser Session" owner="keywords" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-03-28T16:08:24.719816" elapsed="2.356434"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:08:24.719303" elapsed="2.357054"/>
+</kw>
+<status status="PASS" start="2026-03-28T16:07:47.912462" elapsed="39.164109"/>
+</test>
+<status status="PASS" start="2026-03-28T16:07:18.160335" elapsed="68.916906"/>
+</suite>
+<statistics>
+<total>
+<stat pass="4" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Profile" id="s1" pass="4" fail="0" skip="0">Profile</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
