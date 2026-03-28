@@ -11,6 +11,8 @@ from orders.views import (
     DraftOrderView,
     DraftOrderItemCreateView,
     DraftOrderItemUpdateView,
+    DraftOrderItemModifierCreateView,
+    DraftOrderItemModifierUpdateView,
     SubmitOrderView,
     OrderDetailView,
     OrderStatusView,
@@ -40,6 +42,22 @@ urlpatterns = [
         "items/<int:orderItemId>",
         DraftOrderItemUpdateView.as_view(),
         name="draft-order-item-update",
+    ),
+
+    # Add modifier to an existing draft order item
+    # POST /api/v1/orders/items/{orderItemId}/modifiers
+    path(
+        "items/<int:orderItemId>/modifiers",
+        DraftOrderItemModifierCreateView.as_view(),
+        name="draft-order-item-modifier-create",
+    ),
+
+    # Update or remove an existing order item modifier
+    # PATCH /api/v1/orders/items/modifiers/{orderModifierId}
+    path(
+        "items/modifiers/<int:orderModifierId>",
+        DraftOrderItemModifierUpdateView.as_view(),
+        name="draft-order-item-modifier-update",
     ),
 
     # Submit draft order

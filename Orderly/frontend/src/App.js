@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ResetPasswordRequest from "./pages/ResetPasswordRequest";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 
 import OrderHistory from "./pages/OrderHistory";
 
@@ -52,7 +53,8 @@ function AppContent() {
             <Link to="/order-history">Order History</Link>
 
 
-
+            {" | "}
+            <Link to="/profile">Profile</Link>
             {" | "}
             <button onClick={handleLogout}>Logout</button>
           </>
@@ -72,6 +74,7 @@ function AppContent() {
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );

@@ -192,3 +192,49 @@ export async function confirmPasswordReset({ uid, token, newPassword }) {
 
   return data;
 }
+
+// -------------------------
+// GET PROFILE
+// -------------------------
+export async function getProfile() {
+  const response = await fetch("http://127.0.0.1:8000/api/v1/users/me/", {
+    method: "GET",
+    headers: {
+      ...JSON_HEADERS,
+      ...getAuthHeaders(),
+    },
+    credentials: "include",
+  });
+
+  const data = await parseJson(response);
+
+  if (!response.ok) {
+    throw buildError("Failed to fetch profile", response, data);
+  }
+
+  return data;
+}
+
+// -------------------------
+// UPDATE PROFILE
+// -------------------------
+
+export async function updateProfile(form) {
+  const response = await fetch("http://127.0.0.1:8000/api/v1/users/me/", {
+    method: "PATCH",
+    headers: {
+      ...JSON_HEADERS,
+      ...getAuthHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(form),
+  });
+
+  const data = await parseJson(response);
+
+  if (!response.ok) {
+    throw buildError("Failed to update profile", response, data);
+  }
+
+  return data;
+}
