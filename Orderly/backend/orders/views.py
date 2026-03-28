@@ -22,8 +22,10 @@ from accounts.models import CustomerProfile
 from orders.models import Order, OrderItem, OrderStatus
 from orders.serializers import (
     AddDraftOrderItemSerializer,
+    AddDraftOrderItemModifierSerializer,
     SubmitOrderSerializer,
     UpdateDraftOrderItemSerializer,
+    UpdateDraftOrderItemModifierSerializer,
     OrderStatusSerializer,
     OrderDetailSerializer,
     OrderHistoryItemSerializer,
@@ -252,6 +254,50 @@ class DraftOrderItemUpdateView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+class DraftOrderItemModifierCreateView(APIView):
+    def post(self, request, orderItemId):
+        serializer = AddDraftOrderItemModifierSerializer(
+            data=request.data,
+            context={
+                "request": request,
+                "orderItemId": orderItemId
+            }
+        )
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        result = serializer.save()
+
+        # Recalculate after modifier is created
+        order_item = OrderItem.objects.get(pk=orderItemId)
+        recalculate_order_totals(order_item.order)
+
+        return Response(result, status=status.HTTP_201_CREATED)
+
+
+class DraftOrderItemModifierUpdateView(APIView):
+    def patch(self, request, orderModifierId):
+        serializer = UpdateDraftOrderItemModifierSerializer(
+            data=request.data,
+            context={
+                "request": request,
+                "orderModifierId": orderModifierId
+            }
+        )
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        instance = serializer.validated_data["order_modifier"]
+
+        result = serializer.update(instance, serializer.validated_data)
+
+        # Recalculate after modifier is updated or removed
+        recalculate_order_totals(instance.order_item.order)
+
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class SubmitOrderView(APIView):
