@@ -4,15 +4,49 @@ html {
   padding: 0px;
 }
 
+/* Munson Regular */
 @font-face {
-  font-family: 'Renner';
-  src: url('./assets/fonts/Renner.ttf') format('truetype');
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Roman.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Italic */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* AddAff */
+@font-face {
+  font-family: 'AddAff';
+  src: url('./assets/fonts/AddAff.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
+
 body {
-  font-family: 'Renner', sans-serif;
+  font-family: 'Munson', sans-serif;
   width: 100%;
   margin: 0px;
   padding: 0px;

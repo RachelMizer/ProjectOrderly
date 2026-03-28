@@ -1,92 +1,120 @@
-// pages/StoreFront.jsx
-
+// STOREFRONT.JSX - Displays products in the database
 import React, { useEffect, useState } from "react";
+import ProductCard from "../components/ProductCard";
 
 const StoreFront = () => {
   const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
 
-  // TEMPORARY DUMMY DATA — will replace with API later
-  const dummyProducts = [
-    {
-      id: 1,
-      name: "Red Binder",
-      description: "A durable red binder.",
-      price: 4.99,
-      category: "Binders",
-      stock: 12,
-      imageUrl: "/products/red_binder.png"
-    },
-    {
-      id: 2,
-      name: "Blue Pen",
-      description: "Smooth writing pen.",
-      price: 1.49,
-      category: "Pens",
-      stock: 0,
-      imageUrl: "/products/blue_pen.png"
-    }
-  ];
-
-
+  // Load categories + initial products
   useEffect(() => {
-    setProducts(dummyProducts);
-    setFiltered(dummyProducts);
+    const loadInitial = async () => {
+      try {
+        const catRes = await fetch("http://localhost:8000/api/v1/categories");
+        const prodRes = await fetch("http://localhost:8000/api/v1/products");
 
-    const uniqueCats = ["all", ...new Set(dummyProducts.map(p => p.category))];
-    setCategories(uniqueCats);
+        const catData = await catRes.json();
+        const prodData = await prodRes.json();
+
+        setCategories(catData.results);
+
+        // Enrich initial product list
+        const enriched = await enrichProducts(prodData.results);
+        setProducts(enriched);
+
+      } catch (err) {
+        console.error("Error loading storefront:", err);
+      }
+    };
+
+    loadInitial();
   }, []);
 
-  const handleFilter = (cat) => {
-    setActiveCategory(cat);
-    if (cat === "all") {
-      setFiltered(products);
-    } else {
-      setFiltered(products.filter(p => p.category === cat));
+  // Helper: enrich products with variants, minPrice, stock, etc.
+  const enrichProducts = async (productList) => {
+    return Promise.all(
+      productList.map(async (product) => {
+        const variantRes = await fetch(
+          `http://localhost:8000/api/v1/products/${product.id}/variants`
+        );
+        const variantData = await variantRes.json();
+
+        const variants = variantData.results || [];
+
+        const prices = variants
+          .map((v) => Number(v.unitPrice))
+          .filter((p) => !isNaN(p));
+
+        const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+
+        const defaultVariant = variants[0] || null;
+
+        const inStock = variants.some(
+          (v) => Number(v.stockQuantity) > 0
+        );
+
+        return {
+          ...product,
+          variants,
+          minPrice,
+          defaultVariant,
+          inStock,
+        };
+      })
+    );
+  };
+
+  // Handle category filter (API-driven)
+  const handleFilter = async (value) => {
+    setActiveCategory(value);
+
+    try {
+      let url = "http://localhost:8000/api/v1/products";
+
+      if (value !== "all") {
+        url = `http://localhost:8000/api/v1/products?categoryId=${value}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const enriched = await enrichProducts(data.results);
+      setProducts(enriched);
+
+    } catch (err) {
+      console.error("Error filtering products:", err);
     }
   };
 
   return (
     <div className="store">
 
+      {/* FILTER */}
       <div className="filter">
-        <h3>Filter</h3>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            className={activeCategory === cat ? "active" : ""}
-            onClick={() => handleFilter(cat)}
-          >
-            {cat}
-          </button>
-        ))}
+        <h3>Filter the Menu</h3>
+
+        <select
+          value={activeCategory}
+          onChange={(e) => handleFilter(e.target.value)}
+        >
+          <option value="all">All</option>
+
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
       </div>
 
+      {/* PRODUCT GRID */}
       <main className="product-grid">
-        {filtered.map(product => (
-          <div key={product.id} className="product-card">
-            <img src={product.imageUrl} alt={product.name} />
-
-            <h2>{product.name}</h2>
-            <p>{product.description}</p>
-
-            <div className="price-row">
-              <span>${product.price.toFixed(2)}</span>
-              {product.stock === 0 && (
-                <span className="out-of-stock">Out of Stock</span>
-              )}
-            </div>
-
-            <div className="cart-controls">
-              <button disabled={product.stock === 0}>-</button>
-              <p>0</p>
-              <button disabled={product.stock === 0}>+</button>
-            </div>
-          </div>
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </main>
+
     </div>
   );
 };

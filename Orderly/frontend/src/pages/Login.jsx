@@ -71,7 +71,7 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
-
+          <br />
           <div>
             <button type="submit">
               {submitting ? "Logging in..." : "Login"}

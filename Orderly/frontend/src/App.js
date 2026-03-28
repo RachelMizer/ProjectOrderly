@@ -8,6 +8,10 @@ import Login from "./pages/Login";
 import ResetPasswordRequest from "./pages/ResetPasswordRequest";
 import ResetPassword from "./pages/ResetPassword";
 import StoreFront from "./pages/StoreFront";
+import { useEffect } from "react";
+
+import ProductPage from "./pages/ProductPage";
+
 
 import { logout, isAuthenticated } from "./api/auth";
 
@@ -16,7 +20,35 @@ function AppContent() {
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const firstName = storedUser?.first_name || "";
+  const firstName = storedUser?.firstName || "";
+
+  useEffect(() => {
+  async function loadProfile() {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const profile = await response.json();
+        localStorage.setItem("user", JSON.stringify(profile));
+      }
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+    }
+  }
+
+  if (loggedIn) {
+    loadProfile();
+  }
+}, [loggedIn]);
+
+
 
   async function handleLogout() {
     try {
@@ -33,36 +65,34 @@ function AppContent() {
   return (
     <div className="wrapper">
       <header>
-        <img src="/img/HDlogo.png" alt="Happy Desk Logo" />
-        <h3>Make your desk happy today</h3>
+        <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
+        <h2>Your pause, perfected.</h2>
       </header>
 
       <nav>
+      <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+      {" | "}
+      <Link to="/">Home</Link>
 
-        <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+      {!loggedIn && (
+        <>
+          {" | "}
+          <Link to="/register">Register</Link>
+          {" | "}
+          <Link to="/login">Login</Link>
+        </>
+      )}
 
-        <Link to="/">Home</Link>
+      {loggedIn && (
+        <>
+          {" | "}
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      )}
 
-        {!loggedIn && (
-          <>
-            {" | "}
-            <Link to="/register">Register</Link>
-            {" | "}
-            <Link to="/login">Login</Link>
-            {" | "}
-            <img src="/img/ico_cart.png" alt="cart" /><p className="cart-PH" title="not an active link">Cart</p>
-          </>
-        )}
-
-      {/* <Link to="/password-reset">Forgot Password</Link> */}
-
-        {loggedIn && (
-          <>
-            {" | "}
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        )}
-      </nav>
+      <img src="/img/ico_cart.png" alt="cart" />
+      <p className="cart-PH" title="inactive link">Cart</p>
+    </nav>
 
       <Routes>
         <Route path="/" element={<StoreFront />} />
@@ -70,7 +100,9 @@ function AppContent() {
         <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/product/:id" element={<ProductPage />} />
       </Routes>
+    <footer><p>© Quick Sip Cafe 2026</p></footer>
     </div>
   );
 }
