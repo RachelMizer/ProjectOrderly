@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import ResetPasswordRequest from "./pages/ResetPasswordRequest";
 import ResetPassword from "./pages/ResetPassword";
 
+import OrderHistory from "./pages/OrderHistory";
+
 import { logout, isAuthenticated } from "./api/auth";
 
 function AppContent() {
@@ -47,6 +49,11 @@ function AppContent() {
         {loggedIn && (
           <>
             {" | "}
+            <Link to="/order-history">Order History</Link>
+
+
+
+            {" | "}
             <button onClick={handleLogout}>Logout</button>
           </>
         )}
@@ -64,6 +71,7 @@ function AppContent() {
         />
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/order-history" element={<OrderHistory />} />
       </Routes>
     </div>
   );
