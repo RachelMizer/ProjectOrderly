@@ -15,6 +15,8 @@ from django.db.models import Sum
 from rest_framework import serializers
 from catalog.models import ProductVariant, ModifierOption, ModifierGroup
 from orders.models import Order, OrderItem, OrderItemModifier
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import IntegrityError
 
 
 class OrderItemModifierSerializer(serializers.ModelSerializer):
@@ -167,8 +169,6 @@ class UpdateDraftOrderItemSerializer(serializers.Serializer):
 
 
 class AddDraftOrderItemModifierSerializer(serializers.Serializer):
-    # Currently does not validate order ownership
-
     guestEmail = serializers.EmailField(required=False)
     modifierId = serializers.IntegerField()
     quantity = serializers.IntegerField(min_value=1)
@@ -188,7 +188,7 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
                     "error": "INVALID_INPUT",
                     "message": "guestEmail required if not authenticated"
                 })
-            
+
         try:
             order_item = OrderItem.objects.select_related("order", "variant").get(id=order_item_id)
         except OrderItem.DoesNotExist:
@@ -196,10 +196,10 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
                 "error": "NO_ORDER",
                 "message": "customer does not have a draft order or no matching order item"
             })
-        
+
         order = order_item.order
 
-        if user.is_authenticated:
+        if user and user.is_authenticated:
             if not order.customer or order.customer.user != user:
                 raise serializers.ValidationError({
                     "error": "NOT_AUTHORIZED",
@@ -208,8 +208,8 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
         else:
             if order.guest_email != guest_email:
                 raise serializers.ValidationError({
-                   "error": "NOT_AUTHORIZED",
-                   "message": "you do not have permission to modify this order" 
+                    "error": "NOT_AUTHORIZED",
+                    "message": "you do not have permission to modify this order"
                 })
 
         if order.status != "DRAFT":
@@ -217,7 +217,7 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
                 "error": "NO_ORDER",
                 "message": "customer does not have a draft order or no matching order item"
             })
-        
+
         try:
             modifier = ModifierOption.objects.select_related("group").get(id=modifier_id)
         except ModifierOption.DoesNotExist:
@@ -225,14 +225,14 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
                 "error": "INVALID_INPUT",
                 "message": "bad modifierId"
             })
-        
+
         group = modifier.group
         if group.variant_id != order_item.variant_id:
             raise serializers.ValidationError({
                 "error": "INVALID_INPUT",
                 "message": "modifier does not belong to this product"
             })
-        
+
         max_selections = group.max_selections
 
         if max_selections is not None:
@@ -241,26 +241,44 @@ class AddDraftOrderItemModifierSerializer(serializers.Serializer):
                 modifier_option__group=group
             ).aggregate(total=Sum("quantity"))["total"] or 0
 
-            if existing_total + 1 > max_selections:
+            if existing_total + data.get("quantity", 1) > max_selections:
                 raise serializers.ValidationError({
                     "error": "INVALID_INPUT",
                     "message": "max selections exceeded"
                 })
-        
+
+        # NEW: prevent duplicate modifier records on the same order item
+        if OrderItemModifier.objects.filter(
+            order_item=order_item,
+            modifier_option=modifier,
+        ).exists():
+            raise serializers.ValidationError({
+                "error": "INVALID_INPUT",
+                "message": "modifier already added to this item"
+            })
+
         data["order_item"] = order_item
         data["modifier"] = modifier
 
         return data
-    
+
     def create(self, validated_data):
         order_item = validated_data["order_item"]
         modifier = validated_data["modifier"]
+        quantity = validated_data["quantity"]
 
-        order_modifier = OrderItemModifier.objects.create(
-            order_item=order_item,
-            modifier_option=modifier,
-            price_adjustment_charged=modifier.price_adjustment,
-        )
+        try:
+            order_modifier = OrderItemModifier.objects.create(
+                order_item=order_item,
+                modifier_option=modifier,
+                quantity=quantity,
+                price_adjustment_charged=modifier.price_adjustment,
+            )
+        except (DjangoValidationError, IntegrityError):
+            raise serializers.ValidationError({
+                "error": "INVALID_INPUT",
+                "message": "modifier already added to this item"
+            })
 
         return {
             "message": "order updated",
