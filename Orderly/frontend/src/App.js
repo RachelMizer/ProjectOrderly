@@ -3,15 +3,16 @@ import "./App.css";
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ResetPasswordRequest from "./pages/ResetPasswordRequest";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
+import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import Profile from "./pages/Auth/Profile";
 
-import OrderHistory from "./pages/OrderHistory";
+import OrderHistory from "./pages/Orders/OrderHistory";
 
 import { logout, isAuthenticated } from "./api/auth";
+import OrderDetails from "./pages/Orders/OrderDetail";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ function AppContent() {
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/orders/:orderId" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
