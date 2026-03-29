@@ -1,6 +1,8 @@
 # Status Update: Sprint #4 - Week 1
 
-> Note: This is just a rough draft initiated after our thursday meeting. Will need to continue working on this! 
+> Current state:  Draft -- Pending Updates Post Sunday afternoon 2pm
+> I will be adding additional work completed by end of Sunday. 
+> Final draft for Blackboard submission to come Monday, 3/30 at 10am.
 
 **Project Name:** Orderly 
 **Date:** 03/26/26 - 04/03/26 
@@ -20,26 +22,28 @@
 
 ## Trello Board Capture:
 
-![S4W1_SprintBacklog_WeeklyUpdate](/Users/anires/GitHub/ProjectOrderly/images/Sprint Backlog Captures/S4/S4W1_SprintBacklog_WeeklyUpdate.png)
+![S4W1_SprintBacklog_WeeklyUpdate](../../images/Sprint%20Backlog%20Captures/S4/S4W1_SprintBacklog_WeeklyUpdate.png)
 
 ------
 
 ## Tasks Scheduled For This Week:
 
 **Carry-Overs from Sprint 3:** 
-US2.9 Frontend Authentication Components -- **Kim M.** *(In Testing → Done)* 
-US2.15 Sprint 2 QA Execution -- **Kenny B.** (In Progress: 20/22 Complete)
+US2.9 Frontend Authentication Components -- **Kim M.** 
+US2.15 Sprint 2 QA Execution -- **Kenny B.** 
 
-F3.1.1 Product Browsing Page -- **Rachel M.** *(In Progress)* 
-F3.2.1 Shopping Cart Page -- **Rachel M.** *(Backlog)* 
-F3.3.1 Checkout Page -- **Rachel M.** *(Backlog)* 
-F3.4.1 Order Confirmation Page -- **Tristin G.** *(Backlog)* 
-F3.5.1 Order History Page -- **Tristin G.** *(Backlog)* 
-F3.6.1 Profile Page -- **Kim M.** *(Backlog)* 
-F3.7.1 Item Customization Page -- **Rachel M.** *(Backlog)* 
-F3.7.5 Cart Display of Customizations -- **Rachel M.** *(Backlog)* 
-B3.7.3/4 Add/Update Item with Modifiers API -- **Tristin G.** *(In Progress → Review)* B3.4.2 Order Status API -- **Kim M.** *(In Review)* 
-B3.5.2 Order History API -- **Kim M.** *(In Review)*
+F3.1.1 Product Browsing Page -- **Rachel M.** 
+F3.2.1 Shopping Cart Page -- **Rachel M.** 
+F3.3.1 Checkout Page -- **Rachel M.** 
+F3.4.1 Order Confirmation Page -- **Tristin G.** 
+F3.5.1 Order History Page -- **Tristin G.** 
+F3.6.1 Profile Page -- **Kim M.** 
+F3.7.1 Item Customization Page -- **Rachel M.** 
+F3.7.5 Cart Display of Customizations -- **Rachel M.** 
+B3.7.3/4 Add/Update Item with Modifiers API -- **Tristin G.** 
+B3.4.2 Order Status API -- **Kim M.** 
+B3.5.2 Order History API -- **Kim M.** 
+🆕 Code Review Lead *(Assigned reviewer for F3.1.1, F3.7.1, F3.2.1/F3.7.5, F3.3.1, F3.4.1, F3.5.1)*-- **Caleb F.** 
 
 **New Sprint 4 Items:** 
 *Note: Sprint 4 Tasks are not to be started until Sprint 3 carry-overs are majority complete.*
@@ -59,14 +63,24 @@ US4.9 Sprint 4 Demo Materials -- **Tyler R.**
 ## Tasks Completed This Week By Team Members:
 
 US2.9 Frontend Authentication Components *(Done ✅ — passed all regression tests during Sprint 4 Kickoff meeting)* -- **Kim M.**
+B3.3.2 Finalize Order API *(Done ✅)* -- **Kim M.** 
+B3.4.2 Order Status API *(Done ✅)* -- **Kim M.** 
+B3.5.2 Order History API *(Done ✅)* -- **Kim M.** 
+B3.7.3/4 Add Item with Modifiers API *(Done ✅)* -- **Tristin G.** 
+B3.1.2 Product Browsing API *(Done ✅)* -- **Tristin G.** 
+B3.7.2 Modifier Retrieval API *(Done ✅)* -- **Tristin G.** 
+F3.6.1 Profile Page *(Done ✅)* -- **Kim M.** 
+US2.15 Sprint 2 QA Execution *(Done ✅)* -- **Kenny B.**
+Code Reviews Completed *(F3.6.1 Profile Page, F3.1.1 Product Browsing Page, B3.5.2 Order History API, B3.4.2 Order Status API, B3.2.2 Draft Order API, B3.6.2 Profile Management API)*-- **Caleb F.** 
 
 #### In Progress:
 
-F3.1.1 Product Browsing Page *(In Progress)* -- **Rachel M.** 
-B3.7.3/4 Add/Update Item with Modifiers API *(PR published post-meeting)* -- **Tristin G.** 
-B3.4.2 Order Status API *(In Review)* -- **Kim M.** 
-B3.5.2 Order History API *(In Review)* -- **Kim M.** 
-US4.8 Sprint 4 QA Execution *(In Progress)* -- **Kenny B.**
+F3.7.1 Item Customization Page *(In Progress)* -- **Rachel M.** 
+F3.4.1 Order Confirmation Page *(In Progress)* -- **Tristin G.** 
+F3.5.1 Order History Page *(In Progress)* -- **Tristin G.** 
+US3.10 Sprint 3 QA Execution *(In Progress)* -- **Kenny B.** 
+PM3.1 Sprint 3 PM Tasks *(In Progress)* -- **Serina R.**
+F3.1.1 Product Browsing Page *(In Testing)* -- **Rachel M.** / reviewed by **Caleb F.**
 
 #### Testing Activities:
 
