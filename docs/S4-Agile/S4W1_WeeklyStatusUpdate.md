@@ -80,7 +80,6 @@ F3.4.1 Order Confirmation Page *(In Progress)* -- **Tristin G.**
 F3.5.1 Order History Page *(In Progress)* -- **Tristin G.** 
 US3.10 Sprint 3 QA Execution *(In Progress)* -- **Kenny B.** 
 PM3.1 Sprint 3 PM Tasks *(In Progress)* -- **Serina R.**
-F3.1.1 Product Browsing Page *(In Testing)* -- **Rachel M.** / reviewed by **Caleb F.**
 
 #### In QA / Testing:
 
@@ -94,7 +93,8 @@ B3.3.2 Finalize Order API *(All tests passed — Done ✅)* -- **Kenny B.**
 US2.9 Frontend Authentication Components *(All tests passed — Done ✅)* -- **Kenny B.** 
 B3.4.2 Order Status API *(All tests passed — Done ✅)* -- **Kenny B.** 
 B3.5.2 Order History API *(All tests passed — Done ✅)* -- **Kenny B.** 
-B3.7.3/4 Add Item with Modifiers API *(All tests passed — Done ✅)* -- **Kenny B.** F3.6.1 Profile Page *(All tests passed — Done ✅)* -- **Kenny B.**
+B3.7.3/4 Add Item with Modifiers API *(All tests passed — Done ✅)* -- **Kenny B.**
+F3.6.1 Profile Page *(All tests passed — Done ✅)* -- **Kenny B.**
 
 #### Miscellaneous:
 
