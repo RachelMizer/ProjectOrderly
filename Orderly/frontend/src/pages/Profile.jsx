@@ -139,7 +139,7 @@ export default function Profile() {
   if (loading) return <p>Loading profile...</p>;
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "700px" }}>
+    <div className="prof-pg">
       <h1>My Profile</h1>
 
       {message && (

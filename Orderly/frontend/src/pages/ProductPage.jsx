@@ -1,0 +1,245 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+const ProductPage = () => {
+  const { id } = useParams();
+
+  const [product, setProduct] = useState(null);
+  const [variants, setVariants] = useState([]);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [modifierGroups, setModifierGroups] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [loadingModifiers, setLoadingModifiers] = useState(false);
+
+  // ----------------------------------------------------
+  // Load product + variants
+  // ----------------------------------------------------
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const prodData = await prodRes.json();
+
+        const found = prodData.results.find(p => p.id === Number(id));
+        if (!found) {
+          setLoading(false);
+          return;
+        }
+
+        setProduct(found);
+
+        const variantRes = await fetch(
+          `http://localhost:8000/api/v1/products/${id}/variants`
+        );
+        const variantData = await variantRes.json();
+
+        const v = variantData.results || [];
+        setVariants(v);
+
+        if (v.length > 0) {
+          setSelectedVariant(v[0]);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading product:", err);
+        setLoading(false);
+      }
+    }
+
+    loadProduct();
+  }, [id]);
+
+  // ----------------------------------------------------
+  // Load modifiers when selectedVariant changes
+  // ----------------------------------------------------
+  useEffect(() => {
+    if (!selectedVariant) return;
+
+    async function loadModifiers() {
+      setLoadingModifiers(true);
+
+      try {
+        const res = await fetch(
+          `http://localhost:8000/api/v1/products/${id}/variants/${selectedVariant.id}/modifiers`
+        );
+        const data = await res.json();
+
+        setModifierGroups(data.groups || []);
+        setSelectedOptions({});
+      } catch (err) {
+        console.error("Error loading modifiers:", err);
+      }
+
+      setLoadingModifiers(false);
+    }
+
+    loadModifiers();
+  }, [selectedVariant, id]);
+
+  // ----------------------------------------------------
+  // Handle selecting a modifier option
+  // ----------------------------------------------------
+  function handleOptionSelect(group, optionId) {
+    setSelectedOptions(prev => {
+      const current = prev[group.id] || [];
+
+      if (group.maxSelections === 1) {
+        return { ...prev, [group.id]: [optionId] };
+      }
+
+      const isSelected = current.includes(optionId);
+
+      if (isSelected) {
+        return {
+          ...prev,
+          [group.id]: current.filter(id => id !== optionId)
+        };
+      }
+
+      if (current.length >= group.maxSelections) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [group.id]: [...current, optionId]
+      };
+    });
+  }
+
+  // ----------------------------------------------------
+  // Price calculation
+  // ----------------------------------------------------
+  const basePrice = selectedVariant ? Number(selectedVariant.unitPrice) : 0;
+
+  const selectedIds = Object.values(selectedOptions).flat();
+
+  const modifiersTotal = modifierGroups
+    .flatMap(g => g.options)
+    .filter(o => selectedIds.includes(o.id))
+    .reduce((sum, option) => sum + parseFloat(option.priceAdjustment ?? 0), 0);
+
+  const totalPrice = basePrice + modifiersTotal;
+
+  // ----------------------------------------------------
+  // Render
+  // ----------------------------------------------------
+  if (loading) return <div style={{ padding: "2rem" }}>Loading…</div>;
+  if (!product) return <div style={{ padding: "2rem" }}>Product not found.</div>;
+
+  return (
+    <div className="ind-product-pg">
+      <h1>{product.name}</h1>
+
+      <div className="img">Placeholder</div>
+
+      {/* ================================
+          VARIANT SECTION (wrapped)
+         ================================ */}
+      <div className="variant-wrapper">
+        {variants.length > 1 && (
+          <div className="variant-section">
+            <h3>Choose a size</h3>
+
+            <div className="variant-options">
+              {variants.map(v => (
+                <div key={v.id} className="variant-option">
+                  <label>
+                    <input
+                      type="radio"
+                      name="variant"
+                      checked={selectedVariant?.id === v.id}
+                      onChange={() => setSelectedVariant(v)}
+                    />
+                    {v.name} — ${Number(v.unitPrice).toFixed(2)}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ================================
+          MODIFIER SECTION (wrapped)
+         ================================ */}
+      <div className="prod-opts">
+        {loadingModifiers && <p>Loading options…</p>}
+
+        {!loadingModifiers && modifierGroups.length > 0 && (
+          <div className="modifier-section">
+            {modifierGroups.map(group => (
+              <div key={group.id} className="modifier-group">
+                <h4>
+                  {group.name}
+                  {group.required && " *"}
+                </h4>
+
+                <p>
+                  {group.minSelections === group.maxSelections
+                    ? `Choose ${group.minSelections}`
+                    : `Choose ${group.minSelections}–${group.maxSelections}`}
+                </p>
+
+                <div className="modifier-options">
+                  {group.options.map(option => {
+                    const isChecked =
+                      selectedOptions[group.id]?.includes(option.id) || false;
+
+                    const isMaxed =
+                      group.maxSelections > 1 &&
+                      (selectedOptions[group.id]?.length || 0) >=
+                        group.maxSelections &&
+                      !isChecked;
+
+                    return (
+                      <div key={option.id} className="modifier-option">
+                        <label>
+                          <input
+                            type={
+                              group.maxSelections === 1 ? "radio" : "checkbox"
+                            }
+                            name={`group-${group.id}`}
+                            checked={isChecked}
+                            disabled={isMaxed}
+                            onChange={() =>
+                              handleOptionSelect(group, option.id)
+                            }
+                          />
+                          {option.name}
+                          {parseFloat(option.priceAdjustment) > 0 &&
+                            ` (+$${parseFloat(option.priceAdjustment).toFixed(
+                              2
+                            )})`}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ================================
+          PRICE + ADD TO CART
+         ================================ */}
+      <p className="price">Total: ${totalPrice.toFixed(2)}</p>
+
+      {selectedVariant && Number(selectedVariant.stockQuantity) === 0 ? (
+        <p className="OOS">Out of Stock</p>
+      ) : (
+        <div className="add-to-cart">
+          <button>-</button>
+          <p className="nobuff">0</p>
+          <button>+</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductPage;
