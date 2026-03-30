@@ -63,30 +63,51 @@ Hide admin UI from customers and handle unauthorized access gracefully.
 
 *"As a business admin, I want a persistent admin navigation menu with routes to all admin sections and a clear admin interface so I can move between tools quickly."*
 
-**Note:** Frontend work only
-
-## F4.2 — Admin Dashboard Navigation (Frontend)
+## UX4.2 — Admin Dashboard Navigation (UX)
 
 ### Description
 
-Create the admin navigation shell and routing structure.
+Design and build the UI components for the admin navigation shell and page layout wrapper. No live API wiring — render as if the user is a business admin. F4.2 depends on this card.
 
 ### Tasks
 
-- F4.2.1 Create admin navigation menu
-- F4.2.2 Add routes:
-  - Products
-  - Inventory
-  - Suppliers
-  - Reports
-  - Settings
-- F4.2.3 Ensure consistent layout across all admin pages
+- UX4.2.1 Admin navigation menu layout and design
+- UX4.2.2 Nav link states — default, active, hover
+- UX4.2.3 Consistent admin page layout wrapper applied across all admin pages
+- UX4.2.4 Placeholder/disabled state for deferred routes (Suppliers, Settings)
+- UX4.2.5 Responsive behavior for admin nav
 
 ### Acceptance Criteria
 
-- Navigation works across all admin pages
-- UI layout is consistent
-- Admin navigation is not visible to customers
+- Navigation menu is visually complete with all active routes represented
+- Link states (default, active, hover) are implemented
+- Admin page layout wrapper is consistent and ready to wrap all admin pages
+- Deferred routes are visually present but clearly inactive
+- Components are ready for routing and role wiring — no hardcoded logic that would block integration
+
+## F4.2 — Admin Dashboard Navigation (Frontend Integration)
+
+### Description
+
+Wire the admin navigation UI components (UX4.2) to React Router and the auth context. Handles role-based visibility and redirect logic.
+
+> Depends on UX4.2 and F4.1.
+
+### Tasks
+
+- F4.2.1 Connect nav links to React Router routes
+- F4.2.2 Wire role check from auth context — show admin nav only to `business` role users
+- F4.2.3 Apply admin layout wrapper across all admin pages
+- F4.2.4 Redirect unauthorized users away from admin routes
+- F4.2.5 Handle `403` responses without breaking the nav or layout
+
+### Acceptance Criteria
+
+- Navigation routes correctly to all active admin sections
+- Admin nav is not visible to customers
+- Unauthorized users are redirected correctly
+- `403` responses handled gracefully
+- Layout wrapper is consistent across all admin pages
 
 ---
 
@@ -157,12 +178,12 @@ Wire the product management UI components (UX4.3) to the backend API (B4.3). Han
 
 ### Tasks
 
-- F4.3b.1 Fetch and display product list from `GET /api/v1/products`
-- F4.3b.2 Submit create product form to `POST /api/v1/products`
-- F4.3b.3 Submit edit product form to `PATCH /api/v1/products/{id}`
-- F4.3b.4 Handle delete action against `DELETE /api/v1/products/{id}`
-- F4.3b.5 Handle `400` and `403` error responses
-- F4.3b.6 Reflect changes in product list without page reload
+- F4.3.1 Fetch and display product list from `GET /api/v1/products`
+- F4.3.2 Submit create product form to `POST /api/v1/products`
+- F4.3.3 Submit edit product form to `PATCH /api/v1/products/{id}`
+- F4.3.4 Handle delete action against `DELETE /api/v1/products/{id}`
+- F4.3.5 Handle `400` and `403` error responses
+- F4.3.6 Reflect changes in product list without page reload
 
 ### Acceptance Criteria
 
@@ -396,15 +417,15 @@ Wire the sales summary dashboard UI components (UX4.6) to the backend API (B4.6)
 
 ### Tasks
 
-- F4.6b.1 Fetch sales summary data from reporting endpoint
-- F4.6b.2 Populate total revenue, order count, and top-selling products
-- F4.6b.3 Handle loading and empty states
-- F4.6b.4 Enforce admin-only access
+- F4.6.1 Fetch sales summary data from reporting endpoint
+- F4.6.2 Populate total revenue, order count, and top-selling products
+- F4.6.3 Handle loading and empty states
+- F4.6.4 Enforce admin-only access
 
 ### Acceptance Criteria
 
 - Dashboard loads correctly and displays live data
-- Data matches underlying order records
+- Data matches underlying order record
 - Admin-only access enforced
 
 ---
@@ -601,13 +622,13 @@ Assemble and finalize all project documentation artifacts into a clean release c
 
 ---
 
-# US4.8 Sprint 4 QA Execution
+# US4.6 Sprint 4 QA Execution
 
-*"As a QA Lead, I want to track testing progress across all Sprint 4 items so that every feature — carry-overs and new admin work — is tested and verified before Sprint Review."*
+*"As a QA Lead, I want to track testing progress across all Sprint 4 items so that every feature is tested and verified before Sprint Review."*
 
 ---
 
-## US4.8 — Sprint 4 QA Execution
+## US4.6 — Sprint 4 QA Execution
 
 ### Description
 
@@ -625,30 +646,11 @@ Track and execute testing across all Sprint 4 deliverables.
 
 ### Stories to Test
 
-**Carry-Overs**
-
-- [ ] US2.9 — Frontend Auth Components
-- [ ] B3.7.2 — Modifier Retrieval API
-- [ ] B3.3.2 — Finalize Order API
-- [ ] B3.7.3/4 — Add/Update Item with Modifiers API
-- [ ] B3.4.2 — Order Status API
-- [ ] B3.5.2 — Order History API
-- [ ] F3.1.1 — Product Browsing Page
-- [ ] F3.2.1 — Shopping Cart Page
-- [ ] F3.7.1 — Item Customization Page
-- [ ] F3.7.5 — Cart Display of Customizations
-- [ ] F3.3.1 — Checkout Page
-- [ ] F3.4.1 — Order Confirmation Page
-- [ ] F3.5.1 — Order History Page
-- [ ] F3.6.1 — Profile Page
-
-**New Sprint 4 Items**
-
 - [ ]  US4.1 — Role-Based Access Control (B4.1.1 + F4.1.2)
 - [ ]  US4.2 — Admin Dashboard Navigation (F4.2.1)
 - [ ]  US4.3 — Product Management (B4.3 + UX4.3 + F4.3)
 - [ ]  US4.4 — Inventory Management (B4.4 + UX4.4 + F4.4)
-- [ ]  US4.6 — Sales Summary Dashboard (B4.6 + UX4.6 + F4.6) *(if capacity allows)*
+- [ ]  US4.5 — Sales Summary Dashboard (B4.5 + UX4.5 + F4.5) *(if capacity allows)*
 
 ### Acceptance Criteria
 
