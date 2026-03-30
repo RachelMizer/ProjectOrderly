@@ -771,7 +771,7 @@ Content-Type: application/json
 **Body:**  
 ```
 {
-    "guestEmail": "test@example.com" (OPTIONAL),
+    "guestEmail": "test@example.com", (OPTIONAL)
     "quantity": 2
 }
 ```
@@ -873,6 +873,86 @@ body
 {
     "error": "NO_ORDER",
     "message": "customer does not have a draft order or no matching order item"
+}
+```
+
+## Update OrderItemModifier Quantity
+**Endpoint:** `<PATCH> /api/v1/orders/items/{orderModifierId}`  
+**Description:** Update the quantity of an orderItemModifier  
+**Authentication:** `Bearer <accessToken>` (OPTIONAL)  
+**Role:** Owner of order  
+**URL Parameters:** orderModifierId  
+**Request Parameters:** quantity and optional guestEmail  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "guestEmail": "test@example.com", (OPTIONAL) 
+    "quantity": 2
+}
+```
+**Rules:**
++ If the quantity set causes modifiers to exceed MaxSelections in that group, quantity will be reduced to max allowed, and atMaxSelections will return true
+Customer must have an order in draft state
++ Must include guest email if no accessToken in header
++ orderModifier must exist
++ Quantity represents final quantity (if quantity = 2, OrderItemModifier quantity will be set to 2) 
++ Quantity must be equal to or greater than 0
++ Zero quantity removes the OrderItemModifier from the order
+
+**Success Response (200 OK):**
+```
+{
+    "message": "quantity updated",
+    "orderId": 1,
+    "orderItemId": 1,
+    "orderModifierId": 1,
+    "atMaxSelections": False
+}
+```
+or
+```
+{
+    "message": "quantity updated",
+    "orderId": 1,
+    "orderItemId": 1,
+    "orderModifierId": 1,
+    "atMaxSelections": True,
+    "modifierQuantity": 3
+}
+```
+or
+```
+{
+    "message": "modifier removed",
+    "orderId": 1,
+    "orderItemId": 1
+}
+```
+**Bad Request (400):**  
+```
+{
+    "error": "INVALID_INPUT",
+    "message": "Bad quantity or no draft order"
+}
+```
+**Forbidden (403):**  
+```
+{
+    "error": "NOT_AUTHORIZED",
+    "message": "you do not have permission to modify this order"
+}
+```
+**Not Found (404):**  
+```
+{
+    "error": "BAD_MODIFIER",
+    "message": "order modifier does not exist"
 }
 ```
 

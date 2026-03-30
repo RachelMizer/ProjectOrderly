@@ -12,6 +12,7 @@ import { useEffect } from "react";
 
 import ProductPage from "./pages/ProductPage";
 
+import Profile from "./pages/Profile";
 
 import { logout, isAuthenticated } from "./api/auth";
 
@@ -93,6 +94,28 @@ function AppContent() {
       <img src="/img/ico_cart.png" alt="cart" />
       <p className="cart-PH" title="inactive link">Cart</p>
     </nav>
+        <Link to="/">Home</Link>
+
+        {!loggedIn && (
+          <>
+            {" | "}
+            <Link to="/register">Register</Link>
+            {" | "}
+            <Link to="/login">Login</Link>
+            {" | "}
+            <Link to="/password-reset">Forgot Password</Link>
+          </>
+        )}
+
+        {loggedIn && (
+          <>
+            {" | "}
+            <Link to="/profile">Profile</Link>
+            {" | "}
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        )}
+      </nav>
 
       <Routes>
         <Route path="/" element={<StoreFront />} />
@@ -101,6 +124,7 @@ function AppContent() {
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     <footer><p>© Quick Sip Cafe 2026</p></footer>
     </div>
