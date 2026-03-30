@@ -1,9 +1,5 @@
 # Status Update: Sprint #4 - Week 1
 
-> Current state:  Draft -- Pending Updates Post Sunday afternoon 2pm
-> I will be adding additional work completed by end of Sunday. 
-> Final draft for Blackboard submission to come Monday, 3/30 at 10am.
-
 **Project Name:** Orderly 
 **Date:** 03/26/26 - 04/03/26 
 **Team Number:** Group 7 
@@ -76,8 +72,8 @@ Code Reviews Completed *(F3.6.1 Profile Page, F3.1.1 Product Browsing Page, B3.5
 #### In Progress:
 
 F3.7.1 Item Customization Page *(In Progress)* -- **Rachel M.** 
-F3.4.1 Order Confirmation Page *(In Progress)* -- **Tristin G.** 
-F3.5.1 Order History Page *(In Progress)* -- **Tristin G.** 
+F3.4.1 Order Confirmation Page *(In Review)* -- **Tristin G.** 
+F3.5.1 Order History Page *(In Review)* -- **Tristin G.** 
 US3.10 Sprint 3 QA Execution *(In Progress)* -- **Kenny B.** 
 PM3.1 Sprint 3 PM Tasks *(In Progress)* -- **Serina R.**
 
@@ -116,8 +112,6 @@ README files reviewed and confirmed current -- **Caleb F.**
 
 **Description:** Sprint 4 backlog introduction was not completed during the Sprint 4 Kickoff meeting due to time constraints. The meeting ran the full duration on Sprint 3 retrospective and close activities. 
 **Status:** In Progress ⚠️ *(Sprint 4 Backlog pull request will remain open through Monday morning March 30. Team directed to review assignments and submit comments before close. Full Sprint 4 plan distributed separately.)*
-
-**Description:** *(Add any additional challenges that arise during the week here)* **Status:**
 
 ------
 
