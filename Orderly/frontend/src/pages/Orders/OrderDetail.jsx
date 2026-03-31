@@ -88,7 +88,7 @@ export default function OrderDetails() {
 
     return (
         <div>
-            <h2>Order #{order.orderId}</h2>
+            <h2>Order #{order.id}</h2>
 
             <p>
                 <strong>Date:</strong>{" "}
@@ -109,7 +109,7 @@ export default function OrderDetails() {
             <h3>Totals</h3>
             <p>Tax: ${order.taxAmount}</p>
             <p>
-                <strong>Total: ${order.totalPaymentDue}</strong>
+                <strong>Total: ${order.totalDue}</strong>
             </p>
         </div>
     );
