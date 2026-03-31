@@ -28,6 +28,7 @@ class OrderItemModifierSerializer(serializers.ModelSerializer):
     """
 
     optionId = serializers.IntegerField(source="modifier_option.id", read_only=True)
+    groupName = serializers.CharField(source="modifier_option.group.name", read_only=True)
     name = serializers.CharField(source="modifier_option.name", read_only=True)
 
     priceAdjustmentCharged = serializers.DecimalField(
@@ -41,6 +42,7 @@ class OrderItemModifierSerializer(serializers.ModelSerializer):
         model = OrderItemModifier
         fields = [
             "optionId",
+            "groupName",
             "name",
             "priceAdjustmentCharged",
         ]
@@ -56,6 +58,7 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
 
     itemId = serializers.IntegerField(source="id", read_only=True)
     variantId = serializers.IntegerField(source="variant.id", read_only=True)
+    productId = serializers.IntegerField(source="variant.product.id", read_only=True)
     productName = serializers.CharField(source="variant.product.name", read_only=True)
     variantName = serializers.CharField(source="variant.name", read_only=True)
     quantity = serializers.IntegerField(read_only=True)
@@ -67,20 +70,20 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
-    itemTotal = serializers.DecimalField(
-        source="item_total",
-        max_digits=10,
-        decimal_places=2,
-        read_only=True,
-    )
+    itemTotal = serializers.SerializerMethodField()
 
     modifiers = OrderItemModifierSerializer(many=True, read_only=True)
+
+    def get_itemTotal(self, obj):
+        modifier_total = sum(m.price_adjustment_charged for m in obj.modifiers.all())
+        return obj.item_total + modifier_total
 
     class Meta:
         model = OrderItem
         fields = [
             "itemId",
             "variantId",
+            "productId",
             "productName",
             "variantName",
             "quantity",

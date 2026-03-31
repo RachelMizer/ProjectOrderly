@@ -16,41 +16,72 @@ import CartPage from "./pages/Cart";
 
 
 
-
-
-
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
+  const [cartCount, setCartCount] = useState(0);
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const firstName = storedUser?.firstName || "";
 
   useEffect(() => {
-  async function loadProfile() {
+    async function loadProfile() {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          localStorage.setItem("user", JSON.stringify(profile));
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      }
+    }
+
+    if (loggedIn) {
+      loadProfile();
+    }
+  }, [loggedIn]);
+
+  async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    if (!token) { setCartCount(0); return; }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+        method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({})
       });
+      const draft = await draftRes.json();
+      if (!draft.id) { setCartCount(0); return; }
 
-      if (response.ok) {
-        const profile = await response.json();
-        localStorage.setItem("user", JSON.stringify(profile));
-      }
-    } catch (err) {
-      console.error("Failed to load profile:", err);
+      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await detailRes.json();
+      const totalQty = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(totalQty);
+    } catch {
+      setCartCount(0);
     }
   }
 
-  if (loggedIn) {
-    loadProfile();
-  }
-}, [loggedIn]);
+  useEffect(() => {
+    if (loggedIn) fetchCartCount();
+    else setCartCount(0);
+
+    window.addEventListener("cart-updated", fetchCartCount);
+    return () => window.removeEventListener("cart-updated", fetchCartCount);
+  }, [loggedIn]);
 
 
 
@@ -58,6 +89,7 @@ function AppContent() {
     try {
       await logout();
       setLoggedIn(false);
+      setCartCount(0);
       alert("Successfully logged out");
       navigate("/login");
     } catch (error) {
@@ -93,11 +125,16 @@ function AppContent() {
     <Link to="/profile">Profile</Link>
     {" | "}
     <button onClick={handleLogout}>Logout</button>
+    {" | "}
   </>
 )}
 
-<img src="/img/ico_cart.png" alt="cart" />
-<Link to="/cart">Cart</Link>
+<div className="cart-nav-item">
+  <img src="/img/ico_cart.png" alt="cart" />
+  <Link to="/cart">Cart</Link>
+  {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+</div>
+{" | "}
 </nav>
 
 
@@ -111,7 +148,7 @@ function AppContent() {
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/cart" element={<CartPage />} />
       </Routes>
-    <footer><p>© Quick Sip Cafe 2026</p></footer>
+    <footer><p>All Content © Quick Sip Cafe 2026</p><p>Powered by Orderly</p></footer>
     </div>
   );
 }

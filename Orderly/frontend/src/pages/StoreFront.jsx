@@ -5,7 +5,7 @@ import ProductCard from "../components/ProductCard";
 const StoreFront = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState(new Set());
 
   // Load categories + initial products
   useEffect(() => {
@@ -65,27 +65,21 @@ const StoreFront = () => {
     );
   };
 
-  // Handle category filter (API-driven)
-  const handleFilter = async (value) => {
-    setActiveCategory(value);
-
-    try {
-      let url = "http://localhost:8000/api/v1/products";
-
-      if (value !== "all") {
-        url = `http://localhost:8000/api/v1/products?categoryId=${value}`;
+  const handleCheckbox = (categoryId) => {
+    setSelectedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
       }
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const enriched = await enrichProducts(data.results);
-      setProducts(enriched);
-
-    } catch (err) {
-      console.error("Error filtering products:", err);
-    }
+      return next;
+    });
   };
+
+  const filteredProducts = selectedCategories.size === 0
+    ? products
+    : products.filter(p => selectedCategories.has(p.categoryId));
 
   return (
     <div className="store">
@@ -94,23 +88,21 @@ const StoreFront = () => {
       <div className="filter">
         <h3>Filter the Menu</h3>
 
-        <select
-          value={activeCategory}
-          onChange={(e) => handleFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        {categories.map((cat) => (
+          <label key={cat.id}>
+            <input
+              type="checkbox"
+              checked={selectedCategories.has(cat.id)}
+              onChange={() => handleCheckbox(cat.id)}
+            />
+            {cat.name}
+          </label>
+        ))}
       </div>
 
       {/* PRODUCT GRID */}
       <main className="product-grid">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </main>

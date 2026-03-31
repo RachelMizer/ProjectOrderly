@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem("access");
+  const [searchParams] = useSearchParams();
+  const accessToken = localStorage.getItem("accessToken");
+
+  const editItemId = searchParams.get('editItem');
+  const editVariantId = Number(searchParams.get('variantId'));
+  const editModifierIds = searchParams.get('modifiers')
+    ? searchParams.get('modifiers').split(',').map(Number)
+    : [];
+  const isEditMode = Boolean(editItemId);
 
 
   const [product, setProduct] = useState(null);
@@ -41,7 +49,10 @@ const ProductPage = () => {
         setVariants(v);
 
         if (v.length > 0) {
-          setSelectedVariant(v[0]);
+          const preSelected = editVariantId
+            ? v.find(variant => variant.id === editVariantId) || v[0]
+            : v[0];
+          setSelectedVariant(preSelected);
         }
 
         setLoading(false);
@@ -70,7 +81,21 @@ const ProductPage = () => {
         const data = await res.json();
 
         setModifierGroups(data.groups || []);
-        setSelectedOptions({});
+
+        if (isEditMode && editModifierIds.length > 0) {
+          const preSelected = {};
+          for (const group of data.groups || []) {
+            const matchingIds = group.options
+              .map(o => o.id)
+              .filter(optId => editModifierIds.includes(optId));
+            if (matchingIds.length > 0) {
+              preSelected[group.id] = matchingIds;
+            }
+          }
+          setSelectedOptions(preSelected);
+        } else {
+          setSelectedOptions({});
+        }
       } catch (err) {
         console.error("Error loading modifiers:", err);
       }
@@ -168,7 +193,7 @@ const ProductPage = () => {
             "Content-Type": "application/json",
             ...(accessToken && { Authorization: `Bearer ${accessToken}` })
           },
-          body: JSON.stringify({ modifierId })
+          body: JSON.stringify({ modifierId, quantity: 1 })
         }
       );
     }
@@ -176,6 +201,17 @@ const ProductPage = () => {
 
   async function handleAddToCart() {
     try {
+      if (isEditMode) {
+        await fetch(`http://localhost:8000/api/v1/orders/items/${editItemId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+          },
+          body: JSON.stringify({ quantity: 0 })
+        });
+      }
+
       const draft = await getDraftOrder();
       const item = await addItemToOrder(selectedVariant.id, 1);
 
@@ -183,6 +219,7 @@ const ProductPage = () => {
         await addModifiers(item.orderItemId);
       }
 
+      window.dispatchEvent(new Event("cart-updated"));
       navigate("/cart");
     } catch (err) {
       console.error("Error adding to cart:", err);
@@ -299,7 +336,7 @@ const ProductPage = () => {
         <p className="OOS">Out of Stock</p>
       ) : (
         <button className="add-to-cart-btn" onClick={handleAddToCart}>
-          Add to Cart
+          {isEditMode ? "Update Item" : "Add to Cart"}
         </button>
       )}
     </div>

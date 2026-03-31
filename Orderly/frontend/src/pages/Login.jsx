@@ -28,7 +28,8 @@ export default function Login({ setLoggedIn }) {
     setErrorMessage("");
 
     try {
-      await login(formData);
+      const data = await login(formData);
+      
       setLoggedIn(true);
       navigate("/");
     } catch (error) {
@@ -58,7 +59,9 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
+
           <br />
+
           <div>
             <label htmlFor="password">Password</label>
             <br />
@@ -71,12 +74,16 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
+
           <br />
-            <button type="submit">
-              {submitting ? "Logging in..." : "Login"}
-            </button>
-            <br />
-            <a href="/ResetPassword">Reset Password</a>
+
+          <button type="submit">
+            {submitting ? "Logging in..." : "Login"}
+          </button>
+
+          <br />
+
+          <a href="/ResetPassword">Reset Password</a>
         </fieldset>
       </form>
     </div>
