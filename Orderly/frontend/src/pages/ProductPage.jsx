@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const ProductPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem("access");
+
 
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
@@ -124,6 +127,69 @@ const ProductPage = () => {
   const totalPrice = basePrice + modifiersTotal;
 
   // ----------------------------------------------------
+  // ADD TO CART LOGIC
+  // ----------------------------------------------------
+  async function getDraftOrder() {
+    const res = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+      },
+      body: JSON.stringify({})
+    });
+    return res.json(); // { id, created }
+  }
+
+  async function addItemToOrder(variantId, quantity) {
+    const res = await fetch("http://localhost:8000/api/v1/orders/items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+      },
+      body: JSON.stringify({
+        variantId,
+        quantity
+      })
+    });
+    return res.json(); // { orderId, orderItemId }
+  }
+
+  async function addModifiers(orderItemId) {
+    const allSelected = Object.values(selectedOptions).flat();
+
+    for (const modifierId of allSelected) {
+      await fetch(
+        `http://localhost:8000/api/v1/orders/items/${orderItemId}/modifiers`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+          },
+          body: JSON.stringify({ modifierId })
+        }
+      );
+    }
+  }
+
+  async function handleAddToCart() {
+    try {
+      const draft = await getDraftOrder();
+      const item = await addItemToOrder(selectedVariant.id, 1);
+
+      if (selectedIds.length > 0) {
+        await addModifiers(item.orderItemId);
+      }
+
+      navigate("/cart");
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
+  }
+
+  // ----------------------------------------------------
   // Render
   // ----------------------------------------------------
   if (loading) return <div style={{ padding: "2rem" }}>Loading…</div>;
@@ -136,7 +202,7 @@ const ProductPage = () => {
       <div className="img">Placeholder</div>
 
       {/* ================================
-          VARIANT SECTION (wrapped)
+          VARIANT SECTION
          ================================ */}
       <div className="variant-wrapper">
         {variants.length > 1 && (
@@ -163,7 +229,7 @@ const ProductPage = () => {
       </div>
 
       {/* ================================
-          MODIFIER SECTION (wrapped)
+          MODIFIER SECTION
          ================================ */}
       <div className="prod-opts">
         {loadingModifiers && <p>Loading options…</p>}
@@ -232,11 +298,9 @@ const ProductPage = () => {
       {selectedVariant && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
       ) : (
-        <div className="add-to-cart">
-          <button>-</button>
-          <p className="nobuff">0</p>
-          <button>+</button>
-        </div>
+        <button className="add-to-cart-btn" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
       )}
     </div>
   );

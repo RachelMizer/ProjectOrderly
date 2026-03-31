@@ -324,3 +324,14 @@ button {
   text-align: center;
   margin: 20px auto;
 }
+
+/*    CART PAGE   */
+
+.cart-pg {
+  width: 750px;
+  text-align: center;
+}
+
+.cart-pg h3 {
+  background-color: blue;
+}

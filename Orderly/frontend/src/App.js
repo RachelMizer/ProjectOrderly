@@ -12,6 +12,12 @@ import StoreFront from "./pages/StoreFront";
 import { useEffect } from "react";
 import ProductPage from "./pages/ProductPage";
 import { logout, isAuthenticated } from "./api/auth";
+import CartPage from "./pages/Cart";
+
+
+
+
+
 
 function AppContent() {
   const navigate = useNavigate();
@@ -91,7 +97,7 @@ function AppContent() {
 )}
 
 <img src="/img/ico_cart.png" alt="cart" />
-<p className="cart-PH" title="inactive link">Cart</p>
+<Link to="/cart">Cart</Link>
 </nav>
 
 
@@ -103,6 +109,7 @@ function AppContent() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     <footer><p>© Quick Sip Cafe 2026</p></footer>
     </div>
