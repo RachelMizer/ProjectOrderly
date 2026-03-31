@@ -28,7 +28,16 @@ export default function Login({ setLoggedIn }) {
     setErrorMessage("");
 
     try {
-      await login(formData);
+      // 🔹 Clear any stale user data before login
+      localStorage.removeItem("user");
+
+      const data = await login(formData);
+
+      // 🔐 Safety check before storing user
+      if (data?.customer) {
+        localStorage.setItem("user", JSON.stringify(data.customer));
+      }
+
       setLoggedIn(true);
       navigate("/");
     } catch (error) {
@@ -82,3 +91,4 @@ export default function Login({ setLoggedIn }) {
     </div>
   );
 }
+
