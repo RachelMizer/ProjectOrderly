@@ -39,7 +39,7 @@ export default function Login({ setLoggedIn }) {
   }
 
   return (
-    <div>
+    <div className="log-form">
       <h2>Login</h2>
 
       {errorMessage && <p>{errorMessage}</p>}
@@ -58,7 +58,7 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
-
+          <br />
           <div>
             <label htmlFor="password">Password</label>
             <br />
@@ -71,12 +71,12 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
-
-          <div>
+          <br />
             <button type="submit">
               {submitting ? "Logging in..." : "Login"}
             </button>
-          </div>
+            <br />
+            <a href="/ResetPassword">Reset Password</a>
         </fieldset>
       </form>
     </div>
