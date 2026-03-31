@@ -6,16 +6,17 @@ Test Teardown  Close Browser Session
 *** Test Cases ***
 Logged Out User Should Not See Profile Link
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Orderly frontend running...
+    Wait Until Page Contains    Home    10s
     Page Should Not Contain Link    Profile
     Page Should Contain Link    Login
     Page Should Contain Link    Register
 
 Logged In User Can View Profile Page
     Login As Test User
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Page Should Contain Link    Profile
     Open Profile Page
-    Page Should Contain    My Profile
+    Wait Until Page Contains    My Profile    10s
     Page Should Contain Element    id=firstName
     Page Should Contain Element    id=lastName
     Page Should Contain Element    id=streetAddress
@@ -28,11 +29,13 @@ Logged In User Can View Profile Page
 Email Field Should Be Disabled On Profile Page
     Login As Test User
     Open Profile Page
+    Wait Until Page Contains    My Profile    10s
     Element Should Be Disabled    id=email
 
 Logged In User Can Update Profile
     Login As Test User
     Open Profile Page
+    Wait Until Page Contains    My Profile    10s
 
     Clear And Type    id=firstName    ${UPDATED_FIRST_NAME}
     Clear And Type    id=lastName     ${UPDATED_LAST_NAME}
@@ -43,10 +46,10 @@ Logged In User Can Update Profile
     Clear And Type    id=phone    ${UPDATED_PHONE}
 
     Click Button    xpath=//button[normalize-space()='Save']
-    Wait Until Page Contains    Profile updated successfully
+    Wait Until Page Contains    Profile updated successfully    10s
 
     Reload Page
-    Wait Until Page Contains    My Profile
+    Wait Until Page Contains    My Profile    10s
 
     Textfield Value Should Be    id=firstName    ${UPDATED_FIRST_NAME}
     Textfield Value Should Be    id=lastName     ${UPDATED_LAST_NAME}

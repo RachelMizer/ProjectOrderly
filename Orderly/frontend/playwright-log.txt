@@ -1,0 +1,150 @@
+{"level":30,"time":"2026-03-30T19:38:47.964Z","pid":99056,"hostname":"KeniousLaptop","msg":"Listening on 127.0.0.1:49218"}
+{"level":30,"time":"2026-03-30T19:38:48.309Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method newBrowser"}
+{"level":30,"time":"2026-03-30T19:38:49.058Z","pid":99056,"hostname":"KeniousLaptop","msg":"Adding browser to stack: chromium, version: 145.0.7632.6"}
+{"level":30,"time":"2026-03-30T19:38:49.059Z","pid":99056,"hostname":"KeniousLaptop","msg":"Adding 0 contexts to browser"}
+{"level":30,"time":"2026-03-30T19:38:49.059Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method newBrowser"}
+{"level":30,"time":"2026-03-30T19:38:49.066Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method newContext"}
+{"level":30,"time":"2026-03-30T19:38:49.067Z","pid":99056,"hostname":"KeniousLaptop","msg":"Creating new context with options: {\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}}"}
+{"level":30,"time":"2026-03-30T19:38:49.067Z","pid":99056,"hostname":"KeniousLaptop","msg":"currentBrowser: {\"name\":\"chromium\",\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@17f06b40845872dcfab33db7c315d981\"},\"headless\":false,\"_contextStack\":[],\"id\":\"browser=1ddea56b-d74e-4910-a5fc-6f3b897e1a08\"}"}
+{"level":30,"time":"2026-03-30T19:38:49.067Z","pid":99056,"hostname":"KeniousLaptop","msg":"Trace file: "}
+{"level":30,"time":"2026-03-30T19:38:49.094Z","pid":99056,"hostname":"KeniousLaptop","msg":"Setting default timeout for context context=5304a055-d5bd-46e8-86dd-e11706c34284 to 10000"}
+{"level":30,"time":"2026-03-30T19:38:49.094Z","pid":99056,"hostname":"KeniousLaptop","msg":"Changed active context: context=5304a055-d5bd-46e8-86dd-e11706c34284"}
+{"level":30,"time":"2026-03-30T19:38:49.094Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method newContext"}
+{"level":30,"time":"2026-03-30T19:38:49.102Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method newPage"}
+{"level":30,"time":"2026-03-30T19:38:49.102Z","pid":99056,"hostname":"KeniousLaptop","msg":"currentBrowser: {\"name\":\"chromium\",\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@17f06b40845872dcfab33db7c315d981\"},\"headless\":false,\"_contextStack\":[{\"id\":\"context=5304a055-d5bd-46e8-86dd-e11706c34284\",\"c\":{\"_type\":\"BrowserContext\",\"_guid\":\"browser-context@732746b7a6a99f9b91837a75e5ea2b86\"},\"pageStack\":[],\"options\":{\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}},\"traceFile\":\"\"}],\"id\":\"browser=1ddea56b-d74e-4910-a5fc-6f3b897e1a08\"}"}
+{"level":30,"time":"2026-03-30T19:38:49.883Z","pid":99056,"hostname":"KeniousLaptop","msg":"Video path: undefined"}
+{"level":30,"time":"2026-03-30T19:38:49.883Z","pid":99056,"hostname":"KeniousLaptop","msg":"Changed active page"}
+{"level":30,"time":"2026-03-30T19:38:50.549Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method newPage"}
+{"level":30,"time":"2026-03-30T19:38:50.557Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:50.668Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:50.674Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:50.675Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-grid in page."}
+{"level":30,"time":"2026-03-30T19:38:50.731Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:50.738Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:50.739Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:50.743Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:51.752Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:51.752Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:51.756Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:51.765Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:51.765Z","pid":99056,"hostname":"KeniousLaptop","Take screenshot with options: ":{"path":"C:\\Users\\kenny\\Documents\\ProjectOrderly\\Orderly\\frontend\\browser\\screenshot\\robotframework-browser-screenshot-1.png","fileType":"png","fullPage":false,"timeout":10000,"omitBackground":false}}
+{"level":30,"time":"2026-03-30T19:38:52.027Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:52.037Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.039Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.043Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.046Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.053Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.053Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.057Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.064Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.064Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-card >> nth=0 >> h3 in page."}
+{"level":30,"time":"2026-03-30T19:38:52.115Z","pid":99056,"hostname":"KeniousLaptop","msg":"Retrieved text for element css=.product-card >> nth=0 >> h3 containing Blueberry Muffin"}
+{"level":30,"time":"2026-03-30T19:38:52.115Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.122Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.124Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.128Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.130Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.136Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.136Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.139Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.145Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.145Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card >> nth=0 >> select in page."}
+{"level":30,"time":"2026-03-30T19:38:52.148Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.156Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.158Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.162Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.164Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.170Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.170Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.173Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.179Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.179Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-card >> nth=0 >> .price in page."}
+{"level":30,"time":"2026-03-30T19:38:52.198Z","pid":99056,"hostname":"KeniousLaptop","msg":"Retrieved text for element css=.product-card >> nth=0 >> .price containing $2.95"}
+{"level":30,"time":"2026-03-30T19:38:52.198Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.206Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.208Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.212Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.214Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.220Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.220Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.223Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.228Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.229Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card >> nth=0 >> .add-to-cart button in page."}
+{"level":30,"time":"2026-03-30T19:38:52.231Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.239Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.241Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.245Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.247Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.250Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.251Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card .OOS in page."}
+{"level":30,"time":"2026-03-30T19:38:52.254Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.263Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.265Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.270Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.272Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.279Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.280Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.283Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.290Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.290Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-card >> nth=0 >> .view-link in page."}
+{"level":30,"time":"2026-03-30T19:38:52.380Z","pid":99056,"hostname":"KeniousLaptop","msg":"Retrieved text for element css=.product-card >> nth=0 >> .view-link containing View Details"}
+{"level":30,"time":"2026-03-30T19:38:52.380Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getText"}
+{"level":30,"time":"2026-03-30T19:38:52.388Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.391Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.394Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.397Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.401Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.401Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.filter select in page."}
+{"level":30,"time":"2026-03-30T19:38:52.408Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.412Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.412Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.filter select option in page."}
+{"level":30,"time":"2026-03-30T19:38:52.416Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.423Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method selectOption"}
+{"level":30,"time":"2026-03-30T19:38:52.423Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.filter select in page."}
+{"level":30,"time":"2026-03-30T19:38:52.472Z","pid":99056,"hostname":"KeniousLaptop","msg":"Option entries: 8"}
+{"level":30,"time":"2026-03-30T19:38:52.472Z","pid":99056,"hostname":"KeniousLaptop","msg":"Selected entries: 1"}
+{"level":30,"time":"2026-03-30T19:38:52.472Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method selectOption"}
+{"level":30,"time":"2026-03-30T19:38:52.481Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:52.481Z","pid":99056,"hostname":"KeniousLaptop","Take screenshot with options: ":{"path":"C:\\Users\\kenny\\Documents\\ProjectOrderly\\Orderly\\frontend\\browser\\screenshot\\robotframework-browser-screenshot-2.png","fileType":"png","fullPage":false,"timeout":10000,"omitBackground":false}}
+{"level":30,"time":"2026-03-30T19:38:52.582Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:52.589Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.591Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.594Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.596Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.601Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.601Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is disabled, return Locator: css=.product-card in page."}
+{"level":30,"time":"2026-03-30T19:38:52.604Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getElementCount"}
+{"level":30,"time":"2026-03-30T19:38:52.611Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.611Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-card >> nth=0 >> .view-link in page."}
+{"level":30,"time":"2026-03-30T19:38:52.616Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.621Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method click"}
+{"level":30,"time":"2026-03-30T19:38:52.621Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.product-card >> nth=0 >> .view-link in page."}
+{"level":30,"time":"2026-03-30T19:38:52.810Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method click"}
+{"level":30,"time":"2026-03-30T19:38:52.816Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.816Z","pid":99056,"hostname":"KeniousLaptop","msg":"Strict mode is enabled, find Locator with css=.ind-product-pg in page."}
+{"level":30,"time":"2026-03-30T19:38:52.823Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method waitForElementState"}
+{"level":30,"time":"2026-03-30T19:38:52.830Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:52.830Z","pid":99056,"hostname":"KeniousLaptop","Take screenshot with options: ":{"path":"C:\\Users\\kenny\\Documents\\ProjectOrderly\\Orderly\\frontend\\browser\\screenshot\\robotframework-browser-screenshot-3.png","fileType":"png","fullPage":false,"timeout":10000,"omitBackground":false}}
+{"level":30,"time":"2026-03-30T19:38:52.949Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method takeScreenshot"}
+{"level":30,"time":"2026-03-30T19:38:52.956Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.958Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:52.964Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method closeBrowser"}
+{"level":30,"time":"2026-03-30T19:38:52.999Z","pid":99056,"hostname":"KeniousLaptop","msg":"Removed page=b02a8051-2918-4cdf-a5ea-317ccebaa04c from context=5304a055-d5bd-46e8-86dd-e11706c34284 page stack"}
+{"level":30,"time":"2026-03-30T19:38:53.571Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method closeBrowser"}
+================= Original suppressed error =================
+Error: Browser has been closed.
+    at PlaywrightState.getActiveBrowser (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\index.js:12757:15)
+    at PlaywrightServer.getActiveBrowser (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\index.js:13677:59)
+    at PlaywrightServer.setTimeout (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\index.js:13933:56)
+    at Object.onReceiveHalfClose (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\node_modules\@grpc\grpc-js\build\src\server.js:1464:25)
+    at BaseServerInterceptingCall.maybePushNextMessage (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\node_modules\@grpc\grpc-js\build\src\server-interceptors.js:595:31)
+    at BaseServerInterceptingCall.handleEndEvent (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\node_modules\@grpc\grpc-js\build\src\server-interceptors.js:635:14)
+    at ServerHttp2Stream.<anonymous> (C:\Users\kenny\Documents\ProjectOrderly\.venv\Lib\site-packages\Browser\wrapper\node_modules\@grpc\grpc-js\build\src\server-interceptors.js:394:18)
+    at ServerHttp2Stream.emit (node:events:520:22)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+=============================================================
+{"level":30,"time":"2026-03-30T19:38:53.580Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:53.580Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method getBrowserCatalog"}
+{"level":30,"time":"2026-03-30T19:38:53.654Z","pid":99056,"hostname":"KeniousLaptop","msg":"Start of node method closeAllBrowsers"}
+{"level":30,"time":"2026-03-30T19:38:53.655Z","pid":99056,"hostname":"KeniousLaptop","msg":"End of node method closeAllBrowsers"}
