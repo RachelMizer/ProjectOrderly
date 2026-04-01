@@ -10,11 +10,11 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ResetPasswordRequest from "./pages/ResetPasswordRequest";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
+import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import Profile from "./pages/Auth/Profile";
 
 import { logout, isAuthenticated } from "./api/auth";
 import { handleApiError } from "./api/handleApiError";
