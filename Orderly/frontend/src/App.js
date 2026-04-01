@@ -1,30 +1,43 @@
 import "./App.css";
 
+// React
 import { useState, useEffect } from "react";
+
+// Router
 import {
   BrowserRouter,
   Routes,
   Route,
   Link,
   useNavigate,
-  Navigate,
 } from "react-router-dom";
 
+// Auth Pages
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import Profile from "./pages/Auth/Profile";
 
+// Storefront & Customer Pages
 import StoreFront from "./pages/StoreFront";
 import ProductPage from "./pages/ProductPage";
 import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 
-import { logout, isAuthenticated } from "./api/auth";
-import { handleApiError } from "./api/handleApiError";
+// Admin Components
+import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+import AdminLayout from "./components/admin/AdminLayout";
 
-// Safe user parsing helper
+// Admin Pages
+import AdminDashboardHome from "./pages/Admin/AdminDashboardHome";
+import AdminProductsPage from "./pages/Admin/AdminProductsPage";
+import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
+import AdminInventoryPage from "./pages/Admin/AdminInventoryPage";
+
+// API
+import { logout, isAuthenticated } from "./api/auth";
+
 function getStoredUser() {
   try {
     return JSON.parse(localStorage.getItem("user"));
@@ -34,51 +47,12 @@ function getStoredUser() {
   }
 }
 
-// Protected admin route
-function ProtectedAdminRoute({ children }) {
-  const user = getStoredUser();
-
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== "BUSINESS") return <Navigate to="/" replace />;
-
-  return children;
-}
-
-function AdminProductsPage() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    async function testAccess() {
-      try {
-        const token = localStorage.getItem("accessToken");
-
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/v1/admin/products",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.status === 403) throw { status: 403 };
-      } catch (error) {
-        handleApiError(error, navigate);
-      }
-    }
-
-    testAccess();
-  }, [navigate]);
-
-  return <h2>Admin Products</h2>;
-}
-
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
 
   const user = getStoredUser();
-  const role = user?.role;
+  const role = user?.role?.toUpperCase();
   const firstName = user?.firstName || "";
 
   useEffect(() => {
@@ -95,14 +69,24 @@ function AppContent() {
 
         if (response.ok) {
           const profile = await response.json();
-          localStorage.setItem("user", JSON.stringify(profile));
+          const existingUser = getStoredUser();
+
+          const mergedUser = {
+            ...existingUser,
+            ...profile,
+            role: existingUser?.role || profile.role,
+          };
+
+          localStorage.setItem("user", JSON.stringify(mergedUser));
         }
       } catch (err) {
         console.error("Failed to load profile:", err);
       }
     }
 
-    if (loggedIn) loadProfile();
+    if (loggedIn) {
+      loadProfile();
+    }
   }, [loggedIn]);
 
   async function handleLogout() {
@@ -110,7 +94,6 @@ function AppContent() {
       await logout();
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
-
       setLoggedIn(false);
       alert("Successfully logged out");
       navigate("/login");
@@ -154,11 +137,7 @@ function AppContent() {
             {role === "BUSINESS" && (
               <>
                 {" | "}
-                <Link to="/admin/products">Admin Products</Link>
-                {" | "}
-                <Link to="/admin/suppliers">Admin Suppliers</Link>
-                {" | "}
-                <Link to="/admin/inventory">Admin Inventory</Link>
+                <Link to="/admin">Admin Dashboard</Link>
               </>
             )}
 
@@ -182,14 +161,14 @@ function AppContent() {
         <Route path="/orders/:orderId" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />
 
-        <Route
-          path="/admin/products"
-          element={
-            <ProtectedAdminRoute>
-              <AdminProductsPage />
-            </ProtectedAdminRoute>
-          }
-        />
+        <Route element={<ProtectedAdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="suppliers" element={<AdminSuppliersPage />} />
+            <Route path="inventory" element={<AdminInventoryPage />} />
+          </Route>
+        </Route>
       </Routes>
 
       <footer>
