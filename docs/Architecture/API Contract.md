@@ -1462,6 +1462,7 @@ body
 **URL Parameters:**  
 + productId = [integer]  
 + variantId = [integer]  
+
 **Request Parameters:** None  
 ### Request
 **Header:** None  
@@ -1535,46 +1536,342 @@ body
 }
 ```
 
-## Create/Update Product
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+## Create Categories
+**Endpoint:** `POST /api/v1/categories`  
+**Description:** Creates a new category  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:**  
++ name
++ imageUrl (OPTIONAL)
+
+### Request
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**  
+```
+{
+    "name": "desserts",
+    "imageUrl": "https://storename.com/media/categories/desserts.png"
+}
+```
+**Rules:**  
++ accessToken must link to a user with the BUSINESS role
++ must include a unique name
+
+**Success Response (200 OK):** 
+```
+{
+    "message": "category {name} created",
+    "id": 1
+}
+``` 
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "category name not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+
+## Update Categories
+**Endpoint:** `PATCH /api/v1/categories/{categoryId}`  
+**Description:** Updates an existing category   
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:**  
++ name (OPTIONAL)
++ imageUrl (OPTIONAL)
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+{
+    "imageUrl": "https://storename.com/media/categories/cake.png"
+}
+**Rules:**
++ Must use an existing categoryId  
++ Request body must include at least one field  
++ Success response will return the changed field and the new value
+
+**Success Response (200 OK):**
+```
+{
+    "message": "category updated",
+    "id": 1,
+    "newImageUrl": "https://storename.com/media/categories/cake.png"
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing changes"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Create Product
+**Endpoint:** `POST /api/v1/categories/{categoryId}/variants`  
+**Description:** Creates a new product
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
 **URL Parameters:**
 **Request Parameters:**
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
 **Rules:**
 **Success Response (200 OK):**
 
-## Create/Update Variant
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+## Update Product
+**Endpoint:** `PATCH /api/v1/products/{productId}`  
+**Description:** Updates an existing product
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
 **URL Parameters:**
 **Request Parameters:**
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
 **Rules:**
 **Success Response (200 OK):**
 
-## Create/Update Modifiers
-**Endpoint:**
+## Create Variant
+**Endpoint:** `POST /api/v1/products/{productId}/variants`  
 **Description:**
-**Authentication:**
-**Role:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
 **URL Parameters:**
 **Request Parameters:**
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
 **Rules:**
 **Success Response (200 OK):**
 
+## Update Variant
+**Endpoint:** `PATCH /api/v1/variants/{variantId}`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
 
+## Create Modifiers Group
+**Endpoint:** `POST /api/v1/variants/{variantId}/modifiers`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Update Modifiers Group
+**Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Create Modifiers Option
+**Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}/option`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Update Modifiers Option
+**Endpoint:** `PATCH /api/v1/modifiers/option/{optionId}`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Delete Category
+**Endpoint:** `DELETE /api/v1/categories/{categoryId}`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Delete Product
+**Endpoint:** `DELETE /api/v1/products/{productId}`
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Delete Variant
+**Endpoint:** `DELETE /api/v1/variants/{variantId}`  
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Delete Modifier Group
+**Endpoint:** `DELETE /api/v1/modifiers/group/{groupId}`
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
+## Delete Modifier Option
+**Endpoint:** `DELETE /api/v1/modifiers/options/{optionId}`
+**Description:**
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
 
 # Inventory API
 ## View Inventory levels
