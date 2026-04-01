@@ -14,23 +14,23 @@ jest.mock("../api/auth", () => ({
   confirmPasswordReset: jest.fn(),
 }));
 
-jest.mock("../pages/Register", () => function MockRegister() {
+jest.mock("../pages/Auth/Register", () => function MockRegister() {
   return <div>Register Page</div>;
 });
 
-jest.mock("../pages/Login", () => function MockLogin() {
+jest.mock("../pages/Auth/Login", () => function MockLogin() {
   return <div>Login Page</div>;
 });
 
-jest.mock("../pages/ResetPasswordRequest", () => function MockResetPasswordRequest() {
+jest.mock("../pages/Auth/ResetPasswordRequest", () => function MockResetPasswordRequest() {
   return <div>Reset Password Request Page</div>;
 });
 
-jest.mock("../pages/ResetPassword", () => function MockResetPassword() {
+jest.mock("../pages/Auth/ResetPassword", () => function MockResetPassword() {
   return <div>Reset Password Page</div>;
 });
 
-jest.mock("../pages/Profile", () => function MockProfile() {
+jest.mock("../pages/Auth/Profile", () => function MockProfile() {
   return <div>Profile Page</div>;
 });
 

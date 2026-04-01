@@ -16,6 +16,11 @@ import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import Profile from "./pages/Auth/Profile";
 
+import StoreFront from "./pages/StoreFront";
+import ProductPage from "./pages/ProductPage";
+import OrderHistory from "./pages/Orders/OrderHistory";
+import OrderDetails from "./pages/Orders/OrderDetail";
+
 import { logout, isAuthenticated } from "./api/auth";
 import { handleApiError } from "./api/handleApiError";
 
@@ -33,13 +38,8 @@ function getStoredUser() {
 function ProtectedAdminRoute({ children }) {
   const user = getStoredUser();
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (user.role !== "BUSINESS") {
-    return <Navigate to="/" replace />;
-  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "BUSINESS") return <Navigate to="/" replace />;
 
   return children;
 }
@@ -61,9 +61,7 @@ function AdminProductsPage() {
           }
         );
 
-        if (response.status === 403) {
-          throw { status: 403 };
-        }
+        if (response.status === 403) throw { status: 403 };
       } catch (error) {
         handleApiError(error, navigate);
       }
@@ -81,12 +79,35 @@ function AppContent() {
 
   const user = getStoredUser();
   const role = user?.role;
+  const firstName = user?.firstName || "";
+
+  useEffect(() => {
+    async function loadProfile() {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          localStorage.setItem("user", JSON.stringify(profile));
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      }
+    }
+
+    if (loggedIn) loadProfile();
+  }, [loggedIn]);
 
   async function handleLogout() {
     try {
       await logout();
-
-      // Clear all auth-related storage
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
 
@@ -100,10 +121,16 @@ function AppContent() {
   }
 
   return (
-    <div>
-      <h1>Orderly frontend running...</h1>
+    <div className="wrapper">
+      <header>
+        <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
+        <h2>Your pause, perfected.</h2>
+      </header>
 
       <nav>
+        <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+
+        {" | "}
         <Link to="/">Home</Link>
 
         {!loggedIn && (
@@ -121,6 +148,8 @@ function AppContent() {
           <>
             {" | "}
             <Link to="/profile">Profile</Link>
+            {" | "}
+            <Link to="/order-history">Order History</Link>
 
             {role === "BUSINESS" && (
               <>
@@ -137,23 +166,20 @@ function AppContent() {
             <button onClick={handleLogout}>Logout</button>
           </>
         )}
+
+        <img src="/img/ico_cart.png" alt="cart" />
+        <p className="cart-PH">Cart</p>
       </nav>
 
       <Routes>
-        <Route path="/" element={<h2>Home Page</h2>} />
-
-        <Route
-          path="/register"
-          element={<Register setLoggedIn={setLoggedIn} />}
-        />
-
-        <Route
-          path="/login"
-          element={<Login setLoggedIn={setLoggedIn} />}
-        />
-
+        <Route path="/" element={<StoreFront />} />
+        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
         <Route path="/password-reset" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/orders/:orderId" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />
 
         <Route
@@ -164,25 +190,11 @@ function AppContent() {
             </ProtectedAdminRoute>
           }
         />
-
-        <Route
-          path="/admin/suppliers"
-          element={
-            <ProtectedAdminRoute>
-              <h2>Admin Suppliers</h2>
-            </ProtectedAdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/inventory"
-          element={
-            <ProtectedAdminRoute>
-              <h2>Admin Inventory</h2>
-            </ProtectedAdminRoute>
-          }
-        />
       </Routes>
+
+      <footer>
+        <p>© Quick Sip Cafe 2026</p>
+      </footer>
     </div>
   );
 }

@@ -159,11 +159,11 @@ def test_get_order_detail_success(api_client, customer_user, submitted_order):
     assert response.status_code == 200
 
     # Validate key receipt fields
-    assert response.data["orderId"] == submitted_order.id
+    assert response.data["id"] == submitted_order.id
     assert response.data["status"] == OrderStatus.PENDING
     assert "items" in response.data
     assert response.data["taxAmount"] == "0.00"
-    assert response.data["totalPaymentDue"] == "10.00"
+    assert response.data["totalDue"] == "10.00"
     assert "createdAt" in response.data
     assert "updatedAt" in response.data
 
