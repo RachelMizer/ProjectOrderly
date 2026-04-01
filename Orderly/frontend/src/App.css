@@ -54,6 +54,7 @@ nav a, .LOlink {
   color: white;
   text-decoration-line: none;
   font-weight: bold;
+  letter-spacing: .09rem;
 }
 
 nav p {
@@ -108,7 +109,7 @@ a {
   font-weight: bold;
 }
 
-main a {
+main a, .log-form a {
   color: #839170;
 }
 
@@ -226,4 +227,101 @@ h1, h2, h3, h4, h5, h6 {
 .ind-product-pg {
   width: 500px;
   margin: 30px auto;
+}
+
+/*  INDIVIDUAL PRODUCT PAGE  */
+
+.prod-opts {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.modifier-group h4 {
+  margin: 0px;
+  font-size: 1.1rem;
+}
+
+.modifier-group p {
+  margin-top: 0px;
+  margin-bottom: .5rem;
+}
+
+.modifier-options {
+  margin-bottom: 1rem;
+}
+
+/*    REGISTRATION    */
+
+.reg-form {
+  text-align: center;
+  width: 25%;
+  margin: auto;
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.reg-form h2 {
+  margin-bottom: 0px;
+}
+
+.reg-form button {
+    margin-bottom: 10px;
+}
+
+/*    LOGIN     */
+
+.log-form {
+  text-align: center;
+  width: 25%;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.log-form h2 {
+  margin-bottom: 0px;
+}
+
+.log-form button {
+    margin-bottom: 10px;
+}
+
+
+/*    FORM STYLES   */
+
+input {
+  border-radius: 2px;
+  padding: 5px;
+  border: 1px solid #6e5b50;
+}
+
+label {
+  color: #482e1d;
+  font-weight: bold;
+}
+
+fieldset {
+  padding: 10px;
+  border: none;
+  margin: 0px;
+}
+
+button {
+  font-family: 'Munson', serif;
+  background-color: beige;
+  border: 1px solid #6e5b50;
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-weight: bold;
+  font-size: .9rem;
+}
+
+
+/*    PROFILE PAGE    */
+
+.prof-pg {
+  width: 300px;
+  text-align: center;
+  margin: 20px auto;
 }
