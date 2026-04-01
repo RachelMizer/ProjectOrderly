@@ -104,6 +104,7 @@ footer p {
 
 /*    LINK STYLES   */
 a {
+  letter-spacing: .09rem;
   text-decoration-line: none;
   font-weight: bold;
 }

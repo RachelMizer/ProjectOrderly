@@ -3,15 +3,20 @@ import "./App.css";
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ResetPasswordRequest from "./pages/ResetPasswordRequest";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
+import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import StoreFront from "./pages/StoreFront";
 import { useEffect } from "react";
+
 import ProductPage from "./pages/ProductPage";
+import Profile from "./pages/Auth/Profile";
+
+import OrderHistory from "./pages/Orders/OrderHistory";
+
 import { logout, isAuthenticated } from "./api/auth";
+import OrderDetails from "./pages/Orders/OrderDetail";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -60,14 +65,14 @@ function AppContent() {
     }
   }
 
-  return (
-    <div className="wrapper">
-      <header>
-        <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
-        <h2>Your pause, perfected.</h2>
-      </header>
+ return (
+  <div className="wrapper">
+    <header>
+      <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
+      <h2>Your pause, perfected.</h2>
+    </header>
 
-      <nav>
+    <nav>
       <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
       {" | "}
       <Link to="/">Home</Link>
@@ -78,35 +83,43 @@ function AppContent() {
           <Link to="/register">Register</Link>
           {" | "}
           <Link to="/login">Login</Link>
+          {" | "}
+          <Link to="/password-reset">Forgot Password</Link>
         </>
       )}
 
-{loggedIn && (
-  <>
-    {" | "}
-    <Link to="/profile">Profile</Link>
-    {" | "}
-    <button onClick={handleLogout}>Logout</button>
-  </>
-)}
+      {loggedIn && (
+        <>
+          {" | "}
+          <Link to="/profile">Profile</Link>
+          {" | "}
+            <Link to="/order-history">Order History</Link>
+          {" | "}
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      )}
 
-<img src="/img/ico_cart.png" alt="cart" />
-<p className="cart-PH" title="inactive link">Cart</p>
-</nav>
+      <img src="/img/ico_cart.png" alt="cart" />
+      <p className="cart-PH" title="inactive link">Cart</p>
+    </nav>
 
+    <Routes>
+      <Route path="/" element={<StoreFront />} />
+      <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+      <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+      <Route path="/password-reset" element={<ResetPasswordRequest />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/product/:id" element={<ProductPage />} />
+      <Route path="/order-history" element={<OrderHistory />} />
+      <Route path="/orders/:orderId" element={<OrderDetails />} />
+      <Route path="/profile" element={<Profile />} />
+    </Routes>
 
-      <Routes>
-        <Route path="/" element={<StoreFront />} />
-        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
-        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-        <Route path="/password-reset" element={<ResetPasswordRequest />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/product/:id" element={<ProductPage />} />
-      </Routes>
-    <footer><p>© Quick Sip Cafe 2026</p></footer>
-    </div>
-  );
+    <footer>
+      <p>© Quick Sip Cafe 2026</p>
+    </footer>
+  </div>
+);
 }
 
 function App() {

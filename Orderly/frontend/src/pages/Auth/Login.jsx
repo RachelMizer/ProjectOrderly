@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/auth";
+import { login } from "../../api/auth";
 
 export default function Login({ setLoggedIn }) {
   const navigate = useNavigate();
@@ -72,11 +72,13 @@ export default function Login({ setLoggedIn }) {
             />
           </div>
           <br />
+          <div>
             <button type="submit">
               {submitting ? "Logging in..." : "Login"}
             </button>
             <br />
             <a href="/ResetPassword">Reset Password</a>
+          </div>
         </fieldset>
       </form>
     </div>

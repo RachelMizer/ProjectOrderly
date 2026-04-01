@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProfile, updateProfile } from "../api/auth";
+import { getProfile, updateProfile } from "../../api/auth";
 
 export default function Profile() {
   const [form, setForm] = useState({

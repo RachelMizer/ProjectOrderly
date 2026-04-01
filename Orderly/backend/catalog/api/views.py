@@ -119,6 +119,7 @@ class ModifiersView(APIView):
 
         variant = get_object_or_404(ProductVariant, pk=variantId, product=product)
 
+        # Currently only sorts groups, not options
         groups = list(
             ModifierGroup.objects.filter(variant=variant)
             .prefetch_related("options")
