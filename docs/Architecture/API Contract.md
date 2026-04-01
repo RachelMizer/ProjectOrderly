@@ -1563,7 +1563,7 @@ Content-Type: application/json
 + accessToken must link to a user with the BUSINESS role
 + must include a unique name
 
-**Success Response (200 OK):** 
+**Success Response (201 Created):** 
 ```
 {
     "message": "category {name} created",
@@ -1600,7 +1600,7 @@ Content-Type: application/json
 **Description:** Updates an existing category   
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:** None  
+**URL Parameters:** categoryId  
 **Request Parameters:**  
 + name (OPTIONAL)
 + imageUrl (OPTIONAL)
@@ -1611,19 +1611,23 @@ Content-Type: application/json
 Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
+
 **Body:**
+```
 {
     "imageUrl": "https://storename.com/media/categories/cake.png"
 }
+```
 **Rules:**
 + Must use an existing categoryId  
++ Category names must remain unique
 + Request body must include at least one field  
 + Success response will return the changed field and the new value
 
 **Success Response (200 OK):**
 ```
 {
-    "message": "category updated",
+    "message": "category {name} updated",
     "id": 1,
     "newImageUrl": "https://storename.com/media/categories/cake.png"
 }
@@ -1632,7 +1636,7 @@ Content-Type: application/json
 ```
 {
     "error": "INVALID_DATA",
-    "message": "missing changes"
+    "message": "missing changes or name in use"
 }
 ```
 
@@ -1654,11 +1658,24 @@ Content-Type: application/json
 
 ## Create Product
 **Endpoint:** `POST /api/v1/categories/{categoryId}/variants`  
-**Description:** Creates a new product
+**Description:** Creates a new product in an existing category and at least one variant. Will eventually need revision to support suppliers.
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:**
+**URL Parameters:** 
++ categoryId
+  
 **Request Parameters:**
++ name
++ hasVariants
++ imageUrl (OPTIONAL)
+
++ variantName
++ SKU (OPTIONAL)
++ unitPrice
++ initialStockQuantity (OPTIONAL)
++ reorderLevel (OPTIONAL)
++ imageUrl (OPTIONAL)
+
 ### Request
 **Header:**
 ```
@@ -1666,8 +1683,82 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "name": "limited_phish_cropped_pullover_sweater_jacket",
+    "hasVariants": false,
+    "imageUrl": "https://storename.com/media/products/le/phish_cropped_pullover_sweater_jacket.png",
+    "variant": {
+        "name": "limited_phish_cropped_pullover_sweater_jacket",
+        "unitPrice": 69.99,
+        "initialStockQuantity": 500
+    }
+}
+```
+OR
+```
+{
+    "name": "swirl_tshirt",
+    "hasVariants": true,
+    "imageUrl": "https://storename.com/media/products/swirl_tshirt.png",
+    "variants": [
+        {
+            "name": "swirl_tshirt_red",
+            "unitPrice": 24.99,
+            "imageUrl": ""https://storename.com/media/products/swirl_tshirt_red.png"
+        },
+        {
+            "name": "swirl_tshirt_blue",
+            "unitPrice": 24.99,
+            "imageUrl": ""https://storename.com/media/products/swirl_tshirt_blue.png"
+        },
+        ...
+    ]
+}
+```
 **Rules:**
-**Success Response (200 OK):**
++ if hasVariants is false, include one default variant
++ if hasVariants is false, variant image will automatically match product image
++ if hasVariants is true, include at least one variant
++ hasModifiers is automatically set to false, and automatically updated when a related modifier group is created
++ name must be unique
++ SKU must be unique
+**Success Response (201 Created):**
+```
+{
+    "message": "product {name} created",
+    "id": 1,
+    "variants": [
+        {
+            "name": "limited_phish_cropped_pullover_sweater_jacket",
+            "id": 1
+        }
+    ]
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing required field, name not unique, or SKU not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Update Product
 **Endpoint:** `PATCH /api/v1/products/{productId}`  
@@ -1701,7 +1792,7 @@ Content-Type: application/json
 ```
 **Body:**
 **Rules:**
-**Success Response (200 OK):**
+**Success Response (201 Created):**
 
 ## Update Variant
 **Endpoint:** `PATCH /api/v1/variants/{variantId}`  
@@ -1735,7 +1826,7 @@ Content-Type: application/json
 ```
 **Body:**
 **Rules:**
-**Success Response (200 OK):**
+**Success Response (201 Created):**
 
 ## Update Modifiers Group
 **Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
@@ -1769,7 +1860,7 @@ Content-Type: application/json
 ```
 **Body:**
 **Rules:**
-**Success Response (200 OK):**
+**Success Response (201 Created):**
 
 ## Update Modifiers Option
 **Endpoint:** `PATCH /api/v1/modifiers/option/{optionId}`  
