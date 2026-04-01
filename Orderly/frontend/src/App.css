@@ -208,11 +208,15 @@ h1, h2, h3, h4, h5, h6 {
   padding: 10px 30px;
 }
 
-.product-card .price {
+.price {
   color:#9a4422;
   font-weight: bold;
   font-size: 1.2rem;
   letter-spacing: .05rem;
+}
+
+.price-label {
+  font-size: 1.2rem;
 }
 
 .product-card p {
@@ -224,6 +228,13 @@ h1, h2, h3, h4, h5, h6 {
   width: 200px;
   font-size: .9rem;
   line-height: 1rem;
+  text-align: justify;
+}
+
+.prod-desc2 {
+  line-height: 1.1rem;
+  margin-top: -10px;
+  text-align: justify;
 }
 
 .product-card .img, .ind-product-pg .img {

@@ -236,6 +236,8 @@ const ProductPage = () => {
     <div className="ind-product-pg">
       <h1>{product.name}</h1>
 
+      {product.description && <p className="prod-desc2">{product.description}</p>}
+
       <div className="img">Placeholder</div>
 
       {/* ================================
@@ -330,7 +332,7 @@ const ProductPage = () => {
       {/* ================================
           PRICE + ADD TO CART
          ================================ */}
-      <p className="price">Total: ${totalPrice.toFixed(2)}</p>
+      <p className="price-label">Total: <span className="price">${totalPrice.toFixed(2)}</span></p>
 
       {selectedVariant && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
