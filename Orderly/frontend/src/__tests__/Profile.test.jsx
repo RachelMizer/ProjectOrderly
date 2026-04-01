@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Profile from "../pages/Profile";
+import Profile from "../pages/Auth/Profile";
 import * as auth from "../api/auth";
 
 jest.mock("../api/auth");

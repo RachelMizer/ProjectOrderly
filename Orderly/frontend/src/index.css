@@ -1,13 +1,59 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Munson Regular */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Roman.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Italic */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Bold Italic */
+@font-face {
+  font-family: 'Munson';
+  src: url('./assets/fonts/Munson_BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* AddAff */
+@font-face {
+  font-family: 'AddAff';
+  src: url('./assets/fonts/AddAff.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body {
+  font-family: 'Munson', sans-serif;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+#root {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
 }

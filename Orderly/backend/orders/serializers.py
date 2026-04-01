@@ -460,13 +460,7 @@ class OrderStatusSerializer(serializers.ModelSerializer):
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for GET /api/v1/orders/{orderId}.
-
-    Returns full order detail / receipt information.
-    """
-
-    orderId = serializers.IntegerField(source="id", read_only=True)
+    id = serializers.IntegerField(read_only=True)
     date = serializers.DateTimeField(source="order_date", read_only=True)
     taxAmount = serializers.DecimalField(
         source="tax_amount",
@@ -474,7 +468,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True,
     )
-    totalPaymentDue = serializers.DecimalField(
+    totalDue = serializers.DecimalField(
         source="total_payment_due",
         max_digits=10,
         decimal_places=2,
@@ -488,12 +482,12 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            "orderId",
+            "id",
             "date",
             "status",
             "items",
             "taxAmount",
-            "totalPaymentDue",
+            "totalDue",
             "createdAt",
             "updatedAt",
         ]

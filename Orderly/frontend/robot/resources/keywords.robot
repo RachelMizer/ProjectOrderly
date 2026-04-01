@@ -21,7 +21,7 @@ Login As Test User
     Input Text    id=email    ${TEST_EMAIL}
     Input Password    id=password    ${TEST_PASSWORD}
     Click Button    xpath=//button[normalize-space()='Login']
-    Wait Until Page Contains    Home Page
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
 
 Open Profile Page
     Click Link    Profile
