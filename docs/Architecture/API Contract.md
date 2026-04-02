@@ -1657,8 +1657,8 @@ Content-Type: application/json
 ```
 
 ## Create Product
-**Endpoint:** `POST /api/v1/categories/{categoryId}/variants`  
-**Description:** Creates a new product in an existing category and at least one variant. Will eventually need revision to support suppliers.
+**Endpoint:** `POST /api/v1/categories/{categoryId}/products`  
+**Description:** Creates a new product in an existing category.  
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:** 
@@ -1666,14 +1666,7 @@ Content-Type: application/json
   
 **Request Parameters:**
 + name
-+ hasVariants
-+ imageUrl (OPTIONAL)
-
-+ variantName
-+ SKU (OPTIONAL)
-+ unitPrice
-+ initialStockQuantity (OPTIONAL)
-+ reorderLevel (OPTIONAL)
++ supplierId (OPTIONAL)
 + imageUrl (OPTIONAL)
 
 ### Request
@@ -1686,61 +1679,28 @@ Content-Type: application/json
 ```
 {
     "name": "limited_phish_cropped_pullover_sweater_jacket",
-    "hasVariants": false,
+    "supplierId": 900,
     "imageUrl": "https://storename.com/media/products/le/phish_cropped_pullover_sweater_jacket.png",
-    "variant": {
-        "name": "limited_phish_cropped_pullover_sweater_jacket",
-        "unitPrice": 69.99,
-        "initialStockQuantity": 500
-    }
-}
-```
-OR
-```
-{
-    "name": "swirl_tshirt",
-    "hasVariants": true,
-    "imageUrl": "https://storename.com/media/products/swirl_tshirt.png",
-    "variants": [
-        {
-            "name": "swirl_tshirt_red",
-            "unitPrice": 24.99,
-            "imageUrl": ""https://storename.com/media/products/swirl_tshirt_red.png"
-        },
-        {
-            "name": "swirl_tshirt_blue",
-            "unitPrice": 24.99,
-            "imageUrl": ""https://storename.com/media/products/swirl_tshirt_blue.png"
-        },
-        ...
-    ]
 }
 ```
 **Rules:**
-+ if hasVariants is false, include one default variant
-+ if hasVariants is false, variant image will automatically match product image
-+ if hasVariants is true, include at least one variant
++ because all products use at least one variant, UI should support creation of one variant inside product creation
++ hasVariants is automatically set to false, and automatically updated when a SECOND variant is created.
 + hasModifiers is automatically set to false, and automatically updated when a related modifier group is created
 + name must be unique
-+ SKU must be unique
+
 **Success Response (201 Created):**
 ```
 {
     "message": "product {name} created",
     "id": 1,
-    "variants": [
-        {
-            "name": "limited_phish_cropped_pullover_sweater_jacket",
-            "id": 1
-        }
-    ]
 }
 ```
 **Bad Request (400)**:
 ```
 {
     "error": "INVALID_DATA",
-    "message": "missing required field, name not unique, or SKU not unique"
+    "message": "missing required field or name not unique"
 }
 ```
 
@@ -1765,8 +1725,15 @@ OR
 **Description:** Updates an existing product
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:**
+**URL Parameters:** 
++ productId
+  
 **Request Parameters:**
++ name
++ supplierId
++ categoryId
++ imageUrl
+  
 ### Request
 **Header:**
 ```
@@ -1774,16 +1741,65 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "supplierId": 500
+    "imageUrl": "https://storename.com/media/products/red_onion.png"
+}
+```
 **Rules:**
++ All fields are optional
++ product names must remain unique
++ fields included in request represent the new values
+  
 **Success Response (200 OK):**
+```
+{
+    "message": "product {name} updated",
+    "id": 1,
+    "supplierId": 500,
+    "imageUrl": "https://storename.com/media/products/red_onion.png"
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing required field or name not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
 
 ## Create Variant
 **Endpoint:** `POST /api/v1/products/{productId}/variants`  
-**Description:**
+**Description:** Creates a new variant for an existing product  
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:**
+**URL Parameters:** productId
 **Request Parameters:**
++ name
++ SKU (OPTIONAL)
++ unitPrice
++ stockQuantity (OPTIONAL)
++ reorderLevel (OPTIONAL)
++ imageUrl (OPTIONAL)
+  
 ### Request
 **Header:**
 ```
@@ -1791,16 +1807,72 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "name": "tshirt_red_large",
+    "SKU": "TSH-RED-L",
+    "unitPrice": 24.99,
+    "stockQuantity": 15,
+    "reorderLevel": 5,
+    "imageUrl": "https://storename.com/media/variants/tshirt_red_large.png"
+}
+```
 **Rules:**
++ Must relate to existing product
++ name must be unique
++ SKU must be unique
++ Unit price must be greater or equal to 0
++ stock quantity must be >= 0
++ reorder level must be >= 0
++ Creating a second variant for a single product automatically sets product's hasVariants to true
+
 **Success Response (201 Created):**
+```
+{
+    "message": "variant {name} created",
+    "id": 1,
+    "productId": 10
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing required field, invalid price, or SKU not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
 
 ## Update Variant
 **Endpoint:** `PATCH /api/v1/variants/{variantId}`  
 **Description:**
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:**
+**URL Parameters:** variantId
 **Request Parameters:**
++ name
++ SKU
++ unitPrice
++ stockQuantity
++ reorderLevel
++ imageUrl
+  
 ### Request
 **Header:**
 ```
@@ -1808,16 +1880,67 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "unitPrice": 26.99,
+    "stockQuantity": 20
+}
+```
 **Rules:**
++ id must be valid
++ all fields are optional
++ name must remain unique
++ SKU must remain unique
++ Unit price must be greater or equal to 0
++ stock quantity must be >= 0
++ reorder level must be >= 0
+  
 **Success Response (200 OK):**
+```
+{
+    "message": "variant {name} updated",
+    "id": 1,
+    "unitPrice": 26.99,
+    "stockQuantity": 20
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input, duplicate SKU, or name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Create Modifiers Group
-**Endpoint:** `POST /api/v1/variants/{variantId}/modifiers`  
+**Endpoint:** `POST /api/v1/variants/{variantId}/modifier-groups`  
 **Description:**
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:**
++ variantId 
 **Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
+  
 ### Request
 **Header:**
 ```
@@ -1825,8 +1948,29 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "name": "toppings",
+    "required": false,
+    "minSelections": 0,
+    "maxSelections": 5
+}
+```
 **Rules:**
++ Must use existing variant
++ name bust be unique per variant
++ minSelections must be >= 0
++ maxSelections must be >= minSelections
++ if required is true, minSelections must be >= 1
++ creating a modifier group automatically updates the related variant product's hasModifiers to true
 **Success Response (201 Created):**
+```
+{
+    "message": "modifier group {name} created",
+    "id": 1,
+    "variantId": 5
+}
+```
 
 ## Update Modifiers Group
 **Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
@@ -1846,7 +1990,7 @@ Content-Type: application/json
 **Success Response (200 OK):**
 
 ## Create Modifiers Option
-**Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}/option`  
+**Endpoint:** `PATCH /api/v1/modifier-groups/{groupId}/options`  
 **Description:**
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
