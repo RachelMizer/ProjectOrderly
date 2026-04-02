@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../api/auth";
+import { register } from "../../api/auth";
 
 export default function Register({ setLoggedIn }) {
   const navigate = useNavigate();
@@ -86,8 +86,8 @@ export default function Register({ setLoggedIn }) {
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Create Account</h1>
+    <div className="reg-form">
+      <h2>Create Account</h2>
 
       {errors.general && (
         <div style={{ color: "red", marginBottom: "1rem" }}>
@@ -112,7 +112,7 @@ export default function Register({ setLoggedIn }) {
               <div style={{ color: "red" }}>{errors.firstName}</div>
             )}
           </div>
-
+          
           <div style={{ marginBottom: "1rem" }}>
             <label htmlFor="lastName">Last Name</label>
             <br />
@@ -164,6 +164,7 @@ export default function Register({ setLoggedIn }) {
           <button type="submit">
             {submitting ? "Creating Account..." : "Create Account"}
           </button>
+
         </fieldset>
       </form>
     </div>

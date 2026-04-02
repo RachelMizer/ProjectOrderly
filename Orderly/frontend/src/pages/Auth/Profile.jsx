@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProfile, updateProfile } from "../api/auth";
+import { getProfile, updateProfile } from "../../api/auth";
 
 export default function Profile() {
   const [form, setForm] = useState({
@@ -139,7 +139,7 @@ export default function Profile() {
   if (loading) return <p>Loading profile...</p>;
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "700px" }}>
+    <div className="prof-pg">
       <h1>My Profile</h1>
 
       {message && (
