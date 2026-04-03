@@ -151,7 +151,8 @@ export default function Profile() {
 
   return (
     <div className="prof-pg">
-      <h1>My Profile</h1>
+      <h1>Profile</h1>
+      <p>To update your profile, enter the new<br />information and click save.</p>
 
       {message && (
         <div className="prof-success">{message}</div>
@@ -161,151 +162,122 @@ export default function Profile() {
         <div className="prof-error">{error}</div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <fieldset disabled={submitting}>
-
-          <table>
-            <tr>
-              <td rowspan="2">Name</td><td>First</td><td>Last</td>
-            </tr>
-            <tr>
-              <td>First field</td><td>Last field</td>
-            </tr>
-            <tr>
-              <td rowspan="4">Address</td><td>Street Address</td>
-            </tr>
-            <tr>
-              <td>ST. ADD FIELD</td>
-            </tr>
-            <tr>
-              <td>City</td><td>State</td>
-            </tr>
-            <tr>
-              <td>city field</td><td>state field</td>
-            </tr>
-            <tr>
-              <td>Email:</td><td>Phone</td>
-              <td>email field</td><td>phone field</td>
-            </tr>
-          </table>
+     <form onSubmit={handleSubmit}>
+  <fieldset disabled={submitting}>
 
 
-          <div className="prof-section">
-            <h2>Name</h2>
+      {/* NAME SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Name</div>
 
-            <div className="prof-field">
-              <label htmlFor="firstName">First Name</label>
-              <br />
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={form.firstName || ""}
-                onChange={handleChange}
-              />
-              <br />
-              <label htmlFor="lastName">Last Name</label>
-              <br />
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={form.lastName || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+        <div className="prof-cell">
+          <label htmlFor="firstName">First Name</label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            value={form.firstName || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <hr />
+        <div className="prof-cell">
+          <label htmlFor="lastName">Last Name</label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            value={form.lastName || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-          <div className="prof-section">
-            <h2>Address</h2>
+      {/* ADDRESS SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Address</div>
 
-            <div className="prof-field">
-              <label htmlFor="streetAddress">Street Address</label>
-              <br />
-              <input
-                id="streetAddress"
-                name="streetAddress"
-                type="text"
-                value={form.streetAddress || ""}
-                onChange={handleChange}
-              />
-            </div>
+        <div className="prof-cell full-width">
+          <label htmlFor="streetAddress">Street Address</label>
+          <input
+            id="streetAddress"
+            name="streetAddress"
+            type="text"
+            value={form.streetAddress || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-            <div className="prof-field">
-              <label htmlFor="city">City</label>
-              <br />
-              <input
-                id="city"
-                name="city"
-                type="text"
-                value={form.city || ""}
-                onChange={handleChange}
-              />
-            </div>
+        <div className="prof-cell">
+          <label htmlFor="city">City</label>
+          <input
+            id="city"
+            name="city"
+            type="text"
+            value={form.city || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-            <div className="prof-field">
-              <label htmlFor="state">State</label>
-              <br />
-              <input
-                id="state"
-                name="state"
-                type="text"
-                value={form.state || ""}
-                onChange={handleChange}
-              />
-            </div>
+        <div className="prof-cell">
+          <label htmlFor="state">State</label>
+          <input
+            id="state"
+            name="state"
+            type="text"
+            value={form.state || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-            <div className="prof-field">
-              <label htmlFor="zipcode">Zip Code</label>
-              <br />
-              <input
-                id="zipcode"
-                name="zipcode"
-                type="text"
-                value={form.zipcode || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+        <div className="prof-cell">
+          <label htmlFor="zipcode">Zip Code</label>
+          <input
+            id="zipcode"
+            name="zipcode"
+            type="text"
+            value={form.zipcode || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-          <hr />
+      {/* CONTACT SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Contact</div>
 
-          <div className="prof-section">
-            <h2>Contact</h2>
+        <div className="prof-cell">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email || ""}
+            onChange={handleChange}
+            disabled
+          />
+        </div>
 
-            <div className="prof-field">
-              <label htmlFor="email">Email</label>
-              <br />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email || ""}
-                onChange={handleChange}
-                disabled
-              />
-            </div>
+        <div className="prof-cell">
+          <label htmlFor="phone">Phone Number</label>
+          <input
+            id="phone"
+            name="phone"
+            type="text"
+            value={form.phone || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-            <div className="prof-field">
-              <label htmlFor="phone">Phone Number</label>
-              <br />
-              <input
-                id="phone"
-                name="phone"
-                type="text"
-                value={form.phone || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+    <button type="submit">
+      {submitting ? "Saving..." : "Save"}
+    </button>
 
-          <button type="submit">
-            {submitting ? "Saving..." : "Save"}
-          </button>
-        </fieldset>
-      </form>
+  </fieldset>
+</form>
+
+
     </div>
   );
 }

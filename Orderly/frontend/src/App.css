@@ -408,24 +408,9 @@ button {
   width: 500px;
   height: 750px;
   margin: 10px auto;
-  display: flex;
-  flex-direction: column;
-  row-gap: 0px;
-  column-gap: 0px;
   text-align: center;
 }
 
-.prof-section {
-  margin-bottom: 2rem;
-}
-
-.prof-pg hr {
-  margin: auto;
-}
-
-.prof-field {
-  margin-bottom: 5px;
-}
 
 .prof-success {
   color: green;
@@ -435,6 +420,32 @@ button {
 .prof-error {
   color: red;
   margin-bottom: 1rem;
+}
+
+.prof-section {
+  padding: 10px;
+}
+
+.prof-row {
+  margin-bottom: 30px;
+}
+
+.prof-cell {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.prof-row:last-of-type {
+  margin-bottom: 0px;
+}
+
+.prof-section-title {
+  color: #7a3318;
+  font-weight: bold;
+}
+
+.prof-cell input {
+  margin-left: 10px;
 }
 
 
