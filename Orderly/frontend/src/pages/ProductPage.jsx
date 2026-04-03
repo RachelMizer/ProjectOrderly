@@ -249,7 +249,10 @@ const ProductPage = () => {
 
       {product.description && <p className="prod-desc2">{product.description}</p>}
 
-      <div className="img">Placeholder</div>
+      {product.imageUrl
+        ? <img src={product.imageUrl} alt={product.name} className="img" />
+        : <div className="img">Placeholder</div>
+      }
 
       {/* ================================
           VARIANT SECTION

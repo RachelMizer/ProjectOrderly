@@ -117,7 +117,6 @@ function AppContent() {
     <div className="wrapper">
       <header>
         <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
-        <h2>Your pause, perfected.</h2>
       </header>
 
       <nav>

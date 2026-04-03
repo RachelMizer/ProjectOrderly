@@ -36,6 +36,8 @@ class Product(models.Model):
     # Added description field for better product details
     description = models.TextField(blank=True, help_text="Detailed product description")
 
+    image = models.ImageField(upload_to="products/", null=True, blank=True)
+
     has_variants = models.BooleanField(
         default=True,
         help_text="If false, product should still have one default variant.",

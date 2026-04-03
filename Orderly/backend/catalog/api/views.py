@@ -60,7 +60,7 @@ class ProductsView(APIView):
 
         products = products[start:end]
 
-        serializer = ProductSerializer(products, many=True)
+        serializer = ProductSerializer(products, many=True, context={"request": request})
 
         next_url = None
         previous_url = None

@@ -41,9 +41,13 @@ class ProductSerializer(serializers.ModelSerializer):
             "imageUrl",
         ]
 
-    # Will use later to support images. For now, returns None for imageUrl field to match API Contract
     def get_imageUrl(self, obj):
-        return None
+        if not obj.image:
+            return None
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
 
 
 class VariantSerializer(serializers.ModelSerializer):

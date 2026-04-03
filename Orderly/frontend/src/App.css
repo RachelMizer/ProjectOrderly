@@ -22,16 +22,6 @@ header img {
   margin-top: 10px;
 }
 
-header h2 {
-  transform: scale(1, .98);
-  font-weight: normal;
-  margin-top: -35px;
-  margin-left: -100px;
-  z-index: 100;
-  margin-bottom: 0px;
-  color: #9a4422;
-}
-
 nav h3 {
   text-align: center;
   margin-top: -10px;
@@ -247,6 +237,12 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #e4d9b7;
   color: #895d2c;
   text-align: center;
+}
+
+.product-card img.img, .ind-product-pg img.img {
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .product-card h3 {
