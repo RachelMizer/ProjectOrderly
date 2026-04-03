@@ -38,10 +38,10 @@ jobs:
  
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
  
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: "pip"
@@ -77,10 +77,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: "npm"
@@ -93,9 +93,28 @@ jobs:
       - name: Run linter
         working-directory: Orderly/frontend
         run: npm run lint
-        continue-on-error: true # flip flag to false once confirmed front-end linting is stable in CI
 
-      - name: Run tests
+
+      - name: Run npm tests
         working-directory: Orderly/frontend
         run: npm test -- --watchAll=false
-        continue-on-error: true # flip flag to false once confirmed front-end testing is stable in CI
+
+      # -------------------------------------------------------
+      # ROBOT FRAMEWORK — Frontend E2E / Acceptance Tests
+      # -------------------------------------------------------
+      - name: Set up Python for Robot Framework
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies (includes Robot Framework)
+        working-directory: Orderly
+        run: pip install -r requirements.txt
+
+      - name: Initialize Robot Framework Browser library
+        run: rfbrowser init
+
+      - name: Run Robot Framework tests
+        working-directory: Orderly/frontend
+        run: robot robot/tests
+        continue-on-error: true # remove once RF tests are confirmed stable in CI
