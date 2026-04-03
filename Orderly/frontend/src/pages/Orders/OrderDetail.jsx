@@ -33,8 +33,8 @@ export default function OrderDetails() {
         }
 
         return (
-            <div style={{ marginLeft: "1rem" }}>
-                <p><strong>Modifiers:</strong></p>
+            <div className="order-detail-modifiers">
+                <h4>Modifiers:</h4>
                 <ul>
                     {modifiers.map(renderModifierItem)}
                 </ul>
@@ -52,16 +52,15 @@ export default function OrderDetails() {
 
     function renderOrderItem(item) {
         return (
-            <div key={item.itemId} style={{ marginBottom: "1rem"}}>
-                <p>
-                    <strong>{item.productName}</strong> ({item.variantName})
-                </p>
+            <div key={item.itemId} className="order-detail-item">
+                <p><strong>{item.productName}</strong> ({item.variantName})</p>
 
                 <p>Quantity: {item.quantity}</p>
                 <p>Unit Price: ${item.unitPriceCharged}</p>
                 <p>Item Total: ${item.itemTotal}</p>
 
                 {renderModifiers(item.modifiers)}
+
             </div>
         );
     }
@@ -87,7 +86,7 @@ export default function OrderDetails() {
     }
 
     return (
-        <div>
+        <div className="order-detail-pg">
             <h2>Order #{order.id}</h2>
 
             <p>
@@ -99,18 +98,16 @@ export default function OrderDetails() {
                 <strong>Status:</strong> {order.status}
             </p>
 
-            <hr />
-
+            <div className="order-detail-items">
             <h3>Items</h3>
-            {renderItems(order.items)}
+                {renderItems(order.items)}
+            </div>
 
-            <hr />
-
-            <h3>Totals</h3>
-            <p>Tax: ${order.taxAmount}</p>
-            <p>
-                <strong>Total: ${order.totalDue}</strong>
-            </p>
+            <div className="order-detail-totals">
+                <h3>Totals</h3>
+                <p>Tax: ${order.taxAmount}<br />
+                <span className="total">Total: ${order.totalDue}</span></p>
+            </div>
         </div>
     );
 }

@@ -57,23 +57,29 @@ function AppContent() {
   // Fetch cart count
   async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
-    if (!token) { setCartCount(0); return; }
+    const guestEmail = !token ? localStorage.getItem("guestCartEmail") : null;
+
+    if (!token && !guestEmail) { setCartCount(0); return; }
 
     try {
       const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          ...(token && { Authorization: `Bearer ${token}` })
         },
-        body: JSON.stringify({})
+        body: JSON.stringify(guestEmail ? { guestEmail } : {})
       });
 
       const draft = await draftRes.json();
       if (!draft.id) { setCartCount(0); return; }
 
-      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const detailUrl = guestEmail
+        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+
+      const detailRes = await fetch(detailUrl, {
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) }
       });
 
       const data = await detailRes.json();
@@ -85,10 +91,9 @@ function AppContent() {
     }
   }
 
-  // Update cart count on login or cart events
+  // Update cart count on login, logout, or cart events
   useEffect(() => {
-    if (loggedIn) fetchCartCount();
-    else setCartCount(0);
+    fetchCartCount();
 
     window.addEventListener("cart-updated", fetchCartCount);
     return () => window.removeEventListener("cart-updated", fetchCartCount);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { getGuestCartEmail } from "../api/orders";
 
 const ProductCard = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(product.defaultVariant);
@@ -15,24 +16,19 @@ const ProductCard = ({ product }) => {
   };
 
    const handleAddToCart = async () => {
-    try {
-      console.log("Add to Cart clicked!", selectedVariant);
+    const guestEmail = accessToken ? null : getGuestCartEmail();
 
-      // 1. Get or create draft order
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+    try {
+      await fetch("http://localhost:8000/api/v1/orders/draft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(accessToken && { Authorization: `Bearer ${accessToken}` })
         },
-        body: JSON.stringify({})
+        body: JSON.stringify(guestEmail ? { guestEmail } : {})
       });
 
-      const draft = await draftRes.json();
-      console.log("Draft order:", draft);
-
-
-      const addItemRes = await fetch("http://localhost:8000/api/v1/orders/items", {
+      await fetch("http://localhost:8000/api/v1/orders/items", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,12 +36,10 @@ const ProductCard = ({ product }) => {
         },
         body: JSON.stringify({
           variantId: selectedVariant.id,
-          quantity: 1
+          quantity: 1,
+          ...(guestEmail && { guestEmail })
         })
       });
-
-      const addedItem = await addItemRes.json();
-      console.log("Item added:", addedItem);
 
       window.dispatchEvent(new Event("cart-updated"));
     } catch (err) {
@@ -86,11 +80,11 @@ const ProductCard = ({ product }) => {
       </p>
 
       {/* Stock */}
-      {Number(selectedVariant.stockQuantity) === 0 && (
+      {selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 && (
         <p className="OOS">Out of Stock</p>
       )}
 
-      {Number(selectedVariant.stockQuantity) > 0 && (
+      {(selectedVariant.stockQuantity === null || Number(selectedVariant.stockQuantity) > 0) && (
         <button
           className="add-to-cart-btn"
           onClick={handleAddToCart}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/auth";
+import { mergeGuestCart } from "../../api/orders";
 
 export default function Register({ setLoggedIn }) {
   const navigate = useNavigate();
@@ -37,8 +38,7 @@ export default function Register({ setLoggedIn }) {
 
     try {
       await register(form);
-
-      // ✅ Auto-login behavior per API contract
+      await mergeGuestCart();
       setLoggedIn(true);
       navigate("/");
     } catch (err) {

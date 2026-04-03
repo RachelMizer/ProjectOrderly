@@ -18,19 +18,25 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
   const [payment, setPayment] = useState({
-    name: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    phone: "",
+    name: `${storedUser.firstName || ""} ${storedUser.lastName || ""}`.trim(),
+    address: storedUser.streetAddress || "",
+    city: storedUser.city || "",
+    state: storedUser.state || "",
+    zip: storedUser.zipcode || "",
+    phone: storedUser.phone || "",
     paymentType: "CREDIT_CARD",
     cardLast4: "",
     otherDetails: "",
   });
 
   useEffect(() => {
+    if (!accessToken) {
+      navigate("/login");
+      return;
+    }
     loadCart();
   }, []);
 
