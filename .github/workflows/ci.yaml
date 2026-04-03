@@ -64,6 +64,13 @@ jobs:
         working-directory: Orderly/backend
         run: python manage.py migrate --noinput # avoids any interactive prompts during migration
 
+      # Seed the database with reproducible test data for CI.
+      # seed_data creates users (customer1-5 / Password123!), products, variants,
+      # categories, suppliers, and orders. Required for Robot Framework E2E tests in Sprint 5.
+      - name: Seed database
+        working-directory: Orderly/backend
+        run: python manage.py seed_data --seed=42
+
       - name: Run pytest
         working-directory: Orderly/backend
         run: pytest tests/ --tb=short -v
@@ -95,7 +102,6 @@ jobs:
         run: npm run lint
         continue-on-error: true # linting errors present in codebase — remove once resolved by frontend team
 
-
       - name: Run npm tests
         working-directory: Orderly/frontend
         run: npm test -- --watchAll=false
@@ -113,10 +119,70 @@ jobs:
         working-directory: Orderly
         run: pip install -r requirements.txt
 
-      - name: Initialize Robot Framework Browser library
-        run: rfbrowser init
+      # rfbrowser init is disabled — the Robot suite is being standardized on SeleniumLibrary in Sprint 5.
+      # The Browser/Playwright-based tests will be retired. Re-evaluate this step during Sprint 5 workflow updates.
+      # - name: Initialize Robot Framework Browser library
+      #   run: rfbrowser init
+
+      # Start the React dev server in the background and wait until
+      # localhost:3000 is accepting connections before running Robot tests.
+      # Without this, all tests fail immediately with ERR_CONNECTION_REFUSED.
+      - name: Start React dev server
+        working-directory: Orderly/frontend
+        env:
+          BROWSER: none  # prevents react-scripts from trying to open a browser window
+          CI: false       # prevents react-scripts from treating warnings as errors and exiting
+        run: |
+          npm start &
+          echo "Waiting for React dev server on localhost:3000..."
+          timeout 60 bash -c 'until curl -sf http://localhost:3000 > /dev/null 2>&1; do sleep 2; done'
+          echo "React dev server is up."
 
       - name: Run Robot Framework tests
         working-directory: Orderly/frontend
-        run: robot robot/tests
-        continue-on-error: true # remove once RF tests are confirmed stable in CI
+        run: |
+          robot --outputdir robot/results robot/tests || echo "ROBOT_EXIT_CODE=$?" >> $GITHUB_ENV
+        continue-on-error: true # current suite has two known blockers:
+                                 # 1) mixed libraries — some tests use Browser (Playwright), others use SeleniumLibrary
+                                 # 2) robotframework-seleniumlibrary is not in requirements.txt; robotframework-browser is
+                                 # Sprint 5: Kenny delivers CI-safe subset (SeleniumLibrary, headless, seeded data);
+                                 # requirements.txt updated to swap browser for seleniumlibrary;
+                                 # this flag removed once suite is stable
+
+      # Print a readable summary to the Actions job log so failures are visible
+      # even though continue-on-error masks the red check.
+      - name: Robot Framework results summary
+        if: always()
+        working-directory: Orderly/frontend
+        run: |
+          echo "----------------------------------------------------"
+          echo "Robot Framework Results"
+          echo "----------------------------------------------------"
+          if [ -f robot/results/output.xml ]; then
+            python3 - <<'EOF'
+          import xml.etree.ElementTree as ET
+          tree = ET.parse("robot/results/output.xml")
+          root = tree.getroot()
+          stats = root.find(".//total/stat")
+          if stats is not None:
+              passed = stats.get("pass", "?")
+              failed = stats.get("fail", "?")
+              skipped = stats.get("skip", "0")
+              print(f"  Passed:  {passed}")
+              print(f"  Failed:  {failed}")
+              print(f"  Skipped: {skipped}")
+              if int(failed) > 0:
+                  print("")
+                  print("  Failed tests:")
+                  for test in root.iter("test"):
+                      status = test.find("status")
+                      if status is not None and status.get("status") == "FAIL":
+                          print(f"    - {test.get('name')}: {status.get('message','')[:120]}")
+          EOF
+          else
+            echo "  No output.xml found — Robot may not have run successfully."
+          fi
+          echo "----------------------------------------------------"
+          if [ -n "$ROBOT_EXIT_CODE" ]; then
+            echo "  Warning: Robot exited with code $ROBOT_EXIT_CODE (continue-on-error is active)"
+          fi
