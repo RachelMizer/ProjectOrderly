@@ -1861,7 +1861,7 @@ Content-Type: application/json
 
 ## Update Variant
 **Endpoint:** `PATCH /api/v1/variants/{variantId}`  
-**Description:**
+**Description:** Update variant
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:** variantId
@@ -1930,7 +1930,7 @@ Content-Type: application/json
 
 ## Create Modifiers Group
 **Endpoint:** `POST /api/v1/variants/{variantId}/modifier-groups`  
-**Description:**
+**Description:** Create a new modifier group
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:**
@@ -1971,14 +1971,42 @@ Content-Type: application/json
     "variantId": 5
 }
 ```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Update Modifiers Group
 **Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
-**Description:**
+**Description:** Update an existing modifier group
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
-**URL Parameters:**
+**URL Parameters:** 
++ groupId
 **Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
 ### Request
 **Header:**
 ```
@@ -1986,16 +2014,60 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "maxSelections": 3
+}
+```
 **Rules:**
++ must use existing group
++ All fields are optional
++ name must remain unique per variant
++ min and max selections must remain valid
++ required must remain consistent with min selections
 **Success Response (200 OK):**
+```
+{
+    "message": "modifier group {name} updated",
+    "id": 1,
+    "maxSelections": 3
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Create Modifiers Option
-**Endpoint:** `PATCH /api/v1/modifier-groups/{groupId}/options`  
-**Description:**
+**Endpoint:** `POST /api/v1/modifier-groups/{groupId}/options`  
+**Description:** Create new modifier option in a group
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:**
++ groupId
 **Request Parameters:**
++ name
++ priceAdjustment
++ imageUrl (OPTIONAL)
 ### Request
 **Header:**
 ```
@@ -2003,16 +2075,61 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "name": "pepperoni",
+    "priceAdjustment": 1.50,
+    "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+}
+```
 **Rules:**
++ Must use an existing group
++ name must be unique per group
++ priceAdjustment can be positive or negative
++ imageUrl is optional
+
 **Success Response (201 Created):**
+{
+    "message": "modifier option {name} created",
+    "id": 1,
+    "groupId": 2
+}
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Update Modifiers Option
 **Endpoint:** `PATCH /api/v1/modifiers/option/{optionId}`  
-**Description:**
+**Description:** Updates an existing modifier option
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
 **URL Parameters:**
++ optionId
 **Request Parameters:**
++ name
++ priceAdjustment
++ imageUrl
+
 ### Request
 **Header:**
 ```
@@ -2020,8 +2137,48 @@ Authorization: Bearer <accessToken>
 Content-Type: application/json
 ```
 **Body:**
+```
+{
+    "priceAdjustment": 2.00
+}
+```
 **Rules:**
++ must use an existing option
++ all fields are optional
++ name must remain unique per group
++ price adjustment can be positive or negative
+
 **Success Response (200 OK):**
+```
+{
+    "message": "modifier option {name} updated",
+    "id": 1,
+    "priceAdjustment": 2.00
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
 
 ## Delete Category
 **Endpoint:** `DELETE /api/v1/categories/{categoryId}`  
