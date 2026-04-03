@@ -183,14 +183,18 @@ def test_post_items_same_variant_creates_new_line_item_not_merged(
 
 
 @pytest.mark.django_db
-def test_post_items_requires_authentication(api_client, variant):
+def test_post_items_requires_guest_email_for_unauthenticated_user(api_client, variant):
     response = api_client.post(
         "/api/v1/orders/items",
         {"variantId": variant.id, "quantity": 2},
         format="json",
     )
 
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.data == {
+        "error": "INVALID_INPUT",
+        "message": "guestEmail is required for guest carts.",
+    }
 
 
 @pytest.mark.django_db

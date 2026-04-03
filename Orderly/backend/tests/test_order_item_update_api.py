@@ -173,14 +173,18 @@ def test_patch_items_quantity_zero_removes_item_and_recalculates_totals(
 
 
 @pytest.mark.django_db
-def test_patch_items_requires_authentication(api_client, order_item):
+def test_patch_items_requires_guest_email_for_unauthenticated_user(api_client, order_item):
     response = api_client.patch(
         f"/api/v1/orders/items/{order_item.id}",
         {"quantity": 3},
         format="json",
     )
 
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.data == {
+        "error": "INVALID_INPUT",
+        "message": "guestEmail is required for guest carts.",
+    }
 
 
 @pytest.mark.django_db
