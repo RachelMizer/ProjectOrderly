@@ -1566,8 +1566,12 @@ Content-Type: application/json
 **Success Response (201 Created):** 
 ```
 {
-    "message": "category {name} created",
-    "id": 1
+    "message": "category desserts created",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/desserts.png"
+    }
 }
 ``` 
 **Bad Request (400)**:
@@ -1627,9 +1631,12 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```
 {
-    "message": "category {name} updated",
-    "id": 1,
-    "newImageUrl": "https://storename.com/media/categories/cake.png"
+    "message": "category desserts updated",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/cake.png"
+    }
 }
 ```
 **Bad Request (400)**:
@@ -1692,8 +1699,17 @@ Content-Type: application/json
 **Success Response (201 Created):**
 ```
 {
-    "message": "product {name} created",
-    "id": 1,
+    "message": "product limited_phish_cropped_pullover_sweater_jacket created",
+    "product": {
+        "id": 1,
+        "name": "limited_phish_cropped_pullover_sweater_jacket",
+        "supplierId": 900,
+        "categoryId": 10,
+        "description": "",
+        "hasVariants": false,
+        "hasModifiers": false,
+        "imageUrl": "https://storename.com/media/products/le/phish_cropped_pullover_sweater_jacket.png"
+    }
 }
 ```
 **Bad Request (400)**:
@@ -1755,10 +1771,17 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```
 {
-    "message": "product {name} updated",
-    "id": 1,
-    "supplierId": 500,
-    "imageUrl": "https://storename.com/media/products/red_onion.png"
+    "message": "product limited_phish_cropped_pullover_sweater_jacket updated",
+    "product": {
+        "id": 1,
+        "name": "limited_phish_cropped_pullover_sweater_jacket",
+        "supplierId": 500,
+        "categoryId": 10,
+        "description": "",
+        "hasVariants": false,
+        "hasModifiers": false,
+        "imageUrl": "https://storename.com/media/products/red_onion.png"
+    }
 }
 ```
 **Bad Request (400)**:
@@ -1829,9 +1852,17 @@ Content-Type: application/json
 **Success Response (201 Created):**
 ```
 {
-    "message": "variant {name} created",
-    "id": 1,
-    "productId": 10
+    "message": "variant tshirt_red_large created",
+    "variant": {
+        "id": 1,
+        "productId": 10,
+        "name": "tshirt_red_large",
+        "SKU": "TSH-RED-L",
+        "unitPrice": 24.99,
+        "stockQuantity": 15,
+        "reorderLevel": 5,
+        "imageUrl": "https://storename.com/media/variants/tshirt_red_large.png"
+    }
 }
 ```
 **Bad Request (400)**:
@@ -1898,10 +1929,17 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```
 {
-    "message": "variant {name} updated",
-    "id": 1,
-    "unitPrice": 26.99,
-    "stockQuantity": 20
+    "message": "variant tshirt_red_large updated",
+    "variant": {
+        "id": 1,
+        "productId": 10,
+        "name": "tshirt_red_large",
+        "SKU": "TSH-RED-L",
+        "unitPrice": 26.99,
+        "stockQuantity": 20,
+        "reorderLevel": 5,
+        "imageUrl": "https://storename.com/media/variants/tshirt_red_large.png"
+    }
 }
 ```
 **Bad Request (400)**:
@@ -1966,9 +2004,15 @@ Content-Type: application/json
 **Success Response (201 Created):**
 ```
 {
-    "message": "modifier group {name} created",
-    "id": 1,
-    "variantId": 5
+    "message": "modifier group toppings created",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 5
+    }
 }
 ```
 **Bad Request (400)**:
@@ -2028,9 +2072,15 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```
 {
-    "message": "modifier group {name} updated",
-    "id": 1,
-    "maxSelections": 3
+    "message": "modifier group toppings updated",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 3
+    }
 }
 ```
 **Bad Request (400)**:
@@ -2090,9 +2140,14 @@ Content-Type: application/json
 
 **Success Response (201 Created):**
 {
-    "message": "modifier option {name} created",
-    "id": 1,
-    "groupId": 2
+    "message": "modifier option pepperoni created",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 1.50,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
 }
 **Bad Request (400)**:
 ```
@@ -2151,9 +2206,14 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```
 {
-    "message": "modifier option {name} updated",
-    "id": 1,
-    "priceAdjustment": 2.00
+    "message": "modifier option pepperoni updated",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 2.00,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
 }
 ```
 **Bad Request (400)**:
