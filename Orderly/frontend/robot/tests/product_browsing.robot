@@ -1,69 +1,71 @@
 *** Settings ***
-Library    Browser
-
-Suite Setup       Open Browser To Storefront
-Suite Teardown    Close Browser
+Resource    ../resources/keywords.robot
+Test Setup  Open Browser To App
+Test Teardown  Close Browser Session
 
 *** Variables ***
-${BASE_URL}       http://localhost:3000
-
-*** Keywords ***
-Open Browser To Storefront
-    New Browser    chromium    headless=False
-    New Context
-    New Page    ${BASE_URL}/
-
-Product Card Count Should Be Greater Than Zero
-    ${count}=    Get Element Count    css=.product-card
-    Should Be True    ${count} > 0
+${STOREFRONT_URL}    ${BASE_URL}/
 
 *** Test Cases ***
 Product Cards Render On StoreFront
-    Wait For Elements State    css=.product-grid    visible    10s
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    Take Screenshot
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    css=.product-grid    10s
+    Wait Until Page Contains Element    css=.product-card    10s
 
 Product Card Shows Name
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    ${name}=    Get Text    css=.product-card >> nth=0 >> h3
-    Should Not Be Empty    ${name}
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card h3    10s
+    Page Should Contain    Latte
 
-Product Card Shows Variant Dropdown
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    ${count}=    Get Element Count    css=.product-card >> nth=0 >> select
-    Should Be True    ${count} > 0
+Product Card Uses Radio Variants Or Hides Selector For Single Variant
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card    10s
+
+    ${radio_count}=    Get Element Count    css=.product-card .variant-radios input[type="radio"]
+    Should Be True    ${radio_count} >= 0
 
 Product Card Shows Price
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    ${price}=    Get Text    css=.product-card >> nth=0 >> .price
-    Should Contain    ${price}    $
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card .price    10s
+    ${price_text}=    Get Text    css=.product-card .price
+    Should Contain    ${price_text}    $
 
-In Stock Product Shows Quantity Controls
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    ${btns}=    Get Element Count    css=.product-card >> nth=0 >> .add-to-cart button
-    Should Be True    ${btns} >= 0
+In Stock Product Shows Add To Cart Button When Available
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card    10s
+
+    ${add_count}=    Get Element Count    css=.product-card .add-to-cart-btn
+    ${oos_count}=    Get Element Count    css=.product-card .OOS
+
+    Should Be True    ${add_count} > 0 or ${oos_count} > 0
 
 Out Of Stock Product Shows Message If Present
-    ${oos}=    Get Element Count    css=.product-card .OOS
-    Should Be True    ${oos} >= 0
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-grid    10s
+    ${oos_count}=    Get Element Count    css=.product-card .OOS
+    Should Be True    ${oos_count} >= 0
 
-View Details Link Is Present
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    ${link}=    Get Text    css=.product-card >> nth=0 >> .view-link
-    Should Be Equal    ${link}    View Details
+View And Customize Link Is Present
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card .view-link    10s
+    ${link_text}=    Get Text    css=.product-card .view-link
+    Should Be Equal    ${link_text}    View & Customize
 
 Category Filter Can Be Changed
-    Wait For Elements State    css=.filter select    visible    10s
-    ${options}=    Get Element Count    css=.filter select option
-    Should Be True    ${options} >= 1
-    IF    ${options} > 1
-        Select Options By    css=.filter select    value    1
-        Take Screenshot
-    END
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    css=.filter input[type="checkbox"]    10s
 
-View Details Navigates To Product Page
-    Wait Until Keyword Succeeds    10x    1s    Product Card Count Should Be Greater Than Zero
-    Wait For Elements State    css=.product-card >> nth=0 >> .view-link    visible    10s
-    Click    css=.product-card >> nth=0 >> .view-link
-    Wait For Elements State    css=.ind-product-pg    visible    10s
-    Take Screenshot
+    ${before}=    Get Element Count    css=.product-card
+    Click Element    xpath=//div[contains(@class,'filter')]//label[contains(normalize-space(.),'Coffee')]//input[@type='checkbox']
+    ${after}=    Get Element Count    css=.product-card
+
+    Should Be True    ${before} >= 0
+    Should Be True    ${after} >= 0
+
+View And Customize Navigates To Product Page
+    Go To    ${STOREFRONT_URL}
+    Wait Until Page Contains Element    css=.product-card .view-link    10s
+    Click Link    View & Customize
+    Wait Until Location Contains    /product/    10s

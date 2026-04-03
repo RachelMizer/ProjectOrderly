@@ -10,6 +10,13 @@ from orders.models import Order, OrderItem, OrderStatus
 User = get_user_model()
 
 
+WAKE_COUNTY_TAX_RATE = Decimal("0.0725")
+
+
+def calc_tax(amount: Decimal) -> Decimal:
+    return (amount * WAKE_COUNTY_TAX_RATE).quantize(Decimal("0.01"))
+
+
 @pytest.fixture
 def api_client():
     return APIClient()
@@ -77,8 +84,11 @@ def test_post_items_creates_draft_and_adds_item(api_client, customer_user, varia
     )
 
     assert response.status_code == 201
-    assert response.data["message"] == "order updated"
-    assert set(response.data.keys()) == {"message", "orderId", "orderItemId"}
+    assert response.data == {
+        "message": "order updated",
+        "orderId": response.data["orderId"],
+        "orderItemId": response.data["orderItemId"],
+    }
 
     order = Order.objects.get(id=response.data["orderId"])
     item = OrderItem.objects.get(id=response.data["orderItemId"])
@@ -93,9 +103,12 @@ def test_post_items_creates_draft_and_adds_item(api_client, customer_user, varia
     assert item.item_total == Decimal("10.00")
 
     order.refresh_from_db()
-    assert order.subtotal == Decimal("10.00")
-    assert order.tax_amount == Decimal("0.00")
-    assert order.total_payment_due == Decimal("10.00")
+    expected_subtotal = Decimal("10.00")
+    expected_tax = calc_tax(expected_subtotal)
+
+    assert order.subtotal == expected_subtotal
+    assert order.tax_amount == expected_tax
+    assert order.total_payment_due == expected_subtotal + expected_tax
 
 
 @pytest.mark.django_db
@@ -121,7 +134,7 @@ def test_post_items_uses_existing_draft_order(api_client, customer_user, variant
 
 
 @pytest.mark.django_db
-def test_post_items_same_variant_merges_quantity_not_duplicate_row(
+def test_post_items_same_variant_creates_new_line_item_not_merged(
     api_client,
     customer_user,
     variant,
@@ -148,13 +161,25 @@ def test_post_items_same_variant_merges_quantity_not_duplicate_row(
 
     existing_item.refresh_from_db()
     draft_order.refresh_from_db()
+    new_item = OrderItem.objects.get(id=response.data["orderItemId"])
 
-    assert existing_item.quantity == 3
-    assert existing_item.item_total == Decimal("15.00")
-    assert OrderItem.objects.filter(order=draft_order, variant=variant).count() == 1
-    assert response.data["orderItemId"] == existing_item.id
-    assert draft_order.subtotal == Decimal("15.00")
-    assert draft_order.total_payment_due == Decimal("15.00")
+    assert existing_item.quantity == 1
+    assert existing_item.item_total == Decimal("5.00")
+
+    assert new_item.id != existing_item.id
+    assert new_item.order_id == draft_order.id
+    assert new_item.variant_id == variant.id
+    assert new_item.quantity == 2
+    assert new_item.item_total == Decimal("10.00")
+
+    assert OrderItem.objects.filter(order=draft_order, variant=variant).count() == 2
+
+    expected_subtotal = Decimal("15.00")
+    expected_tax = calc_tax(expected_subtotal)
+
+    assert draft_order.subtotal == expected_subtotal
+    assert draft_order.tax_amount == expected_tax
+    assert draft_order.total_payment_due == expected_subtotal + expected_tax
 
 
 @pytest.mark.django_db
