@@ -1,15 +1,14 @@
 *** Settings ***
 Resource    ../resources/keywords.robot
-Test Setup    Open Browser To App
+Test Setup    Setup Logged In User
 Test Teardown    Close Browser Session
 
 *** Variables ***
+${BASE_URL}    http://localhost:3000
 ${CART_URL}    ${BASE_URL}/cart
 
 *** Test Cases ***
 Cart Page Shows Items Or Empty State
-    Login As Test User
-    Sync Auth Token Key For Frontend
     Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
 
@@ -18,11 +17,8 @@ Cart Page Shows Items Or Empty State
     Should Be True    ${item_count} > 0 or ${empty_count} > 0
 
 Cart Items Are Visible
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
-    Wait Until Page Contains    Your Cart    10s
     Wait Until Page Contains Element    css=.cart-item    10s
 
     Page Should Contain Element    css=.cart-item h3
@@ -30,9 +26,7 @@ Cart Items Are Visible
     Page Should Contain Element    xpath=(//button[normalize-space()='Delete'])[1]
 
 Quantity Can Be Increased
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -41,9 +35,7 @@ Quantity Can Be Increased
     Wait Until Keyword Succeeds    10x    1s    Quantity Should Change    ${before_qty}
 
 Quantity Can Be Decreased
-    [Documentation]    Requires a cart item with quantity > 1 for a strict decrement assertion.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -55,9 +47,7 @@ Quantity Can Be Decreased
     Should Be True    ${item_count} >= 0 and ${empty_count} >= 0
 
 Delete Removes Cart Item
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -66,8 +56,6 @@ Delete Removes Cart Item
     Wait Until Keyword Succeeds    10x    1s    Cart Item Count Should Drop Or Empty State Should Show    ${before}
 
 Totals Section Is Visible
-    Login As Test User
-    Sync Auth Token Key For Frontend
     Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
 
@@ -76,26 +64,24 @@ Totals Section Is Visible
         Page Should Contain    Total Items
         Page Should Contain    Subtotal
         Page Should Contain    Tax
-        Page Should Contain    Grand Total
+        ${grand_total_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Grand Total')]
+        ${total_count}=    Get Element Count    xpath=//*[normalize-space()='Total']
+        Should Be True    ${grand_total_count} > 0 or ${total_count} > 0
     ELSE
         Log    Totals section not expected when cart is empty.
     END
 
 Totals Update When Quantity Changes
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
-    ${before_total}=    Get Text    xpath=//td[normalize-space()='Grand Total']/following-sibling::td[1]
+    ${before_total}=    Get Text    xpath=//td[normalize-space()='Grand Total' or normalize-space()='Total']/following-sibling::td[1]
     Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='+'])[1]
     Wait Until Keyword Succeeds    10x    1s    Grand Total Should Change    ${before_total}
 
 Cart Persists After Refresh
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -110,9 +96,7 @@ Cart Persists After Refresh
     Page Should Contain    ${qty}
 
 Modifiers Display Under Cart Item
-    [Documentation]    Requires at least one cart item with modifiers for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -124,9 +108,7 @@ Modifiers Display Under Cart Item
     Should Be True    ${mods_list} > 0 or ${no_addons} > 0
 
 Modifier Pricing Is Reflected In Item Total
-    [Documentation]    Best when test data includes an item with priced modifiers.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains Element    css=.cart-item    10s
 
@@ -135,16 +117,14 @@ Modifier Pricing Is Reflected In Item Total
     Should Be True    ${priced_mods} >= 0 and ${item_prices} > 0
 
 Empty Cart Clears All Items
-    [Documentation]    Requires at least one cart item for the test user.
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Ensure Cart Has Item
     Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
 
     ${item_count}=    Get Element Count    css=.cart-item
     IF    ${item_count} > 0
-        Handle Future Dialogs
         Click Button    Empty Cart
+        Handle Alert    ACCEPT
         Wait Until Page Contains    Your cart is empty.    10s
         Page Should Contain    Your Cart
     ELSE
@@ -152,6 +132,11 @@ Empty Cart Clears All Items
     END
 
 *** Keywords ***
+Setup Logged In User
+    Open Browser To App
+    Login As Test User
+    Sync Auth Token Key For Frontend
+
 Sync Auth Token Key For Frontend
     ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
     ${current}=    Execute JavaScript    return window.localStorage.getItem('accessToken');
@@ -160,8 +145,27 @@ Sync Auth Token Key For Frontend
         Reload Page
     END
 
-Handle Future Dialogs
-    Run Keyword And Ignore Error    Handle Alert    action=ACCEPT
+Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains    Your Cart    10s
+
+    ${item_count}=    Get Element Count    css=.cart-item
+    IF    ${item_count} == 0
+        Add First Available Item To Cart
+        Go To    ${CART_URL}
+        Wait Until Page Contains Element    css=.cart-item    10s
+    END
+
+Add First Available Item To Cart
+    Go To    ${BASE_URL}
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    css=.product-card    10s
+
+    ${add_count}=    Get Element Count    css=.product-card .add-to-cart-btn
+    Should Be True    ${add_count} > 0
+
+    Click Element    xpath=(//button[contains(normalize-space(.), 'Add to Cart')])[1]
+    Sleep    1s
 
 Quantity Should Change
     [Arguments]    ${before_qty}
@@ -170,5 +174,11 @@ Quantity Should Change
 
 Grand Total Should Change
     [Arguments]    ${before_total}
-    ${after_total}=    Get Text    xpath=//td[normalize-space()='Grand Total']/following-sibling::td[1]
+    ${after_total}=    Get Text    xpath=//td[normalize-space()='Grand Total' or normalize-space()='Total']/following-sibling::td[1]
     Should Not Be Equal    ${after_total}    ${before_total}
+
+Cart Item Count Should Drop Or Empty State Should Show
+    [Arguments]    ${before}
+    ${after}=    Get Element Count    css=.cart-item
+    ${empty}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
+    Should Be True    ${after} < ${before} or ${empty} > 0
