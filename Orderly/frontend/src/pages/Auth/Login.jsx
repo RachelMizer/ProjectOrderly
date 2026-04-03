@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/auth";
+import { mergeGuestCart } from "../../api/orders";
 
 export default function Login({ setLoggedIn }) {
   const navigate = useNavigate();
@@ -28,8 +29,8 @@ export default function Login({ setLoggedIn }) {
     setErrorMessage("");
 
     try {
-      const data = await login(formData);
-      
+      await login(formData);
+      await mergeGuestCart();
       setLoggedIn(true);
       navigate("/");
     } catch (error) {

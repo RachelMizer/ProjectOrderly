@@ -26,8 +26,6 @@ NEW FEATURES
     - Empty cart guard with link back to cart
     - Dispatches cart-updated event and navigates to order detail on success
 
-- frontend/src/pages/Cart.jsx
-    - Enabled "Go to Checkout" button (was disabled placeholder)
 
 - frontend/src/App.js
     - Imported Checkout component
@@ -37,3 +35,42 @@ NEW FEATURES
     - Styled active "Go to Checkout" button
     - Added full checkout page styles (.checkout-pg, .checkout-item, .checkout-totals,
       .checkout-fieldset, .checkout-field, .checkout-actions, .submit-order-btn, etc.)
+
+BUG FIXES
+---------
+- frontend/src/components/ProductCard.jsx
+- frontend/src/pages/ProductPage.jsx
+    - Fixed: stockQuantity === null (non-stock-tracked items) was being treated as
+      out-of-stock because Number(null) === 0; Add to Cart button was never rendered
+    - Fix: null stockQuantity now treated as always available
+
+GUEST CART SUPPORT
+------------------
+- backend/orders/services.py
+    - Added get_or_create_guest_draft_order(guest_email)
+    - Added order_item_belongs_to_guest(order_item, guest_email)
+    - Added get_order_for_guest(order_id, guest_email)
+
+- backend/orders/views.py
+    - DraftOrderView: changed to AllowAny; guests pass guestEmail in request body
+    - DraftOrderItemCreateView: changed to AllowAny; guests pass guestEmail in request body
+    - DraftOrderItemUpdateView: changed to AllowAny; guests pass guestEmail in request body
+    - OrderDetailView: changed to AllowAny; guests pass guestEmail as query param
+
+- frontend/src/api/orders.js
+    - Added getGuestCartEmail(): generates and persists a guest_<uuid>@cart.local
+      token in localStorage to identify guest carts across sessions
+
+- frontend/src/components/ProductCard.jsx
+- frontend/src/pages/ProductPage.jsx
+- frontend/src/pages/Cart.jsx
+    - All cart operations now pass guestEmail when user is not logged in
+
+- frontend/src/pages/Checkout.jsx
+    - Redirects to /login if user is not authenticated (guests can shop but
+      must log in to check out)
+
+- frontend/src/App.js
+    - fetchCartCount now supports guests: reads guestCartEmail from localStorage
+      and passes it to the draft/detail endpoints
+    - Cart badge now updates for guest users on cart-updated events

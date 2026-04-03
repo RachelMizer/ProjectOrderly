@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { getGuestCartEmail } from "../api/orders";
 
 function CartPage() {
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ function CartPage() {
   const navigate = useNavigate();
 
   const accessToken = localStorage.getItem("accessToken");
+  const guestEmail = accessToken ? null : getGuestCartEmail();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const fullName = storedUser
     ? `${storedUser.firstName || ""} ${storedUser.lastName || ""}`.trim()
@@ -17,20 +19,22 @@ function CartPage() {
 
   async function loadCart() {
     try {
-      // Step 1: Get or create the draft order to obtain its id
       const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(accessToken && { Authorization: `Bearer ${accessToken}` })
         },
-        body: JSON.stringify({})
+        body: JSON.stringify(guestEmail ? { guestEmail } : {})
       });
 
       const draft = await draftRes.json();
 
-      // Step 2: Fetch full order detail (includes items)
-      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
+      const detailUrl = guestEmail
+        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+
+      const detailRes = await fetch(detailUrl, {
         headers: {
           ...(accessToken && { Authorization: `Bearer ${accessToken}` })
         }
@@ -61,7 +65,10 @@ function CartPage() {
               "Content-Type": "application/json",
               ...(accessToken && { Authorization: `Bearer ${accessToken}` })
             },
-            body: JSON.stringify({ quantity: 0 })
+            body: JSON.stringify({
+              quantity: 0,
+              ...(guestEmail && { guestEmail })
+            })
           })
         )
       );
@@ -80,7 +87,10 @@ function CartPage() {
           "Content-Type": "application/json",
           ...(accessToken && { Authorization: `Bearer ${accessToken}` })
         },
-        body: JSON.stringify({ quantity: newQuantity })
+        body: JSON.stringify({
+          quantity: newQuantity,
+          ...(guestEmail && { guestEmail })
+        })
       });
       await loadCart();
       window.dispatchEvent(new Event("cart-updated"));

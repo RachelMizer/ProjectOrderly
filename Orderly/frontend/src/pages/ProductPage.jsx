@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { getGuestCartEmail } from "../api/orders";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -154,6 +155,8 @@ const ProductPage = () => {
   // ----------------------------------------------------
   // ADD TO CART LOGIC
   // ----------------------------------------------------
+  const guestEmail = accessToken ? null : getGuestCartEmail();
+
   async function getDraftOrder() {
     const res = await fetch("http://localhost:8000/api/v1/orders/draft", {
       method: "POST",
@@ -161,9 +164,9 @@ const ProductPage = () => {
         "Content-Type": "application/json",
         ...(accessToken && { Authorization: `Bearer ${accessToken}` })
       },
-      body: JSON.stringify({})
+      body: JSON.stringify(guestEmail ? { guestEmail } : {})
     });
-    return res.json(); // { id, created }
+    return res.json();
   }
 
   async function addItemToOrder(variantId, quantity) {
@@ -175,10 +178,11 @@ const ProductPage = () => {
       },
       body: JSON.stringify({
         variantId,
-        quantity
+        quantity,
+        ...(guestEmail && { guestEmail })
       })
     });
-    return res.json(); // { orderId, orderItemId }
+    return res.json();
   }
 
   async function addModifiers(orderItemId) {
@@ -193,7 +197,11 @@ const ProductPage = () => {
             "Content-Type": "application/json",
             ...(accessToken && { Authorization: `Bearer ${accessToken}` })
           },
-          body: JSON.stringify({ modifierId, quantity: 1 })
+          body: JSON.stringify({
+            modifierId,
+            quantity: 1,
+            ...(guestEmail && { guestEmail })
+          })
         }
       );
     }
@@ -208,11 +216,14 @@ const ProductPage = () => {
             "Content-Type": "application/json",
             ...(accessToken && { Authorization: `Bearer ${accessToken}` })
           },
-          body: JSON.stringify({ quantity: 0 })
+          body: JSON.stringify({
+            quantity: 0,
+            ...(guestEmail && { guestEmail })
+          })
         });
       }
 
-      const draft = await getDraftOrder();
+      await getDraftOrder();
       const item = await addItemToOrder(selectedVariant.id, 1);
 
       if (selectedIds.length > 0) {
@@ -334,7 +345,7 @@ const ProductPage = () => {
          ================================ */}
       <p className="price-label">Total: <span className="price">${totalPrice.toFixed(2)}</span></p>
 
-      {selectedVariant && Number(selectedVariant.stockQuantity) === 0 ? (
+      {selectedVariant && selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
       ) : (
         <button className="add-to-cart-btn" onClick={handleAddToCart}>
