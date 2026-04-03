@@ -1,8 +1,8 @@
 BASE_URL = "http://localhost:3000"
 BROWSER = "chrome"
 
-TEST_EMAIL = "test5@tester.com"
-TEST_PASSWORD = "Kb187255"
+TEST_EMAIL = "test@test.com"
+TEST_PASSWORD = "Password123!"
 UPDATED_FIRST_NAME = "Kenny"
 UPDATED_LAST_NAME = "Tester"
 UPDATED_STREET = "321 Lake Road"

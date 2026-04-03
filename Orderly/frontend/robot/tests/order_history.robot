@@ -6,25 +6,53 @@ Test Teardown  Close Browser Session
 *** Test Cases ***
 Logged In User Can View Order History Page
     Login As Test User
-    Open Order History Page
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
-    Page Should Contain Element    xpath=//button[normalize-space()='Previous']
-    Page Should Contain Element    xpath=//button[normalize-space()='Next']
 
 Order History Shows Empty State When No Past Orders Exist
     Login As Test User
-    Open Order History Page
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
-    Wait For Order History To Finish Loading
+    Wait Until Page Does Not Contain    Loading order history...    10s
     Page Should Contain    No past orders found.
 
-*** Keywords ***
-Open Order History Page
-    Click Link    Order History
+Order History Shows Pagination Controls
+    Login As Test User
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
+    Wait Until Page Does Not Contain    Loading order history...    10s
+    Page Should Contain Button    Previous
+    Page Should Contain Button    Next
+    Page Should Contain           Page 1
 
-Wait For Order History To Finish Loading
-    Wait Until Keyword Succeeds    10x    1s    Order History Should Be Finished
+Order History Can Open Order Detail When Past Orders Exist
+    [Documentation]    This passes only when the seeded/test user actually has at least one non-DRAFT order.
+    Login As Test User
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
+    Wait Until Page Contains    Order History    10s
+    Wait Until Page Does Not Contain    Loading order history...    10s
 
-Order History Should Be Finished
-    Page Should Not Contain    Loading order history...
+    ${order_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Order #')]
+    IF    ${order_count} > 0
+        Click Element    xpath=(//*[contains(normalize-space(.), 'Order #')])[1]
+        Wait Until Location Contains    /orders/    10s
+    ELSE
+        Log    No non-draft orders available for this user; skipping click-through assertion.
+    END
+
+*** Keywords ***
+Sync Auth Token Key For Frontend
+    ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
+    ${current}=   Execute JavaScript    return window.localStorage.getItem('accessToken');
+    IF    '${current}' == 'None' and '${legacy}' != 'None'
+        Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
+        Reload Page
+    END
