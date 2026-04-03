@@ -33,6 +33,15 @@ export default function Profile() {
     non_field_errors: "Error",
   };
 
+  function formatPhone(phone) {
+    const digits = (phone || "").replace(/\D/g, "");
+    if (digits.length === 10)
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    if (digits.length === 11 && digits[0] === "1")
+      return `1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    return phone;
+  }
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -40,6 +49,7 @@ export default function Profile() {
         setForm((prev) => ({
           ...prev,
           ...data,
+          phone: formatPhone(data.phone),
         }));
       } catch (err) {
         const backend = err?.response?.data || {};
@@ -86,6 +96,7 @@ export default function Profile() {
       setForm((prev) => ({
         ...prev,
         ...updated,
+        phone: formatPhone(updated.phone),
       }));
       setMessage("Profile updated successfully");
       setTimeout(() => setMessage(""), 3000);
@@ -143,19 +154,46 @@ export default function Profile() {
       <h1>My Profile</h1>
 
       {message && (
-        <div style={{ color: "green", marginBottom: "1rem" }}>{message}</div>
+        <div className="prof-success">{message}</div>
       )}
 
       {error && (
-        <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>
+        <div className="prof-error">{error}</div>
       )}
 
       <form onSubmit={handleSubmit}>
         <fieldset disabled={submitting}>
-          <div style={{ marginBottom: "2rem" }}>
+
+          <table>
+            <tr>
+              <td rowspan="2">Name</td><td>First</td><td>Last</td>
+            </tr>
+            <tr>
+              <td>First field</td><td>Last field</td>
+            </tr>
+            <tr>
+              <td rowspan="4">Address</td><td>Street Address</td>
+            </tr>
+            <tr>
+              <td>ST. ADD FIELD</td>
+            </tr>
+            <tr>
+              <td>City</td><td>State</td>
+            </tr>
+            <tr>
+              <td>city field</td><td>state field</td>
+            </tr>
+            <tr>
+              <td>Email:</td><td>Phone</td>
+              <td>email field</td><td>phone field</td>
+            </tr>
+          </table>
+
+
+          <div className="prof-section">
             <h2>Name</h2>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="firstName">First Name</label>
               <br />
               <input
@@ -165,9 +203,7 @@ export default function Profile() {
                 value={form.firstName || ""}
                 onChange={handleChange}
               />
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
+              <br />
               <label htmlFor="lastName">Last Name</label>
               <br />
               <input
@@ -180,12 +216,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <hr style={{ margin: "1.5rem 0" }} />
+          <hr />
 
-          <div style={{ marginBottom: "2rem" }}>
+          <div className="prof-section">
             <h2>Address</h2>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="streetAddress">Street Address</label>
               <br />
               <input
@@ -197,7 +233,7 @@ export default function Profile() {
               />
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="city">City</label>
               <br />
               <input
@@ -209,7 +245,7 @@ export default function Profile() {
               />
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="state">State</label>
               <br />
               <input
@@ -221,7 +257,7 @@ export default function Profile() {
               />
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="zipcode">Zip Code</label>
               <br />
               <input
@@ -234,12 +270,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <hr style={{ margin: "1.5rem 0" }} />
+          <hr />
 
-          <div style={{ marginBottom: "2rem" }}>
+          <div className="prof-section">
             <h2>Contact</h2>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="email">Email</label>
               <br />
               <input
@@ -252,7 +288,7 @@ export default function Profile() {
               />
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
+            <div className="prof-field">
               <label htmlFor="phone">Phone Number</label>
               <br />
               <input

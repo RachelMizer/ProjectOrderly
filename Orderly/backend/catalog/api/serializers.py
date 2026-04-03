@@ -26,6 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
     hasModifiers = serializers.BooleanField(source="has_modifiers")
     minPrice = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     imageUrl = serializers.SerializerMethodField()
+    categoryId = serializers.IntegerField(source="category_id", read_only=True)
 
     class Meta:
         model = Product
@@ -33,6 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "description",
+            "categoryId",
             "hasVariants",
             "hasModifiers",
             "minPrice",

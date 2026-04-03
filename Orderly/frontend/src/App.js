@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 
 import Register from "./pages/Auth/Register";
@@ -8,55 +8,98 @@ import Login from "./pages/Auth/Login";
 import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import StoreFront from "./pages/StoreFront";
-import { useEffect } from "react";
 
 import ProductPage from "./pages/ProductPage";
 import Profile from "./pages/Auth/Profile";
 
 import OrderHistory from "./pages/Orders/OrderHistory";
+import OrderDetails from "./pages/Orders/OrderDetail";
+
+import CartPage from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 import { logout, isAuthenticated } from "./api/auth";
-import OrderDetails from "./pages/Orders/OrderDetail";
+
 
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
+  const [cartCount, setCartCount] = useState(0);
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const firstName = storedUser?.firstName || "";
 
+  // Load profile on login
   useEffect(() => {
-  async function loadProfile() {
+    async function loadProfile() {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          localStorage.setItem("user", JSON.stringify(profile));
+        }
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      }
+    }
+
+    if (loggedIn) {
+      loadProfile();
+    }
+  }, [loggedIn]);
+
+  // Fetch cart count
+  async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    if (!token) { setCartCount(0); return; }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+        method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({})
       });
 
-      if (response.ok) {
-        const profile = await response.json();
-        localStorage.setItem("user", JSON.stringify(profile));
-      }
-    } catch (err) {
-      console.error("Failed to load profile:", err);
+      const draft = await draftRes.json();
+      if (!draft.id) { setCartCount(0); return; }
+
+      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await detailRes.json();
+      const totalQty = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(totalQty);
+
+    } catch {
+      setCartCount(0);
     }
   }
 
-  if (loggedIn) {
-    loadProfile();
-  }
-}, [loggedIn]);
+  // Update cart count on login or cart events
+  useEffect(() => {
+    if (loggedIn) fetchCartCount();
+    else setCartCount(0);
 
+    window.addEventListener("cart-updated", fetchCartCount);
+    return () => window.removeEventListener("cart-updated", fetchCartCount);
+  }, [loggedIn]);
 
-
+  // Logout
   async function handleLogout() {
     try {
       await logout();
       setLoggedIn(false);
+      setCartCount(0);
       alert("Successfully logged out");
       navigate("/login");
     } catch (error) {
@@ -65,62 +108,69 @@ function AppContent() {
     }
   }
 
- return (
-  <div className="wrapper">
-    <header>
-      <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
-      <h2>Your pause, perfected.</h2>
-    </header>
+  return (
+    <div className="wrapper">
+      <header>
+        <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
+        <h2>Your pause, perfected.</h2>
+      </header>
 
-    <nav>
-      <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
-      {" | "}
-      <Link to="/">Home</Link>
+      <nav>
+        <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+        {" | "}
+        <Link to="/">Home</Link>
 
-      {!loggedIn && (
-        <>
-          {" | "}
-          <Link to="/register">Register</Link>
-          {" | "}
-          <Link to="/login">Login</Link>
-          {" | "}
-          <Link to="/password-reset">Forgot Password</Link>
-        </>
-      )}
+        {!loggedIn && (
+          <>
+            {" | "}
+            <Link to="/register">Register</Link>
+            {" | "}
+            <Link to="/login">Login</Link>
+            {" | "}
+            <Link to="/password-reset">Forgot Password</Link>
+          </>
+        )}
 
-      {loggedIn && (
-        <>
-          {" | "}
-          <Link to="/profile">Profile</Link>
-          {" | "}
-            <Link to="/order-history">Order History</Link>
-          {" | "}
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      )}
+        {loggedIn && (
+          <>
+            {" | "}
+            <Link to="/profile">Profile</Link>
+            {" | "}
+            <Link to="/order-history">Orders</Link>
+            {" | "}
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        )}
 
-      <img src="/img/ico_cart.png" alt="cart" />
-      <p className="cart-PH" title="inactive link">Cart</p>
-    </nav>
+        <div className="cart-nav-item">
+          <img src="/img/ico_cart.png" alt="cart" />
+          <Link to="/cart">Cart</Link>
+          {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+        </div>
+      </nav>
 
-    <Routes>
-      <Route path="/" element={<StoreFront />} />
-      <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
-      <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-      <Route path="/password-reset" element={<ResetPasswordRequest />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/product/:id" element={<ProductPage />} />
-      <Route path="/order-history" element={<OrderHistory />} />
-      <Route path="/orders/:orderId" element={<OrderDetails />} />
-      <Route path="/profile" element={<Profile />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<StoreFront />} />
+        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/password-reset" element={<ResetPasswordRequest />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/orders/:orderId" element={<OrderDetails />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/cart" element={<CartPage />} />
+      <Route path="/checkout" element={<Checkout />} />
+      </Routes>
 
-    <footer>
-      <p>© Quick Sip Cafe 2026</p>
-    </footer>
-  </div>
-);
+      <footer>
+        <p>All Content © Quick Sip Cafe 2026</p>
+        <p>Powered by Orderly</p>
+      </footer>
+    </div>
+  );
 }
+
 
 function App() {
   return (

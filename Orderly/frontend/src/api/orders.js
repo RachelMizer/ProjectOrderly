@@ -51,6 +51,28 @@ export async function getOrderDetail(orderId) {
   return data;
 }
 
+// Submit Order
+// PATCH /api/v1/orders/{orderId}/submit
+export async function submitOrder(orderId, paymentData) {
+  const response = await fetch(`${API_BASE}${orderId}/submit`, {
+    method: "PATCH",
+    headers: {
+      ...JSON_HEADERS,
+      ...getAuthHeaders(),
+    },
+    credentials: "include",
+    body: JSON.stringify(paymentData),
+  });
+
+  const data = await parseJson(response);
+
+  if (!response.ok) {
+    throw buildError("Failed to submit order", response, data);
+  }
+
+  return data;
+}
+
 // Get Order History
 // GET /api/v1/orders/me?page=&pageSize=
 export async function getOrderHistory({ page = 1, pageSize = 25} = {}) {

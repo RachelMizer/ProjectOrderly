@@ -1,0 +1,39 @@
+feat-checkout-pg — Session Change Log
+======================================
+Date: 2026-04-02
+
+MERGE CONFLICT RESOLUTIONS
+---------------------------
+- App.js: Resolved 3 merge conflicts between HEAD and feat-shopping-cart-pg
+    - Imports: kept both OrderDetails and CartPage
+    - Nav: merged Order History link (HEAD) with active cart badge/link (feat-shopping-cart-pg)
+    - Routes/footer: kept all routes, added /cart route, used updated footer text
+
+- Login.jsx: Resolved 1 merge conflict between HEAD and feat-shopping-cart-pg
+    - Kept HEAD version (submit button wrapped in <div>)
+
+NEW FEATURES
+------------
+- frontend/src/api/orders.js
+    - Added submitOrder(orderId, paymentData)
+      PATCH /api/v1/orders/{orderId}/submit
+
+- frontend/src/pages/Checkout.jsx (new file)
+    - Read-only order review: items, modifiers, quantities, subtotal, tax, grand total
+    - Simulated payment fields: name, phone, address, city, state, zip
+    - Payment type selector: Credit Card, Cash, Other
+    - Conditional fields: card last 4 (Credit Card) / details field (Other)
+    - Empty cart guard with link back to cart
+    - Dispatches cart-updated event and navigates to order detail on success
+
+- frontend/src/pages/Cart.jsx
+    - Enabled "Go to Checkout" button (was disabled placeholder)
+
+- frontend/src/App.js
+    - Imported Checkout component
+    - Added /checkout route
+
+- frontend/src/App.css
+    - Styled active "Go to Checkout" button
+    - Added full checkout page styles (.checkout-pg, .checkout-item, .checkout-totals,
+      .checkout-fieldset, .checkout-field, .checkout-actions, .submit-order-btn, etc.)
