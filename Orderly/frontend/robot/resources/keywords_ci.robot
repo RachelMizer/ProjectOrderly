@@ -18,21 +18,27 @@ Open Browser To App
     Set Selenium Timeout    10 seconds
 
 Close Browser Session
+    Run Keyword If Test Failed    Capture Page Screenshot
     Close Browser
 
 Go To Login Page
     Go To    ${BASE_URL}/login
-    Wait Until Page Contains Element    name=email    10s
+    Wait Until Element Is Visible    xpath=//input[@type='email' or @id='email']    10s
 
 Login As Test User
     Go To Login Page
-    Input Text    name=email    ${TEST_EMAIL}
-    Input Password    name=password    ${TEST_PASSWORD}
-    Click Button    xpath=//button[normalize-space()='Login']
+
+    Wait Until Element Is Visible    xpath=//input[@type='email' or @id='email']    10s
+    Input Text    xpath=//input[@type='email' or @id='email']    ${TEST_EMAIL}
+
+    Wait Until Element Is Visible    xpath=//input[@type='password' or @id='password']    10s
+    Input Password    xpath=//input[@type='password' or @id='password']    ${TEST_PASSWORD}
+
+    Click Element    xpath=//button[@type='submit']
 
     Sync Auth Token Key For Frontend
 
-    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Wait Until Page Does Not Contain Element    xpath=//button[@type='submit']    10s
 
 Sync Auth Token Key For Frontend
     ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
