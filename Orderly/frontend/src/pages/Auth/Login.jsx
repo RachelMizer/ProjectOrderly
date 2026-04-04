@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/auth";
+import { mergeGuestCart } from "../../api/orders";
 
 export default function Login({ setLoggedIn }) {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function Login({ setLoggedIn }) {
 
     try {
       await login(formData);
+      await mergeGuestCart();
       setLoggedIn(true);
       navigate("/");
     } catch (error) {
@@ -58,7 +60,9 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
+
           <br />
+
           <div>
             <label htmlFor="password">Password</label>
             <br />
@@ -71,6 +75,7 @@ export default function Login({ setLoggedIn }) {
               required
             />
           </div>
+
           <br />
           <div>
             <button type="submit">

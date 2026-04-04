@@ -2,6 +2,7 @@
 
 const API_BASE = "http://127.0.0.1:8000/api/v1/auth/";
 const ACCESS_TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",
@@ -20,23 +21,24 @@ function setStoredAccessToken(token) {
   }
 }
 
-function clearStoredAccessToken() {
+function setStoredRefreshToken(token) {
+  if (token) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  }
+}
+
+function clearStoredTokens() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
 export function isAuthenticated() {
   return Boolean(getStoredAccessToken());
 }
 
-// Optional helper for future protected API calls
 export function getAuthHeaders() {
   const token = getStoredAccessToken();
-
-  return token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {};
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 // -------------------------
@@ -44,11 +46,7 @@ export function getAuthHeaders() {
 // -------------------------
 async function parseJson(response) {
   const contentType = response.headers.get("content-type") || "";
-
-  if (!contentType.includes("application/json")) {
-    return {};
-  }
-
+  if (!contentType.includes("application/json")) return {};
   try {
     return await response.json();
   } catch {
@@ -58,139 +56,82 @@ async function parseJson(response) {
 
 function buildError(defaultMessage, response, data = {}) {
   const err = new Error(data?.message || data?.detail || defaultMessage);
-  err.response = {
-    status: response.status,
-    data,
-  };
+  err.response = { status: response.status, data };
   return err;
 }
 
 // -------------------------
 // REGISTER
-// Route: /api/v1/auth/register
 // -------------------------
 export async function register(form) {
   const response = await fetch(`${API_BASE}register`, {
     method: "POST",
     headers: JSON_HEADERS,
-    credentials: "include",
-    body: JSON.stringify({
-      email: form.email,
-      password: form.password,
-      firstName: form.firstName,
-      lastName: form.lastName,
-    }),
+    body: JSON.stringify(form),
   });
 
   const data = await parseJson(response);
+  if (!response.ok) throw buildError("Registration failed", response, data);
 
-  if (!response.ok) {
-    throw buildError("Registration failed", response, data);
-  }
-
-  if (data.accessToken) {
-    setStoredAccessToken(data.accessToken);
-  }
+  if (data.access) setStoredAccessToken(data.access);
+  if (data.refresh) setStoredRefreshToken(data.refresh);
 
   return data;
 }
 
 // -------------------------
 // LOGIN
-// Route: /api/v1/auth/login
 // -------------------------
 export async function login(form) {
   const response = await fetch(`${API_BASE}login`, {
     method: "POST",
     headers: JSON_HEADERS,
-    credentials: "include",
-    body: JSON.stringify({
-      email: form.email,
-      password: form.password,
-    }),
+    body: JSON.stringify(form),
   });
 
   const data = await parseJson(response);
+  if (!response.ok) throw buildError("Login failed", response, data);
 
-  if (!response.ok) {
-    throw buildError("Login failed", response, data);
-  }
-
-  if (data.accessToken) {
-    setStoredAccessToken(data.accessToken);
-  }
+  // FIXED: store the correct token field
+  if (data.accessToken) setStoredAccessToken(data.accessToken);
 
   return data;
 }
 
+
 // -------------------------
 // LOGOUT
-// Route: /api/v1/auth/logout
 // -------------------------
-export async function logout() {
-  const response = await fetch(`${API_BASE}logout`, {
-    method: "POST",
-    headers: JSON_HEADERS,
-    credentials: "include",
-    body: JSON.stringify({}),
-  });
-
-  const data = await parseJson(response);
-
-  if (!response.ok) {
-    throw buildError("Logout failed", response, data);
-  }
-
-  clearStoredAccessToken();
-  return data;
+export function logout() {
+  clearStoredTokens();
 }
 
 // -------------------------
 // PASSWORD RESET REQUEST
-// Route: /api/v1/auth/password-reset
-// Body: { email }
 // -------------------------
 export async function requestPasswordReset(email) {
   const response = await fetch(`${API_BASE}password-reset`, {
     method: "POST",
     headers: JSON_HEADERS,
-    credentials: "include",
     body: JSON.stringify({ email }),
   });
 
-  const data = await parseJson(response);
-
-  if (!response.ok) {
-    throw buildError("Password reset request failed", response, data);
-  }
-
-  return data;
+  if (!response.ok) throw new Error("Password reset request failed");
+  return response.json();
 }
 
 // -------------------------
 // PASSWORD RESET CONFIRM
-// Route: /api/v1/auth/password-reset/confirm
-// Body: { uid, token, newPassword }
 // -------------------------
 export async function confirmPasswordReset({ uid, token, newPassword }) {
   const response = await fetch(`${API_BASE}password-reset/confirm`, {
     method: "POST",
     headers: JSON_HEADERS,
-    credentials: "include",
-    body: JSON.stringify({
-      uid,
-      token,
-      newPassword,
-    }),
+    body: JSON.stringify({ uid, token, newPassword }),
   });
 
-  const data = await parseJson(response);
-
-  if (!response.ok) {
-    throw buildError("Password reset confirmation failed", response, data);
-  }
-
-  return data;
+  if (!response.ok) throw new Error("Password reset confirmation failed");
+  return response.json();
 }
 
 // -------------------------
@@ -203,14 +144,10 @@ export async function getProfile() {
       ...JSON_HEADERS,
       ...getAuthHeaders(),
     },
-    credentials: "include",
   });
 
   const data = await parseJson(response);
-
-  if (!response.ok) {
-    throw buildError("Failed to fetch profile", response, data);
-  }
+  if (!response.ok) throw buildError("Failed to fetch profile", response, data);
 
   return data;
 }
@@ -218,7 +155,6 @@ export async function getProfile() {
 // -------------------------
 // UPDATE PROFILE
 // -------------------------
-
 export async function updateProfile(form) {
   const response = await fetch("http://127.0.0.1:8000/api/v1/users/me/", {
     method: "PATCH",
@@ -226,15 +162,11 @@ export async function updateProfile(form) {
       ...JSON_HEADERS,
       ...getAuthHeaders(),
     },
-    credentials: "include",
     body: JSON.stringify(form),
   });
 
   const data = await parseJson(response);
-
-  if (!response.ok) {
-    throw buildError("Failed to update profile", response, data);
-  }
+  if (!response.ok) throw buildError("Failed to update profile", response, data);
 
   return data;
 }
