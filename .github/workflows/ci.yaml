@@ -141,7 +141,7 @@ jobs:
       - name: Run Robot Framework tests
         working-directory: Orderly/frontend
         run: |
-          robot --outputdir robot/results robot/tests || echo "ROBOT_EXIT_CODE=$?" >> $GITHUB_ENV
+          robot --outputdir robot/results robot/tests/ci || echo "ROBOT_EXIT_CODE=$?" >> $GITHUB_ENV
         continue-on-error: true # current suite has two known blockers:
                                  # 1) mixed libraries — some tests use Browser (Playwright), others use SeleniumLibrary
                                  # 2) robotframework-seleniumlibrary is not in requirements.txt; robotframework-browser is
