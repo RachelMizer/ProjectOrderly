@@ -7,12 +7,17 @@ Open Browser To App
     ${options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
 
     IF    ${HEADLESS}
-        Call Method    ${options}    add_argument    --headless=new
+        ${headless_arg}=    Set Variable    --headless=new
+        Call Method    ${options}    add_argument    ${headless_arg}
     END
 
-    Call Method    ${options}    add_argument    --no-sandbox
-    Call Method    ${options}    add_argument    --disable-dev-shm-usage
-    Call Method    ${options}    add_argument    --window-size=1920,1080
+    ${no_sandbox}=    Set Variable    --no-sandbox
+    ${disable_dev_shm}=    Set Variable    --disable-dev-shm-usage
+    ${window_size}=    Set Variable    --window-size=1920,1080
+
+    Call Method    ${options}    add_argument    ${no_sandbox}
+    Call Method    ${options}    add_argument    ${disable_dev_shm}
+    Call Method    ${options}    add_argument    ${window_size}
 
     Open Browser    ${BASE_URL}    ${BROWSER}    options=${options}
     Set Selenium Timeout    10 seconds
