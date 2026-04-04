@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    ../resources/keywords_ci.robot
+Resource    ../../resources/keywords_ci.robot
 Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
