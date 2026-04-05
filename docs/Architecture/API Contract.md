@@ -1608,6 +1608,7 @@ Content-Type: application/json
 **Request Parameters:**  
 + name (OPTIONAL)
 + imageUrl (OPTIONAL)
++ isActive (OPTIONL)
 
 ### Request
 **Header:**
@@ -1627,6 +1628,8 @@ Content-Type: application/json
 + Category names must remain unique
 + Request body must include at least one field  
 + Success response will return the changed field and the new value
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
 
 **Success Response (200 OK):**
 ```
@@ -1749,6 +1752,7 @@ Content-Type: application/json
 + supplierId
 + categoryId
 + imageUrl
++ isActive
   
 ### Request
 **Header:**
@@ -1767,6 +1771,8 @@ Content-Type: application/json
 + All fields are optional
 + product names must remain unique
 + fields included in request represent the new values
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
   
 **Success Response (200 OK):**
 ```
@@ -1903,6 +1909,7 @@ Content-Type: application/json
 + stockQuantity
 + reorderLevel
 + imageUrl
++ isActive
   
 ### Request
 **Header:**
@@ -1925,6 +1932,8 @@ Content-Type: application/json
 + Unit price must be greater or equal to 0
 + stock quantity must be >= 0
 + reorder level must be >= 0
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
   
 **Success Response (200 OK):**
 ```
@@ -2051,6 +2060,8 @@ Content-Type: application/json
 + required
 + minSelections
 + maxSelections
++ isActive
+
 ### Request
 **Header:**
 ```
@@ -2069,6 +2080,8 @@ Content-Type: application/json
 + name must remain unique per variant
 + min and max selections must remain valid
 + required must remain consistent with min selections
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
 **Success Response (200 OK):**
 ```
 {
@@ -2184,6 +2197,7 @@ Content-Type: application/json
 + name
 + priceAdjustment
 + imageUrl
++ isActive
 
 ### Request
 **Header:**
@@ -2202,6 +2216,8 @@ Content-Type: application/json
 + all fields are optional
 + name must remain unique per group
 + price adjustment can be positive or negative
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
 
 **Success Response (200 OK):**
 ```
@@ -2240,99 +2256,46 @@ Content-Type: application/json
 }
 ```
 
-## Delete Category
-**Endpoint:** `DELETE /api/v1/categories/{categoryId}`  
-**Description:**
-**Authentication:** `Bearer <accessToken>`  
-**Role:** Business  
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-```
-Authorization: Bearer <accessToken>
-Content-Type: application/json
-```
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
-
-## Delete Product
-**Endpoint:** `DELETE /api/v1/products/{productId}`
-**Description:**
-**Authentication:** `Bearer <accessToken>`  
-**Role:** Business  
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-```
-Authorization: Bearer <accessToken>
-Content-Type: application/json
-```
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
-
-## Delete Variant
-**Endpoint:** `DELETE /api/v1/variants/{variantId}`  
-**Description:**
-**Authentication:** `Bearer <accessToken>`  
-**Role:** Business  
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-```
-Authorization: Bearer <accessToken>
-Content-Type: application/json
-```
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
-
-## Delete Modifier Group
-**Endpoint:** `DELETE /api/v1/modifiers/group/{groupId}`
-**Description:**
-**Authentication:** `Bearer <accessToken>`  
-**Role:** Business  
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-```
-Authorization: Bearer <accessToken>
-Content-Type: application/json
-```
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
-
-## Delete Modifier Option
-**Endpoint:** `DELETE /api/v1/modifiers/options/{optionId}`
-**Description:**
-**Authentication:** `Bearer <accessToken>`  
-**Role:** Business  
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-```
-Authorization: Bearer <accessToken>
-Content-Type: application/json
-```
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
-
 # Inventory API
 
+## Create Inventory Item
+**Endpoint:** 
+**Description:** Creates a non-sellable inventory item
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
+
 ## Create Variant Inventory Usage
+**Endpoint:**
+**Description:** Links a variant to an inventory item
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
 
 ## Create Modifier Inventory Usage
-
-## Create Inventory Item
-
+**Endpoint:**
+**Description:** Links a modifier option to an inventory item
+**Authentication:**
+**Role:**
+**URL Parameters:**
+**Request Parameters:**
+### Request
+**Header:**
+**Body:**
+**Rules:**
+**Success Response (200 OK):**
 
 ## View Inventory levels
 **Endpoint:**
