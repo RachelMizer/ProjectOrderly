@@ -170,12 +170,15 @@ Organizes products for browsing, filtering, reporting
 + CategoryName
   
 + CategoryImage
+
++ IsActive - indicates whether this appears in the catalog
+
   
   #### Table View
   
-  | CategoryID | CategoryName | CategoryImage |
-  | ---------- | ------------ | ------------- |
-  | 10         | Food         | media/category/food.png |
+  | CategoryID | CategoryName | CategoryImage | IsActive |
+  | ---------- | ------------ | ------------- | -------- |
+  | 10         | Food         | media/category/food.png | True |
 
 ---
 
@@ -198,12 +201,14 @@ Represents an abstract item or service offered by the client business
 + HasModifiers - indicates if customization is available
 
 + ProductImage 
+
++ IsActive - indicates whether this appears in the catalog
   
   #### Table View
   
-  | ProductID | SupplierID | ProductName | CategoryID | HasVariants | HasModifiers | ProductImage |
-  | --------- | ---------- | ----------- | ---------- | ----------- | ------------ | ------------ |
-  | 100       | 900        | Pizza       | 10         | Yes         | Yes          | media/product/pizza.png |
+  | ProductID | SupplierID | ProductName | CategoryID | HasVariants | HasModifiers | ProductImage | IsActive |
+  | --------- | ---------- | ----------- | ---------- | ----------- | ------------ | ------------ | -------- |
+  | 100       | 900        | Pizza       | 10         | Yes         | Yes          | media/product/pizza.png | True |
 
 ---
 
@@ -228,13 +233,16 @@ Used for products that are sold as discrete units. individual SKUs
 + ReorderLevel
 
 + VariantImage 
+
++ IsActive - indicates whether this appears in the catalog
+
   
   #### Table View
   
-  | VariantID | ProductID | VariantName      | SKU        | UnitPrice | StockQuantity | ReorderLevel | VariantImage |
-  | --------- | --------- | ---------------- | ---------- | --------- | ------------- | ------------ | ------------ |
-  | 2001      | 100       | Large Pizza      | PIZ-LRG-01 | 12.50     | NULL          | NULL         | media/product/pizza.png |
-  | 2002      | 101       | T-Shirt (Red, L) | TSH-RED-L  | 19.99     | 15            | 5            | media/variant/red_shirt.png |
+  | VariantID | ProductID | VariantName      | SKU        | UnitPrice | StockQuantity | ReorderLevel | VariantImage | IsActive |
+  | --------- | --------- | ---------------- | ---------- | --------- | ------------- | ------------ | ------------ | -------- |
+  | 2001      | 100       | Large Pizza      | PIZ-LRG-01 | 12.50     | NULL          | NULL         | media/product/pizza.png | True |
+  | 2002      | 101       | T-Shirt (Red, L) | TSH-RED-L  | 19.99     | 15            | 5            | media/variant/red_shirt.png | True |
 
 ---
 
@@ -279,12 +287,15 @@ Defines logical group of customization options for a product. Associated with pr
 + MinSelections
 
 + MaxSelections
+
++ IsActive - indicates whether this appears in the catalog
+
   
   #### Table View
   
-  | ModifierGroupID | VariantID | GroupName | Required | MinSelections | MaxSelections |
-  | --------------- | --------- | --------- | -------- | ------------- | ------------- |
-  | 4001            | 2001      | Toppings  | No       | 0             | 5             |
+  | ModifierGroupID | VariantID | GroupName | Required | MinSelections | MaxSelections | IsActive |
+  | --------------- | --------- | --------- | -------- | ------------- | ------------- | -------- |
+  | 4001            | 2001      | Toppings  | No       | 0             | 5             | True |
 
 ---
 
@@ -303,12 +314,15 @@ Defines an individual selectable customization
 + PriceAdjustment
 
 + ModifierOptionImage
+
++ IsActive - indicates whether this appears in the catalog
+
   
   #### Table View
   
-  | ModifierOptionID | ModifierGroupID | OptionName | PriceAdjustment | ModifierOptionImage |
-  | ---------------- | --------------- | ---------- | --------------- | ------------------- |
-  | 3001             | 4001            | Pepperoni  | 1.50            | media/modifiers/pepperoni.png |
+  | ModifierOptionID | ModifierGroupID | OptionName | PriceAdjustment | ModifierOptionImage | IsActive |
+  | ---------------- | --------------- | ---------- | --------------- | ------------------- | -------- |
+  | 3001             | 4001            | Pepperoni  | 1.50            | media/modifiers/pepperoni.png | True |
 
 ---
 
