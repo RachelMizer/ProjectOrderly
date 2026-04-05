@@ -33,6 +33,15 @@ export default function Profile() {
     non_field_errors: "Error",
   };
 
+  function formatPhone(phone) {
+    const digits = (phone || "").replace(/\D/g, "");
+    if (digits.length === 10)
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    if (digits.length === 11 && digits[0] === "1")
+      return `1-${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    return phone;
+  }
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -40,6 +49,7 @@ export default function Profile() {
         setForm((prev) => ({
           ...prev,
           ...data,
+          phone: formatPhone(data.phone),
         }));
       } catch (err) {
         const backend = err?.response?.data || {};
@@ -86,6 +96,7 @@ export default function Profile() {
       setForm((prev) => ({
         ...prev,
         ...updated,
+        phone: formatPhone(updated.phone),
       }));
       setMessage("Profile updated successfully");
       setTimeout(() => setMessage(""), 3000);
@@ -140,136 +151,133 @@ export default function Profile() {
 
   return (
     <div className="prof-pg">
-      <h1>My Profile</h1>
+      <h1>Profile</h1>
+      <p>To update your profile, enter the new<br />information and click save.</p>
 
       {message && (
-        <div style={{ color: "green", marginBottom: "1rem" }}>{message}</div>
+        <div className="prof-success">{message}</div>
       )}
 
       {error && (
-        <div style={{ color: "red", marginBottom: "1rem" }}>{error}</div>
+        <div className="prof-error">{error}</div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <fieldset disabled={submitting}>
-          <div style={{ marginBottom: "2rem" }}>
-            <h2>Name</h2>
+     <form onSubmit={handleSubmit}>
+  <fieldset disabled={submitting}>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="firstName">First Name</label>
-              <br />
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={form.firstName || ""}
-                onChange={handleChange}
-              />
-            </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="lastName">Last Name</label>
-              <br />
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={form.lastName || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+      {/* NAME SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Name</div>
 
-          <hr style={{ margin: "1.5rem 0" }} />
+        <div className="prof-cell">
+          <label htmlFor="firstName">First Name</label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            value={form.firstName || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <div style={{ marginBottom: "2rem" }}>
-            <h2>Address</h2>
+        <div className="prof-cell">
+          <label htmlFor="lastName">Last Name</label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            value={form.lastName || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="streetAddress">Street Address</label>
-              <br />
-              <input
-                id="streetAddress"
-                name="streetAddress"
-                type="text"
-                value={form.streetAddress || ""}
-                onChange={handleChange}
-              />
-            </div>
+      {/* ADDRESS SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Address</div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="city">City</label>
-              <br />
-              <input
-                id="city"
-                name="city"
-                type="text"
-                value={form.city || ""}
-                onChange={handleChange}
-              />
-            </div>
+        <div className="prof-cell full-width">
+          <label htmlFor="streetAddress">Street Address</label>
+          <input
+            id="streetAddress"
+            name="streetAddress"
+            type="text"
+            value={form.streetAddress || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="state">State</label>
-              <br />
-              <input
-                id="state"
-                name="state"
-                type="text"
-                value={form.state || ""}
-                onChange={handleChange}
-              />
-            </div>
+        <div className="prof-cell">
+          <label htmlFor="city">City</label>
+          <input
+            id="city"
+            name="city"
+            type="text"
+            value={form.city || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="zipcode">Zip Code</label>
-              <br />
-              <input
-                id="zipcode"
-                name="zipcode"
-                type="text"
-                value={form.zipcode || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+        <div className="prof-cell">
+          <label htmlFor="state">State</label>
+          <input
+            id="state"
+            name="state"
+            type="text"
+            value={form.state || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-          <hr style={{ margin: "1.5rem 0" }} />
+        <div className="prof-cell">
+          <label htmlFor="zipcode">Zip Code</label>
+          <input
+            id="zipcode"
+            name="zipcode"
+            type="text"
+            value={form.zipcode || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-          <div style={{ marginBottom: "2rem" }}>
-            <h2>Contact</h2>
+      {/* CONTACT SECTION */}
+      <div className="prof-row">
+        <div className="prof-section-title">Contact</div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="email">Email</label>
-              <br />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email || ""}
-                onChange={handleChange}
-                disabled
-              />
-            </div>
+        <div className="prof-cell">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email || ""}
+            onChange={handleChange}
+            disabled
+          />
+        </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="phone">Phone Number</label>
-              <br />
-              <input
-                id="phone"
-                name="phone"
-                type="text"
-                value={form.phone || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+        <div className="prof-cell">
+          <label htmlFor="phone">Phone Number</label>
+          <input
+            id="phone"
+            name="phone"
+            type="text"
+            value={form.phone || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-          <button type="submit">
-            {submitting ? "Saving..." : "Save"}
-          </button>
-        </fieldset>
-      </form>
+    <button type="submit">
+      {submitting ? "Saving..." : "Save"}
+    </button>
+
+  </fieldset>
+</form>
+
+
     </div>
   );
 }

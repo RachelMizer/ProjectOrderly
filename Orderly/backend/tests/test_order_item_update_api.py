@@ -10,6 +10,13 @@ from orders.models import Order, OrderItem, OrderStatus
 User = get_user_model()
 
 
+WAKE_COUNTY_TAX_RATE = Decimal("0.0725")
+
+
+def calc_tax(amount: Decimal) -> Decimal:
+    return (amount * WAKE_COUNTY_TAX_RATE).quantize(Decimal("0.01"))
+
+
 @pytest.fixture
 def api_client():
     return APIClient()
@@ -127,11 +134,14 @@ def test_patch_items_updates_quantity_and_recalculates_totals(
     order_item.refresh_from_db()
     order_item.order.refresh_from_db()
 
+    expected_subtotal = Decimal("18.00")
+    expected_tax = calc_tax(expected_subtotal)
+
     assert order_item.quantity == 4
     assert order_item.item_total == Decimal("18.00")
-    assert order_item.order.subtotal == Decimal("18.00")
-    assert order_item.order.tax_amount == Decimal("0.00")
-    assert order_item.order.total_payment_due == Decimal("18.00")
+    assert order_item.order.subtotal == expected_subtotal
+    assert order_item.order.tax_amount == expected_tax
+    assert order_item.order.total_payment_due == expected_subtotal + expected_tax
 
 
 @pytest.mark.django_db
@@ -163,14 +173,18 @@ def test_patch_items_quantity_zero_removes_item_and_recalculates_totals(
 
 
 @pytest.mark.django_db
-def test_patch_items_requires_authentication(api_client, order_item):
+def test_patch_items_requires_guest_email_for_unauthenticated_user(api_client, order_item):
     response = api_client.patch(
         f"/api/v1/orders/items/{order_item.id}",
         {"quantity": 3},
         format="json",
     )
 
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.data == {
+        "error": "INVALID_INPUT",
+        "message": "guestEmail is required for guest carts.",
+    }
 
 
 @pytest.mark.django_db

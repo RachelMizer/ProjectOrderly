@@ -404,27 +404,28 @@ class Command(BaseCommand):
         # 6) Products
         # ------------------------------------------------------------
         products_spec = [
-            ("House Coffee", "Coffee", suppliers[0], True, False),
-            ("Latte", "Coffee", suppliers[4], True, True),
-            ("Cappuccino", "Coffee", suppliers[4], True, True),
-            ("Mocha", "Coffee", suppliers[4], True, True),
-            ("Cold Brew", "Coffee", suppliers[0], True, True),
-            ("Green Tea", "Tea", suppliers[1], True, False),
-            ("Chai Tea Latte", "Tea", suppliers[1], True, True),
-            ("Blueberry Muffin", "Bakery", suppliers[3], True, False),
-            ("Chocolate Croissant", "Bakery", suppliers[3], True, False),
-            ("Breakfast Sandwich", "Breakfast", suppliers[2], True, True),
-            ("Pumpkin Spice Latte", "Seasonal", suppliers[4], True, True),
+            ("House Coffee",        "Coffee",    suppliers[0], True, False, "Our signature daily brew — smooth, comforting, and roasted to bring out a rich, balanced flavor in every cup."),
+            ("Latte",               "Coffee",    suppliers[4], True, True,  "Our latte blends rich espresso with silky steamed milk for a creamy, balanced cup that's perfect for slow mornings or steady afternoons."),
+            ("Cappuccino",          "Coffee",    suppliers[4], True, True,  "A cozy classic made with rich espresso and a cloud of silky steamed milk, finished with a light, velvety foam."),
+            ("Mocha",               "Coffee",    suppliers[4], True, True,  "A cozy fusion of bold espresso and velvety chocolate, finished with steamed milk for a cup that's equal parts rich, warm, and indulgent. It's your coffee break with a little extra joy."),
+            ("Cold Brew",           "Coffee",    suppliers[0], True, True,  "Slow-steeped to bring out deep, smooth coffee flavor with none of the bitterness."),
+            ("Green Tea",           "Tea",       suppliers[1], True, False, "Light, calming, and naturally uplifting. Our green tea is smooth and gently grassy, brewed to bring out its delicate flavor and soothing warmth."),
+            ("Chai Tea Latte",      "Tea",       suppliers[1], True, True,  "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla."),
+            ("Blueberry Muffin",    "Bakery",    suppliers[3], True, False, "Warm, soft, and bursting with juicy blueberries, this muffin is everything you want from a morning treat."),
+            ("Chocolate Croissant", "Bakery",    suppliers[3], True, False, "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within."),
+            ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. From there, make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
+            ("Pumpkin Spice Latte", "Seasonal",  suppliers[4], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
         ]
 
         products = {}
 
-        for pname, cname, supp, has_variants, has_modifiers in products_spec:
+        for pname, cname, supp, has_variants, has_modifiers, description in products_spec:
             defaults = {
                 "category": categories[cname],
                 "supplier": supp,
                 "has_variants": has_variants,
                 "has_modifiers": has_modifiers,
+                "description": description,
             }
 
             product, _ = Product.objects.get_or_create(
@@ -442,6 +443,9 @@ class Command(BaseCommand):
                 changed = True
             if product.has_modifiers != has_modifiers:
                 product.has_modifiers = has_modifiers
+                changed = True
+            if product.description != description:
+                product.description = description
                 changed = True
 
             if changed:
