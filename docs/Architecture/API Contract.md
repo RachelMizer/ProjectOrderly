@@ -2326,6 +2326,14 @@ Content-Type: application/json
 **Success Response (200 OK):**
 
 # Inventory API
+
+## Create Variant Inventory Usage
+
+## Create Modifier Inventory Usage
+
+## Create Inventory Item
+
+
 ## View Inventory levels
 **Endpoint:**
 **Description:**
