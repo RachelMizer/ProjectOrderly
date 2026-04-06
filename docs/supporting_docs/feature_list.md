@@ -33,7 +33,7 @@
 *   Manage products (add, edit, delete)
 *   Manage pricing
 *   Update and manage inventory levels
-*   Low-stock notificationsRemo
+*   Low-stock notifications
 *   Product category management
 
 ## 5\. Administrative Dashboard
