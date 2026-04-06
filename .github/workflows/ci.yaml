@@ -151,7 +151,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: Orderly/frontend
-        run: npm install # WAS CI but does not work with current caching strategy for package-lock.json
+        run: npm ci # WAS CI but does not work with current caching strategy for package-lock.json
 
       # Tells MySQL to allow 'orderly_user' full permissions so Django can create
       # `test_orderly` when pytest runs.
