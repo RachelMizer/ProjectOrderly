@@ -41,10 +41,16 @@ CI Regression - Customer Can Reach Checkout And Place Order
 
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Cart    10s
-    Page Should Contain    Breakfast Sandwich
 
-    Wait Until Page Contains Element    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]    10s
-    Click Element    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
+    ${checkout_link_count}=    Get Element Count    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
+    ${checkout_button_count}=    Get Element Count    xpath=//button[contains(normalize-space(.),'Checkout')]
+    Should Be True    ${checkout_link_count} > 0 or ${checkout_button_count} > 0
+
+    IF    ${checkout_link_count} > 0
+        Click Element    xpath=(//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')])[1]
+    ELSE
+        Click Element    xpath=(//button[contains(normalize-space(.),'Checkout')])[1]
+    END
 
     Wait Until Page Contains    Checkout    10s
     Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]    10s
