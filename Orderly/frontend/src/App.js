@@ -50,7 +50,15 @@ function AppContent() {
 
         if (response.ok) {
           const profile = await response.json();
-          localStorage.setItem("user", JSON.stringify(profile));
+          const existingUser = getStoredUser() || {};
+
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...existingUser,
+              ...profile,
+            })
+          );
         }
       } catch (err) {
         console.error("Failed to load profile:", err);
