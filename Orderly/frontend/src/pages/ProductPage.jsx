@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { getGuestCartEmail } from "../api/orders";
 
 const ProductPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const accessToken = localStorage.getItem("accessToken");
+
+  const editItemId = searchParams.get('editItem');
+  const editVariantId = Number(searchParams.get('variantId'));
+  const editModifierIds = searchParams.get('modifiers')
+    ? searchParams.get('modifiers').split(',').map(Number)
+    : [];
+  const isEditMode = Boolean(editItemId);
+
 
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
@@ -38,7 +50,10 @@ const ProductPage = () => {
         setVariants(v);
 
         if (v.length > 0) {
-          setSelectedVariant(v[0]);
+          const preSelected = editVariantId
+            ? v.find(variant => variant.id === editVariantId) || v[0]
+            : v[0];
+          setSelectedVariant(preSelected);
         }
 
         setLoading(false);
@@ -67,7 +82,21 @@ const ProductPage = () => {
         const data = await res.json();
 
         setModifierGroups(data.groups || []);
-        setSelectedOptions({});
+
+        if (isEditMode && editModifierIds.length > 0) {
+          const preSelected = {};
+          for (const group of data.groups || []) {
+            const matchingIds = group.options
+              .map(o => o.id)
+              .filter(optId => editModifierIds.includes(optId));
+            if (matchingIds.length > 0) {
+              preSelected[group.id] = matchingIds;
+            }
+          }
+          setSelectedOptions(preSelected);
+        } else {
+          setSelectedOptions({});
+        }
       } catch (err) {
         console.error("Error loading modifiers:", err);
       }
@@ -124,6 +153,91 @@ const ProductPage = () => {
   const totalPrice = basePrice + modifiersTotal;
 
   // ----------------------------------------------------
+  // ADD TO CART LOGIC
+  // ----------------------------------------------------
+  const guestEmail = accessToken ? null : getGuestCartEmail();
+
+  async function getDraftOrder() {
+    const res = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+      },
+      body: JSON.stringify(guestEmail ? { guestEmail } : {})
+    });
+    return res.json();
+  }
+
+  async function addItemToOrder(variantId, quantity) {
+    const res = await fetch("http://localhost:8000/api/v1/orders/items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+      },
+      body: JSON.stringify({
+        variantId,
+        quantity,
+        ...(guestEmail && { guestEmail })
+      })
+    });
+    return res.json();
+  }
+
+  async function addModifiers(orderItemId) {
+    const allSelected = Object.values(selectedOptions).flat();
+
+    for (const modifierId of allSelected) {
+      await fetch(
+        `http://localhost:8000/api/v1/orders/items/${orderItemId}/modifiers`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+          },
+          body: JSON.stringify({
+            modifierId,
+            quantity: 1,
+            ...(guestEmail && { guestEmail })
+          })
+        }
+      );
+    }
+  }
+
+  async function handleAddToCart() {
+    try {
+      if (isEditMode) {
+        await fetch(`http://localhost:8000/api/v1/orders/items/${editItemId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+          },
+          body: JSON.stringify({
+            quantity: 0,
+            ...(guestEmail && { guestEmail })
+          })
+        });
+      }
+
+      await getDraftOrder();
+      const item = await addItemToOrder(selectedVariant.id, 1);
+
+      if (selectedIds.length > 0) {
+        await addModifiers(item.orderItemId);
+      }
+
+      window.dispatchEvent(new Event("cart-updated"));
+      navigate("/cart");
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
+  }
+
+  // ----------------------------------------------------
   // Render
   // ----------------------------------------------------
   if (loading) return <div style={{ padding: "2rem" }}>Loading…</div>;
@@ -133,10 +247,12 @@ const ProductPage = () => {
     <div className="ind-product-pg">
       <h1>{product.name}</h1>
 
+      {product.description && <p className="prod-desc2">{product.description}</p>}
+
       <div className="img">Placeholder</div>
 
       {/* ================================
-          VARIANT SECTION (wrapped)
+          VARIANT SECTION
          ================================ */}
       <div className="variant-wrapper">
         {variants.length > 1 && (
@@ -163,7 +279,7 @@ const ProductPage = () => {
       </div>
 
       {/* ================================
-          MODIFIER SECTION (wrapped)
+          MODIFIER SECTION
          ================================ */}
       <div className="prod-opts">
         {loadingModifiers && <p>Loading options…</p>}
@@ -227,16 +343,14 @@ const ProductPage = () => {
       {/* ================================
           PRICE + ADD TO CART
          ================================ */}
-      <p className="price">Total: ${totalPrice.toFixed(2)}</p>
+      <p className="price-label">Total: <span className="price">${totalPrice.toFixed(2)}</span></p>
 
-      {selectedVariant && Number(selectedVariant.stockQuantity) === 0 ? (
+      {selectedVariant && selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
       ) : (
-        <div className="add-to-cart">
-          <button>-</button>
-          <p className="nobuff">0</p>
-          <button>+</button>
-        </div>
+        <button className="add-to-cart-btn" onClick={handleAddToCart}>
+          {isEditMode ? "Update Item" : "Add to Cart"}
+        </button>
       )}
     </div>
   );

@@ -169,12 +169,16 @@ def test_get_order_detail_success(api_client, customer_user, submitted_order):
 
 
 @pytest.mark.django_db
-def test_get_order_detail_requires_authentication(api_client, submitted_order):
+def test_get_order_detail_requires_guest_email_for_unauthenticated_user(api_client, submitted_order):
     response = api_client.get(
         f"/api/v1/orders/{submitted_order.id}"
     )
 
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.data == {
+        "error": "INVALID_INPUT",
+        "message": "guestEmail is required for guest cart access.",
+    }
 
 
 @pytest.mark.django_db

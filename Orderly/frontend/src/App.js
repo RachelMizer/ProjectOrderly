@@ -25,6 +25,10 @@ import ProductPage from "./pages/ProductPage";
 import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 
+import CartPage from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+
+
 // Admin Components
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -50,11 +54,13 @@ function getStoredUser() {
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
+  const [cartCount, setCartCount] = useState(0);
 
   const user = getStoredUser();
   const role = user?.role?.toUpperCase();
   const firstName = user?.firstName || "";
 
+  // Load profile on login
   useEffect(() => {
     async function loadProfile() {
       const token = localStorage.getItem("accessToken");
@@ -69,7 +75,7 @@ function AppContent() {
 
         if (response.ok) {
           const profile = await response.json();
-          const existingUser = getStoredUser();
+          const existingUser = getStoredUser() || {};
 
           const mergedUser = {
             ...existingUser,
@@ -89,12 +95,59 @@ function AppContent() {
     }
   }, [loggedIn]);
 
+  // Fetch cart count
+  async function fetchCartCount() {
+    const token = localStorage.getItem("accessToken");
+    const guestEmail = !token ? localStorage.getItem("guestCartEmail") : null;
+
+    if (!token && !guestEmail) { setCartCount(0); return; }
+
+    try {
+      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify(guestEmail ? { guestEmail } : {})
+      });
+
+      const draft = await draftRes.json();
+      if (!draft.id) { setCartCount(0); return; }
+
+      const detailUrl = guestEmail
+        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+
+      const detailRes = await fetch(detailUrl, {
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+      });
+
+      const data = await detailRes.json();
+      const totalQty = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(totalQty);
+
+    } catch {
+      setCartCount(0);
+    }
+  }
+
+  // Update cart count on login, logout, or cart events
+  useEffect(() => {
+    fetchCartCount();
+
+    window.addEventListener("cart-updated", fetchCartCount);
+    return () => window.removeEventListener("cart-updated", fetchCartCount);
+  }, [loggedIn]);
+
+  // Logout
   async function handleLogout() {
     try {
       await logout();
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
       setLoggedIn(false);
+      setCartCount(0);
       alert("Successfully logged out");
       navigate("/login");
     } catch (error) {
@@ -146,20 +199,23 @@ function AppContent() {
           </>
         )}
 
-        <img src="/img/ico_cart.png" alt="cart" />
-        <p className="cart-PH">Cart</p>
+        <div className="cart-nav-item">
+          <img src="/img/ico_cart.png" alt="cart" />
+          <Link to="/cart">Cart</Link>
+          {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+        </div>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<StoreFront />} />
-        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
-        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-        <Route path="/password-reset" element={<ResetPasswordRequest />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/product/:id" element={<ProductPage />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/orders/:orderId" element={<OrderDetails />} />
-        <Route path="/profile" element={<Profile />} />
+        <Routes>
+          <Route path="/" element={<StoreFront />} />
+          <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+          <Route path="/password-reset" element={<ResetPasswordRequest />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
+          <Route path="/profile" element={<Profile />} />
 
         <Route element={<ProtectedAdminRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -169,14 +225,18 @@ function AppContent() {
             <Route path="inventory" element={<AdminInventoryPage />} />
           </Route>
         </Route>
-      </Routes>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<Checkout />} />
+        </Routes>
 
       <footer>
-        <p>© Quick Sip Cafe 2026</p>
+        <p>All Content © Quick Sip Cafe 2026</p>
+        <p>Powered by Orderly</p>
       </footer>
     </div>
   );
 }
+
 
 function App() {
   return (

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from accounts.models import CustomerProfile, UserRole, UserRoleChoices
 from catalog.models import Category, Product, ProductVariant
-from orders.models import Order, OrderItem, OrderStatus
+from orders.models import OrderItem, OrderStatus
 from orders.services import (
     add_item_to_order,
     get_or_create_draft_order,
@@ -14,6 +14,13 @@ from orders.services import (
 )
 
 User = get_user_model()
+
+
+WAKE_COUNTY_TAX_RATE = Decimal("0.0725")
+
+
+def calc_tax(amount: Decimal) -> Decimal:
+    return (amount * WAKE_COUNTY_TAX_RATE).quantize(Decimal("0.01"))
 
 
 @pytest.fixture
@@ -66,6 +73,7 @@ def test_get_or_create_draft_order_creates_once(customer_user):
 
     assert created is True
     assert order.status == OrderStatus.DRAFT
+    assert order.customer == customer_user.customer_profile
 
     same_order, created_again = get_or_create_draft_order(customer_user.customer_profile)
 
@@ -74,29 +82,66 @@ def test_get_or_create_draft_order_creates_once(customer_user):
 
 
 @pytest.mark.django_db
-def test_add_item_to_order_merges_duplicate_variant(customer_user, variant):
+def test_add_item_to_order_creates_separate_rows_for_duplicate_variant(customer_user, variant):
     order, _ = get_or_create_draft_order(customer_user.customer_profile)
 
     item1 = add_item_to_order(order, variant, 1)
     item2 = add_item_to_order(order, variant, 2)
 
-    item1.refresh_from_db()
-    assert item1.id == item2.id
-    assert item1.quantity == 3
-    assert OrderItem.objects.filter(order=order, variant=variant).count() == 1
+    assert item1.id != item2.id
+    assert item1.quantity == 1
+    assert item2.quantity == 2
+    assert item1.unit_price_charged == Decimal("3.25")
+    assert item2.unit_price_charged == Decimal("3.25")
+    assert item1.item_total == Decimal("3.25")
+    assert item2.item_total == Decimal("6.50")
+    assert OrderItem.objects.filter(order=order, variant=variant).count() == 2
 
 
 @pytest.mark.django_db
-def test_recalculate_order_totals_uses_sum_of_item_totals(customer_user, variant):
+def test_recalculate_order_totals_uses_sum_of_item_totals_and_tax(customer_user, variant):
     order, _ = get_or_create_draft_order(customer_user.customer_profile)
     add_item_to_order(order, variant, 2)
 
     recalculate_order_totals(order)
     order.refresh_from_db()
 
-    assert order.subtotal == Decimal("6.50")
-    assert order.tax_amount == Decimal("0.00")
-    assert order.total_payment_due == Decimal("6.50")
+    expected_subtotal = Decimal("6.50")
+    expected_tax = calc_tax(expected_subtotal)
+
+    assert order.subtotal == expected_subtotal
+    assert order.tax_amount == expected_tax
+    assert order.total_payment_due == expected_subtotal + expected_tax
+
+
+@pytest.mark.django_db
+def test_recalculate_order_totals_sums_multiple_line_items(customer_user, variant):
+    order, _ = get_or_create_draft_order(customer_user.customer_profile)
+    add_item_to_order(order, variant, 1)
+    add_item_to_order(order, variant, 2)
+
+    recalculate_order_totals(order)
+    order.refresh_from_db()
+
+    expected_subtotal = Decimal("9.75")
+    expected_tax = calc_tax(expected_subtotal)
+
+    assert order.subtotal == expected_subtotal
+    assert order.tax_amount == expected_tax
+    assert order.total_payment_due == expected_subtotal + expected_tax
+
+
+@pytest.mark.django_db
+def test_update_order_item_quantity_updates_item_total(customer_user, variant):
+    order, _ = get_or_create_draft_order(customer_user.customer_profile)
+    item = add_item_to_order(order, variant, 2)
+
+    updated_item = update_order_item_quantity(item, 4)
+
+    assert updated_item is not None
+    updated_item.refresh_from_db()
+    assert updated_item.quantity == 4
+    assert updated_item.item_total == Decimal("13.00")
 
 
 @pytest.mark.django_db
