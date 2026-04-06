@@ -44,20 +44,22 @@ CI Regression - Customer Can Reach Checkout And Place Order
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Your Cart    10s
     Wait Until Page Contains Element    css=.checkout-btn    10s
-
     Click Element    css=.checkout-btn
 
     Wait Until Page Contains    Checkout    10s
-    Wait Until Page Contains Element
-    ...    css=.submit-order-btn
-    ...    10s
 
+    Input Text    id=name       CI Test User
+    Input Text    id=phone      9195551234
+    Input Text    id=address    123 Test Street
+    Input Text    id=city       Raleigh
+    Input Text    id=state      NC
+    Input Text    id=zip        27601
+    Select From List By Value    id=paymentType    CASH
+
+    Wait Until Page Contains Element    css=.submit-order-btn    10s
     Click Element    css=.submit-order-btn
 
-    # 🔥 KEY FIX: wait for redirect instead of text
     Wait Until Location Contains    /orders/    15s
-
-    # Then verify page content AFTER navigation
     Wait Until Page Contains    Status:    10s
     Page Should Contain    Items
     Page Should Contain    Totals
