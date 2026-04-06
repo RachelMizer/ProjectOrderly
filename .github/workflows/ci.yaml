@@ -214,7 +214,7 @@ jobs:
         working-directory: Orderly/frontend
         run: |
           robot --outputdir robot/results robot/tests/ci || echo "ROBOT_EXIT_CODE=$?" >> $GITHUB_ENV
-        continue-on-error: true # current suite has two known blockers:
+          # current suite has two known blockers:
                                  # 1) mixed libraries — some tests use Browser (Playwright), others use SeleniumLibrary
                                  # 2) robotframework-seleniumlibrary is not in requirements.txt; robotframework-browser is
                                  # Sprint 5: Kenny delivers CI-safe subset (SeleniumLibrary, headless, seeded data);
