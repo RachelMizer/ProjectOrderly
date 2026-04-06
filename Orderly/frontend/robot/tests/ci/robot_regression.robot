@@ -39,19 +39,13 @@ CI Regression - Customer Can Reach Checkout And Place Order
     Authenticated Navigation Should Be Visible
     Add Customized Breakfast Sandwich To Cart
 
-    # 🔥 NEW: verify item was actually added BEFORE navigation
     Wait Until Page Contains    Breakfast Sandwich    10s
 
     Go To    ${BASE_URL}/cart
-    Wait Until Page Contains    Cart    10s
+    Wait Until Page Contains    Your Cart    10s
+    Wait Until Page Contains Element    css=.checkout-btn    10s
 
-    # Now this should exist
-    Wait Until Page Contains Element
-    ...    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
-    ...    10s
-
-    Click Element
-    ...    xpath=(//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')])[1]
+    Click Element    css=.checkout-btn
 
     Wait Until Page Contains    Checkout    10s
     Wait Until Page Contains Element
