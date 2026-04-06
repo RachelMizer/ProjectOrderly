@@ -63,10 +63,8 @@ Open Product By Exact Name
     Go To    ${BASE_URL}/
     Wait Until Page Contains    Filter the Menu    15s
     Wait Until Page Contains Element    css=.product-card    15s
-
-    ${product_xpath}=    Set Variable    xpath=//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]
-    Wait Until Page Contains Element    ${product_xpath}    15s
-    Click Element    xpath=(${product_xpath}//a[contains(@class,'view-link') or contains(.,'View')])[1]
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]    15s
+    Click Element    xpath=(//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]//a[contains(@class,'view-link') or contains(normalize-space(.),'View')])[1]
 
 Select Required Breakfast Sandwich Modifiers
     Wait Until Page Contains    Breakfast Sandwich    15s

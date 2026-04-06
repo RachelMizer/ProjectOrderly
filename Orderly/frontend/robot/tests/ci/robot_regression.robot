@@ -21,13 +21,6 @@ CI Regression - Product Browsing Loads Seeded Storefront
 
 CI Regression - Customer Can Add Customized Item To Cart
     Login As Test User
-    Authenticated Navigation Should Be Visible
-    Add Customized Breakfast Sandwich To Cart
-    Wait Until Page Contains    Cart    10s
-    Page Should Contain    Breakfast Sandwich
-
-CI Regression - Customer Can Add Customized Item To Cart
-    Login As Test User
     Add Breakfast Sandwich With Modifiers To Cart
     Go To Cart Page
     Cart Should Contain At Least One Item
