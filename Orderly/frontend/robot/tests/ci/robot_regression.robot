@@ -39,22 +39,27 @@ CI Regression - Customer Can Reach Checkout And Place Order
     Authenticated Navigation Should Be Visible
     Add Customized Breakfast Sandwich To Cart
 
+    # 🔥 NEW: verify item was actually added BEFORE navigation
+    Wait Until Page Contains    Breakfast Sandwich    10s
+
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Cart    10s
 
-    ${checkout_link_count}=    Get Element Count    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
-    ${checkout_button_count}=    Get Element Count    xpath=//button[contains(normalize-space(.),'Checkout')]
-    Should Be True    ${checkout_link_count} > 0 or ${checkout_button_count} > 0
+    # Now this should exist
+    Wait Until Page Contains Element
+    ...    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
+    ...    10s
 
-    IF    ${checkout_link_count} > 0
-        Click Element    xpath=(//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')])[1]
-    ELSE
-        Click Element    xpath=(//button[contains(normalize-space(.),'Checkout')])[1]
-    END
+    Click Element
+    ...    xpath=(//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')])[1]
 
     Wait Until Page Contains    Checkout    10s
-    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]    10s
-    Click Element    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
+    Wait Until Page Contains Element
+    ...    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
+    ...    10s
+
+    Click Element
+    ...    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
 
     Wait Until Page Contains    Confirmation    15s
 
