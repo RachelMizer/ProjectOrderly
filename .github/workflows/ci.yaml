@@ -95,7 +95,11 @@ jobs:
 
       - name: Install dependencies
         working-directory: Orderly/frontend
-        run: npm install # WAS CI but does not work with current caching strategy for package-lock.json
+        run: npm ci
+
+      - name: Verify react-router-dom
+        working-directory: Orderly/frontend
+        run: npm ls react-router-dom
 
       - name: Run CI smoke tests
         working-directory: Orderly/frontend

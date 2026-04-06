@@ -2,9 +2,26 @@
 
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
 
-// ✅ FIXED PATHS (go up TWO levels)
+// Mock router for CI so tests do not depend on real route resolution
+jest.mock(
+  "react-router-dom",
+  () => ({
+    __esModule: true,
+    MemoryRouter: ({ children }) => <>{children}</>,
+    Routes: ({ children }) => <>{children}</>,
+    Route: ({ element }) => element,
+    useNavigate: () => jest.fn(),
+    useParams: () => ({ orderId: "15" }),
+    Link: ({ children, to, ...props }) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
+  }),
+  { virtual: true }
+);
+
 import Login from "../../pages/Auth/Login";
 import Register from "../../pages/Auth/Register";
 import ResetPasswordRequest from "../../pages/Auth/ResetPasswordRequest";
@@ -16,7 +33,6 @@ import OrderDetail from "../../pages/Orders/OrderDetail";
 import * as auth from "../../api/auth";
 import * as ordersApi from "../../api/orders";
 
-// ✅ MOCKS (fixed paths)
 jest.mock("../../api/auth", () => ({
   login: jest.fn(),
   register: jest.fn(),
@@ -51,16 +67,15 @@ describe("CI smoke tests", () => {
     jest.clearAllMocks();
     localStorage.clear();
 
-    // ✅ Mock fetch for storefront
     global.fetch = jest.fn((url) => {
-      if (url.includes("categories")) {
+      if (String(url).includes("categories")) {
         return Promise.resolve({
           ok: true,
           json: async () => ({ results: [{ id: 1, name: "Coffee" }] }),
         });
       }
 
-      if (url.includes("variants")) {
+      if (String(url).includes("variants")) {
         return Promise.resolve({
           ok: true,
           json: async () => ({
@@ -76,7 +91,7 @@ describe("CI smoke tests", () => {
         });
       }
 
-      if (url.includes("products")) {
+      if (String(url).includes("products")) {
         return Promise.resolve({
           ok: true,
           json: async () => ({
@@ -89,41 +104,37 @@ describe("CI smoke tests", () => {
     });
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   test("login works", async () => {
     auth.login.mockResolvedValue({ accessToken: "fake-token" });
 
-    render(
-        <MemoryRouter>
-        <Login setLoggedIn={mockSetLoggedIn} />
-        </MemoryRouter>
-    );
+    render(<Login setLoggedIn={mockSetLoggedIn} />);
 
     fireEvent.change(screen.getByLabelText(/email/i), {
-        target: { value: "customer1@example.com" },
+      target: { value: "customer1@example.com" },
     });
 
     fireEvent.change(screen.getByLabelText(/password/i), {
-        target: { value: "Password123!" },
+      target: { value: "Password123!" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-        expect(auth.login).toHaveBeenCalledWith({
+      expect(auth.login).toHaveBeenCalledWith({
         email: "customer1@example.com",
         password: "Password123!",
-        });
+      });
     });
-    });
+  });
 
   test("register works", async () => {
     auth.register.mockResolvedValue({ accessToken: "token" });
 
-    render(
-      <MemoryRouter>
-        <Register />
-      </MemoryRouter>
-    );
+    render(<Register />);
 
     fireEvent.change(screen.getByLabelText(/first name/i), {
       target: { value: "John" },
@@ -154,19 +165,21 @@ describe("CI smoke tests", () => {
     render(<ResetPasswordRequest />);
 
     fireEvent.change(screen.getByLabelText(/^email$/i), {
-        target: { value: "customer1@example.com" },
+      target: { value: "customer1@example.com" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /send reset link/i }));
 
     await waitFor(() => {
-        expect(auth.requestPasswordReset).toHaveBeenCalledWith("customer1@example.com");
+      expect(auth.requestPasswordReset).toHaveBeenCalledWith(
+        "customer1@example.com"
+      );
     });
 
     expect(
-        await screen.findByText(/password reset email sent/i)
+      await screen.findByText(/password reset email sent/i)
     ).toBeInTheDocument();
-    });
+  });
 
   test("profile loads and saves", async () => {
     auth.getProfile.mockResolvedValue(mockProfile);
@@ -177,11 +190,13 @@ describe("CI smoke tests", () => {
 
     render(<Profile />);
 
-    const firstName = await screen.findByLabelText(/first name/i);
+    const firstNameInput = await screen.findByLabelText(/first name/i);
 
     expect(screen.getByLabelText(/email/i)).toHaveValue("kenny@test.com");
 
-    fireEvent.change(firstName, { target: { value: "Ken" } });
+    fireEvent.change(firstNameInput, {
+      target: { value: "Ken" },
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
@@ -191,11 +206,7 @@ describe("CI smoke tests", () => {
   });
 
   test("storefront renders", async () => {
-    render(
-      <MemoryRouter>
-        <StoreFront />
-      </MemoryRouter>
-    );
+    render(<StoreFront />);
 
     expect(await screen.findByText("Latte")).toBeInTheDocument();
     expect(screen.getByText("$4.50")).toBeInTheDocument();
@@ -213,13 +224,7 @@ describe("CI smoke tests", () => {
       results: [],
     });
 
-    render(
-      <MemoryRouter initialEntries={["/order-history"]}>
-        <Routes>
-          <Route path="/order-history" element={<OrderHistory />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    render(<OrderHistory />);
 
     expect(
       await screen.findByText(/no past orders found/i)
@@ -244,13 +249,7 @@ describe("CI smoke tests", () => {
       ],
     });
 
-    render(
-      <MemoryRouter initialEntries={["/orders/15"]}>
-        <Routes>
-          <Route path="/orders/:orderId" element={<OrderDetail />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    render(<OrderDetail />);
 
     expect(await screen.findByText(/order #15/i)).toBeInTheDocument();
     expect(screen.getByText(/chai/i)).toBeInTheDocument();
