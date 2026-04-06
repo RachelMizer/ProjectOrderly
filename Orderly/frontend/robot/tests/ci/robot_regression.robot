@@ -49,14 +49,16 @@ CI Regression - Customer Can Reach Checkout And Place Order
 
     Wait Until Page Contains    Checkout    10s
     Wait Until Page Contains Element
-    ...    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
+    ...    css=.submit-order-btn
     ...    10s
 
-    Click Element
-    ...    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
+    Click Element    css=.submit-order-btn
 
-    Wait Until Page Contains    Order #    15s
-    Page Should Contain    Status:
+    # 🔥 KEY FIX: wait for redirect instead of text
+    Wait Until Location Contains    /orders/    15s
+
+    # Then verify page content AFTER navigation
+    Wait Until Page Contains    Status:    10s
     Page Should Contain    Items
     Page Should Contain    Totals
 
