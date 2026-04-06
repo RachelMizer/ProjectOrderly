@@ -102,10 +102,9 @@ jobs:
         run: npm run lint
         continue-on-error: true # linting errors present in codebase — remove once resolved by frontend team
 
-      - name: Run npm tests
+      - name: Run CI frontend tests
         working-directory: Orderly/frontend
-        run: npm test -- --watchAll=false
-        continue-on-error: true # test failures present in codebase — remove once resolved by frontend team
+        run: npm run test:ci
 
   # -------------------------------------------------------
   # E2E / ROBOT FRAMEWORK — Frontend + Backend together
