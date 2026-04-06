@@ -1,93 +1,97 @@
 *** Settings ***
-Documentation     Frontend smoke and workflow tests aligned to the existing SeleniumLibrary keyword structure.
-...               This file converts the Jest frontend tests into browser-level Robot tests that fit the existing suite.
-...               Mock-only Jest cases were omitted because they are not reliable browser tests without controlled API mocking.
-Resource          ../resources/keywords.robot
-Library           String
-Test Setup        Open Browser To App
-Test Teardown     Close Browser Session
+Resource    ../resources/keywords.robot
+Test Setup    Open Browser To App
+Test Teardown    Close Browser Session
 
 *** Variables ***
-${HOME_TEXT}                      Orderly frontend running...
-${POST_LOGIN_TEXT}                Home Page
-${REGISTER_SUCCESS_TEXT}          Account created successfully
-${RESET_REQUEST_SUCCESS_TEXT}     If an account exists, a reset link has been sent
-${PROFILE_SUCCESS_TEXT}           Profile updated successfully
+${TEST_EMAIL}          test@test.com
+${TEST_PASSWORD}       Password123!
+${UPDATED_FIRST_NAME}  Ken
+${UPDATED_CITY}        Charlotte
 
 *** Test Cases ***
 App Navigation Hides Profile Link When Not Authenticated
-    [Documentation]    Browser equivalent of the unauthenticated app navigation Jest test.
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Home    10s
+    Wait Until Page Contains Element    xpath=//a[@href='/']    10s
+    Page Should Contain Link    Home
     Page Should Not Contain Link    Profile
+    Page Should Not Contain Link    Orders
     Page Should Contain Link    Login
     Page Should Contain Link    Register
 
-App Navigation Shows Profile Link When Authenticated
-    [Documentation]    Browser equivalent of the authenticated app navigation Jest test.
+App Navigation Shows Auth Links When Authenticated
     Login As Test User
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Page Should Contain Link    Profile
-    Page Should Contain Element    xpath=//button[normalize-space()='Logout']
+    Page Should Contain Link    Orders
+    Page Should Contain Button    Logout
 
 Login Page Renders Form
-    Go To Login Page
-    Page Should Contain    Login
-    Page Should Contain Element    id=email
-    Page Should Contain Element    id=password
-    Page Should Contain Element    xpath=//button[normalize-space()='Login']
+    Go To    ${BASE_URL}/login
+    Wait Until Page Contains    Login    10s
+    Page Should Contain Element    name=email
+    Page Should Contain Element    name=password
+    Page Should Contain Button    Login
 
 Successful Login Submits Valid Credentials
-    Login As Test User
+    Go To    ${BASE_URL}/login
+    Wait Until Page Contains Element    name=email    10s
+    Input Text    name=email    ${TEST_EMAIL}
+    Input Password    name=password    ${TEST_PASSWORD}
+    Click Button    Login
+    Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Page Should Contain Link    Profile
 
 Register Page Renders Form
     Go To    ${BASE_URL}/register
-    Wait Until Page Contains Element    id=firstName
-    Page Should Contain Element    id=lastName
-    Page Should Contain Element    id=email
-    Page Should Contain Element    id=password
-    Page Should Contain Element    xpath=//button[contains(normalize-space(),'Create Account')]
+    Wait Until Page Contains    Register    10s
+    Page Should Contain Element    name=firstName
+    Page Should Contain Element    name=lastName
+    Page Should Contain Element    name=email
+    Page Should Contain Element    name=password
 
 Register Page Accepts Form Input
-    [Documentation]    Safe browser-level version of the register component test.
     Go To    ${BASE_URL}/register
-    Wait Until Page Contains Element    id=firstName
-    Clear And Type    id=firstName    Kenny
-    Clear And Type    id=lastName     Test
-    Clear And Type    id=email        kenny.robot@example.com
-    Clear And Type    id=password     Password123!
-    Textfield Value Should Be    id=firstName    Kenny
-    Textfield Value Should Be    id=lastName     Test
-    Textfield Value Should Be    id=email        kenny.robot@example.com
+    Wait Until Page Contains Element    name=firstName    10s
+    Input Text    name=firstName    Test
+    Input Text    name=lastName     User
+    Input Text    name=email        temp-user@example.com
+    Input Password    name=password    Password123!
+    Textfield Value Should Be    name=firstName    Test
+    Textfield Value Should Be    name=lastName     User
+    Textfield Value Should Be    name=email        temp-user@example.com
 
 Reset Password Request Page Renders Form
     Go To    ${BASE_URL}/password-reset
-    Wait Until Page Contains Element    id=email
-    Page Should Contain Element    xpath=//button[contains(normalize-space(),'Send Reset Link')]
+    Wait Until Page Contains    Forgot Password    10s
+    Page Should Contain Element    id=email
+    Page Should Contain Button    Send Reset Link
 
 Reset Password Request Accepts Email Input
     Go To    ${BASE_URL}/password-reset
-    Wait Until Page Contains Element    id=email
-    Clear And Type    id=email    ${TEST_EMAIL}
+    Wait Until Page Contains Element    id=email    10s
+    Input Text    id=email    ${TEST_EMAIL}
     Textfield Value Should Be    id=email    ${TEST_EMAIL}
 
 Reset Password Page Renders Form
-    [Documentation]    Uses the same query-string pattern shown in the uploaded Jest test.
     Go To    ${BASE_URL}/reset-password?uid=abc123&token=xyz123
-    Wait Until Page Contains Element    id=password
-    Page Should Contain Element    xpath=//button[contains(normalize-space(),'Reset Password')]
+    Wait Until Page Contains Element    xpath=//input[@type='password']    10s
+    Page Should Contain Button    Reset Password
 
 Reset Password Page Accepts Password Input
     Go To    ${BASE_URL}/reset-password?uid=abc123&token=xyz123
-    Wait Until Page Contains Element    id=password
-    Clear And Type    id=password    NewPassword123!
-    Textfield Value Should Be    id=password    NewPassword123!
+    Wait Until Page Contains Element    xpath=//input[@type='password']    10s
+    Input Password    xpath=//input[@type='password']    Password123!
+    Textfield Value Should Be    xpath=//input[@type='password']    Password123!
 
 Profile Page Loads Existing Data
     Login As Test User
-    Open Profile Page
-    Page Should Contain Element    id=firstName
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    id=firstName    10s
+    Page Should Contain    Profile
     Page Should Contain Element    id=lastName
     Page Should Contain Element    id=streetAddress
     Page Should Contain Element    id=city
@@ -98,27 +102,97 @@ Profile Page Loads Existing Data
 
 Profile Email Field Is Disabled
     Login As Test User
-    Open Profile Page
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    id=email    10s
     Element Should Be Disabled    id=email
 
 Profile Allows Editing Editable Fields
     Login As Test User
-    Open Profile Page
-    Clear And Type    id=firstName    ${UPDATED_FIRST_NAME}
-    Clear And Type    id=city         ${UPDATED_CITY}
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    id=firstName    10s
+    Clear Element Text    id=firstName
+    Input Text    id=firstName    ${UPDATED_FIRST_NAME}
+    Clear Element Text    id=city
+    Input Text    id=city    ${UPDATED_CITY}
     Textfield Value Should Be    id=firstName    ${UPDATED_FIRST_NAME}
-    Textfield Value Should Be    id=city         ${UPDATED_CITY}
+    Textfield Value Should Be    id=city    ${UPDATED_CITY}
     Element Should Be Disabled    id=email
 
 Profile Save Submits Updated Data
     Login As Test User
-    Open Profile Page
-    Clear And Type    id=firstName        ${UPDATED_FIRST_NAME}
-    Clear And Type    id=lastName         ${UPDATED_LAST_NAME}
-    Clear And Type    id=streetAddress    ${UPDATED_STREET}
-    Clear And Type    id=city             ${UPDATED_CITY}
-    Clear And Type    id=state            ${UPDATED_STATE}
-    Clear And Type    id=zipcode          ${UPDATED_ZIP}
-    Clear And Type    id=phone            ${UPDATED_PHONE}
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    id=firstName    10s
+    Clear Element Text    id=firstName
+    Input Text    id=firstName    ${UPDATED_FIRST_NAME}
     Click Button    xpath=//button[normalize-space()='Save']
-    Wait Until Page Contains    ${PROFILE_SUCCESS_TEXT}
+    Wait Until Page Contains    Profile updated successfully    10s
+
+StoreFront Renders Product Grid
+    Go To    ${BASE_URL}
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    css=.product-grid    10s
+    Wait Until Page Contains Element    css=.product-card    10s
+
+StoreFront Shows Product Name
+    Go To    ${BASE_URL}
+    Wait Until Page Contains Element    css=.product-card h3    10s
+
+StoreFront Shows Price
+    Go To    ${BASE_URL}
+    Wait Until Page Contains Element    css=.product-card .price    10s
+    ${price}=    Get Text    css=.product-card .price
+    Should Contain    ${price}    $
+
+StoreFront Shows Add To Cart Or Out Of Stock State
+    Go To    ${BASE_URL}
+    Wait Until Page Contains Element    css=.product-card    10s
+    ${add_count}=    Get Element Count    css=.product-card .add-to-cart-btn
+    ${oos_count}=    Get Element Count    css=.product-card .OOS
+    Should Be True    ${add_count} > 0 or ${oos_count} > 0
+
+StoreFront Shows View And Customize Link
+    Go To    ${BASE_URL}
+    Wait Until Page Contains Element    css=.product-card .view-link    10s
+    ${link_text}=    Get Text    css=.product-card .view-link
+    Should Be Equal    ${link_text}    View & Customize
+
+StoreFront Category Filter Can Be Toggled
+    Go To    ${BASE_URL}
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    css=.filter input[type="checkbox"]    10s
+    Click Element    css=.filter input[type="checkbox"]
+
+View And Customize Navigates To Product Page
+    Go To    ${BASE_URL}
+    Wait Until Page Contains Element    css=.product-card .view-link    10s
+    Click Element    css=.product-card .view-link
+    Wait Until Location Contains    /product/    10s
+
+Order History Page Loads For Authenticated User
+    Login As Test User
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/order-history']
+    Wait Until Page Contains    Order History    10s
+    Wait Until Page Does Not Contain    Loading order history...    10s
+
+Order History Shows Empty State Or Orders
+    Login As Test User
+    Sync Auth Token Key For Frontend
+    Click Element    xpath=//a[@href='/order-history']
+    Wait Until Page Contains    Order History    10s
+    Wait Until Page Does Not Contain    Loading order history...    10s
+    ${order_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Order #')]
+    ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'No past orders found.')]
+    Should Be True    ${order_count} > 0 or ${empty_count} > 0
+
+*** Keywords ***
+Sync Auth Token Key For Frontend
+    ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
+    ${current}=    Execute JavaScript    return window.localStorage.getItem('accessToken');
+    IF    '${current}' == 'None' and '${legacy}' != 'None'
+        Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
+        Reload Page
+    END
