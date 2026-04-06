@@ -181,6 +181,12 @@ Complete all backend + required frontend for a functional admin system.
 - F5.4.2 Display metrics
 - F5.4.3 Handle loading/errors
 
+### Acceptance Criteria
+- Admin can view, add, and edit suppliers through the UI
+- Supplier can be linked to a product from the product edit form
+- Supplier list reflects changes immediately without page reload
+- Unauthorized users cannot access the page
+
 ---
 
 ---
@@ -193,6 +199,13 @@ Complete all backend + required frontend for a functional admin system.
 - B5.5.1 Create supplier endpoints
 - B5.5.2 Add validation
 - B5.5.3 Link supplier to products
+
+### Acceptance Criteria
+- Suppliers can be created and edited via API
+- Products can reference a supplier
+- Name validation enforced; returns 400 if missing
+- Restricted to business role
+
 
 ---
 
