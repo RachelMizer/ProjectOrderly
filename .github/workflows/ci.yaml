@@ -95,7 +95,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: Orderly/frontend
-        run: npm ci
+        run: npm install
 
       - name: Verify react-router-dom
         working-directory: Orderly/frontend
