@@ -52,9 +52,8 @@ export default function OrderHistory({}){
 
     function renderOrderItems(order) {
         return (
-            <div
+            <div className="order-hist-item"
                 key={order.id}
-                style={{ marginBottom: "1rem", cursor: "pointer"}}
                 onClick={function (){
                     handleOrderClick(order.id);
                 }}
@@ -68,10 +67,8 @@ export default function OrderHistory({}){
                 </p>
 
                 <p>Status: {order.status}</p>
-
                 <p>Total: ${order.totalDue}</p>
 
-                <hr />
             </div>
         );
     }
@@ -93,19 +90,17 @@ export default function OrderHistory({}){
     }
 
     return (
-        <div>
+        <div className="order-hist-pg">
             <h2>Order History</h2>
 
-            {renderOrders()}
+            <div>{renderOrders()}</div>
 
-            <div style={{ margin: "1rem" }}>
+            <div>
                 <button onClick={handlePrevious} disabled={!previous}>
                     Previous
                 </button>
 
-                <span style={{ margin: "0 1rem" }}>
-                    Page {page}
-                </span>
+                    <span className="pg-num">Page {page}</span>
 
                 <button onClick={handleNext} disabled={!next}>
                     Next

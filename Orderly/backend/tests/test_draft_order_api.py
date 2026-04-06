@@ -114,10 +114,14 @@ def test_post_draft_is_scoped_to_authenticated_customer(
 
 
 @pytest.mark.django_db
-def test_post_draft_requires_authentication(api_client):
+def test_post_draft_requires_guest_email_for_unauthenticated_user(api_client):
     response = api_client.post("/api/v1/orders/draft")
 
-    assert response.status_code == 401
+    assert response.status_code == 400
+    assert response.data == {
+        "error": "INVALID_INPUT",
+        "message": "guestEmail is required for guest carts.",
+    }
 
 
 @pytest.mark.django_db
