@@ -15,7 +15,7 @@ jobs:
   backend:
     name: Backend Tests (Django / pytest)
     runs-on: ubuntu-latest
- 
+
     services:
       mysql:
         image: mysql:8.0
@@ -31,25 +31,25 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
- 
+
     env:
       SECRET_KEY: ci-insecure-key-for-testing-only
       DEBUG: "True"
- 
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
- 
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: "pip"
- 
+
       - name: Install dependencies
         working-directory: Orderly
         run: pip install -r requirements.txt
-      
+
       # Tells MySQL to allow 'orderly_user' full permissions so Django can create
       # `test_orderly` when pytest runs.
       - name: Grant test database permissions
@@ -107,22 +107,94 @@ jobs:
         run: npm test -- --watchAll=false
         continue-on-error: true # test failures present in codebase — remove once resolved by frontend team
 
-      # -------------------------------------------------------
-      # ROBOT FRAMEWORK — Frontend E2E / Acceptance Tests
-      # -------------------------------------------------------
-      - name: Set up Python for Robot Framework
+  # -------------------------------------------------------
+  # E2E / ROBOT FRAMEWORK — Frontend + Backend together
+  # -------------------------------------------------------
+  e2e:
+    name: E2E Tests (Robot Framework)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: orderly
+          MYSQL_USER: orderly_user
+          MYSQL_PASSWORD: localdevpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      SECRET_KEY: ci-insecure-key-for-testing-only
+      DEBUG: "True"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: "pip"
 
-      - name: Install dependencies (includes Robot Framework)
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Orderly/frontend/package-lock.json
+
+      - name: Install Python dependencies (includes Robot Framework)
         working-directory: Orderly
         run: pip install -r requirements.txt
+
+      - name: Install frontend dependencies
+        working-directory: Orderly/frontend
+        run: npm install # WAS CI but does not work with current caching strategy for package-lock.json
+
+      # Tells MySQL to allow 'orderly_user' full permissions so Django can create
+      # `test_orderly` when pytest runs.
+      - name: Grant test database permissions
+        run: |
+          mysql -u root -proot -h 127.0.0.1 -e "
+            GRANT ALL PRIVILEGES ON \`test_orderly\`.* TO 'orderly_user'@'%';
+            GRANT ALL PRIVILEGES ON \`orderly\`.* TO 'orderly_user'@'%';
+            FLUSH PRIVILEGES;
+          "
+
+      - name: Run migrations
+        working-directory: Orderly/backend
+        run: python manage.py migrate --noinput # avoids any interactive prompts during migration
+
+      # Seed the database with reproducible test data for CI.
+      # seed_data creates users (customer1-5 / Password123!), products, variants,
+      # categories, suppliers, and orders. Required for Robot Framework E2E tests in Sprint 5.
+      - name: Seed database
+        working-directory: Orderly/backend
+        run: python manage.py seed_data --seed=42
 
       # rfbrowser init is disabled — the Robot suite is being standardized on SeleniumLibrary in Sprint 5.
       # The Browser/Playwright-based tests will be retired. Re-evaluate this step during Sprint 5 workflow updates.
       # - name: Initialize Robot Framework Browser library
       #   run: rfbrowser init
+
+      # Start the Django dev server in the background and wait until
+      # localhost:8000 is accepting connections before running Robot tests.
+      # Without this, frontend auth/catalog requests fail even if React is up.
+      - name: Start Django dev server
+        working-directory: Orderly/backend
+        run: |
+          python manage.py runserver 0.0.0.0:8000 &
+          echo "Waiting for Django dev server on localhost:8000..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8000 > /dev/null 2>&1; do sleep 2; done'
+          echo "Django dev server is up."
 
       # Start the React dev server in the background and wait until
       # localhost:3000 is accepting connections before running Robot tests.
