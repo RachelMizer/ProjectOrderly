@@ -55,7 +55,10 @@ CI Regression - Customer Can Reach Checkout And Place Order
     Click Element
     ...    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
 
-    Wait Until Page Contains    Confirmation    15s
+    Wait Until Page Contains    Order #    15s
+    Page Should Contain    Status:
+    Page Should Contain    Items
+    Page Should Contain    Totals
 
 CI Regression - Submitted Order Appears In Order History
     Login As Test User
