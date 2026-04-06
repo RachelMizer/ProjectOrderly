@@ -144,8 +144,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    # MUST CHANGE LATER
+    
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "EXCEPTION_HANDLER": "accounts.api.exceptions.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
