@@ -33,7 +33,10 @@ from orders.serializers import (
 from orders.services import (
     add_item_to_order,
     get_or_create_draft_order,
+    get_or_create_guest_draft_order,
     order_item_belongs_to_customer,
+    order_item_belongs_to_guest,
+    get_order_for_guest,
     recalculate_order_totals,
     submit_order,
     update_order_item_quantity,
@@ -48,46 +51,47 @@ from orders.services import (
 
 class DraftOrderView(APIView):
     """
-    Create or retrieve a customer's draft order.
+    Create or retrieve a draft order.
 
     Endpoint:
         POST /api/v1/orders/draft
 
     Behavior:
-        - Returns the customer's current draft order
-        - If no draft order exists, one is created automatically
-        - Returns only the draft order id and whether it was newly created
+        - Authenticated: returns or creates the customer's draft order
+        - Guest: requires guestEmail in body; returns or creates a guest draft order
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_customer_profile(self, request):
-        """
-        Retrieve the authenticated user's CustomerProfile.
-
-        Returns None if the user does not have a customer profile.
-        """
         try:
             return request.user.customer_profile
         except CustomerProfile.DoesNotExist:
             return None
 
     def post(self, request):
-        """
-        Handle POST requests to create or retrieve the draft order.
-        """
-        customer_profile = self.get_customer_profile(request)
-
-        if not customer_profile:
-            return Response(
-                {
-                    "error": "NOT_AUTHORIZED",
-                    "message": "Authenticated user does not have a customer profile.",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        order, created = get_or_create_draft_order(customer_profile)
+        if request.user.is_authenticated:
+            customer_profile = self.get_customer_profile(request)
+            if not customer_profile:
+                return Response(
+                    {
+                        "error": "NOT_AUTHORIZED",
+                        "message": "Authenticated user does not have a customer profile.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            order, created = get_or_create_draft_order(customer_profile)
+        else:
+            guest_email = request.data.get("guestEmail")
+            if not guest_email:
+                return Response(
+                    {
+                        "error": "INVALID_INPUT",
+                        "message": "guestEmail is required for guest carts.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            order, created = get_or_create_guest_draft_order(guest_email)
 
         return Response(
             {
@@ -100,62 +104,55 @@ class DraftOrderView(APIView):
 
 class DraftOrderItemCreateView(APIView):
     """
-    Add a new item to the authenticated customer's draft order.
+    Add a new item to a draft order.
 
     Endpoint:
         POST /api/v1/orders/items
 
-    Request Body Example:
-        {
-            "variantId": 5,
-            "quantity": 2
-        }
-
     Behavior:
-        - Finds or creates the user's draft order
-        - Adds the product variant to the cart
-        - If the variant already exists in the cart, quantity increases
-        - Recalculates cart totals
-        - Returns a simple success response with orderId and orderItemId
+        - Authenticated: finds or creates the customer's draft order
+        - Guest: requires guestEmail in body
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_customer_profile(self, request):
-        """
-        Retrieve the authenticated user's CustomerProfile.
-
-        Returns None if the user does not have a customer profile.
-        """
         try:
             return request.user.customer_profile
         except CustomerProfile.DoesNotExist:
             return None
 
     def post(self, request):
-        """
-        Handle POST requests for adding items to the cart.
-        """
-        customer_profile = self.get_customer_profile(request)
-
-        if not customer_profile:
-            return Response(
-                {
-                    "error": "NOT_AUTHORIZED",
-                    "message": "Authenticated user does not have a customer profile.",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
         serializer = AddDraftOrderItemSerializer(data=request.data, context={})
         serializer.is_valid(raise_exception=True)
 
         variant = serializer.context["variant"]
         quantity = serializer.validated_data["quantity"]
 
-        draft_order, _ = get_or_create_draft_order(customer_profile)
-        order_item = add_item_to_order(draft_order, variant, quantity)
+        if request.user.is_authenticated:
+            customer_profile = self.get_customer_profile(request)
+            if not customer_profile:
+                return Response(
+                    {
+                        "error": "NOT_AUTHORIZED",
+                        "message": "Authenticated user does not have a customer profile.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            draft_order, _ = get_or_create_draft_order(customer_profile)
+        else:
+            guest_email = request.data.get("guestEmail")
+            if not guest_email:
+                return Response(
+                    {
+                        "error": "INVALID_INPUT",
+                        "message": "guestEmail is required for guest carts.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            draft_order, _ = get_or_create_guest_draft_order(guest_email)
 
+        order_item = add_item_to_order(draft_order, variant, quantity)
         recalculate_order_totals(draft_order)
 
         return Response(
@@ -170,71 +167,71 @@ class DraftOrderItemCreateView(APIView):
 
 class DraftOrderItemUpdateView(APIView):
     """
-    Update or remove an item in the customer's draft order.
+    Update or remove an item in a draft order.
 
     Endpoint:
         PATCH /api/v1/orders/items/{orderItemId}
 
-    Request Body Example:
-        {
-            "quantity": 3
-        }
-
     Behavior:
-        - Updates quantity of an existing cart item
-        - If quantity = 0, the item is removed
-        - Recalculates order totals
-        - Returns a simple success response indicating whether
-          quantity was updated or the item was removed
+        - Authenticated: verifies customer ownership
+        - Guest: requires guestEmail in body to verify ownership
+        - quantity = 0 removes the item
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_customer_profile(self, request):
-        """
-        Retrieve the authenticated user's CustomerProfile.
-
-        Returns None if the user does not have a customer profile.
-        """
         try:
             return request.user.customer_profile
         except CustomerProfile.DoesNotExist:
             return None
 
     def patch(self, request, orderItemId):
-        """
-        Handle PATCH requests to update an order item.
-        """
-        customer_profile = self.get_customer_profile(request)
-
-        if not customer_profile:
-            return Response(
-                {
-                    "error": "NOT_AUTHORIZED",
-                    "message": "Authenticated user does not have a customer profile.",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
         order_item = get_object_or_404(OrderItem, pk=orderItemId)
 
-        if not order_item_belongs_to_customer(order_item, customer_profile):
-            return Response(
-                {
-                    "error": "NOT_AUTHORIZED",
-                    "message": "You do not have permission to modify this order.",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        if request.user.is_authenticated:
+            customer_profile = self.get_customer_profile(request)
+            if not customer_profile:
+                return Response(
+                    {
+                        "error": "NOT_AUTHORIZED",
+                        "message": "Authenticated user does not have a customer profile.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            if not order_item_belongs_to_customer(order_item, customer_profile):
+                return Response(
+                    {
+                        "error": "NOT_AUTHORIZED",
+                        "message": "You do not have permission to modify this order.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        else:
+            guest_email = request.data.get("guestEmail")
+            if not guest_email:
+                return Response(
+                    {
+                        "error": "INVALID_INPUT",
+                        "message": "guestEmail is required for guest carts.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not order_item_belongs_to_guest(order_item, guest_email):
+                return Response(
+                    {
+                        "error": "NOT_AUTHORIZED",
+                        "message": "You do not have permission to modify this order.",
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
         serializer = UpdateDraftOrderItemSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         quantity = serializer.validated_data["quantity"]
-
         draft_order = order_item.order
         updated_item = update_order_item_quantity(order_item, quantity)
-
         recalculate_order_totals(draft_order)
 
         if updated_item is None:
@@ -419,13 +416,28 @@ class OrderDetailView(APIView):
     Return full order detail / receipt information for a single order.
 
     GET /api/v1/orders/{orderId}
+
+    Authenticated: uses customer profile for ownership check.
+    Guest: requires ?guestEmail= query param for ownership check.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, orderId):
-        customer_profile = get_customer_profile_for_user(request.user)
-        order = get_order_for_customer(orderId, customer_profile)
+        if request.user.is_authenticated:
+            customer_profile = get_customer_profile_for_user(request.user)
+            order = get_order_for_customer(orderId, customer_profile)
+        else:
+            guest_email = request.query_params.get("guestEmail")
+            if not guest_email:
+                return Response(
+                    {
+                        "error": "INVALID_INPUT",
+                        "message": "guestEmail is required for guest cart access.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            order = get_order_for_guest(orderId, guest_email)
 
         serializer = OrderDetailSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)

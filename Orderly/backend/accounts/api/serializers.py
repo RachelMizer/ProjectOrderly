@@ -268,12 +268,13 @@ class MeSerializer(serializers.Serializer):
             return value
 
         import re
-        if not re.fullmatch(r"^\+?1?\d{10,15}$", value):
+        normalized = re.sub(r"[\s\-(). ]+", "", value)
+        if not re.fullmatch(r"\+?1?\d{10,15}$", normalized):
             raise serializers.ValidationError(
                 "Enter a valid phone number (10–15 digits, optional +country code)."
             )
 
-        return value
+        return normalized
     
     # Adding better validation for state, zipcode, and phone to ensure data integrity and provide clearer error messages for users.
     def to_representation(self, user):
