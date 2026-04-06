@@ -107,7 +107,7 @@ Every pull request to `main` automatically triggers two checks:
 | Check | What It Does |
 |---|---|
 | **Backend Tests** | Installs dependencies, runs migrations, runs full pytest suite |
-| **Frontend Checks** | Installs dependencies, runs linter, runs tests |
+| **Frontend Checks** | Installs dependencies, runs linter, runs npm tests, runs Robot Framework acceptance tests |
 
 ### What a red ❌ means
 
@@ -180,4 +180,4 @@ Reach out to Serina in the team channel or tag her on your Trello card.
 
 ------
 
-*Last updated: March 13, 2026 — Serina Rodriguez, PM/Scrum Master*
+*Last updated: April 2, 2026 — Serina Rodriguez, PM/Scrum Master*
