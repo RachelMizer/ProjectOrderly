@@ -193,7 +193,7 @@ jobs:
         run: |
           python manage.py runserver 0.0.0.0:8000 &
           echo "Waiting for Django dev server on localhost:8000..."
-          timeout 60 bash -c 'until curl -sf http://localhost:8000 > /dev/null 2>&1; do sleep 2; done'
+          timeout 60 bash -c 'until curl -sf http://localhost:8000/admin/login/ > /dev/null 2>&1; do sleep 2; done'
           echo "Django dev server is up."
 
       # Start the React dev server in the background and wait until
