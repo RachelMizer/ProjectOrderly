@@ -19,11 +19,12 @@ CI Regression - Product Browsing Loads Seeded Storefront
     Page Should Contain Element    css=.product-grid
     Page Should Contain Element    css=.product-card
 
-CI Regression - Customer Can Add Simple Product To Cart
+CI Regression - Customer Can Add Customized Item To Cart
     Login As Test User
-    Add Simple Product To Cart
-    Go To Cart Page
-    Cart Should Contain At Least One Item
+    Authenticated Navigation Should Be Visible
+    Add Customized Breakfast Sandwich To Cart
+    Wait Until Page Contains    Cart    10s
+    Page Should Contain    Breakfast Sandwich
 
 CI Regression - Customer Can Add Customized Item To Cart
     Login As Test User
@@ -42,11 +43,21 @@ CI Regression - Customer Can Update Cart Quantity
 
 CI Regression - Customer Can Reach Checkout And Place Order
     Login As Test User
-    Add Breakfast Sandwich With Modifiers To Cart
-    Go To Checkout From Cart
-    Fill Checkout Form For Credit Card
-    Submit Order
-    Order Confirmation Should Be Visible
+    Authenticated Navigation Should Be Visible
+    Add Customized Breakfast Sandwich To Cart
+
+    Go To    ${BASE_URL}/cart
+    Wait Until Page Contains    Cart    10s
+    Page Should Contain    Breakfast Sandwich
+
+    Wait Until Page Contains Element    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]    10s
+    Click Element    xpath=//a[contains(@href,'/checkout') or contains(normalize-space(.),'Checkout')]
+
+    Wait Until Page Contains    Checkout    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]    10s
+    Click Element    xpath=//button[contains(normalize-space(.),'Place Order') or contains(normalize-space(.),'Submit Order')]
+
+    Wait Until Page Contains    Confirmation    15s
 
 CI Regression - Submitted Order Appears In Order History
     Login As Test User

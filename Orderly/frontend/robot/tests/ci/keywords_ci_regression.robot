@@ -58,6 +58,36 @@ Login As Test User
     Sync Auth Token Key For Frontend
     Wait Until Keyword Succeeds    12x    1s    Authenticated Navigation Should Be Visible
 
+Open Product By Exact Name
+    [Arguments]    ${product_name}
+    Go To    ${BASE_URL}/
+    Wait Until Page Contains    Filter the Menu    15s
+    Wait Until Page Contains Element    css=.product-card    15s
+
+    ${product_xpath}=    Set Variable    xpath=//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]
+    Wait Until Page Contains Element    ${product_xpath}    15s
+    Click Element    xpath=(${product_xpath}//a[contains(@class,'view-link') or contains(.,'View')])[1]
+
+Select Required Breakfast Sandwich Modifiers
+    Wait Until Page Contains    Breakfast Sandwich    15s
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'modifier-group')][.//*[contains(normalize-space(.),'Bread Choice')]]    15s
+
+    ${bread_radio_count}=    Get Element Count    xpath=//div[contains(@class,'modifier-group')][.//*[contains(normalize-space(.),'Bread Choice')]]//input[@type='radio']
+    Should Be True    ${bread_radio_count} > 0
+
+    Click Element    xpath=(//div[contains(@class,'modifier-group')][.//*[contains(normalize-space(.),'Bread Choice')]]//input[@type='radio'])[1]
+
+    ${protein_checkbox_count}=    Get Element Count    xpath=//div[contains(@class,'modifier-group')][.//*[contains(normalize-space(.),'Protein Add-On')]]//input[@type='checkbox']
+    IF    ${protein_checkbox_count} > 0
+        Click Element    xpath=(//div[contains(@class,'modifier-group')][.//*[contains(normalize-space(.),'Protein Add-On')]]//input[@type='checkbox'])[1]
+    END
+
+Add Customized Breakfast Sandwich To Cart
+    Open Product By Exact Name    Breakfast Sandwich
+    Select Required Breakfast Sandwich Modifiers
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.),'Add to Cart') or contains(normalize-space(.),'Add To Cart')]    10s
+    Click Element    xpath=//button[contains(normalize-space(.),'Add to Cart') or contains(normalize-space(.),'Add To Cart')]
+
 Log Out User
     Click Element    xpath=//button[contains(., 'Logout') or contains(., 'Log Out')]
     Run Keyword And Ignore Error    Handle Alert    ACCEPT
