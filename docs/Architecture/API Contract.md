@@ -1544,7 +1544,6 @@ body
 **URL Parameters:** None  
 **Request Parameters:**  
 + name
-+ imageUrl (OPTIONAL)
 
 ### Request
 **Header:**  
@@ -1556,7 +1555,6 @@ Content-Type: application/json
 ```
 {
     "name": "desserts",
-    "imageUrl": "https://storename.com/media/categories/desserts.png"
 }
 ```
 **Rules:**  
@@ -1607,7 +1605,6 @@ Content-Type: application/json
 **URL Parameters:** categoryId  
 **Request Parameters:**  
 + name (OPTIONAL)
-+ imageUrl (OPTIONAL)
 + isActive (OPTIONL)
 
 ### Request
@@ -1620,7 +1617,7 @@ Content-Type: application/json
 **Body:**
 ```
 {
-    "imageUrl": "https://storename.com/media/categories/cake.png"
+    "name": "sweets"
 }
 ```
 **Rules:**
@@ -1677,7 +1674,6 @@ Content-Type: application/json
 **Request Parameters:**
 + name
 + supplierId (OPTIONAL)
-+ imageUrl (OPTIONAL)
 
 ### Request
 **Header:**
@@ -1690,14 +1686,13 @@ Content-Type: application/json
 {
     "name": "limited_phish_cropped_pullover_sweater_jacket",
     "supplierId": 900,
-    "imageUrl": "https://storename.com/media/products/le/phish_cropped_pullover_sweater_jacket.png",
 }
 ```
 **Rules:**
 + because all products use at least one variant, UI should support creation of one variant inside product creation
 + hasVariants is automatically set to false, and automatically updated when a SECOND variant is created.
 + hasModifiers is automatically set to false, and automatically updated when a related modifier group is created
-+ name must be unique
++ name must be unique within category
 
 **Success Response (201 Created):**
 ```
@@ -1751,7 +1746,6 @@ Content-Type: application/json
 + name
 + supplierId
 + categoryId
-+ imageUrl
 + isActive
   
 ### Request
@@ -1764,7 +1758,6 @@ Content-Type: application/json
 ```
 {
     "supplierId": 500
-    "imageUrl": "https://storename.com/media/products/red_onion.png"
 }
 ```
 **Rules:**
@@ -1823,11 +1816,10 @@ Content-Type: application/json
 **URL Parameters:** productId
 **Request Parameters:**
 + name
-+ SKU (OPTIONAL)
++ SKU
 + unitPrice
 + stockQuantity (OPTIONAL)
 + reorderLevel (OPTIONAL)
-+ imageUrl (OPTIONAL)
   
 ### Request
 **Header:**
@@ -1843,12 +1835,11 @@ Content-Type: application/json
     "unitPrice": 24.99,
     "stockQuantity": 15,
     "reorderLevel": 5,
-    "imageUrl": "https://storename.com/media/variants/tshirt_red_large.png"
 }
 ```
 **Rules:**
 + Must relate to existing product
-+ name must be unique
++ name must be unique within product
 + SKU must be unique
 + Unit price must be greater or equal to 0
 + stock quantity must be >= 0
@@ -1908,7 +1899,6 @@ Content-Type: application/json
 + unitPrice
 + stockQuantity
 + reorderLevel
-+ imageUrl
 + isActive
   
 ### Request
@@ -2130,7 +2120,6 @@ Content-Type: application/json
 **Request Parameters:**
 + name
 + priceAdjustment
-+ imageUrl (OPTIONAL)
 ### Request
 **Header:**
 ```
@@ -2142,14 +2131,12 @@ Content-Type: application/json
 {
     "name": "pepperoni",
     "priceAdjustment": 1.50,
-    "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
 }
 ```
 **Rules:**
 + Must use an existing group
 + name must be unique per group
 + priceAdjustment can be positive or negative
-+ imageUrl is optional
 
 **Success Response (201 Created):**
 {
@@ -2187,7 +2174,7 @@ Content-Type: application/json
 ```
 
 ## Update Modifiers Option
-**Endpoint:** `PATCH /api/v1/modifiers/option/{optionId}`  
+**Endpoint:** `PATCH /api/v1/modifiers/options/{optionId}`  
 **Description:** Updates an existing modifier option
 **Authentication:** `Bearer <accessToken>`  
 **Role:** Business  
@@ -2196,7 +2183,6 @@ Content-Type: application/json
 **Request Parameters:**
 + name
 + priceAdjustment
-+ imageUrl
 + isActive
 
 ### Request

@@ -3,6 +3,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]
@@ -37,13 +38,14 @@ class Product(models.Model):
     description = models.TextField(blank=True, help_text="Detailed product description")
 
     has_variants = models.BooleanField(
-        default=True,
+        default=False,
         help_text="If false, product should still have one default variant.",
     )
     has_modifiers = models.BooleanField(
         default=False,
         help_text="If true, variants can have modifier groups/options.",
     )
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]
@@ -76,6 +78,7 @@ class ProductVariant(models.Model):
     # Stock-tracked variants (nullable for non-stock variants, e.g., made-to-order items)
     stock_quantity = models.IntegerField(null=True, blank=True)
     reorder_level = models.IntegerField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["product__name", "name"]
@@ -109,6 +112,7 @@ class ModifierGroup(models.Model):
     required = models.BooleanField(default=False)
     min_selections = models.PositiveSmallIntegerField(default=0)
     max_selections = models.PositiveSmallIntegerField(default=1)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["variant__product__name", "variant__name", "name"]
@@ -135,6 +139,7 @@ class ModifierOption(models.Model):
     )
     name = models.CharField(max_length=150)
     price_adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["group__name", "name"]

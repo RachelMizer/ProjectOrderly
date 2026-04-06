@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny
 
 from catalog.models import (
     Category,
@@ -15,13 +17,39 @@ from catalog.models import (
 )
 
 from .serializers import (
-    CategorieSerializer,
-    ProductSerializer,
-    VariantSerializer,
-    ModifierGroupSerializer,
+    ReadCategoriesSerializer,
+    ReadProductSerializer,
+    ReadVariantSerializer,
+    ReadModifierGroupSerializer,
+    CreateCategoriesSerializer,
+    CreateProductsSerializer,
+    CreateVariantsSerializer,
+    CreateModifierGroupsSerializer,
+    CreateModifierOptionsSerializer,
+    UpdateCategoriesSerializer,
+    UpdateProductsSerializer,
+    UpdateVariantsSerializer,
+    UpdateModifierGroupsSerializer,
+    UpdateModifierOptionsSerializer,
 )
 
 
+def require_business_user(request):
+    user = request.user
+
+    if not user or not user.is_authenticated:
+        raise PermissionDenied("missing or expired access token")
+
+    if not hasattr(user, "profile") or user.profile.role != "BUSINESS":
+        raise PermissionDenied("insufficient role")
+
+
+###########
+# READ View
+###########
+
+
+# Create and Read view due to same url pattern
 class CategoriesView(APIView):
 
     # Override default auth & perm classes
@@ -30,12 +58,40 @@ class CategoriesView(APIView):
 
     def get(self, request):
         categories = Category.objects.all()
-        serializer = CategorieSerializer(categories, many=True)
+        serializer = ReadCategoriesSerializer(categories, many=True)
 
         return Response({"results": serializer.data})
 
+    def post(self, request):
+        require_business_user(request)
 
-class ProductsView(APIView):
+        serializer = CreateCategoriesSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "error": "INVALID_DATA",
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        category = serializer.save()
+
+        return Response(
+            {
+                "message": f"category {category.name} created",
+                "category": {
+                    "id": category.id,
+                    "name": category.name,
+                    "imageUrl": None,
+                },
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ReadProductsView(APIView):
 
     # Override default auth & perm classes
     authentication_classes = []
@@ -60,7 +116,7 @@ class ProductsView(APIView):
 
         products = products[start:end]
 
-        serializer = ProductSerializer(products, many=True)
+        serializer = ReadProductSerializer(products, many=True)
 
         next_url = None
         previous_url = None
@@ -87,11 +143,13 @@ class ProductsView(APIView):
         )
 
 
+# Create and Read view due to same url pattern
 class VariantsView(APIView):
 
-    # Override default auth & perm classes
-    authentication_classes = []
-    permission_classes = []
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return super().get_permissions()
 
     def get(self, request, productId):
 
@@ -103,12 +161,50 @@ class VariantsView(APIView):
 
         count = len(variants)
 
-        serializer = VariantSerializer(variants, many=True)
+        serializer = ReadVariantSerializer(variants, many=True)
 
         return Response({"count": count, "results": serializer.data})
 
+    def post(self, request, productId):
+        require_business_user(request)
 
-class ModifiersView(APIView):
+        serializer = CreateVariantsSerializer(
+            data=request.data, context={"productId": productId}
+        )
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "error": "INVALID_DATA",
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        variant = serializer.save()
+
+        if ProductVariant.objects.filter(product_id=productId).count() > 1:
+            Product.objects.filter(id=productId).update(has_variants=True)
+
+        return Response(
+            {
+                "message": f"variant {variant.name} created",
+                "variant": {
+                    "id": variant.id,
+                    "productId": productId,
+                    "name": variant.name,
+                    "SKU": variant.sku,
+                    "unitPrice": variant.unit_price,
+                    "stockQuantity": variant.stock_quantity,
+                    "reorderLevel": variant.reorder_level,
+                    "imageUrl": None,
+                },
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ReadModifiersView(APIView):
 
     # Override default auth & perm classes
     authentication_classes = []
@@ -126,6 +222,48 @@ class ModifiersView(APIView):
             .order_by("name")
         )
 
-        serializer = ModifierGroupSerializer(groups, many=True)
+        serializer = ReadModifierGroupSerializer(groups, many=True)
 
         return Response({"count": len(groups), "groups": serializer.data})
+
+
+#############
+# Create View
+#############
+
+
+class CreateProductsView(APIView):
+    pass
+
+
+class CreateModifierGroupsView(APIView):
+    pass
+
+
+class CreateModifierOptionsView(APIView):
+    pass
+
+
+#############
+# Update View
+#############
+
+
+class UpdateCategoriesView(APIView):
+    pass
+
+
+class UpdateProductsView(APIView):
+    pass
+
+
+class UpdateVariantsView(APIView):
+    pass
+
+
+class UpdateModifierGroupsView(APIView):
+    pass
+
+
+class UpdateModifierOptionsView(APIView):
+    pass
