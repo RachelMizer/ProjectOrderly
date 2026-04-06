@@ -17,9 +17,16 @@ import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import { getStoredUser } from "./api/auth";
 import { logout, isAuthenticated } from "./api/auth";
 
+
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user")) || null;
+  } catch {
+    return null;
+  }
+}
 
 function AppContent() {
   const navigate = useNavigate();
@@ -180,18 +187,9 @@ function AppContent() {
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/orders/:orderId" element={<OrderDetails />} />
-          <Route path="/profile" element={<Profile />} />
-
-        <Route
-          path="/admin/products"
-          element={
-            <ProtectedAdminRoute>
-              <AdminProductsPage />
-            </ProtectedAdminRoute>
-          }
-        />
+          <Route path="/profile" element={<Profile />} />      
           <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout" element={<Checkout />} />
       </Routes>
 
       <footer>
