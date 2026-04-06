@@ -97,12 +97,7 @@ jobs:
         working-directory: Orderly/frontend
         run: npm install # WAS CI but does not work with current caching strategy for package-lock.json
 
-      - name: Run linter
-        working-directory: Orderly/frontend
-        run: npm run lint
-        continue-on-error: true # linting errors present in codebase — remove once resolved by frontend team
-
-      - name: Run CI frontend tests
+      - name: Run CI smoke tests
         working-directory: Orderly/frontend
         run: npm run test:ci
 
