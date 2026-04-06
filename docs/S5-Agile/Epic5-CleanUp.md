@@ -249,8 +249,45 @@ Complete all backend + required frontend for a functional admin system.
 # US5.7 Admin Settings (Optional)
 
 ## B5.7 — Settings API (Backend)
+
+### Tasks
+- B5.7.1 Create settings model
+- B5.7.2 Implement GET /api/v1/settings
+- B5.7.3 Implement PATCH /api/v1/settings
+
+### Acceptance Criteria
+- Settings can be retrieved and updated
+- Changes persist after save
+- Restricted to business role
+
+
 ## UX5.7 — Settings Page (UX)
+
+### Tasks
+- UX5.7.1 Settings page layout with editable form
+- UX5.7.2 Fields: tax rate, contact info
+- UX5.7.3 Save button with success/error feedback states
+- UX5.7.4 Unsaved changes indicator (optional if time allows)
+
+### Acceptance Criteria
+- Form layout complete with all fields
+- Save feedback states implemented
+- Ready for API wiring — no hardcoded logic
+
+
 ## F5.7 — Settings Integration (Frontend)
+
+### Tasks
+- F5.7.1 Fetch current settings from GET /api/v1/settings on page load
+- F5.7.2 Submit updates to PATCH /api/v1/settings
+- F5.7.3 Handle success and error responses
+- F5.7.4 Confirm data persists after page refresh
+
+### Acceptance Criteria
+- Settings load correctly on page load
+- Admin can update and save successfully
+- Data persists after refresh
+
 
 ---
 
