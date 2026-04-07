@@ -857,3 +857,49 @@ button {
 .pg-num {
   margin: auto 5px;
 }
+
+/* Admin Layout Styling */
+
+.admin-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+}
+
+.admin-nav {
+  min-width: 200px;
+  text-align: left;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f8f8f8;
+}
+
+.admin-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+
+.admin-nav li {
+  margin-bottom: 0.75rem;
+}
+
+.admin-nav a {
+  text-decoration: none;
+  color: #333;
+}
+
+.admin-nav a.active {
+  font-weight: bold;
+  color: #8B4513; /* matches your theme */
+}
+
+.admin-content {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
