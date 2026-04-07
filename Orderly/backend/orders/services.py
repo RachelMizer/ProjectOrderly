@@ -40,8 +40,59 @@ from django.db.models import Sum
 from rest_framework.exceptions import NotFound, PermissionDenied
 
 from accounts.models import CustomerProfile
-from orders.models import Order, OrderItem, OrderStatus
+from orders.models import Order, OrderItem, OrderItemModifier, OrderStatus
 from .exceptions import NotAuthorizedException
+
+
+def get_or_create_guest_draft_order(guest_email):
+    """
+    Return the guest's active DRAFT order identified by guest_email token.
+    Create one if it does not exist.
+    """
+    order, created = Order.objects.get_or_create(
+        guest_email=guest_email,
+        status=OrderStatus.DRAFT,
+        defaults={
+            "subtotal": Decimal("0.00"),
+            "tax_amount": Decimal("0.00"),
+        },
+    )
+    return order, created
+
+
+def order_item_belongs_to_guest(order_item, guest_email):
+    """
+    Return True if the order item belongs to the guest's active DRAFT order.
+    """
+    return (
+        order_item.order.guest_email == guest_email
+        and order_item.order.status == OrderStatus.DRAFT
+    )
+
+
+def get_order_for_guest(order_id, guest_email):
+    """
+    Return an order if it exists and belongs to the given guest token.
+
+    Raises:
+    - NotFound if the order does not exist
+    - NotAuthorizedException if the order belongs to a different guest
+    """
+    try:
+        order = (
+            Order.objects.prefetch_related(
+                "items__variant__product",
+                "items__modifiers__modifier_option__group",
+            )
+            .get(pk=order_id)
+        )
+    except Order.DoesNotExist as exc:
+        raise NotFound("Order not found.") from exc
+
+    if order.guest_email != guest_email:
+        raise NotAuthorizedException("You do not have permission to access this order.")
+
+    return order
 
 
 def get_or_create_draft_order(customer_profile):
@@ -68,13 +119,20 @@ def recalculate_order_totals(order):
     based on the order's current items.
     """
 
-    subtotal = (
+    item_subtotal = (
         order.items.aggregate(total=Sum("item_total"))["total"]
         or Decimal("0.00")
     )
+    modifier_subtotal = (
+        OrderItemModifier.objects.filter(order_item__order=order)
+        .aggregate(total=Sum("price_adjustment_charged"))["total"]
+        or Decimal("0.00")
+    )
+    subtotal = item_subtotal + modifier_subtotal
 
-    # Placeholder until tax rules are finalized
-    tax_amount = Decimal("0.00")
+    # Wake County, NC: 4.75% state + 2.5% county/transit = 7.25%
+    WAKE_COUNTY_TAX_RATE = Decimal("0.0725")
+    tax_amount = (subtotal * WAKE_COUNTY_TAX_RATE).quantize(Decimal("0.01"))
 
     order.subtotal = subtotal
     order.tax_amount = tax_amount
@@ -85,24 +143,18 @@ def recalculate_order_totals(order):
 
 def add_item_to_order(order, variant, quantity):
     """
-    Add a variant to the order.
+    Add a variant to the order as a new line item.
 
-    For B3.2.2, if the variant is already in the draft order,
-    increase its quantity instead of creating a duplicate row.
+    Each call creates a separate OrderItem so that individual
+    items can be customized and edited independently.
     """
 
-    order_item = order.items.filter(variant=variant).first()
-
-    if order_item:
-        order_item.quantity += quantity
-        order_item.save()
-    else:
-        order_item = OrderItem.objects.create(
-            order=order,
-            variant=variant,
-            quantity=quantity,
-            unit_price_charged=variant.unit_price,
-        )
+    order_item = OrderItem.objects.create(
+        order=order,
+        variant=variant,
+        quantity=quantity,
+        unit_price_charged=variant.unit_price,
+    )
 
     return order_item
 
@@ -241,7 +293,7 @@ def get_order_for_customer(order_id, customer_profile):
             Order.objects.select_related("customer")
             .prefetch_related(
                 "items__variant__product",
-                "items__modifiers__modifier_option",
+                "items__modifiers__modifier_option__group",
             )
             .get(pk=order_id)
         )
