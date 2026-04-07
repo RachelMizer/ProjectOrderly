@@ -1,0 +1,1626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.13.7 on win32)" generated="2026-04-06T10:46:13.027705" rpa="false" schemaversion="5">
+<suite id="s1" name="Ci" source="C:\Users\kenny\Documents\ProjectOrderly\Orderly\frontend\robot\tests\ci">
+<suite id="s1-s1" name="Robot Regression" source="C:\Users\kenny\Documents\ProjectOrderly\Orderly\frontend\robot\tests\ci\robot_regression.robot">
+<test id="s1-s1-t1" name="CI Regression - User Can Log In And Log Out" line="8">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:13.612603" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000159115C7B60&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.599536" elapsed="0.013175"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:13.613783" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.613325" elapsed="0.000505"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.613989" elapsed="0.000361"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:13.613040" elapsed="0.001387"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:13.612990" elapsed="0.001502"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:13.614921" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.614601" elapsed="0.000417"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:13.615580" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.615206" elapsed="0.000414"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:13.616104" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.615776" elapsed="0.000366"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.616277" elapsed="0.000344"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.616758" elapsed="0.000307"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:13.617191" elapsed="0.000286"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:13.617944" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:22.798919" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-55.png"&gt;&lt;img src="selenium-screenshot-55.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:22.799381" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:13.617626" elapsed="9.335296">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:22.953544" elapsed="0.000098"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:13.598454" elapsed="9.355459">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:23.092301" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-56.png"&gt;&lt;img src="selenium-screenshot-56.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:22.957905" elapsed="0.134571"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:22.957032" elapsed="0.135580"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:23.092819" elapsed="2.512140"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:22.955560" elapsed="2.649774"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:13.597433" elapsed="12.011456">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t2" name="CI Regression - Product Browsing Loads Seeded Storefront" line="15">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:25.616166" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000159115E9310&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.614909" elapsed="0.001348"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:25.617483" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.616877" elapsed="0.000683"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.617864" elapsed="0.000613"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:25.616534" elapsed="0.002075"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:25.616464" elapsed="0.002256"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:25.619449" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.618918" elapsed="0.000599"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:25.620287" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.619783" elapsed="0.000577"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:25.621090" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.620598" elapsed="0.000564"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.621408" elapsed="0.000648"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.622325" elapsed="0.000629"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:25.623210" elapsed="0.000608"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:25.625015" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:31.614785" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-57.png"&gt;&lt;img src="selenium-screenshot-57.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:31.615055" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:25.624352" elapsed="5.992188">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:31.616883" elapsed="0.000046"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:25.614166" elapsed="6.002921">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:31.734795" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-58.png"&gt;&lt;img src="selenium-screenshot-58.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:31.618691" elapsed="0.116265"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:31.618288" elapsed="0.116789"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:31.735246" elapsed="2.371772"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:31.617872" elapsed="2.489411"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:25.612524" elapsed="8.495260">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t3" name="CI Regression - Customer Can Add Customized Item To Cart" line="22">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:34.114079" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000159117356D0&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.112821" elapsed="0.001368"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:34.116611" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.115852" elapsed="0.000831"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.116955" elapsed="0.000547"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:34.115461" elapsed="0.002146"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:34.114424" elapsed="0.003275"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:34.118786" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.117867" elapsed="0.001076"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:34.120555" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.119499" elapsed="0.001176"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:34.121977" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.121096" elapsed="0.001809"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.125687" elapsed="0.001194"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.127249" elapsed="0.000903"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:34.128477" elapsed="0.000708"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:34.130458" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:37.687384" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-59.png"&gt;&lt;img src="selenium-screenshot-59.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:37.687890" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:34.129581" elapsed="3.567797">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:37.697764" elapsed="0.000072"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:34.112086" elapsed="3.586047">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:37.869341" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-60.png"&gt;&lt;img src="selenium-screenshot-60.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:37.700220" elapsed="0.169434"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:37.699544" elapsed="0.170358"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:37.870280" elapsed="3.029940"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:37.698878" elapsed="3.201556"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:34.110681" elapsed="6.790193">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t4" name="CI Regression - Customer Can Update Cart Quantity" line="30">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:40.906093" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x0000015911754510&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.904796" elapsed="0.001398"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:40.907855" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.906958" elapsed="0.001059"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.908344" elapsed="0.000730"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:40.906541" elapsed="0.002687"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:40.906467" elapsed="0.002877"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:40.910210" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.909563" elapsed="0.000732"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:40.911113" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.910573" elapsed="0.000610"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:40.912021" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.911435" elapsed="0.000667"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.912362" elapsed="0.000694"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.913361" elapsed="0.000694"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:40.914339" elapsed="0.000617"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:40.915876" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:44.733043" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-61.png"&gt;&lt;img src="selenium-screenshot-61.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:44.733687" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:40.915291" elapsed="3.971507">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:44.896649" elapsed="0.000125"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:40.904135" elapsed="3.993006">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:45.478384" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-62.png"&gt;&lt;img src="selenium-screenshot-62.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:44.992569" elapsed="0.486084"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:44.988237" elapsed="0.490661"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:45.479262" elapsed="2.361198"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:44.932694" elapsed="2.908114"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:40.902902" elapsed="6.939705">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t5" name="CI Regression - Customer Can Reach Checkout And Place Order" line="37">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:47.846888" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x0000015911755480&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.845974" elapsed="0.000995"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:47.847945" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.847466" elapsed="0.000535"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.848197" elapsed="0.002402"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:47.847177" elapsed="0.003562"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:47.847131" elapsed="0.003698"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:47.851709" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.851036" elapsed="0.000737"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:47.863383" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.851984" elapsed="0.011497"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:47.864413" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.863779" elapsed="0.000703"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.864700" elapsed="0.002215"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.867258" elapsed="0.000735"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:47.868455" elapsed="0.000795"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:47.870111" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:52.071254" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-63.png"&gt;&lt;img src="selenium-screenshot-63.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:52.072954" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:47.869567" elapsed="4.208361">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:52.078600" elapsed="0.000095"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:47.845486" elapsed="4.233484">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:52.221048" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-64.png"&gt;&lt;img src="selenium-screenshot-64.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:52.083252" elapsed="0.138030"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:52.082391" elapsed="0.139039"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:52.222467" elapsed="2.554927"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:52.081602" elapsed="2.696135"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:47.844454" elapsed="6.934557">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t6" name="CI Regression - Submitted Order Appears In Order History" line="65">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:46:54.784757" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x000001591161E8D0&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.783721" elapsed="0.001116"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:54.786054" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.785469" elapsed="0.000644"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.786325" elapsed="0.000490"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:54.785060" elapsed="0.001854"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:46:54.785006" elapsed="0.001995"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:54.787631" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.787154" elapsed="0.000534"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:54.788813" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.787878" elapsed="0.000998"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:46:54.789576" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.789078" elapsed="0.000681"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.789967" elapsed="0.001064"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.791327" elapsed="0.000527"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:46:54.792057" elapsed="0.000459"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:54.793166" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:46:58.847187" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-65.png"&gt;&lt;img src="selenium-screenshot-65.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:46:58.847650" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:46:54.792749" elapsed="4.057708">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:46:58.850873" elapsed="0.000073"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:54.782934" elapsed="4.068261">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:46:58.994487" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-66.png"&gt;&lt;img src="selenium-screenshot-66.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:46:58.853164" elapsed="0.141567"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:46:58.852568" elapsed="0.142452"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:46:58.995419" elapsed="2.372095"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:46:58.852031" elapsed="2.515753"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:46:54.781573" elapsed="6.586639">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<test id="s1-s1-t7" name="CI Regression - Customer Can Edit Profile Information" line="70">
+<kw name="Open Browser To App" owner="keywords_ci_regression" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-04-06T10:47:01.373032" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x00000159115D67A0&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.372176" elapsed="0.000932"/>
+</kw>
+<if>
+<branch type="IF" condition="${HEADLESS}">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:47:01.374579" level="INFO">${headless_arg} = --headless=new</msg>
+<var>${headless_arg}</var>
+<arg>--headless=new</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.373800" elapsed="0.000857"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${headless_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.375084" elapsed="0.000644"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:47:01.373395" elapsed="0.002447"/>
+</branch>
+<status status="PASS" start="2026-04-06T10:47:01.373329" elapsed="0.002601"/>
+</if>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:47:01.376521" level="INFO">${sandbox_arg} = --no-sandbox</msg>
+<var>${sandbox_arg}</var>
+<arg>--no-sandbox</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.376098" elapsed="0.000478"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:47:01.377254" level="INFO">${dev_shm_arg} = --disable-dev-shm-usage</msg>
+<var>${dev_shm_arg}</var>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.376761" elapsed="0.000547"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-04-06T10:47:01.377885" level="INFO">${window_arg} = --window-size=1920,1080</msg>
+<var>${window_arg}</var>
+<arg>--window-size=1920,1080</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.377498" elapsed="0.000435"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${sandbox_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.378101" elapsed="0.000434"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${dev_shm_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.378725" elapsed="0.000685"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>${window_arg}</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-04-06T10:47:01.379601" elapsed="0.000400"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:47:01.380605" level="INFO">Opening browser 'chrome' to base url 'http://localhost:3000'.</msg>
+<msg time="2026-04-06T10:47:05.617158" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-67.png"&gt;&lt;img src="selenium-screenshot-67.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-04-06T10:47:05.617614" level="FAIL">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>options=${options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2026-04-06T10:47:01.380221" elapsed="4.244950">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>10 seconds</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="NOT RUN" start="2026-04-06T10:47:05.625803" elapsed="0.002991"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:47:01.371058" elapsed="4.258356">WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</kw>
+<kw name="Close Browser Session" owner="keywords_ci_regression" type="TEARDOWN">
+<kw name="Run Keyword If Test Failed" owner="BuiltIn">
+<kw name="Capture Page Screenshot" owner="SeleniumLibrary">
+<msg time="2026-04-06T10:47:05.864253" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-68.png"&gt;&lt;img src="selenium-screenshot-68.png" width="800px"&gt;&lt;/a&gt;</msg>
+<doc>Takes a screenshot of the current page and embeds it into a log file.</doc>
+<status status="PASS" start="2026-04-06T10:47:05.633703" elapsed="0.230815"/>
+</kw>
+<arg>Capture Page Screenshot</arg>
+<doc>Runs the given keyword with the given arguments, if the test failed.</doc>
+<status status="PASS" start="2026-04-06T10:47:05.632863" elapsed="0.231883"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-04-06T10:47:05.865085" elapsed="2.552127"/>
+</kw>
+<status status="PASS" start="2026-04-06T10:47:05.631880" elapsed="2.785748"/>
+</kw>
+<status status="FAIL" start="2026-04-06T10:47:01.369941" elapsed="7.048649">Setup failed:
+WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED
+  (Session info: chrome=146.0.7680.178)
+Stacktrace:
+	chromedriver!GetHandleVerifier [0x7ff78a6a29c5+2ed785]
+	chromedriver!GetHandleVerifier [0x7ff78a3ca0d0+14e90]
+	chromedriver!(No symbol) [0x7ff78a12db2d]
+	chromedriver!(No symbol) [0x7ff78a12a654]
+	chromedriver!(No symbol) [0x7ff78a11a6d1]
+	chromedriver!(No symbol) [0x7ff78a11c5bf]
+	chromedriver!(No symbol) [0x7ff78a11ac73]
+	chromedriver!(No symbol) [0x7ff78a11a43b]
+	chromedriver!(No symbol) [0x7ff78a11a0f1]
+	chromedriver!(No symbol) [0x7ff78a117d3b]
+	chromedriver!(No symbol) [0x7ff78a118482]
+	chromedriver!(No symbol) [0x7ff78a131de6]
+	chromedriver!(No symbol) [0x7ff78a1d4994]
+	chromedriver!(No symbol) [0x7ff78a1aff8a]
+	chromedriver!(No symbol) [0x7ff78a1d3b9b]
+	chromedriver!(No symbol) [0x7ff78a179298]
+	chromedriver!(No symbol) [0x7ff78a17a183]
+	chromedriver!GetHandleVerifier [0x7ff78a6cde0d+318bcd]
+	chromedriver!GetHandleVerifier [0x7ff78a6c8588+313348]
+	chromedriver!GetHandleVerifier [0x7ff78a6e9d7a+334b3a]
+	chromedriver!GetHandleVerifier [0x7ff78a3e6785+31545]
+	chromedriver!GetHandleVerifier [0x7ff78a3efacc+3a88c]
+	chromedriver!GetHandleVerifier [0x7ff78a3d3634+1e3f4]
+	chromedriver!GetHandleVerifier [0x7ff78a3d37e6+1e5a6]
+	chromedriver!GetHandleVerifier [0x7ff78a3b7e37+2bf7]
+	KERNEL32!BaseThreadInitThunk [0x7ffe6183e8d7+17]
+	ntdll!RtlUserThreadStart [0x7ffe62a6c48c+2c]
+</status>
+</test>
+<doc>Combined CI regression suite for seeded Orderly data.</doc>
+<status status="FAIL" start="2026-04-06T10:46:13.097681" elapsed="55.325521"/>
+</suite>
+<status status="FAIL" start="2026-04-06T10:46:13.029918" elapsed="55.398148"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="7" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Ci" id="s1" pass="0" fail="7" skip="0">Ci</stat>
+<stat name="Robot Regression" id="s1-s1" pass="0" fail="7" skip="0">Ci.Robot Regression</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

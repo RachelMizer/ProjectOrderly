@@ -1,6 +1,5 @@
 import "./App.css";
 
-// React
 import { useState, useEffect } from "react";
 
 // Router
@@ -17,17 +16,17 @@ import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
 import ResetPassword from "./pages/Auth/ResetPassword";
+import StoreFront from "./pages/StoreFront";
+
+import ProductPage from "./pages/ProductPage";
 import Profile from "./pages/Auth/Profile";
 
 // Storefront & Customer Pages
-import StoreFront from "./pages/StoreFront";
-import ProductPage from "./pages/ProductPage";
 import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-
 
 // Admin Components
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
@@ -95,8 +94,7 @@ function AppContent() {
     }
   }, [loggedIn]);
 
-  // Fetch cart count
-  async function fetchCartCount() {
+async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
     const guestEmail = !token ? localStorage.getItem("guestCartEmail") : null;
 
@@ -139,6 +137,7 @@ function AppContent() {
     window.addEventListener("cart-updated", fetchCartCount);
     return () => window.removeEventListener("cart-updated", fetchCartCount);
   }, [loggedIn]);
+
 
   // Logout
   async function handleLogout() {
@@ -206,16 +205,18 @@ function AppContent() {
         </div>
       </nav>
 
-        <Routes>
-          <Route path="/" element={<StoreFront />} />
-          <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-          <Route path="/password-reset" element={<ResetPasswordRequest />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-          <Route path="/order-history" element={<OrderHistory />} />
-          <Route path="/orders/:orderId" element={<OrderDetails />} />
-          <Route path="/profile" element={<Profile />} />
+      <Routes>
+        <Route path="/" element={<StoreFront />} />
+        <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/password-reset" element={<ResetPasswordRequest />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/orders/:orderId" element={<OrderDetails />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
 
         <Route element={<ProtectedAdminRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -225,9 +226,7 @@ function AppContent() {
             <Route path="inventory" element={<AdminInventoryPage />} />
           </Route>
         </Route>
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<Checkout />} />
-        </Routes>
+      </Routes>
 
       <footer>
         <p>All Content © Quick Sip Cafe 2026</p>

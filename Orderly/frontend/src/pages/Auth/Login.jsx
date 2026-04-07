@@ -33,6 +33,7 @@ export default function Login({ setLoggedIn }) {
       localStorage.removeItem("user");
 
       const data = await login(formData);
+      await mergeGuestCart();
 
       // 🔐 Safety check before storing user
       if (data?.customer) {
@@ -98,4 +99,3 @@ export default function Login({ setLoggedIn }) {
     </div>
   );
 }
-
