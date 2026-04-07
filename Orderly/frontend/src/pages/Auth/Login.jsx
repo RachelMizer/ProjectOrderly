@@ -29,12 +29,10 @@ export default function Login({ setLoggedIn }) {
     setErrorMessage("");
 
     try {
-      // 🔹 Clear any stale user data before login
       localStorage.removeItem("user");
 
       const data = await login(formData);
 
-      // 🔐 Safety check before storing user
       if (data?.customer) {
         localStorage.setItem("user", JSON.stringify(data.customer));
       }
@@ -86,16 +84,16 @@ export default function Login({ setLoggedIn }) {
           </div>
 
           <br />
+
           <div>
             <button type="submit">
               {submitting ? "Logging in..." : "Login"}
             </button>
             <br />
-            <a href="/ResetPassword">Reset Password</a>
+            <a href="/reset-password">Reset Password</a>
           </div>
         </fieldset>
       </form>
     </div>
   );
 }
-

@@ -1,7 +1,14 @@
 import "./App.css";
 
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useNavigate, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
@@ -10,22 +17,29 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import Profile from "./pages/Auth/Profile";
 
 import StoreFront from "./pages/StoreFront";
-
-
 import ProductPage from "./pages/ProductPage";
 import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import { logout, isAuthenticated } from "./api/auth";
 
+import { logout, isAuthenticated } from "./api/auth";
 
 function getStoredUser() {
   try {
     return JSON.parse(localStorage.getItem("user")) || null;
   } catch {
+    localStorage.removeItem("user");
     return null;
   }
+}
+
+function ProtectedRoute({ loggedIn, children }) {
+  if (!loggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 function AppContent() {
@@ -37,7 +51,6 @@ function AppContent() {
   const role = user?.role;
   const firstName = user?.firstName || "";
 
-  // Load profile on login
   useEffect(() => {
     async function loadProfile() {
       const token = localStorage.getItem("accessToken");
@@ -45,7 +58,9 @@ function AppContent() {
 
       try {
         const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
@@ -70,44 +85,56 @@ function AppContent() {
     }
   }, [loggedIn]);
 
-  // Fetch cart count
   async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
     const guestEmail = !token ? localStorage.getItem("guestCartEmail") : null;
 
-    if (!token && !guestEmail) { setCartCount(0); return; }
+    if (!token && !guestEmail) {
+      setCartCount(0);
+      return;
+    }
 
     try {
       const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify(guestEmail ? { guestEmail } : {})
+        body: JSON.stringify(guestEmail ? { guestEmail } : {}),
       });
 
       const draft = await draftRes.json();
-      if (!draft.id) { setCartCount(0); return; }
+
+      if (!draft.id) {
+        setCartCount(0);
+        return;
+      }
 
       const detailUrl = guestEmail
-        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(
+            guestEmail
+          )}`
         : `http://localhost:8000/api/v1/orders/${draft.id}`;
 
       const detailRes = await fetch(detailUrl, {
-        headers: { ...(token && { Authorization: `Bearer ${token}` }) }
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       const data = await detailRes.json();
-      const totalQty = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
-      setCartCount(totalQty);
+      const totalQty = (data.items || []).reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
 
+      setCartCount(totalQty);
     } catch {
       setCartCount(0);
     }
   }
 
-  // Update cart count on login, logout, or cart events
   useEffect(() => {
     fetchCartCount();
 
@@ -115,7 +142,6 @@ function AppContent() {
     return () => window.removeEventListener("cart-updated", fetchCartCount);
   }, [loggedIn]);
 
-  // Logout
   async function handleLogout() {
     try {
       await logout();
@@ -166,11 +192,7 @@ function AppContent() {
             {role === "BUSINESS" && (
               <>
                 {" | "}
-                <Link to="/admin/products">Admin Products</Link>
-                {" | "}
-                <Link to="/admin/suppliers">Admin Suppliers</Link>
-                {" | "}
-                <Link to="/admin/inventory">Admin Inventory</Link>
+                <span>Admin</span>
               </>
             )}
 
@@ -186,18 +208,53 @@ function AppContent() {
         </div>
       </nav>
 
-        <Routes>
-          <Route path="/" element={<StoreFront />} />
-          <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-          <Route path="/password-reset" element={<ResetPasswordRequest />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-          <Route path="/order-history" element={<OrderHistory />} />
-          <Route path="/orders/:orderId" element={<OrderDetails />} />
-          <Route path="/profile" element={<Profile />} />      
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<Checkout />} />
+      <Routes>
+        <Route path="/" element={<StoreFront />} />
+        <Route
+          path="/register"
+          element={<Register setLoggedIn={setLoggedIn} />}
+        />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/password-reset" element={<ResetPasswordRequest />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/cart" element={<CartPage />} />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/order-history"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders/:orderId"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <OrderDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       <footer>
@@ -207,7 +264,6 @@ function AppContent() {
     </div>
   );
 }
-
 
 function App() {
   return (
