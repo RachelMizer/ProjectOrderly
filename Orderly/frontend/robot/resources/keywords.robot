@@ -23,6 +23,14 @@ Login As Test User
     Click Button    xpath=//button[normalize-space()='Login']
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
 
+Login As Business User
+    Go To    ${BASE_URL}/login
+    Wait Until Page Contains    Login    10s
+    Input Text    id=email    business1@example.com
+    Input Text    id=password    Password123!
+    Click Button    xpath=//button[normalize-space()='Login']
+    Wait Until Location Is    ${BASE_URL}/    10s
+
 Open Profile Page
     Click Link    Profile
     Wait Until Page Contains    My Profile
