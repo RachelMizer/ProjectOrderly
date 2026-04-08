@@ -61,7 +61,7 @@ class AdminProductVariantSerializer(serializers.ModelSerializer):
 
     def validate_stock_quantity(self, value):
         if value is not None and value < 0:
-            raise serializers.ValidationError("stock_quantity must be greater than or equal to 0")
+            raise serializers.ValidationError("Stock quantity cannot be set below 0.")
         return value
 
     def validate_reorder_level(self, value):
@@ -72,3 +72,25 @@ class AdminProductVariantSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         product = self.context["product"]
         return ProductVariant.objects.create(product=product, **validated_data)
+
+
+class AdminVariantInventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "id",
+            "name",
+            "stock_quantity",
+            "reorder_level",
+        ]
+        read_only_fields = ["id", "name"]
+
+    def validate_stock_quantity(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("Stock quantity cannot be set below 0.")
+        return value
+
+    def validate_reorder_level(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("reorder_level must be greater than or equal to 0")
+        return value

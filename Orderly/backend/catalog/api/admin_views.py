@@ -11,6 +11,7 @@ from catalog.models import Product, ProductVariant
 from .admin_serializers import (
     AdminProductSerializer,
     AdminProductVariantSerializer,
+    AdminVariantInventorySerializer,
 )
 
 
@@ -71,7 +72,8 @@ class AdminProductDetailView(APIView):
 
 class AdminProductVariantListCreateView(APIView):
     """
-    Business-only admin endpoint for listing and creating variants for a product.
+    Business-only admin endpoint for listing variant inventory and
+    creating variants for a product.
     """
 
     permission_classes = [IsAuthenticated, IsBusinessUser]
@@ -79,7 +81,7 @@ class AdminProductVariantListCreateView(APIView):
     def get(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
         variants = product.variants.all().order_by("name")
-        serializer = AdminProductVariantSerializer(variants, many=True)
+        serializer = AdminVariantInventorySerializer(variants, many=True)
 
         return Response(
             {
@@ -106,7 +108,7 @@ class AdminProductVariantListCreateView(APIView):
 
 class AdminProductVariantDetailView(APIView):
     """
-    Business-only admin endpoint for updating and deleting a specific variant
+    Business-only admin endpoint for updating inventory on a specific variant
     that belongs to a specific product.
     """
 
@@ -121,7 +123,7 @@ class AdminProductVariantDetailView(APIView):
 
     def patch(self, request, productId, variantId):
         variant = self.get_object(productId, variantId)
-        serializer = AdminProductVariantSerializer(
+        serializer = AdminVariantInventorySerializer(
             variant,
             data=request.data,
             partial=True,
@@ -130,7 +132,7 @@ class AdminProductVariantDetailView(APIView):
         updated_variant = serializer.save()
 
         return Response(
-            AdminProductVariantSerializer(updated_variant).data,
+            AdminVariantInventorySerializer(updated_variant).data,
             status=status.HTTP_200_OK,
         )
 
