@@ -16,21 +16,24 @@ Go To Login Page
     Go To    ${BASE_URL}/login
     Wait Until Page Contains Element    id=email
 
-Login As Test User
-    Go To Login Page
-    Input Text    id=email    ${TEST_EMAIL}
-    Input Password    id=password    ${TEST_PASSWORD}
-    Click Button    xpath=//button[normalize-space()='Login']
-    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
-
-Login As Business User
+Login As User
+    [Arguments]    ${email}    ${password}
     Go To    ${BASE_URL}/login
-    Wait Until Page Contains    Login    10s
-    Input Text    id=email    business1@example.com
-    Input Text    id=password    Password123!
+    Wait Until Page Contains Element    id=email    10s
+
+    Input Text    id=email    ${email}
+    Input Text    id=password    ${password}
+
     Click Button    xpath=//button[normalize-space()='Login']
+
     Wait Until Location Is    ${BASE_URL}/    10s
 
+
+Login As Customer User
+    Login As User    ${CUSTOMER_EMAIL}    ${CUSTOMER_PASSWORD}
+
+Login As Business User
+    Login As User    ${BUSINESS_EMAIL}    ${BUSINESS_PASSWORD}
 Open Profile Page
     Click Link    Profile
     Wait Until Page Contains    My Profile
@@ -50,3 +53,21 @@ Clear And Type
     Press Keys    ${locator}    CTRL+a
     Press Keys    ${locator}    BACKSPACE
     Input Text    ${locator}    ${value}
+
+Sync Auth Token Key For Frontend
+    ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
+    ${current}=    Execute JavaScript    return window.localStorage.getItem('accessToken');
+    IF    '${current}' == 'None' and '${legacy}' != 'None'
+        Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
+        Reload Page
+    END
+
+Create Admin Product
+    [Arguments]    ${product_name}    ${description}
+    Wait For Product Form Options
+    Input Text    name=name    ${product_name}
+    Select Product Category
+    Select Product Supplier
+    Input Text    name=description    ${description}
+    Click Button    xpath=//button[normalize-space()='Create Product']
+    Wait Until Keyword Succeeds    10s    1s    Page Should Contain    ${product_name}

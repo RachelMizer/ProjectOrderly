@@ -134,7 +134,7 @@ Empty Cart Clears All Items
 *** Keywords ***
 Setup Logged In User
     Open Browser To App
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
 
 Sync Auth Token Key For Frontend

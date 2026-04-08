@@ -13,7 +13,7 @@ Logged Out User Should Not See Profile Link
     Page Should Contain Link    Register
 
 Logged In User Can View Profile Page
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
@@ -29,7 +29,7 @@ Logged In User Can View Profile Page
     Page Should Contain Element    id=phone
 
 Email Field Should Be Disabled On Profile Page
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
@@ -37,7 +37,7 @@ Email Field Should Be Disabled On Profile Page
     Element Should Be Disabled    id=email
 
 Logged In User Can Update Profile
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
