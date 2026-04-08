@@ -186,8 +186,7 @@ Wire the admin navigation UI components (UX4.2) to React Router and the auth con
 - UX5.2.10 Add variant form — fields: name, price
 - UX5.2.11 Edit variant form — pre-populated fields, inline validation feedback
 - UX5.2.12 Delete variant confirmation dialog
-- UX5.2.13 Modifier group and option list — read-only display under each variant (name, options)
-- UX5.2.14 Empty state for variant list and modifier list
+- UX5.2.13 Empty state for variant list
 
 **Acceptance Criteria**
 
@@ -195,10 +194,10 @@ Wire the admin navigation UI components (UX4.2) to React Router and the auth con
 - Validation feedback displays correctly for error states
 - Delete confirmation dialog renders correctly
 - Static/mock only — components ready for API wiring
-- Components styled and consistent with branding (colors, typography, component library)
 - Variant list displays correctly within a product
 - Add and edit variant forms implemented with validation states
-- Modifier groups and options visible in read-only display per variant
+- Delete variant confirmation dialog renders correctly.
+- Components styled and consistent with branding (colors, typography, component library)
 
 ------
 
@@ -220,7 +219,6 @@ Wire the product management UI components (UX5.2) to the backend API (B5.2). Han
 - F5.2.8 Submit create variant form to `POST /api/v1/admin/products/{productId}/variants`
 - F5.2.9 Submit edit variant form to `PATCH /api/v1/admin/products/{productId}/variants/{variantId}`
 - F5.2.10 Handle delete variant action against `DELETE /api/v1/admin/products/{productId}/variants/{variantId}`
-- F5.2.11 Fetch and display modifier groups and options from `GET /api/v1/variants/{variantId}/modifiers` — read-only display only
 
 **Acceptance Criteria**
 
@@ -230,8 +228,6 @@ Wire the product management UI components (UX5.2) to the backend API (B5.2). Han
 - Unauthorized users cannot access the page
 - Admin can create, edit, and delete variants within a product
 - Variant list updates immediately after any change
-- Modifier groups and options display correctly under each variant
-- Empty modifier list handled gracefully
 
 ------
 
@@ -625,7 +621,8 @@ Documentation is a running task throughout the sprint. QA begins as soon as Wave
 
 *"As a Technical Writer, I want to collect and organize sprint deliverable screenshots into a visual summary so that the team has complete demo materials ready for Sprint Review."*
 
-**Owner:** Caleb Fowlkes **Depends on:** Wave 1 items stabilizing — screenshots can't be collected until features are visually complete
+**Owner:** Caleb Fowlkes 
+**Depends on:** Wave 1 items stabilizing — screenshots can't be collected until features are visually complete
 
 **Tasks**
 
@@ -649,7 +646,8 @@ Documentation is a running task throughout the sprint. QA begins as soon as Wave
 
 ### DC5.3 — Sprint 5 Code Reviews
 
-**Owner:** Caleb Fowlkes **Type:** Running task — spans full sprint
+**Owner:** Caleb Fowlkes 
+**Type:** Running task — spans full sprint
 
 *"As a Code Review Lead, I want to review all Sprint 5 pull requests against our standards so that merged code is clean, consistent, and ready for final delivery."*
 
@@ -812,4 +810,20 @@ A card is Done when all of the following are true:
 
 ------
 
-*Last updated: April 7, 2026 — Serina Rodriguez, Scrum Master / PM*
+## Scope Decisions & Change Log
+
+**April 8, 2026 — US5.2 Variant Management Added**
+
+During the initial kickoff of Sprint 5, Product Owner Kim Mayo identified that the original US5.2 scope covered product CRUD only, with no provision for variant or modifier management. A product cannot function as a complete catalog item without at least one variant.
+
+After evaluating time estimates and the April 10 Wave 1 deadline, the following decisions were made:
+
+- **Variant management added to scope** — B5.2, UX5.2, and F5.2 updated to include full variant CRUD. Kim Mayo had already implemented variant endpoints in B5.2 prior to this decision.
+- **Modifier management deferred** — Full modifier CRUD was estimated to nearly double the scope of US5.2 and was removed from Sprint 5. Modifiers are a documented known gap.
+- **Modifier visibility removed** — Read-only modifier display was briefly scoped as a lightweight alternative but was removed to keep Wave 1 clean and focused.
+
+*Decision made by: Serina Rodriguez (Scrum Master) and Kim Mayo (Product Owner)*
+
+
+
+*Last updated: April 8, 2026 — Serina Rodriguez, Scrum Master / PM*
