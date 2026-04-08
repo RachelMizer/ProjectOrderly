@@ -17,6 +17,7 @@ import OrderDetails from "./pages/Orders/OrderDetail";
 
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Admin from "./Admin";
 
 import { logout, isAuthenticated } from "./api/auth";
 
@@ -177,7 +178,10 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/admin/*" element={<Admin />} />
+        <Route path="/*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 }

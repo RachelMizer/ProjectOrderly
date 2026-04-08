@@ -1,0 +1,142 @@
+/*      ADMIN GLOBAL LAYOUT     */
+
+body {
+    background-color: white;
+    font-family: sans-serif;
+}
+
+.admin-wrap {
+    background: #33638B;
+    background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/*      DASHBOARD       */
+
+.admin-dash-wrap {
+    background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.admin-dash-display {
+    width: 1500px;
+    height: 800px;
+    background-color: white;
+    overflow: scroll;
+}
+
+.admin-dash {
+
+}
+
+/*      ADMIN NAV       */
+
+.admin-dash-wrap nav {
+    width: 100%;
+    background-color:#33638b;
+    font-family: 'Renner', sans-serif;
+}
+
+.admin-dash-wrap nav a {
+    letter-spacing: .09rem;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.admin-dash-wrap nav p {
+    margin-top: 3px;
+    margin-right: 150px;
+    letter-spacing: .09rem;
+}
+
+
+/*      FONTS       */
+
+@font-face {
+  font-family: 'Renner';
+  src: url('./assets/fonts/Renner.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*      HEADERS     */
+
+h1, h2, h3, h4, h5, h6 {
+    color: #33638B;
+    letter-spacing: .1rem;
+    font-family: 'Renner', sans-serif;
+}
+
+
+/*      FORMS       */
+
+label {
+    font-family: 'Renner';
+    color: #33638B;
+    letter-spacing: .13rem;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+}
+
+button {
+    font-family: 'Renner', sans-serif;
+    color: white;
+    background-color: #33638B;
+    text-transform: uppercase;
+    letter-spacing: .13rem;
+    padding: 3px 10px;
+    margin-bottom: 15px;
+}
+
+.admin-login input {
+    margin-bottom: 0px;
+    border-radius: 5px;
+    border: 1px solid #33638B;
+    font-family: 'Renner', sans-serif;
+    font-size: 1rem;
+    width: 180px;
+}
+
+.admin-login input:focus {
+    outline: none;
+    border: 1px solid #33638B;
+}
+
+.admin-login button {
+    margin-top: 25px;
+}
+
+.admin-login button:disabled {
+    background-color: #33638B;
+    color: white;
+    cursor: default;
+}
+
+/*      ADMIN LOGIN     */
+
+.admin-login {
+    background-color: #aeaee2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    text-align: center;
+    border-radius: 10px;
+    padding: 50px+10% 50px;
+}
+
+.admin-login h1 {
+    font-size: 3rem;
+    margin-bottom: 0px;
+    font-weight: normal;
+}
+

@@ -44,6 +44,14 @@ html {
   font-style: normal;
 }
 
+/* Renner */
+@font-face {
+  font-family: 'Renner';
+  src: url('./assets/fonts/Renner.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 body {
   font-family: 'Munson', sans-serif;
