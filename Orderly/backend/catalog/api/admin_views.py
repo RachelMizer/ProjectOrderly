@@ -6,9 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.api.permissions import IsBusinessUser
-from catalog.models import Product
+from catalog.models import Product, ProductVariant
 
-from .admin_serializers import AdminProductSerializer
+from .admin_serializers import (
+    AdminProductSerializer,
+    AdminProductVariantSerializer,
+)
 
 
 class AdminProductListCreateView(APIView):
@@ -62,5 +65,77 @@ class AdminProductDetailView(APIView):
     def delete(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
         product.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdminProductVariantListCreateView(APIView):
+    """
+    Business-only admin endpoint for listing and creating variants for a product.
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get(self, request, productId):
+        product = get_object_or_404(Product, pk=productId)
+        variants = product.variants.all().order_by("name")
+        serializer = AdminProductVariantSerializer(variants, many=True)
+
+        return Response(
+            {
+                "count": variants.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request, productId):
+        product = get_object_or_404(Product, pk=productId)
+        serializer = AdminProductVariantSerializer(
+            data=request.data,
+            context={"product": product},
+        )
+        serializer.is_valid(raise_exception=True)
+        variant = serializer.save()
+
+        return Response(
+            AdminProductVariantSerializer(variant).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class AdminProductVariantDetailView(APIView):
+    """
+    Business-only admin endpoint for updating and deleting a specific variant
+    that belongs to a specific product.
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get_object(self, productId, variantId):
+        return get_object_or_404(
+            ProductVariant,
+            pk=variantId,
+            product_id=productId,
+        )
+
+    def patch(self, request, productId, variantId):
+        variant = self.get_object(productId, variantId)
+        serializer = AdminProductVariantSerializer(
+            variant,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        updated_variant = serializer.save()
+
+        return Response(
+            AdminProductVariantSerializer(updated_variant).data,
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request, productId, variantId):
+        variant = self.get_object(productId, variantId)
+        variant.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
