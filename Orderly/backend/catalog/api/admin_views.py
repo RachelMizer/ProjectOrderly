@@ -108,7 +108,7 @@ class AdminProductVariantListCreateView(APIView):
 
 class AdminProductVariantDetailView(APIView):
     """
-    Business-only admin endpoint for updating inventory on a specific variant
+    Business-only admin endpoint for updating and deleting a specific variant
     that belongs to a specific product.
     """
 
@@ -123,7 +123,7 @@ class AdminProductVariantDetailView(APIView):
 
     def patch(self, request, productId, variantId):
         variant = self.get_object(productId, variantId)
-        serializer = AdminVariantInventorySerializer(
+        serializer = AdminProductVariantSerializer(
             variant,
             data=request.data,
             partial=True,
@@ -132,7 +132,7 @@ class AdminProductVariantDetailView(APIView):
         updated_variant = serializer.save()
 
         return Response(
-            AdminVariantInventorySerializer(updated_variant).data,
+            AdminProductVariantSerializer(updated_variant).data,
             status=status.HTTP_200_OK,
         )
 
