@@ -40,6 +40,7 @@ export default function Login({ setLoggedIn }) {
         localStorage.setItem("user", JSON.stringify(data.customer));
       }
 
+      await mergeGuestCart();
       setLoggedIn(true);
       navigate("/");
     } catch (error) {
