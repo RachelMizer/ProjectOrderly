@@ -1,60 +1,382 @@
 /*      ADMIN GLOBAL LAYOUT     */
 
-body {
-    background-color: white;
-    font-family: sans-serif;
-}
-
 .admin-wrap {
-    background: #33638B;
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Renner', sans-serif;
 }
-
-
-/*      DASHBOARD       */
 
 .admin-dash-wrap {
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-}
-
-.admin-dash-display {
-    width: 1500px;
-    height: 800px;
-    background-color: white;
-    overflow: scroll;
-}
-
-.admin-dash {
-
-}
-
-/*      ADMIN NAV       */
-
-.admin-dash-wrap nav {
-    width: 100%;
-    background-color:#33638b;
+    flex-direction: row;
     font-family: 'Renner', sans-serif;
 }
 
-.admin-dash-wrap nav a {
-    letter-spacing: .09rem;
-    font-weight: normal;
-    text-transform: uppercase;
+
+/*      SIDEBAR     */
+
+.admin-sidebar {
+    width: 180px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    padding: 50px 15px;
 }
 
-.admin-dash-wrap nav p {
-    margin-top: 3px;
-    margin-right: 150px;
-    letter-spacing: .09rem;
+.admin-sidebar .orderly-head {
+    color: white;
+    text-align: center;
+    padding: 0px;
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: .2rem;
+}
+
+.admin-brand {
+    text-decoration: none;
+    color: white;
+}
+
+.admin-brand h1 {
+    font-size: 1.8rem;
+    font-weight: normal;
+    margin: 0 0 4px 0;
+    color: white;
+    letter-spacing: .1rem;
+    text-transform: none;
+}
+
+.admin-brand p {
+    font-size: .65rem;
+    margin: 0;
+    letter-spacing: .05rem;
+    color: white;
+    text-transform: none;
+    font-weight: normal;
+}
+
+
+/*      SIDEBAR MENU        */
+
+.sidebar-menu {
+    margin-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-title {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .15rem;
+    text-transform: uppercase;
+    margin: 0 0 4px 0;
+}
+
+.sidebar-sub {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    margin: 0 0 4px 0;
+}
+
+.sidebar-recent {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+}
+
+.sidebar-recent li {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    letter-spacing: .05rem;
+    padding: 2px 0;
+    cursor: pointer;
+}
+
+.sidebar-recent li:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.sidebar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.sidebar-link-disabled {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    letter-spacing: .08rem;
+    cursor: not-allowed;
+}
+
+.sidebar-empty {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-style: italic;
+    margin: 0 0 10px 0;
+}
+
+.sidebar-back {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    letter-spacing: .08rem;
+    text-decoration: none;
+    margin-top: auto;
+}
+
+.sidebar-back:hover {
+    color: white;
+}
+
+
+/*      MAIN AREA       */
+
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+
+/*      TOP BAR     */
+
+.admin-topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.admin-welcome {
+    margin: 0;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: .15rem;
+    font-weight: 800;
+    text-shadow: 1px 1px 4px #133c57;
+}
+
+.admin-topbar-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.admin-topbar-actions a {
+    color: white;
+    font-family: 'Renner', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .13rem;
+    font-size: .8rem;
+    text-decoration: none;
+    text-shadow: 1px 1px 4px #133c57;
+}
+
+
+/*      NAV CARDS       */
+
+.admin-nav-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding: 0 20px 12px;
+    background: transparent;
+    border-radius: 20px;
+}
+
+.nav-card {
+    flex: 1;
+    aspect-ratio: 2 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: .15rem;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 3px 3px 10px #133c57;
+}
+
+.nav-card span {
+    position: relative;
+    z-index: 1;
+    text-shadow: 1px 1px 4px #133c57;
+    font-weight: 800;
+}
+
+
+
+
+/*      DASHBOARD       */
+
+.dash-info-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    align-items: center;
+    background-color: white;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+}
+
+.dash-info-bar p {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .05rem;
+}
+
+.dash-inbox-disabled {
+    margin-left: auto;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    letter-spacing: .08rem;
+    color: #33638B;
+    cursor: not-allowed;
+    font-weight: 800;
+}
+
+
+.dash-recent-file {
+    padding: 10px 16px;
+    border-radius: 6px;
+    background-color: white;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dash-recent-label {
+    margin: 0 0 2px 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: .05rem;
+    color: #33638B;
+    font-weight: 800;
+}
+
+.dash-recent-value {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .85rem;
+    color: #33638B;
+    letter-spacing: .05rem;
+}
+
+.dash-recent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dash-file-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+.dash-file-card:hover {
+    background-color: #c9dcea;
+}
+
+.dash-file-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background-color: #33638B;
+    color: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Renner', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.dash-file-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-file-name {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .05rem;
+}
+
+.dash-file-accessed {
+    margin: 2px 0 0 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .7rem;
+    color: #5a85a0;
+    letter-spacing: .03rem;
+}
+
+
+/*      CONTENT AREA        */
+
+.admin-content {
+    flex: 1;
+    margin: 0 20px;
+    background-color: rgba(220, 235, 245, 0.85);
+    border-radius: 4px 4px 0 0;
+    overflow: auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+/*      FOOTER      */
+
+.admin-footer {
+    color: white;
+    text-align: right;
+    padding: 5px 20px;
+    font-size: .9rem;
+    letter-spacing: .12rem;
+    font-family: 'Renner', sans-serif;
+    text-transform: uppercase;
 }
 
 
@@ -67,18 +389,37 @@ body {
   font-style: normal;
 }
 
-/*      HEADERS     */
 
-h1, h2, h3, h4, h5, h6 {
+/*      ACCOUNT SETTINGS    */
+
+.admin-acct p, .admin-acct li {
+    color: #466681;
+}
+
+.admin-acct-permissions {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 6px;
+}
+
+.admin-acct-permissions li {
+    margin-bottom: 4px;
+    font-size: .9rem;
+}
+
+
+/*      SCOPED ELEMENT OVERRIDES    */
+
+.admin-dash-wrap h1, .admin-dash-wrap h2, .admin-dash-wrap h3,
+.admin-dash-wrap h4, .admin-dash-wrap h5, .admin-dash-wrap h6,
+.admin-wrap h1, .admin-wrap h2, .admin-wrap h3,
+.admin-wrap h4, .admin-wrap h5, .admin-wrap h6 {
     color: #33638B;
     letter-spacing: .1rem;
     font-family: 'Renner', sans-serif;
 }
 
-
-/*      FORMS       */
-
-label {
+.admin-dash-wrap label, .admin-wrap label {
     font-family: 'Renner';
     color: #33638B;
     letter-spacing: .13rem;
@@ -86,7 +427,7 @@ label {
     text-transform: uppercase;
 }
 
-button {
+.admin-dash-wrap button, .admin-wrap button {
     font-family: 'Renner', sans-serif;
     color: white;
     background-color: #33638B;
@@ -94,6 +435,32 @@ button {
     letter-spacing: .13rem;
     padding: 3px 10px;
     margin-bottom: 15px;
+}
+
+.admin-dash-wrap a, .admin-wrap a {
+    font-family: 'Renner', sans-serif;
+    color: white;
+}
+
+
+/*      ADMIN LOGIN     */
+
+.admin-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    text-align: center;
+    border-radius: 10px;
+    padding: 50px;
+}
+
+.admin-login h1 {
+    font-size: 3rem;
+    margin-bottom: 0px;
+    font-weight: normal;
+    color: #33638B;
 }
 
 .admin-login input {
@@ -119,24 +486,3 @@ button {
     color: white;
     cursor: default;
 }
-
-/*      ADMIN LOGIN     */
-
-.admin-login {
-    background-color: #aeaee2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    text-align: center;
-    border-radius: 10px;
-    padding: 50px+10% 50px;
-}
-
-.admin-login h1 {
-    font-size: 3rem;
-    margin-bottom: 0px;
-    font-weight: normal;
-}
-

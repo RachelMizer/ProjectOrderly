@@ -161,7 +161,7 @@ export default function Register({ setLoggedIn }) {
             )}
           </div>
 
-          <button type="submit">
+          <button className="cust-button" type="submit">
             {submitting ? "Creating Account..." : "Create Account"}
           </button>
 

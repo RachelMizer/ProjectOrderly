@@ -351,7 +351,7 @@ const ProductPage = () => {
       {selectedVariant && selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
       ) : (
-        <button className="add-to-cart-btn" onClick={handleAddToCart}>
+        <button className="cust-button" onClick={handleAddToCart}>
           {isEditMode ? "Update Item" : "Add to Cart"}
         </button>
       )}
