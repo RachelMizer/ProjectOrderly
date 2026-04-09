@@ -79,7 +79,12 @@ class LoginSerializer(serializers.Serializer):
         email = attributes.get("email", "").strip().lower()
         password = attributes.get("password")
 
-        user = authenticate(username=email, password=password)
+        try:
+            user_obj = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Email or password is incorrect")
+
+        user = authenticate(username=user_obj.username, password=password)
 
         if not user:
             raise serializers.ValidationError("Email or password is incorrect")

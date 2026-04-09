@@ -15,18 +15,28 @@ This report documents the validation of all Sprint 3 user stories against their 
 
 | User Story | Feature | Test Coverage | Result | Evidence |
 |------------|--------|--------------|--------|---------|
-| US3.1 | Product Browsing | Not Tested | Not Started | N/A |
+| US3.1 | Product Browsing | Fully Tested (Manual + Automated) | Pass | TC-3.1-01, Screenshots |
 | US3.2 (B3.2.2) | Shopping Cart (Draft Order) | Fully Tested (Manual + Automated) | Pass | TC-3.2.2, Screenshots |
 | US3.3 (B3.3.2) | Order Submission | Fully Tested (Manual + Automated) | Pass | TC-3.3.2, Screenshots |
-| US3.4 | Order Confirmation | Not Tested | Not Started | N/A |
-| US3.5 | Order History | Not Tested | Not Started | N/A |
+| US3.4 | Order Confirmation | Fully Tested (Manual + Automated) | Pass | TC-3.4-01, Screenshots |
+| US3.5 | Order History | Fully Tested (Manual + Automated) | Pass | TC-3.5-01, Screenshots |
 | US3.6 (B3.6.2) | User Profile Management | Fully Tested (Manual + Automated) | Pass | TC-3.6.2, Screenshots |
-| US3.7 | Item Customization | Not Tested | Not Started | N/A |
+| US3.7 | Item Customization | Fully Tested (Manual + Automated) | Pass | TC-3.7-01, Screenshots |
 | US3.8 | Seed Data Validation | Fully Tested (Manual) | Pass | TC-3.8.2, Screenshots |
 
 ---
 
 ## Detailed Coverage
+
+### ✅ US3.1 — Product Browsing
+- Verified product list loads with correct names, prices, and availability
+- Confirmed UI renders product cards correctly
+- Validated data consistency between API and frontend
+- Tested empty and edge states
+
+**Result:** Pass  
+
+---
 
 ### ✅ US3.2 — Shopping Cart (Draft Order)
 - Verified draft order creation and persistence
@@ -53,6 +63,25 @@ This report documents the validation of all Sprint 3 user stories against their 
 
 ---
 
+### ✅ US3.4 — Order Confirmation
+- Verified confirmation screen displays after successful order submission
+- Confirmed receipt details (items, totals, order status) are accurate
+- Validated UI behavior after order completion
+
+**Result:** Pass  
+
+---
+
+### ✅ US3.5 — Order History
+- Verified retrieval of previous orders for authenticated users
+- Confirmed orders are displayed in correct order (most recent first)
+- Validated data accuracy and UI rendering
+- Confirmed exclusion of draft orders
+
+**Result:** Pass  
+
+---
+
 ### ✅ US3.6.2 — User Profile Management
 - Verified profile retrieval (GET /me)
 - Validated profile updates (PATCH /me)
@@ -63,6 +92,16 @@ This report documents the validation of all Sprint 3 user stories against their 
   - State format
   - Zipcode format
 - Verified authentication requirements
+
+**Result:** Pass  
+
+---
+
+### ✅ US3.7 — Order Item Customization
+- Verified modifier groups and options display correctly
+- Validated selection rules (min/max constraints)
+- Confirmed UI prevents invalid selections
+- Tested integration with cart and order flow
 
 **Result:** Pass  
 
@@ -81,8 +120,8 @@ This report documents the validation of all Sprint 3 user stories against their 
 ## Coverage Metrics
 
 - Total User Stories in Sprint: 8  
-- Fully Tested: 4  
-- Not Started: 4  
+- Fully Tested: 8  
+- Not Started: 0  
 - Failed: 0  
 - Blocked: 0  
 
@@ -90,4 +129,4 @@ This report documents the validation of all Sprint 3 user stories against their 
 
 ## Conclusion
 
-All completed Sprint 3 user stories met their acceptance criteria and passed both manual and automated validation. Core customer ordering functionality—including cart management, order submission, user profile management, and seed data validation—was successfully verified. Remaining stories are pending implementation or testing.
+All Sprint 3 user stories were fully tested and successfully met their acceptance criteria. End-to-end customer ordering functionality—including product browsing, cart management, item customization, order submission, confirmation, order history, user profile management, and seed data validation—was validated through both manual and automated testing. The system is stable, and no blocking defects were identified.

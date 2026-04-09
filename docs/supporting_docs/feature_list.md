@@ -34,7 +34,6 @@
 *   Manage pricing
 *   Update and manage inventory levels
 *   Low-stock notifications
-*   Bulk product import via CSV
 *   Product category management
 
 ## 5\. Administrative Dashboard
@@ -44,8 +43,6 @@
 *   Export sales summaries as spreadsheets
 *   View and filter orders (by date, status, customer)
 *   Activity log viewer (audit logging UI)
-*   Supplier information management (contacts, details)
-*   Business configuration settings (tax rates, service fees, etc.)
 
 ## 6\. Reporting
 
@@ -62,7 +59,6 @@
 *   Authentication handling (tokens, protected routes)
 *   Error handling and empty-state messaging
 *   Loading states for data-heavy screens
-*   Accessibility improvements (ARIA labels, keyboard navigation)
 
 ## 8\. Help & Support
 
