@@ -3,52 +3,90 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AdminProductsPage from "../pages/Admin/AdminProductsPage";
 import * as auth from "../api/auth";
-import { handleApiError } from "../api/handleApiError";
 
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
-  getAuthHeaders: jest.fn(),
-}));
-
-jest.mock("../api/handleApiError", () => ({
-  handleApiError: jest.fn(),
+  getAuthHeaders: jest.fn(() => ({
+    Authorization: "Bearer fake-token",
+  })),
 }));
 
 global.fetch = jest.fn();
-
-function mockJsonResponse(body, { status = 200, ok = true, contentType = "application/json" } = {}) {
-  return Promise.resolve({
-    ok,
-    status,
-    json: async () => body,
-    headers: {
-      get: jest.fn((name) =>
-        name?.toLowerCase() === "content-type" ? contentType : null
-      ),
-    },
-  });
-}
 
 function setBusinessUser() {
   localStorage.setItem("user", JSON.stringify({ role: "BUSINESS" }));
   localStorage.setItem("accessToken", "fake-token");
   auth.isAuthenticated.mockReturnValue(true);
-  auth.getAuthHeaders.mockReturnValue({
-    Authorization: "Bearer fake-token",
+}
+
+function makeResponse({
+  ok = true,
+  status = 200,
+  body = {},
+  contentType = "application/json",
+}) {
+  return Promise.resolve({
+    ok,
+    status,
+    headers: {
+      get: (name) =>
+        name?.toLowerCase() === "content-type" ? contentType : null,
+    },
+    json: async () => body,
   });
 }
 
-function mockInitialLoad(products = [], categories = [], suppliers = []) {
-  fetch
-    .mockImplementationOnce(() =>
-      mockJsonResponse({ results: products }, { status: 200, ok: true })
-    )
-    .mockImplementationOnce(() =>
-      mockJsonResponse({ results: categories }, { status: 200, ok: true })
-    )
-    .mockImplementationOnce(() =>
-      mockJsonResponse({ results: suppliers }, { status: 200, ok: true })
+function setupFetch({
+  products = [],
+  categories = [],
+  suppliers = [],
+  overrides = [],
+} = {}) {
+  const oneTimeOverrides = [...overrides];
+
+  fetch.mockImplementation((input, init = {}) => {
+    const url = (typeof input === "string" ? input : input?.url) || "";
+    const method = (init?.method || input?.method || "GET").toUpperCase();
+
+    const overrideIndex = oneTimeOverrides.findIndex(
+      (o) => url.includes(o.path) && method === o.method.toUpperCase()
     );
+
+    if (overrideIndex !== -1) {
+      const override = oneTimeOverrides.splice(overrideIndex, 1)[0];
+      return makeResponse(override.response);
+    }
+
+    if (method === "GET" && url.includes("/admin/products")) {
+      return makeResponse({
+        status: 200,
+        body: { results: products },
+      });
+    }
+
+    if (method === "GET" && url.includes("/categories")) {
+      return makeResponse({
+        status: 200,
+        body: { results: categories },
+      });
+    }
+
+    if (method === "GET" && url.includes("/admin/suppliers")) {
+      return makeResponse({
+        status: 200,
+        body: { results: suppliers },
+      });
+    }
+
+    return makeResponse({
+      status: 200,
+      body: { results: [] },
+    });
+  });
+}
+
+function getFormSelects() {
+  return screen.getAllByRole("combobox");
 }
 
 describe("Admin Products CRUD UI", () => {
@@ -61,19 +99,19 @@ describe("Admin Products CRUD UI", () => {
   test("loads and displays product list", async () => {
     setBusinessUser();
 
-    mockInitialLoad(
-      [
+    setupFetch({
+      products: [
         {
           id: 1,
-          name: "Test Product",
+          name: "Latte",
           category: 1,
           supplier: 1,
-          description: "Test desc",
+          description: "Espresso with milk",
         },
       ],
-      [{ id: 1, name: "Coffee" }],
-      [{ id: 1, name: "Good Supply" }]
-    );
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
 
     render(
       <MemoryRouter>
@@ -81,20 +119,20 @@ describe("Admin Products CRUD UI", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText(/test product/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/coffee/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/good supply/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/test desc/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/latte/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/espresso with milk/i)).toBeInTheDocument();
   });
 
-  test("shows no products found when product list is empty", async () => {
+  test("shows empty state when no products exist", async () => {
     setBusinessUser();
 
-    mockInitialLoad(
-      [],
-      [{ id: 1, name: "Coffee" }],
-      [{ id: 1, name: "Good Supply" }]
-    );
+    setupFetch({
+      products: [],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
 
     render(
       <MemoryRouter>
@@ -105,29 +143,31 @@ describe("Admin Products CRUD UI", () => {
     expect(await screen.findByText(/no products found/i)).toBeInTheDocument();
   });
 
-  test("create product updates UI immediately", async () => {
+  test("creates a product and updates UI immediately", async () => {
     setBusinessUser();
 
-    mockInitialLoad(
-      [],
-      [{ id: 1, name: "Coffee" }],
-      [{ id: 1, name: "Good Supply" }]
-    );
-
-    fetch.mockImplementationOnce(() =>
-      mockJsonResponse(
+    setupFetch({
+      products: [],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      overrides: [
         {
-          id: 2,
-          name: "New Product",
-          category: 1,
-          supplier: 1,
-          description: "Created in test",
-          has_variants: true,
-          has_modifiers: false,
+          method: "POST",
+          path: "/admin/products",
+          response: {
+            ok: true,
+            status: 201,
+            body: {
+              id: 2,
+              name: "Mocha",
+              category: 1,
+              supplier: 1,
+              description: "Chocolate espresso drink",
+            },
+          },
         },
-        { status: 201, ok: true }
-      )
-    );
+      ],
+    });
 
     render(
       <MemoryRouter>
@@ -138,38 +178,196 @@ describe("Admin Products CRUD UI", () => {
     await screen.findByText(/no products found/i);
 
     fireEvent.change(screen.getByPlaceholderText(/name/i), {
-      target: { value: "New Product" },
+      target: { value: "Mocha" },
     });
 
-    const selects = screen.getAllByRole("combobox");
+    const selects = getFormSelects();
     fireEvent.change(selects[0], { target: { value: "1" } });
     fireEvent.change(selects[1], { target: { value: "1" } });
 
     fireEvent.change(screen.getByPlaceholderText(/description/i), {
-      target: { value: "Created in test" },
+      target: { value: "Chocolate espresso drink" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /^create product$/i }));
 
-    expect(await screen.findByText(/new product/i)).toBeInTheDocument();
-    expect(screen.getByText(/created in test/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/mocha/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/chocolate espresso drink/i)).toBeInTheDocument();
   });
 
-  test("validation errors show in UI", async () => {
+  test("enters edit mode and updates a product in the UI", async () => {
     setBusinessUser();
 
-    mockInitialLoad(
-      [],
-      [{ id: 1, name: "Coffee" }],
-      [{ id: 1, name: "Good Supply" }]
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "House Coffee",
+          category: 1,
+          supplier: 1,
+          description: "Original description",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      overrides: [
+        {
+          method: "PATCH",
+          path: "/admin/products/1",
+          response: {
+            ok: true,
+            status: 200,
+            body: {
+              id: 1,
+              name: "House Coffee Updated",
+              category: 1,
+              supplier: 1,
+              description: "Updated description",
+            },
+          },
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminProductsPage />
+      </MemoryRouter>
     );
 
-    fetch.mockImplementationOnce(() =>
-      mockJsonResponse(
-        { message: "Name is required" },
-        { status: 400, ok: false }
-      )
+    expect(await screen.findByText(/house coffee/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
+
+    expect(screen.getByText(/edit product/i)).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText(/name/i), {
+      target: { value: "House Coffee Updated" },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/description/i), {
+      target: { value: "Updated description" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /^update product$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/house coffee updated/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/updated description/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^house coffee$/i)).not.toBeInTheDocument();
+  });
+
+  test("cancel edit resets form and returns to create mode", async () => {
+    setBusinessUser();
+
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Chai Tea Latte",
+          category: 1,
+          supplier: 1,
+          description: "Spiced tea",
+        },
+      ],
+      categories: [{ id: 1, name: "Tea" }],
+      suppliers: [{ id: 1, name: "Tea Supplier" }],
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminProductsPage />
+      </MemoryRouter>
     );
+
+    expect(await screen.findByText(/chai tea latte/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
+    expect(screen.getByText(/edit product/i)).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText(/name/i), {
+      target: { value: "Temporary Name" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /^create product$/i })
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByPlaceholderText(/name/i)).toHaveValue("");
+    expect(screen.getByText(/chai tea latte/i)).toBeInTheDocument();
+  });
+
+  test("deletes a product and removes it from the UI", async () => {
+    setBusinessUser();
+
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Delete Me",
+          category: 1,
+          supplier: 1,
+          description: "Remove this item",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      overrides: [
+        {
+          method: "DELETE",
+          path: "/admin/products/1",
+          response: {
+            ok: true,
+            status: 204,
+            body: {},
+            contentType: "",
+          },
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminProductsPage />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/delete me/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/delete me/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test("shows backend validation error in the UI", async () => {
+    setBusinessUser();
+
+    setupFetch({
+      products: [],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      overrides: [
+        {
+          method: "POST",
+          path: "/admin/products",
+          response: {
+            ok: false,
+            status: 400,
+            body: {
+              message: "Name already exists",
+            },
+          },
+        },
+      ],
+    });
 
     render(
       <MemoryRouter>
@@ -179,28 +377,84 @@ describe("Admin Products CRUD UI", () => {
 
     await screen.findByText(/no products found/i);
 
-    const selects = screen.getAllByRole("combobox");
+    fireEvent.change(screen.getByPlaceholderText(/name/i), {
+      target: { value: "Duplicate Product" },
+    });
+
+    const selects = getFormSelects();
     fireEvent.change(selects[0], { target: { value: "1" } });
     fireEvent.change(selects[1], { target: { value: "1" } });
 
+    fireEvent.change(screen.getByPlaceholderText(/description/i), {
+      target: { value: "Duplicate description" },
+    });
+
     fireEvent.click(screen.getByRole("button", { name: /^create product$/i }));
 
-    expect(await screen.findByText(/name is required/i)).toBeInTheDocument();
+    expect(await screen.findByText(/name already exists/i)).toBeInTheDocument();
   });
 
-  test("403 on initial load calls handleApiError", async () => {
+  test("shows delete error when backend delete fails", async () => {
     setBusinessUser();
 
-    fetch
-      .mockImplementationOnce(() =>
-        mockJsonResponse({}, { status: 403, ok: false })
-      )
-      .mockImplementationOnce(() =>
-        mockJsonResponse({ results: [] }, { status: 200, ok: true })
-      )
-      .mockImplementationOnce(() =>
-        mockJsonResponse({ results: [] }, { status: 200, ok: true })
-      );
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Cannot Delete",
+          category: 1,
+          supplier: 1,
+          description: "Delete should fail",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      overrides: [
+        {
+          method: "DELETE",
+          path: "/admin/products/1",
+          response: {
+            ok: false,
+            status: 500,
+            body: {
+              message: "Failed to delete product",
+            },
+          },
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter>
+        <AdminProductsPage />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/cannot delete/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    expect(
+      await screen.findByText(/failed to delete product/i)
+    ).toBeInTheDocument();
+  });
+
+  test("403 on initial load triggers unauthorized handling", async () => {
+    setBusinessUser();
+
+    setupFetch({
+      overrides: [
+        {
+          method: "GET",
+          path: "/admin/products",
+          response: {
+            ok: false,
+            status: 403,
+            body: {},
+          },
+        },
+      ],
+    });
 
     render(
       <MemoryRouter>
@@ -209,12 +463,9 @@ describe("Admin Products CRUD UI", () => {
     );
 
     await waitFor(() => {
-      expect(handleApiError).toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalledWith(
+        "You do not have permission to access this page."
+      );
     });
-
-    expect(handleApiError).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 403 }),
-      expect.any(Function)
-    );
   });
 });
