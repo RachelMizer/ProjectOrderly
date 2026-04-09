@@ -11,6 +11,7 @@ from catalog.models import Product, ProductVariant
 from .admin_serializers import (
     AdminProductSerializer,
     AdminProductVariantSerializer,
+    AdminVariantInventorySerializer,
 )
 
 
@@ -71,7 +72,8 @@ class AdminProductDetailView(APIView):
 
 class AdminProductVariantListCreateView(APIView):
     """
-    Business-only admin endpoint for listing and creating variants for a product.
+    Business-only admin endpoint for listing variant inventory and
+    creating variants for a product.
     """
 
     permission_classes = [IsAuthenticated, IsBusinessUser]
@@ -79,7 +81,7 @@ class AdminProductVariantListCreateView(APIView):
     def get(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
         variants = product.variants.all().order_by("name")
-        serializer = AdminProductVariantSerializer(variants, many=True)
+        serializer = AdminVariantInventorySerializer(variants, many=True)
 
         return Response(
             {
