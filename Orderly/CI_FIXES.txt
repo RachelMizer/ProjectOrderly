@@ -1,0 +1,37 @@
+CI TEST FIXES
+================================================================================
+
+FAILING TESTS: Both test jobs failing with the same error.
+
+--------------------------------------------------------------------------------
+
+ERROR (fields.E210) — Pillow not installed
+------------------------------------------
+CAUSE:
+  catalog.Product.image uses Django's ImageField, which requires the Pillow
+  library to be installed. Pillow was missing from requirements.txt, so CI
+  was not installing it before running migrations.
+
+FIX:
+  Added Pillow==11.2.1 to requirements.txt.
+
+FILE CHANGED: requirements.txt
+
+--------------------------------------------------------------------------------
+
+WARNING (models.W036) — MySQL unique constraints with conditions
+----------------------------------------------------------------
+This is a WARNING, not an error, and is not causing test failures.
+
+CAUSE:
+  MySQL does not support partial unique constraints (unique constraints with
+  a WHERE condition). Django generates this warning when it detects one in
+  the model definitions.
+
+NO ACTION REQUIRED. If the warning noise is undesirable, it can be silenced
+by adding the following to the relevant Meta class in the model:
+
+  class Meta:
+      suppress_warnings = ["models.W036"]
+
+--------------------------------------------------------------------------------
