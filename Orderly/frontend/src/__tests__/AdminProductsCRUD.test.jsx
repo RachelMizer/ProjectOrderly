@@ -1,39 +1,54 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AdminProductsPage from "../pages/Admin/AdminProductsPage";
 import * as auth from "../api/auth";
+import { handleApiError } from "../api/handleApiError";
 
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
+  getAuthHeaders: jest.fn(),
+}));
+
+jest.mock("../api/handleApiError", () => ({
+  handleApiError: jest.fn(),
 }));
 
 global.fetch = jest.fn();
+
+function mockJsonResponse(body, { status = 200, ok = true, contentType = "application/json" } = {}) {
+  return Promise.resolve({
+    ok,
+    status,
+    json: async () => body,
+    headers: {
+      get: jest.fn((name) =>
+        name?.toLowerCase() === "content-type" ? contentType : null
+      ),
+    },
+  });
+}
 
 function setBusinessUser() {
   localStorage.setItem("user", JSON.stringify({ role: "BUSINESS" }));
   localStorage.setItem("accessToken", "fake-token");
   auth.isAuthenticated.mockReturnValue(true);
+  auth.getAuthHeaders.mockReturnValue({
+    Authorization: "Bearer fake-token",
+  });
 }
 
-// AdminProductsPage expects arrays or { results: [...] }, not { data: [...] }
 function mockInitialLoad(products = [], categories = [], suppliers = []) {
   fetch
-    .mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => products,
-    })
-    .mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => categories,
-    })
-    .mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => suppliers,
-    });
+    .mockImplementationOnce(() =>
+      mockJsonResponse({ results: products }, { status: 200, ok: true })
+    )
+    .mockImplementationOnce(() =>
+      mockJsonResponse({ results: categories }, { status: 200, ok: true })
+    )
+    .mockImplementationOnce(() =>
+      mockJsonResponse({ results: suppliers }, { status: 200, ok: true })
+    );
 }
 
 describe("Admin Products CRUD UI", () => {
@@ -47,7 +62,15 @@ describe("Admin Products CRUD UI", () => {
     setBusinessUser();
 
     mockInitialLoad(
-      [{ id: 1, name: "Test Product", category: 1, supplier: 1, description: "Test desc" }],
+      [
+        {
+          id: 1,
+          name: "Test Product",
+          category: 1,
+          supplier: 1,
+          description: "Test desc",
+        },
+      ],
       [{ id: 1, name: "Coffee" }],
       [{ id: 1, name: "Good Supply" }]
     );
@@ -59,6 +82,27 @@ describe("Admin Products CRUD UI", () => {
     );
 
     expect(await screen.findByText(/test product/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/coffee/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/good supply/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/test desc/i)).toBeInTheDocument();
+  });
+
+  test("shows no products found when product list is empty", async () => {
+    setBusinessUser();
+
+    mockInitialLoad(
+      [],
+      [{ id: 1, name: "Coffee" }],
+      [{ id: 1, name: "Good Supply" }]
+    );
+
+    render(
+      <MemoryRouter>
+        <AdminProductsPage />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/no products found/i)).toBeInTheDocument();
   });
 
   test("create product updates UI immediately", async () => {
@@ -70,17 +114,20 @@ describe("Admin Products CRUD UI", () => {
       [{ id: 1, name: "Good Supply" }]
     );
 
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      status: 201,
-      json: async () => ({
-        id: 2,
-        name: "New Product",
-        category: 1,
-        supplier: 1,
-        description: "Created in test",
-      }),
-    });
+    fetch.mockImplementationOnce(() =>
+      mockJsonResponse(
+        {
+          id: 2,
+          name: "New Product",
+          category: 1,
+          supplier: 1,
+          description: "Created in test",
+          has_variants: true,
+          has_modifiers: false,
+        },
+        { status: 201, ok: true }
+      )
+    );
 
     render(
       <MemoryRouter>
@@ -91,7 +138,7 @@ describe("Admin Products CRUD UI", () => {
     await screen.findByText(/no products found/i);
 
     fireEvent.change(screen.getByPlaceholderText(/name/i), {
-    target: { value: "New Product" },
+      target: { value: "New Product" },
     });
 
     const selects = screen.getAllByRole("combobox");
@@ -99,12 +146,13 @@ describe("Admin Products CRUD UI", () => {
     fireEvent.change(selects[1], { target: { value: "1" } });
 
     fireEvent.change(screen.getByPlaceholderText(/description/i), {
-    target: { value: "Created in test" },
+      target: { value: "Created in test" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /^create product$/i }));
 
     expect(await screen.findByText(/new product/i)).toBeInTheDocument();
+    expect(screen.getByText(/created in test/i)).toBeInTheDocument();
   });
 
   test("validation errors show in UI", async () => {
@@ -116,13 +164,12 @@ describe("Admin Products CRUD UI", () => {
       [{ id: 1, name: "Good Supply" }]
     );
 
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({
-        message: "Name is required",
-      }),
-    });
+    fetch.mockImplementationOnce(() =>
+      mockJsonResponse(
+        { message: "Name is required" },
+        { status: 400, ok: false }
+      )
+    );
 
     render(
       <MemoryRouter>
@@ -141,10 +188,19 @@ describe("Admin Products CRUD UI", () => {
     expect(await screen.findByText(/name is required/i)).toBeInTheDocument();
   });
 
-  test("403 triggers alert", async () => {
+  test("403 on initial load calls handleApiError", async () => {
     setBusinessUser();
 
-    fetch.mockRejectedValueOnce({ status: 403 });
+    fetch
+      .mockImplementationOnce(() =>
+        mockJsonResponse({}, { status: 403, ok: false })
+      )
+      .mockImplementationOnce(() =>
+        mockJsonResponse({ results: [] }, { status: 200, ok: true })
+      )
+      .mockImplementationOnce(() =>
+        mockJsonResponse({ results: [] }, { status: 200, ok: true })
+      );
 
     render(
       <MemoryRouter>
@@ -152,12 +208,13 @@ describe("Admin Products CRUD UI", () => {
       </MemoryRouter>
     );
 
-    expect(
-      await screen.findByText(/unable to load page data|admin products/i)
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalled();
+    });
 
-    expect(window.alert).toHaveBeenCalledWith(
-      "You do not have permission to access this page."
+    expect(handleApiError).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 403 }),
+      expect.any(Function)
     );
   });
 });
