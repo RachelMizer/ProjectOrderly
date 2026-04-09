@@ -76,21 +76,26 @@ const ProductCard = ({ product }) => {
 
       {/* Price */}
       <p className="price">
-        ${Number(selectedVariant.unitPrice).toFixed(2)}
+        {selectedVariant?.unitPrice != null
+          ? `$${Number(selectedVariant.unitPrice).toFixed(2)}`
+          : "N/A"}
       </p>
 
       {/* Stock */}
-      {selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 && (
-        <p className="OOS">Out of Stock</p>
+      {selectedVariant?.stockQuantity !== null &&
+        Number(selectedVariant?.stockQuantity) === 0 && (
+          <p className="OOS">Out of Stock</p>
       )}
 
-      {(selectedVariant.stockQuantity === null || Number(selectedVariant.stockQuantity) > 0) && (
-        <button
-          className="add-to-cart-btn"
-          onClick={handleAddToCart}
-        >
-          Add to Cart
-        </button>
+      {(selectedVariant?.stockQuantity === null ||
+        Number(selectedVariant?.stockQuantity) > 0) && (
+          <button
+            className="add-to-cart-btn"
+            onClick={handleAddToCart}
+            disabled={!selectedVariant}
+          >
+            Add to Cart
+          </button>
       )}
 
       <Link to={`/product/${product.id}`} className="view-link">
