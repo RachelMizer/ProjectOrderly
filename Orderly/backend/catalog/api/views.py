@@ -98,7 +98,9 @@ class VariantsView(APIView):
         product = get_object_or_404(Product, pk=productId)
 
         variants = list(
-            ProductVariant.objects.filter(product_id=productId).order_by("name")
+            ProductVariant.objects.filter(product_id=productId)
+            .prefetch_related("inventory_usage__inventory_item")
+            .order_by("name")
         )
 
         count = len(variants)

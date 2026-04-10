@@ -29,8 +29,6 @@ import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Admin from "./Admin";
 
-
-
 // Admin Components
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -77,7 +75,7 @@ function AppContent() {
 
         if (response.ok) {
           const profile = await response.json();
-          const existingUser = getStoredUser();
+          const existingUser = getStoredUser() || {};
 
           const mergedUser = {
             ...existingUser,

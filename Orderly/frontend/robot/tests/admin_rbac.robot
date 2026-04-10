@@ -4,7 +4,7 @@ Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${CUSTOMER_EMAIL}       test@test.com
+${CUSTOMER_EMAIL}       Customer1@example.com
 ${CUSTOMER_PASSWORD}    Password123!
 
 *** Test Cases ***
@@ -15,13 +15,13 @@ Logged Out User Is Redirected To Login From Admin Route
     Location Should Contain    /login
 
 Customer Does Not See Admin Dashboard Link
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/']    10s
     Page Should Not Contain Link    Admin Dashboard
 
 Customer Is Redirected Home From Admin Route
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/admin/products
     Wait Until Page Contains    Filter the Menu    10s

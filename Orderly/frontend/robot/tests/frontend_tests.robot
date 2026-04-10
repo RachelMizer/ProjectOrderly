@@ -4,7 +4,7 @@ Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${TEST_EMAIL}          test@test.com
+${TEST_EMAIL}          customer1@example.com
 ${TEST_PASSWORD}       Password123!
 ${UPDATED_FIRST_NAME}  Ken
 ${UPDATED_CITY}        Charlotte
@@ -20,7 +20,7 @@ App Navigation Hides Profile Link When Not Authenticated
     Page Should Contain Link    Register
 
 App Navigation Shows Auth Links When Authenticated
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Page Should Contain Link    Profile
@@ -87,7 +87,7 @@ Reset Password Page Accepts Password Input
     Textfield Value Should Be    xpath=//input[@type='password']    Password123!
 
 Profile Page Loads Existing Data
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
@@ -101,14 +101,14 @@ Profile Page Loads Existing Data
     Page Should Contain Element    id=phone
 
 Profile Email Field Is Disabled
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=email    10s
     Element Should Be Disabled    id=email
 
 Profile Allows Editing Editable Fields
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
@@ -121,7 +121,7 @@ Profile Allows Editing Editable Fields
     Element Should Be Disabled    id=email
 
 Profile Save Submits Updated Data
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
@@ -172,14 +172,14 @@ View And Customize Navigates To Product Page
     Wait Until Location Contains    /product/    10s
 
 Order History Page Loads For Authenticated User
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
     Wait Until Page Does Not Contain    Loading order history...    10s
 
 Order History Shows Empty State Or Orders
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
