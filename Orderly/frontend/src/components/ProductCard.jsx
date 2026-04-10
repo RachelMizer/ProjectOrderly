@@ -52,7 +52,10 @@ const ProductCard = ({ product }) => {
     <div className="product-card">
       <h3>{product.name}</h3>
 
-      <div className="img">Placeholder</div>
+      {product.imageUrl
+        ? <img src={product.imageUrl} alt={product.name} className="img" />
+        : <div className="img">Placeholder</div>
+      }
 
       {product.description && <p className="prod-desc">{product.description}</p>}
 

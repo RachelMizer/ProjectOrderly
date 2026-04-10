@@ -47,17 +47,24 @@ from .exceptions import NotAuthorizedException
 def get_or_create_guest_draft_order(guest_email):
     """
     Return the guest's active DRAFT order identified by guest_email token.
-    Create one if it does not exist.
+    Create one if it does not exist. If duplicates exist, return the most recent.
     """
-    order, created = Order.objects.get_or_create(
+    order = (
+        Order.objects.filter(guest_email=guest_email, status=OrderStatus.DRAFT)
+        .order_by("-created_at")
+        .first()
+    )
+
+    if order:
+        return order, False
+
+    order = Order.objects.create(
         guest_email=guest_email,
         status=OrderStatus.DRAFT,
-        defaults={
-            "subtotal": Decimal("0.00"),
-            "tax_amount": Decimal("0.00"),
-        },
+        subtotal=Decimal("0.00"),
+        tax_amount=Decimal("0.00"),
     )
-    return order, created
+    return order, True
 
 
 def order_item_belongs_to_guest(order_item, guest_email):
