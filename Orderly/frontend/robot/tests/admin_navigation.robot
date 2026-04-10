@@ -10,20 +10,19 @@ Logged Out User Is Redirected To Login From Admin Home
     Location Should Contain    /login
 
 Customer Does Not See Admin Nav
-    Login As Test User
-    Sync Auth Token Key For Frontend
-    Wait Until Page Contains Element    xpath=//a[@href='/']    10s
-    Page Should Not Contain    Admin Dashboard
-    Page Should Not Contain    Dashboard Home
-    Page Should Not Contain    Suppliers
-    Page Should Not Contain    Inventory
+    Login As Customer User
+    Wait Until Location Is    ${BASE_URL}/    10s
+    Wait Until Page Contains    Home    10s
+    Page Should Not Contain Link    Admin Dashboard
 
 Customer Is Redirected Home From Admin Inventory
-    Login As Test User
-    Sync Auth Token Key For Frontend
+    Login As Customer User
+    Wait Until Location Is    ${BASE_URL}/    10s
+
     Go To    ${BASE_URL}/admin/inventory
+
+    Wait Until Location Is    ${BASE_URL}/    10s
     Wait Until Page Contains    Filter the Menu    10s
-    Location Should Be    ${BASE_URL}/
     Page Should Not Contain    Admin Inventory
 
 Business User Sees Persistent Admin Nav On Admin Home

@@ -5,14 +5,14 @@ Test Teardown  Close Browser Session
 
 *** Test Cases ***
 Logged In User Can View Order History Page
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
     Wait Until Page Contains    Order History    10s
 
 Order History Shows Empty State When No Past Orders Exist
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
@@ -24,7 +24,7 @@ Order History Shows Empty State When No Past Orders Exist
     Should Be True    ${empty_count} > 0 or ${order_count} > 0
 
 Order History Shows Pagination Controls
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
@@ -36,7 +36,7 @@ Order History Shows Pagination Controls
 
 Order History Can Open Order Detail When Past Orders Exist
     [Documentation]    This passes only when the seeded/test user actually has at least one non-DRAFT order.
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
