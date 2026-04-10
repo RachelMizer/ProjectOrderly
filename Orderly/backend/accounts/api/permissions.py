@@ -8,7 +8,7 @@ class IsBusinessUser(BasePermission):
     Allows access only to authenticated users with BUSINESS role.
     """
 
-    message = "user does not have this permission"
+    message = "User does not have this permission."
 
     def has_permission(self, request, view):
         user = request.user

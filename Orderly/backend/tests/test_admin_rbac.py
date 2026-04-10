@@ -119,7 +119,7 @@ def assert_invalid_role_response(response):
     assert response.status_code == 403
     assert response.data == {
         "error": "INVALID_ROLE",
-        "message": "user does not have this permission",
+        "message": "User does not have this permission.",
     }
 
 

@@ -184,13 +184,6 @@ async function fetchCartCount() {
             {" | "}
             <Link to="/order-history">Order History</Link>
 
-            {role === "BUSINESS" && (
-              <>
-                {" | "}
-                <Link to="/admin">Admin Dashboard</Link>
-              </>
-            )}
-
             {" | "}
             <button onClick={handleLogout}>Logout</button>
           </>

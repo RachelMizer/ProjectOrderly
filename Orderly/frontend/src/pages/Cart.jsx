@@ -130,7 +130,7 @@ function CartPage() {
                 navigate(`/product/${item.productId}?editItem=${item.itemId}&variantId=${item.variantId}&modifiers=${modifierIds}`);
               }}>Edit Item</button>
           </div>
-          {item.variantName !== 'Standard' && <p className="cart-item-type">Size: {item.variantName}</p>}
+          {item.variantName !== 'Standard' && <p className="cart-item-type">Option: {item.variantName}</p>}
           <h4>Item Add-Ons / Mods:</h4>
           {item.modifiers?.length > 0 ? (
             <ul>
@@ -158,8 +158,7 @@ function CartPage() {
         </div>
       ))}
 
-      <hr />
-      <button className="empty-cart-btn" onClick={emptyCart}>Empty Cart</button>
+      <button className="empty-cart-btn" style={{marginTop: "15px"}} onClick={emptyCart}>Empty Cart</button>
       <div className="cart-totals">
         <table>
           <tr><td className="left">Total Items</td> <td className="right">{totalItems}</td></tr>

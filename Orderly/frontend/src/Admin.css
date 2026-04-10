@@ -206,7 +206,10 @@
 
 .nav-card {
     flex: 1;
+    min-width: 200px;
+    max-width: 250px;
     aspect-ratio: 2 / 1;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -231,8 +234,6 @@
     text-shadow: 1px 1px 4px #133c57;
     font-weight: 800;
 }
-
-
 
 
 /*      DASHBOARD       */
@@ -443,6 +444,199 @@
 }
 
 
+/*      SUBMENU BAR     */
+
+.submenu-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 4px;
+    padding: 6px 14px;
+    margin-bottom: 16px;
+}
+
+.submenu-label {
+    font-family: 'Renner', sans-serif;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+}
+
+.submenu-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+button.submenu-action {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    letter-spacing: .05rem;
+    color: #33638B;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+button.submenu-action.submenu-action--disabled {
+    color: #a0b8c8;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+button.submenu-action[title="Pending further development"] {
+    cursor: not-allowed;
+}
+
+.catalog-last-updated {
+    margin-top: 0px;
+    margin-bottom: 5px;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    color: #33638B;
+    letter-spacing: .05rem;
+    text-align: left;
+}
+
+.submenu-search {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    letter-spacing: .05rem;
+    color: #33638B;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    background: transparent;
+    padding: 2px 6px;
+    width: 230px;
+    outline: none;
+    margin-bottom: 0;
+}
+
+.submenu-search::placeholder {
+    color: #33638B;
+    opacity: 0.7;
+}
+
+
+/*      ADMIN TABLE         */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Renner', sans-serif;
+    font-size: .95rem;
+}
+
+.admin-th {
+    text-align: center;
+    padding: 5px;
+    background-color: #33638B;
+    color: white;
+    letter-spacing: .08rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.admin-th:hover {
+    background-color: #264e6e;
+}
+
+.admin-th--no-sort {
+    cursor: default;
+}
+
+.admin-th--no-sort:hover {
+    background-color: #33638B;
+}
+
+.sort-indicator {
+    margin-left: 0px;
+    font-size: .8rem;
+}
+
+.sort-indicator--inactive {
+    opacity: 0.5;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #dce8f0;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #c4d9e8;
+}
+
+.admin-table td {
+    padding: 0px 10px;
+    line-height: 1rem;
+    color: #2a4f6b;
+    border-bottom: 1px solid #c4d9e8;
+    text-align: center;
+}
+
+.td-description {
+    text-align: left;
+}
+
+.td-name {
+    font-weight: 700;
+}
+
+.table-action-btn {
+    padding: 1px 5px !important;
+    font-size: .70rem;
+}
+
+.variants-row-cell {
+    padding: 0px;
+    background: #f0f6fa;
+}
+
+.variants-row-cell h4 {
+    padding-top: 12px;
+    padding-left: 12px;
+    margin-bottom: 8px;
+}
+
+.variant-form {
+    margin-bottom: 1rem;
+    padding: 0 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.variant-form input {
+    margin-bottom: 0;
+    font-family: 'Renner', sans-serif;
+}
+
+.variant-form button {
+    align-self: center;
+    margin-bottom: 0;
+}
+
+.variants-row-cell .admin-table td {
+    padding: 0;
+    text-align: center;
+}
+
+.variants-row-cell .admin-table {
+    margin-top: 4px;
+    font-size: .9rem;
+}
+
+
 /*      ADMIN LOGIN     */
 
 .admin-login {
@@ -453,7 +647,7 @@
     background-color: white;
     text-align: center;
     border-radius: 10px;
-    padding: 50px;
+    padding: 40px 60px;
 }
 
 .admin-login h1 {
@@ -485,4 +679,122 @@
     background-color: #33638B;
     color: white;
     cursor: default;
+}
+
+.td-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 5px;
+}
+
+.td-actions button {
+    white-space: nowrap;
+    margin-top: 15px;
+}
+
+.variant-action-btn {
+    font-size: .75rem;
+    padding: 2px 6px !important;
+    margin-bottom: 0;
+    letter-spacing: .08rem;
+}
+
+/*      Product Creation Form       */
+
+.admin-create-prod {
+    width: 75%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-family: 'Renner', sans-serif;
+}
+
+.admin-create-prod label {
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.admin-create-prod input, .admin-create-prod textarea {
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border-radius: 5px;
+}
+
+.admin-create-prod textarea {
+    vertical-align: top;
+}
+
+.admin-create-prod select {
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border-radius: 5px;
+}
+
+.product-form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-form-table tr {
+    border-bottom: 1px solid #c4d9e8;
+}
+
+.form-label-cell {
+    width: 30%;
+    padding: 8px 12px 8px 0;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.product-form-table td:not(.form-label-cell) {
+    padding: 8px 0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.product-form-table input:not([type="checkbox"]),
+.product-form-table select,
+.product-form-table textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border-radius: 5px;
+}
+
+.form-checkbox-cell {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.product-img-preview {
+    display: block;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    max-width: 160px;
+    max-height: 160px;
+    margin-top: 8px;
+    border-radius: 5px;
+    border: 2px solid gray;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: row;
+    column-gap: 10px;
+    row-gap: 0px;
+    margin-top: 10px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-actions button {
+    font-size: .9rem;
 }

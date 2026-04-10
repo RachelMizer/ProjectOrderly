@@ -24,7 +24,7 @@ class AdminProductListCreateView(APIView):
 
     def get(self, request):
         products = Product.objects.select_related("category", "supplier").order_by("name")
-        serializer = AdminProductSerializer(products, many=True)
+        serializer = AdminProductSerializer(products, many=True, context={"request": request})
 
         return Response(
             {
@@ -35,12 +35,12 @@ class AdminProductListCreateView(APIView):
         )
 
     def post(self, request):
-        serializer = AdminProductSerializer(data=request.data)
+        serializer = AdminProductSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         product = serializer.save()
 
         return Response(
-            AdminProductSerializer(product).data,
+            AdminProductSerializer(product, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -52,14 +52,19 @@ class AdminProductDetailView(APIView):
 
     permission_classes = [IsAuthenticated, IsBusinessUser]
 
+    def get(self, request, productId):
+        product = get_object_or_404(Product, pk=productId)
+        serializer = AdminProductSerializer(product, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def patch(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
-        serializer = AdminProductSerializer(product, data=request.data, partial=True)
+        serializer = AdminProductSerializer(product, data=request.data, partial=True, context={"request": request})
         serializer.is_valid(raise_exception=True)
         updated_product = serializer.save()
 
         return Response(
-            AdminProductSerializer(updated_product).data,
+            AdminProductSerializer(updated_product, context={"request": request}).data,
             status=status.HTTP_200_OK,
         )
 
@@ -81,7 +86,7 @@ class AdminProductVariantListCreateView(APIView):
     def get(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
         variants = product.variants.all().order_by("name")
-        serializer = AdminVariantInventorySerializer(variants, many=True)
+        serializer = AdminProductVariantSerializer(variants, many=True)
 
         return Response(
             {

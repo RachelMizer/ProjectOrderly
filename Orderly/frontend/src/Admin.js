@@ -7,7 +7,9 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import Dashboard from "./pages/Admin/dashboard";
 import Reports from "./pages/Admin/reports";
 import Inventory from "./pages/Admin/inventory";
-import ProductCatalog from "./pages/Admin/prod-cat";
+import ProductCatalog from "./pages/Admin/AdminProductsPage";
+import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
+import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
 import Orders from "./pages/Admin/orders";
 import AccountSettings from "./pages/Admin/admin-acct";
 
@@ -147,6 +149,9 @@ function AdminLayout() {
             <Route path="/reports" element={<Reports />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/catalog" element={<ProductCatalog />} />
+            <Route path="/catalog/new" element={<AdminProductFormPage />} />
+            <Route path="/catalog/edit/:productId" element={<AdminProductFormPage />} />
+            <Route path="/suppliers/new" element={<AdminSupplierFormPage />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/account" element={<AccountSettings />} />
           </Routes>

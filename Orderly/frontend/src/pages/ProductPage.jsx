@@ -260,7 +260,7 @@ const ProductPage = () => {
       <div className="variant-wrapper">
         {variants.length > 1 && (
           <div className="variant-section">
-            <h3>Choose a size</h3>
+            <h3>Choose an option</h3>
 
             <div className="variant-options">
               {variants.map(v => (

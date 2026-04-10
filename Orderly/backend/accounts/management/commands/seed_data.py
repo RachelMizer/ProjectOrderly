@@ -238,6 +238,11 @@ class Command(BaseCommand):
                 "email": "support@brewsource.example",
                 "phone": "9195551600",
             },
+            {
+                "name": "Hearth & Heart Bakery",
+                "email": "contact@heartNhearth.com",
+                "phone": "18001234456",
+            },
         ]
 
         suppliers = []
@@ -415,6 +420,7 @@ class Command(BaseCommand):
             ("Chocolate Croissant", "Bakery",    suppliers[3], True, False, "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within."),
             ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. From there, make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
             ("Pumpkin Spice Latte", "Seasonal",  suppliers[4], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
+            ("Cake Pop",           "Bakery",    suppliers[5], True, False, "A decadent 'pop' of confectionery goodness, our sweet cake pops will quickly brighten up your day!"),
         ]
 
         products = {}
@@ -508,6 +514,11 @@ class Command(BaseCommand):
                 ("Small", Decimal("5.00")),
                 ("Medium", Decimal("5.50")),
                 ("Large", Decimal("6.00")),
+            ],
+            "Cake Pop": [
+                ("Chocolate", Decimal("2.00")),
+                ("Birthday Cake", Decimal("2.00")),
+                ("Vanilla", Decimal("2.00")),
             ],
         }
 
