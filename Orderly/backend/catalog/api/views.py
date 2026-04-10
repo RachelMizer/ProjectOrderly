@@ -52,9 +52,10 @@ def require_business_user(request):
 # Create and Read view due to same url pattern
 class CategoriesView(APIView):
 
-    # Override default auth & perm classes
-    authentication_classes = []
-    permission_classes = []
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return super().get_permissions()
 
     def get(self, request):
         categories = Category.objects.all()
