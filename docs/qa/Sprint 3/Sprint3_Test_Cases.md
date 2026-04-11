@@ -16,19 +16,155 @@ Product Browsing
 As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order.
 
 ### Preconditions:
-
+- Backend server is running and accessible  
+- Frontend application is running at `http://localhost:3000`  
+- Database is seeded with product, category, and variant data  
+- No authentication required (public storefront access)  
 
 ### Test Steps:
-
+1. Navigate to `http://localhost:3000/`  
+2. Verify the storefront page loads successfully  
+3. Observe the product grid and confirm multiple product cards are displayed  
+4. Verify each product card includes:
+   - product name  
+   - variant dropdown  
+   - price  
+   - availability (in-stock or out-of-stock)  
+5. Select a different variant from the dropdown on a product  
+6. Verify the displayed price updates accordingly  
+7. Identify an in-stock product and confirm quantity controls (`+ / -`) are visible  
+8. Identify an out-of-stock product and confirm “Out of Stock” message is displayed  
+9. Locate and interact with the category filter dropdown  
+10. Select a category and verify the product list updates  
+11. Click “View Details” on a product  
+12. Verify navigation to the product detail page  
+13. Confirm product detail page displays correct product info and variant selection  
 
 ### Expected Result:
-
+- Storefront loads without errors  
+- Products are displayed in a grid layout  
+- Each product shows name, variant options, price, and availability  
+- Variant selection updates product details dynamically  
+- In-stock products show quantity controls  
+- Out-of-stock products display “Out of Stock”  
+- Category filter updates the displayed product list  
+- “View Details” navigates to the correct product detail page  
+- Product detail page displays accurate information  
 
 ### Actual Result:
+- Storefront loaded successfully with product grid  
+- Product cards displayed correct name, variant, price, and availability  
+- Variant selection updated pricing as expected  
+- In-stock products displayed quantity controls (UI only)  
+- Out-of-stock products correctly showed “Out of Stock”  
+- Category filter updated product list correctly  
+- “View Details” navigated to the correct product detail page  
+- Product detail page displayed correct product and variant information  
 
+### Evidence:
+## US3.1 — Product Browsing
+
+### Test Case ID:
+TC-3.1-01
+
+### Feature:
+Product Browsing
+
+### User Story:
+As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order.
+
+---
+
+### Preconditions:
+- Backend server is running and accessible  
+- Frontend application is running at `http://localhost:3000`  
+- Database is seeded with product, category, and variant data  
+- No authentication required (public storefront access)  
+
+---
+
+### Test Steps:
+1. Navigate to `http://localhost:3000/`  
+2. Verify the storefront page loads successfully  
+3. Observe the product grid and confirm multiple product cards are displayed  
+4. Verify each product card includes:
+   - product name  
+   - variant dropdown  
+   - price  
+   - availability (in-stock or out-of-stock)  
+5. Select a different variant from the dropdown on a product  
+6. Verify the displayed price updates accordingly  
+7. Identify an in-stock product and confirm quantity controls (`+ / -`) are visible  
+8. Identify an out-of-stock product and confirm “Out of Stock” message is displayed  
+9. Locate and interact with the category filter dropdown  
+10. Select a category and verify the product list updates  
+11. Click “View Details” on a product  
+12. Verify navigation to the product detail page  
+13. Confirm product detail page displays correct product info and variant selection  
+
+---
+
+### Expected Result:
+- Storefront loads without errors  
+- Products are displayed in a grid layout  
+- Each product shows name, variant options, price, and availability  
+- Variant selection updates product details dynamically  
+- In-stock products show quantity controls  
+- Out-of-stock products display “Out of Stock”  
+- Category filter updates the displayed product list  
+- “View Details” navigates to the correct product detail page  
+- Product detail page displays accurate information  
+
+---
+
+### Actual Result:
+- Storefront loaded successfully with product grid  
+- Product cards displayed correct name, variant, price, and availability  
+- Variant selection updated pricing as expected  
+- In-stock products displayed quantity controls (UI only)  
+- Out-of-stock products correctly showed “Out of Stock”  
+- Category filter updated product list correctly  
+- “View Details” navigated to the correct product detail page  
+- Product detail page displayed correct product and variant information  
+
+---
 
 ### Status:
+PASS
 
+---
+
+### Notes:
+- Quantity controls are currently UI-only and not functionally tied to cart logic (expected for this user story)  
+- Product data is dynamically loaded via API and enriched with variant data  
+- Testing included both manual validation and automated coverage (Jest + Robot Framework)
+
+---
+
+### Evidence:
+
+![Storefront Loads](Screenshots/3.1/storefront_loads.jpg)
+
+![Products Displayed in Grid](Screenshots/3.1/products_displayed_in_grid.jpg)
+
+![Category Filter Displayed](Screenshots/3.1/category_filter_displayed.jpg)
+
+![Category Filtering Works](Screenshots/3.1/category_filtering_works.jpg)
+
+![Variant Selection Works](Screenshots/3.1/variant_section_works.jpg)
+
+![Price Shown](Screenshots/3.1/price_shown.jpg)
+
+![Quantity Controls Shown](Screenshots/3.1/quantity_controls_shown.jpg)
+
+![Out of Stock Product](Screenshots/3.1/out_of_stock_product.jpg)
+
+![View Details Navigation](Screenshots/3.1/view_details_navigation.jpg)
+
+![Detail Variant Selection](Screenshots/3.1/detail_variant_selection.jpg)
+
+### Status:
+PASS
 
 ### Notes:
 
@@ -245,19 +381,45 @@ Order Confirmation
 As a customer, I want to see a confirmation screen with my receipt after placing an order so that I have immediate proof of my purchase.
 
 ### Preconditions:
-
+- User account exists with valid credentials (e.g., orderhistory1@test.com)
+- User has at least one submitted (non-draft) order in the system
+- Backend order submission and retrieval endpoints are functional
+- Frontend application is running and accessible
+- User is logged into the application
 
 ### Test Steps:
-
+1. Log in using a valid customer account with existing orders
+2. Navigate to the "Order History" page from the navigation menu
+3. Verify that at least one order is displayed
+4. Click on an order entry (e.g., "Order #23")
+5. Observe navigation to the order detail page (`/orders/{orderId}`)
+6. Review the displayed order confirmation details
 
 ### Expected Result:
-
+- User is successfully navigated to the order detail (confirmation) page
+- The page displays:
+  - Order number (Order #)
+  - Date of the order
+  - Order status
+  - List of items in the order
+  - Item details (product name, quantity, unit price, item total)
+  - Totals section (tax and total amount)
+- The confirmation page accurately reflects the order data returned from the API
+- Page loads without errors
 
 ### Actual Result:
+- User successfully navigated from Order History to Order Detail page
+- Confirmation page displayed all required fields:
+  - Order number, date, status, items, and totals
+  - Item-level details (quantity, unit price, item total)
+- Data matched backend response
+- No UI or rendering issues observed
 
+### Evidence:
+![Order Confirmation](Screenshots/3.4/confirmation_page.jpg)
 
 ### Status:
-
+PASS
 
 ### Notes:
 
@@ -276,19 +438,46 @@ Order History
 As a customer, I want to view my previous orders so that I can reorder my favorites quickly.
 
 ### Preconditions:
-
+- User account exists with valid credentials (e.g., orderhistory1@test.com)
+- User has at least one submitted (non-draft) order
+- Backend order history endpoint (`/api/v1/orders/me`) is functional
+- Frontend application is running and accessible
+- User is logged into the application
 
 ### Test Steps:
-
+1. Log in using a valid customer account
+2. Navigate to the "Order History" page from the navigation menu
+3. Verify that a list of previous orders is displayed
+4. Confirm each order displays:
+   - Order number (Order #)
+   - Date
+   - Status
+   - Total amount
+5. Click on an order entry
+6. Verify navigation to the order detail page (`/orders/{orderId}`)
+7. (Optional) Use pagination controls (Next/Previous) if multiple pages exist
 
 ### Expected Result:
-
+- Order History page loads successfully
+- A list of past (non-draft) orders is displayed
+- Each order includes order number, date, status, and total
+- Clicking an order navigates to the corresponding order detail page
+- Pagination works correctly when applicable
+- Empty state message ("No past orders found.") is displayed if no orders exist
+- Page loads without errors
 
 ### Actual Result:
+- Order History page loaded successfully
+- Orders displayed with correct details (order number, date, status, total)
+- Clicking an order successfully navigated to the order detail page
+- Pagination controls displayed and functioned correctly (if applicable)
+- No UI or data issues observed
 
+### Evidence:
+![Order History](Screenshots/3.5/order_history.jpg)
 
 ### Status:
-
+PASS
 
 ### Notes:
 
@@ -649,19 +838,50 @@ Order Item Customization
 As a customer, I want to customize items (extras or options) so that my order matches my preferences.
 
 ### Preconditions:
-
+- Application is running (frontend + backend)
+- Seed data is loaded (products, variants, modifiers)
+- User is on the storefront page
+- At least one product with modifiers exists (e.g., Latte, Breakfast Sandwich)
 
 ### Test Steps:
-
+1. Navigate to the storefront.
+2. Select a product with modifiers (e.g., Latte) by clicking **View Details**.
+3. Verify product customization page loads.
+4. Select a different variant (if applicable).
+5. Observe modifier groups displayed for the selected variant.
+6. Select an option from a single-select modifier group (radio buttons).
+7. Select multiple options from a multi-select modifier group (checkboxes).
+8. Attempt to exceed the maximum allowed selections in a multi-select group.
+9. Verify additional options become disabled or cannot be selected.
+10. Observe the total price updating as modifier options are selected.
+11. Navigate to a product with a required modifier group (e.g., Breakfast Sandwich).
+12. Verify required modifier group is displayed.
 
 ### Expected Result:
-
+- Product customization page loads successfully with correct product details.
+- Variant selection updates modifier groups dynamically.
+- Modifier groups and options display correctly.
+- Single-select groups allow only one selection.
+- Multi-select groups allow multiple selections within defined limits.
+- Maximum selection rules are enforced (extra options disabled or blocked).
+- Total price updates correctly based on selected modifiers.
+- Required modifier groups are clearly displayed.
 
 ### Actual Result:
+- Product customization page loaded successfully.
+- Variants updated modifier groups correctly.
+- Modifier groups and options rendered as expected.
+- Radio button behavior enforced single selection correctly.
+- Checkbox behavior allowed multiple selections within limits.
+- Maximum selection constraint enforced by disabling additional options.
+- Total price updated dynamically based on selected modifiers.
+- Required modifier group (Bread Choice) displayed correctly.
 
+### Evidence:
+![Customization Page](Screenshots/3.7/customization_page.jpg)
 
 ### Status:
-
+PASS
 
 ### Notes:
 

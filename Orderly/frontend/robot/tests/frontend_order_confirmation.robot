@@ -4,12 +4,12 @@ Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${TEST_EMAIL}       test@test.com
+${TEST_EMAIL}       customer@example.com
 ${TEST_PASSWORD}    Password123!
 
 *** Test Cases ***
 Customer Can Reach Cart From Navigation
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/cart']    10s
     Click Element    xpath=//a[@href='/cart']
@@ -17,7 +17,7 @@ Customer Can Reach Cart From Navigation
     Wait Until Page Contains    Your Cart    10s
 
 Customer Can View Cart Page Empty State Or Items
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Your Cart    10s
@@ -27,7 +27,7 @@ Customer Can View Cart Page Empty State Or Items
     Should Be True    ${empty_count} > 0 or ${item_count} > 0
 
 Customer Can View Checkout Entry Point From Cart When Items Exist
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Your Cart    10s
@@ -38,7 +38,7 @@ Customer Can View Checkout Entry Point From Cart When Items Exist
 
 Customer Can Navigate To Checkout From Cart When Items Exist
     [Documentation]    If the seeded/authenticated user has cart items, checkout button should route to /checkout.
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Your Cart    10s
@@ -52,7 +52,7 @@ Customer Can Navigate To Checkout From Cart When Items Exist
     END
 
 Customer Can View Order History From Navigation
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
@@ -61,7 +61,7 @@ Customer Can View Order History From Navigation
     Wait Until Page Does Not Contain    Loading order history...    10s
 
 Customer Can View Empty State Or Previous Orders In History
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/order-history
     Wait Until Page Contains    Order History    10s
@@ -73,7 +73,7 @@ Customer Can View Empty State Or Previous Orders In History
 
 Customer Can Open An Order From Order History When Present
     [Documentation]    Passes only when the test user has at least one non-DRAFT order in history.
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/order-history
     Wait Until Page Contains    Order History    10s
@@ -88,7 +88,7 @@ Customer Can Open An Order From Order History When Present
     END
 
 Customer Can See Order History Pagination Controls
-    Login As Test User
+    Login As Customer User
     Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/order-history
     Wait Until Page Contains    Order History    10s

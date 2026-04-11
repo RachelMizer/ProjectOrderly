@@ -55,6 +55,7 @@ class VariantSerializer(serializers.ModelSerializer):
         source="unit_price", max_digits=10, decimal_places=2, read_only=True
     )
     stockQuantity = serializers.IntegerField(source="stock_quantity", read_only=True)
+    isAvailable = serializers.SerializerMethodField()
     imageUrl = serializers.SerializerMethodField()
 
     class Meta:
@@ -64,8 +65,19 @@ class VariantSerializer(serializers.ModelSerializer):
             "name",
             "unitPrice",
             "stockQuantity",
+            "isAvailable",
             "imageUrl",
         ]
+
+    def get_isAvailable(self, obj):
+        # Ingredient-based availability takes precedence
+        if obj.inventory_usage.exists():
+            return all(
+                usage.inventory_item.stock_quantity > 0
+                for usage in obj.inventory_usage.all()
+            )
+        # Fallback to simple stock-based availability
+        return obj.stock_quantity is None or obj.stock_quantity > 0
 
     def get_imageUrl(self, obj):
         return None

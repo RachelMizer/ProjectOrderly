@@ -23,7 +23,17 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    path("api/v1/", include("catalog.api.urls")),  # Catalog API
+    # Catalog API public endpoints
+    path("api/v1/", include("catalog.api.urls")),
+
+    # Catalog API admin endpoints (business users only)
+    path("api/v1/admin/", include("catalog.api.admin_urls")),
+
+    # Supplier admin endpoints (business users only, RBAC protected)
+    path("api/v1/admin/", include("suppliers.api.admin_urls")),
+
+    # Inventory admin endpoints (business users only, RBAC protected)
+    path("api/v1/admin/", include("inventory.api.admin_urls")),
     
     # Auth API
     path("api/v1/auth/", include("accounts.api.urls")),
