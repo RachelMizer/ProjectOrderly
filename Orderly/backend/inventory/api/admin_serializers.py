@@ -4,6 +4,8 @@ from inventory.models import InventoryItem
 
 
 class AdminInventoryItemSerializer(serializers.ModelSerializer):
+    affected_products = serializers.SerializerMethodField()
+
     class Meta:
         model = InventoryItem
         fields = [
@@ -12,8 +14,19 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
             "stock_quantity",
             "unit_of_measure",
             "reorder_level",
+            "affected_products",
         ]
         read_only_fields = ["id"]
+
+    def get_affected_products(self, obj):
+        names = set()
+        for usage in obj.variant_usages.select_related("variant__product").all():
+            names.add(usage.variant.product.name)
+        for usage in obj.modifier_usages.select_related(
+            "modifier_option__group__variant__product"
+        ).all():
+            names.add(usage.modifier_option.group.variant.product.name)
+        return sorted(names)
 
     def validate_name(self, value):
         if not value or not value.strip():
@@ -43,6 +56,7 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
         if (
             reorder_level is not None
             and stock_quantity is not None
+            and stock_quantity > 0
             and reorder_level > stock_quantity
         ):
             raise serializers.ValidationError(
