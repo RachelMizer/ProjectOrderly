@@ -1535,46 +1535,385 @@ body
 }
 ```
 
-## Create/Update Product
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+## List Products (ADMIN)
+**Endpoint:** `<GET> /api/v1/admin/products`  
+**Description:** Returns all products for admin management  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:** None  
 ### Request
 **Header:**
-**Body:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
 **Rules:**
-**Success Response (200 OK):**
++ Returns all products ordered alphabetically
++ includes category and supplier references
++ Returns count
++ Returns a collection of products named 'results'
 
-## Create/Update Variant
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
+**Success Response (200 OK):**
+```
+{
+    "count": 2,
+    "results": [
+        {
+            "id": 1,
+            "category": 10,
+            "supplier": 900,
+            "name": "Pizza",
+            "description": "Large pizza",
+            "has_variants": true,
+            "has_modifiers": true
+        },
+        {
+            "id": 2,
+            "category": 11,
+            "supplier": null,
+            "name": "Soda",
+            "description": "",
+            "has_variants": false,
+            "has_modifiers": false
+        }
+    ]
+}
+```
+**Unauthorized (401):**
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Forbidden (403):**
+```
+{
+    "error": "FORBIDDEN",
+    "message": "business role required"
+}
+```
+
+
+## Create Product (ADMIN)
+**Endpoint:** `<POST> /api/v1/admin/products`  
+**Description:** Creates a new product  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:** 
++ category
++ supplier (OPTIONAL)
++ name
++ description
++ has_variants
++ has_modifiers
+
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "category": 10,
+    "supplier": 900,
+    "name": "Pizza",
+    "description": "Large pizza",
+    "has_variants": true,
+    "has_modifiers": true
+}
+```
 **Rules:**
-**Success Response (200 OK):**
++ name is required
++ category is required and must exist
 
-## Create/Update Modifiers
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
+**Success Response (201 Created):**
+```
+{
+    "id": 1,
+    "category": 10,
+    "supplier": 900,
+    "name": "Pizza",
+    "description": "Large pizza",
+    "has_variants": true,
+    "has_modifiers": true
+}
+```
+**Bad Request (400):**
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "invalid input",
+    "fields": {
+        "name": "required"
+    }
+}
+```
+
+## Update Product (ADMIN)
+**Endpoint:** `<PATCH> /api/v1/admin/products/{productId}`  
+**Description:** Updates an existing product  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
 **URL Parameters:**
++ productId
+  
 **Request Parameters:**
++ id
++ category
++ supplier
++ name
++ description
++ has_variants
++ has_modifiers
+  
 ### Request
 **Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
 **Body:**
+```
+{
+    "name": "Updated Pizza",
+    "description": "Now bigger"
+}
+```
 **Rules:**
++ All fields are optional
++ name must not by empty if provided
+  
 **Success Response (200 OK):**
+```
+{
+    "id": 1,
+    "category": 10,
+    "supplier": 900,
+    "name": "Updated Pizza",
+    "description": "Now bigger",
+    "has_variants": true,
+    "has_modifiers": true
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "product not found"
+}
+```
+## Delete Product (ADMIN) 
+**Endpoint:** `<DELETE> /api/v1/admin/products/{productId}`  
+**Description:** Deletes a product  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** 
++ productId
+  
+**Request Parameters:** None  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**
++ product must exist.
++ Unsafe delete
 
+**Success Response (204 Deleted):** No body  
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "product not found"
+}
+```
 
+## List Variants (ADMIN)
+**Endpoint:** `<GET> /api/v1/admin/products/{productId}/variants`  
+**Description:** Returns an inventory focused view of variants for a product   
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ productId
+**Request Parameters:** None  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**
++ Returns only inventory related fields
++ Ordered alphabetically
+
+**Success Response (200 OK):**
+{
+    "count": 2,
+    "results": [
+        {
+            "id": 1,
+            "name": "Large",
+            "stock_quantity": 10,
+            "reorder_level": 5
+        },
+        {
+            "id": 2,
+            "name": "Small",
+            "stock_quantity": 20,
+            "reorder_level": 5
+        }
+    ]
+}
+
+## Create Variant (ADMIN)
+**Endpoint:** `<POST> /api/v1/admin/products/{productId}/variants`  
+**Description:** Creates a variant under a product  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** 
++ productId
+
+**Request Parameters:**
++ name
++ sku
++ unit_price
++ stock_quantity (OPTIONAL)
++ reorder_level (OPTIONAL)
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "name": "Large",
+    "sku": "PIZ-LRG",
+    "unit_price": 12.50,
+    "stock_quantity": 10,
+    "reorder_level": 5
+}
+```
+**Rules:**
++ Must include name, sku, and unit_price
++ Unit price must be >= 0
++ Stock quantity must be >= 0
++ Reorder Level must be >= 0, and cannot exceed stock quantity
+**Success Response (200 OK):**
+```
+{
+    "id": 1,
+    "product": 100,
+    "name": "Large",
+    "sku": "PIZ-LRG",
+    "unit_price": 12.50,
+    "stock_quantity": 10,
+    "reorder_level": 5
+}
+```
+**Bad Request (400):**
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "invalid input",
+    "fields": {
+        "reorder_level": "Reorder level cannot exceed stock quantity."
+    }
+}
+```
+
+## Update Variant (ADMIN)
+**Endpoint:** `<PATCH> /api/v1/admin/products/{productId}/variants/{variantId}`  
+**Description:** Updates a variant  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ productId
++ variantId
+
+**Request Parameters:**
++ id
++ product
++ name
++ sku
++ unit_price
++ stock_quantity
++ reorder_level
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "unit_price": 13.50,
+    "stock_quantity": 15
+}
+```
+**Rules:**
++ All fields optional
++ Same validation rules as create
++ Variant must belong to product
+  
+**Success Response (200 OK):**
+```
+{
+    "id": 1,
+    "product": 100,
+    "name": "Large",
+    "sku": "PIZ-LRG",
+    "unit_price": 13.50,
+    "stock_quantity": 15,
+    "reorder_level": 5
+}
+```
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "variant not found for product"
+}
+```
+
+## Delete Variant API (ADMIN)
+**Endpoint:** `<DELETE> /api/v1/admin/products/{productId}/variants/{variantId}`  
+**Description:** Deletes a variant  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ productId
++ variantId
+
+**Request Parameters:** None  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**
++ Unsafe delete
++ Variant must exist and belong to product
+**Success Response (204 Deleted):** No body  
+**Not Found (404):**
+```
+{
+    "error": "NOT_FOUND",
+    "message": "variant not found for product"
+}
+```
 
 # Inventory API
 ## View Inventory levels
