@@ -27,6 +27,7 @@ import OrderDetails from "./pages/Orders/OrderDetail";
 
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Admin from "./Admin";
 
 // Admin Components
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
@@ -159,7 +160,6 @@ async function fetchCartCount() {
     <div className="wrapper">
       <header>
         <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
-        <h2>Your pause, perfected.</h2>
       </header>
 
       <nav>
@@ -174,8 +174,6 @@ async function fetchCartCount() {
             <Link to="/register">Register</Link>
             {" | "}
             <Link to="/login">Login</Link>
-            {" | "}
-            <Link to="/password-reset">Forgot Password</Link>
           </>
         )}
 
@@ -240,7 +238,10 @@ async function fetchCartCount() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/admin/*" element={<Admin />} />
+        <Route path="/*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 }
