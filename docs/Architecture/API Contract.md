@@ -1663,7 +1663,6 @@ Content-Type: application/json
 + productId
   
 **Request Parameters:**
-+ id
 + category
 + supplier
 + name
@@ -1841,8 +1840,6 @@ Content-Type: application/json
 + variantId
 
 **Request Parameters:**
-+ id
-+ product
 + name
 + sku
 + unit_price
