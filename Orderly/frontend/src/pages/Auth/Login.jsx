@@ -51,14 +51,14 @@ export default function Login({ setLoggedIn }) {
   }
 
   return (
-    <div className="log-form">
+    <div className="cust-log-form">
       <h2>Login</h2>
 
       {errorMessage && <p>{errorMessage}</p>}
 
       <form onSubmit={handleSubmit}>
         <fieldset disabled={submitting}>
-          <div>
+          <div className="cust-field">
             <label htmlFor="email">Email</label>
             <br />
             <input
@@ -73,7 +73,7 @@ export default function Login({ setLoggedIn }) {
 
           <br />
 
-          <div>
+          <div className="cust-field">
             <label htmlFor="password">Password</label>
             <br />
             <input
@@ -92,7 +92,7 @@ export default function Login({ setLoggedIn }) {
               {submitting ? "Logging in..." : "Login"}
             </button>
             <br />
-            <a href="/ResetPassword">Reset Password</a>
+            <a className="cust-a" href="/ResetPassword">Reset Password</a>
           </div>
         </fieldset>
       </form>

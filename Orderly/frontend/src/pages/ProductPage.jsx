@@ -249,7 +249,10 @@ const ProductPage = () => {
 
       {product.description && <p className="prod-desc2">{product.description}</p>}
 
-      <div className="img">Placeholder</div>
+      {product.imageUrl
+        ? <img src={product.imageUrl} alt={product.name} className="img" />
+        : <div className="img">Placeholder</div>
+      }
 
       {/* ================================
           VARIANT SECTION
@@ -348,7 +351,7 @@ const ProductPage = () => {
       {selectedVariant && selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 ? (
         <p className="OOS">Out of Stock</p>
       ) : (
-        <button className="add-to-cart-btn" onClick={handleAddToCart}>
+        <button className="cust-button" onClick={handleAddToCart}>
           {isEditMode ? "Update Item" : "Add to Cart"}
         </button>
       )}
