@@ -54,6 +54,7 @@ F3.5.1 Order History Page *(Done ✅)* -- **Tristin G.**
 F3.7.1 Item Customization Page *(Done ✅)* -- **Rachel M.**
 B4.1 Role-Based Access Control (Backend) *(Done ✅)* -- **Kim M.**
 PM3.1 Sprint 3 PM Tasks *(Done ✅)* -- **Serina R.**
+US4.7 Sprint 4 Visual Summary for Review Demo *(Done ✅)* -- **Caleb F.**
 
 #### In Progress:
 

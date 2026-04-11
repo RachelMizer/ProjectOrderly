@@ -1,8 +1,17 @@
 import "./App.css";
 
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 
+// Router
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+// Auth Pages
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import ResetPasswordRequest from "./pages/Auth/ResetPasswordRequest";
@@ -12,22 +21,44 @@ import StoreFront from "./pages/StoreFront";
 import ProductPage from "./pages/ProductPage";
 import Profile from "./pages/Auth/Profile";
 
+// Storefront & Customer Pages
 import OrderHistory from "./pages/Orders/OrderHistory";
 import OrderDetails from "./pages/Orders/OrderDetail";
 
 import CartPage from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Admin from "./Admin";
 
+// Admin Components
+import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+import AdminLayout from "./components/admin/AdminLayout";
+
+// Admin Pages
+import AdminDashboardHome from "./pages/Admin/AdminDashboardHome";
+import AdminProductsPage from "./pages/Admin/AdminProductsPage";
+import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
+import AdminInventoryPage from "./pages/Admin/AdminInventoryPage";
+
+// API
 import { logout, isAuthenticated } from "./api/auth";
 
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch (error) {
+    localStorage.removeItem("user");
+    return null;
+  }
+}
 
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
   const [cartCount, setCartCount] = useState(0);
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const firstName = storedUser?.firstName || "";
+  const user = getStoredUser();
+  const role = user?.role?.toUpperCase();
+  const firstName = user?.firstName || "";
 
   // Load profile on login
   useEffect(() => {
@@ -37,12 +68,22 @@ function AppContent() {
 
       try {
         const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (response.ok) {
           const profile = await response.json();
-          localStorage.setItem("user", JSON.stringify(profile));
+          const existingUser = getStoredUser() || {};
+
+          const mergedUser = {
+            ...existingUser,
+            ...profile,
+            role: existingUser?.role || profile.role,
+          };
+
+          localStorage.setItem("user", JSON.stringify(mergedUser));
         }
       } catch (err) {
         console.error("Failed to load profile:", err);
@@ -54,8 +95,7 @@ function AppContent() {
     }
   }, [loggedIn]);
 
-  // Fetch cart count
-  async function fetchCartCount() {
+async function fetchCartCount() {
     const token = localStorage.getItem("accessToken");
     const guestEmail = !token ? localStorage.getItem("guestCartEmail") : null;
 
@@ -99,10 +139,13 @@ function AppContent() {
     return () => window.removeEventListener("cart-updated", fetchCartCount);
   }, [loggedIn]);
 
+
   // Logout
   async function handleLogout() {
     try {
       await logout();
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
       setLoggedIn(false);
       setCartCount(0);
       alert("Successfully logged out");
@@ -121,6 +164,7 @@ function AppContent() {
 
       <nav>
         <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
+
         {" | "}
         <Link to="/">Home</Link>
 
@@ -138,7 +182,15 @@ function AppContent() {
             {" | "}
             <Link to="/profile">Profile</Link>
             {" | "}
-            <Link to="/order-history">Orders</Link>
+            <Link to="/order-history">Order History</Link>
+
+            {role === "BUSINESS" && (
+              <>
+                {" | "}
+                <Link to="/admin">Admin Dashboard</Link>
+              </>
+            )}
+
             {" | "}
             <button onClick={handleLogout}>Logout</button>
           </>
@@ -162,7 +214,16 @@ function AppContent() {
         <Route path="/orders/:orderId" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={<Checkout />} />
+
+        <Route element={<ProtectedAdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="suppliers" element={<AdminSuppliersPage />} />
+            <Route path="inventory" element={<AdminInventoryPage />} />
+          </Route>
+        </Route>
       </Routes>
 
       <footer>
@@ -177,7 +238,10 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        <Route path="/admin/*" element={<Admin />} />
+        <Route path="/*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 }

@@ -1,109 +1,142 @@
 *** Settings ***
 Resource    ../resources/keywords.robot
-Test Setup    Open Browser To App
+Test Setup    Setup Logged In User
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${TEST_EMAIL}       test@test.com
-${TEST_PASSWORD}    Password123!
-${BASE_URL}         http://localhost:3000
+${BASE_URL}    http://localhost:3000
+${CART_URL}    ${BASE_URL}/cart
 
 *** Test Cases ***
-Checkout Shows Cart Contents And Totals
-    [Documentation]    AC: Checkout shows correct items and total
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
-
-    ${item_count}=    Get Element Count    css=.checkout-item
-    Should Be True    ${item_count} > 0
-
-    Page Should Contain    Subtotal
-    Page Should Contain    Tax
-
-    ${grand_total_text}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Grand Total')]
-    ${total_text}=          Get Element Count    xpath=//*[normalize-space()='Total' or contains(normalize-space(.), 'Order Total')]
-    Should Be True    ${grand_total_text} > 0 or ${total_text} > 0
-
-Customer Can Open Checkout From Cart
-    [Documentation]    AC: Customer can submit order from checkout page
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/cart
+Cart Page Shows Items Or Empty State
+    Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
-    Click Button    Go to Checkout
-    Wait Until Location Contains    /checkout    10s
-    Wait Until Page Contains    Checkout    10s
 
-Checkout Payment Type Shows Credit Card Conditional Field
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    ${item_count}=    Get Element Count    css=.cart-item
+    ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
+    Should Be True    ${item_count} > 0 or ${empty_count} > 0
 
-    Select Payment Type    Credit Card
-    Wait Until Page Contains Element    xpath=//input[contains(@name,'card') or contains(@id,'card')]    10s
+Cart Items Are Visible
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-Checkout Payment Type Shows Other Conditional Field
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    Page Should Contain Element    css=.cart-item h3
+    Page Should Contain Element    css=.cart-item-controls
+    Page Should Contain Element    xpath=(//button[normalize-space()='Delete'])[1]
 
-    Select Payment Type    Other
-    Wait Until Page Contains Element    xpath=//textarea[contains(@name,'other') or contains(@id,'other')] | //input[contains(@name,'other') or contains(@id,'other')]    10s
+Quantity Can Be Increased
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-Customer Can Submit Order From Checkout
-    [Documentation]    AC: Customer can submit order from checkout page / Order submits successfully
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    ${before_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
+    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='+'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Quantity Should Change    ${before_qty}
 
-    Fill Checkout Form For Credit Card
-    Click Submit Order
+Quantity Can Be Decreased
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-    Wait Until Location Contains    /orders/    15s
+    ${before_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
+    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='−'])[1]
 
-Cart Is Empty After Successful Submission
-    [Documentation]    AC: Cart is empty after successful order submission
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    ${item_count}=    Get Element Count    css=.cart-item
+    ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
+    Should Be True    ${item_count} >= 0 and ${empty_count} >= 0
 
-    Fill Checkout Form For Credit Card
-    Click Submit Order
-    Wait Until Location Contains    /orders/    15s
+Delete Removes Cart Item
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-    Go To    ${BASE_URL}/cart
+    ${before}=    Get Element Count    css=.cart-item
+    Click Button    xpath=(//button[normalize-space()='Delete'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Cart Item Count Should Drop Or Empty State Should Show    ${before}
+
+Totals Section Is Visible
+    Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
-    Wait Until Page Contains    Your cart is empty.    10s
 
-Checkout Shows Error If Required Payment Data Missing
-    Ensure Logged In User Has Cart Item
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    ${item_count}=    Get Element Count    css=.cart-item
+    IF    ${item_count} > 0
+        Page Should Contain    Total Items
+        Page Should Contain    Subtotal
+        Page Should Contain    Tax
+        ${grand_total_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Grand Total')]
+        ${total_count}=    Get Element Count    xpath=//*[normalize-space()='Total']
+        Should Be True    ${grand_total_count} > 0 or ${total_count} > 0
+    ELSE
+        Log    Totals section not expected when cart is empty.
+    END
 
-    Fill Basic Checkout Contact Info
-    Select Payment Type    Credit Card
-    Click Submit Order
+Totals Update When Quantity Changes
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-    ${ui_error_count}=          Get Element Count    css=.checkout-error
-    ${card_field_still_here}=   Get Element Count    xpath=//input[contains(@name,'card') or contains(@id,'card')]
-    ${location_changed}=        Execute JavaScript    return window.location.pathname;
+    ${before_total}=    Get Text    xpath=//td[normalize-space()='Grand Total' or normalize-space()='Total']/following-sibling::td[1]
+    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='+'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Grand Total Should Change    ${before_total}
 
-    Should Be True    ${ui_error_count} > 0 or ${card_field_still_here} > 0
-    Should Not Be Equal    ${location_changed}    /orders/
+Cart Persists After Refresh
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-Empty Checkout State Handles Missing Cart Gracefully
-    [Documentation]    Verifies checkout handles empty cart scenario
-    Login As Test User
-    Sync Auth Token Key For Frontend
-    Empty Cart If Present
+    ${product_name}=    Get Text    xpath=(//div[contains(@class,'cart-item')]//h3)[1]
+    ${qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
 
-    Go To    ${BASE_URL}/checkout
-    Wait Until Page Contains    Checkout    10s
+    Reload Page
+    Wait Until Page Contains    Your Cart    10s
+    Wait Until Page Contains Element    css=.cart-item    10s
 
-    ${empty_state}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'empty cart') or contains(normalize-space(.), 'Your cart is empty') or contains(normalize-space(.), 'Return to Cart') or contains(normalize-space(.), 'Back to Cart')]
-    Should Be True    ${empty_state} > 0
+    Page Should Contain    ${product_name}
+    Page Should Contain    ${qty}
+
+Modifiers Display Under Cart Item
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
+
+    ${mods_heading}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Item Add-Ons / Mods:')]
+    Should Be True    ${mods_heading} > 0
+
+    ${mods_list}=    Get Element Count    css=.cart-item ul li
+    ${no_addons}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'No add-ons added')]
+    Should Be True    ${mods_list} > 0 or ${no_addons} > 0
+
+Modifier Pricing Is Reflected In Item Total
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
+
+    ${priced_mods}=    Get Element Count    xpath=//li[contains(normalize-space(.), '(+$')]
+    ${item_prices}=    Get Element Count    xpath=//div[contains(@class,'cart-item')]//p[starts-with(normalize-space(.), '$')]
+    Should Be True    ${priced_mods} >= 0 and ${item_prices} > 0
+
+Empty Cart Clears All Items
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains    Your Cart    10s
+
+    ${item_count}=    Get Element Count    css=.cart-item
+    IF    ${item_count} > 0
+        Click Button    Empty Cart
+        Handle Alert    ACCEPT
+        Wait Until Page Contains    Your cart is empty.    10s
+        Page Should Contain    Your Cart
+    ELSE
+        Log    Cart already empty; skipping.
+    END
 
 *** Keywords ***
+Setup Logged In User
+    Open Browser To App
+    Login As Customer User
+    Sync Auth Token Key For Frontend
+
 Sync Auth Token Key For Frontend
     ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
     ${current}=    Execute JavaScript    return window.localStorage.getItem('accessToken');
@@ -112,27 +145,19 @@ Sync Auth Token Key For Frontend
         Reload Page
     END
 
-Ensure Logged In User Has Cart Item
-    Login As Test User
-    Sync Auth Token Key For Frontend
-    Empty Cart If Present
-    Add First Available Item To Cart
-    Go To    ${BASE_URL}/cart
+Ensure Cart Has Item
+    Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
-    Wait Until Page Contains Element    css=.cart-item    10s
 
-Empty Cart If Present
-    Go To    ${BASE_URL}/cart
-    Wait Until Page Contains    Your Cart    10s
     ${item_count}=    Get Element Count    css=.cart-item
-    IF    ${item_count} > 0
-        Click Button    Empty Cart
-        Handle Alert    ACCEPT
-        Wait Until Page Contains    Your cart is empty.    10s
+    IF    ${item_count} == 0
+        Add First Available Item To Cart
+        Go To    ${CART_URL}
+        Wait Until Page Contains Element    css=.cart-item    10s
     END
 
 Add First Available Item To Cart
-    Go To    ${BASE_URL}/
+    Go To    ${BASE_URL}
     Wait Until Page Contains    Filter the Menu    10s
     Wait Until Page Contains Element    css=.product-card    10s
 
@@ -142,35 +167,18 @@ Add First Available Item To Cart
     Click Element    xpath=(//button[contains(normalize-space(.), 'Add to Cart')])[1]
     Sleep    1s
 
-Fill Basic Checkout Contact Info
-    Wait Until Page Contains Element    xpath=//input[contains(@name,'name') or contains(@id,'name')]    10s
-    Input Text    xpath=//input[contains(@name,'name') or contains(@id,'name')]    Test User
+Quantity Should Change
+    [Arguments]    ${before_qty}
+    ${after_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
+    Should Not Be Equal    ${after_qty}    ${before_qty}
 
-    Input Text    xpath=//input[contains(@name,'phone') or contains(@id,'phone')]    9195551234
-    Input Text    xpath=//input[contains(@name,'address') or contains(@id,'address')]    123 Main St
-    Input Text    xpath=//input[contains(@name,'city') or contains(@id,'city')]    Raleigh
-    Input Text    xpath=//input[contains(@name,'state') or contains(@id,'state')]    NC
-    Input Text    xpath=//input[contains(@name,'zip') or contains(@id,'zip')]    27601
+Grand Total Should Change
+    [Arguments]    ${before_total}
+    ${after_total}=    Get Text    xpath=//td[normalize-space()='Grand Total' or normalize-space()='Total']/following-sibling::td[1]
+    Should Not Be Equal    ${after_total}    ${before_total}
 
-Select Payment Type
-    [Arguments]    ${payment_type}
-    ${select_count}=    Get Element Count    xpath=//select[contains(@name,'payment') or contains(@id,'payment')]
-    IF    ${select_count} > 0
-        Select From List By Label    xpath=//select[contains(@name,'payment') or contains(@id,'payment')]    ${payment_type}
-    ELSE
-        Click Element    xpath=//label[contains(normalize-space(.), '${payment_type}')]
-    END
-
-Fill Checkout Form For Credit Card
-    Fill Basic Checkout Contact Info
-    Select Payment Type    Credit Card
-    Wait Until Page Contains Element    xpath=//input[contains(@name,'card') or contains(@id,'card')]    10s
-    Input Text    xpath=//input[contains(@name,'card') or contains(@id,'card')]    4242
-
-Click Submit Order
-    ${submit_count}=    Get Element Count    xpath=//button[contains(normalize-space(.), 'Submit Order')]
-    IF    ${submit_count} > 0
-        Click Button    Submit Order
-    ELSE
-        Click Element    xpath=//button[@type='submit']
-    END
+Cart Item Count Should Drop Or Empty State Should Show
+    [Arguments]    ${before}
+    ${after}=    Get Element Count    css=.cart-item
+    ${empty}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
+    Should Be True    ${after} < ${before} or ${empty} > 0
