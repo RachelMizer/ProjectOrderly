@@ -7,6 +7,9 @@ from suppliers.models import Supplier
 
 
 class AdminProductSerializer(serializers.ModelSerializer):
+    imageUrl = serializers.SerializerMethodField()
+    image = serializers.ImageField(write_only=True, required=False, allow_null=True)
+
     class Meta:
         model = Product
         fields = [
@@ -17,8 +20,18 @@ class AdminProductSerializer(serializers.ModelSerializer):
             "description",
             "has_variants",
             "has_modifiers",
+            "image",
+            "imageUrl",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "imageUrl"]
+
+    def get_imageUrl(self, obj):
+        if not obj.image:
+            return None
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
 
     def validate_name(self, value):
         if not value or not value.strip():

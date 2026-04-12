@@ -1,75 +1,138 @@
 *** Settings ***
-Resource    ../resources/keywords.robot
-Test Setup    Open Browser To App
-Test Teardown    Close Browser Session
+Library    SeleniumLibrary
+Variables  ../variables/variables.py
+Resource   ../resources/keywords.robot
+
+*** Variables ***
+${ADMIN_URL}              ${BASE_URL}/admin
+${ADMIN_CATALOG_URL}      ${BASE_URL}/admin/catalog
+${ADMIN_INVENTORY_URL}    ${BASE_URL}/admin/inventory
+${ADMIN_REPORTS_URL}      ${BASE_URL}/admin/reports
+${ADMIN_ORDERS_URL}       ${BASE_URL}/admin/orders
 
 *** Test Cases ***
-Logged Out User Is Redirected To Login From Admin Home
-    Go To    ${BASE_URL}/admin
-    Wait Until Page Contains Element    name=email    10s
-    Location Should Contain    /login
+Business Admin Can Access Admin Dashboard Shell
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_URL}
 
-Customer Does Not See Admin Nav
+    Wait Until Page Contains    Dashboard Home    10s
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains    Reports    10s
+    Wait Until Page Contains    Inventory    10s
+    Wait Until Page Contains    Product Catalog    10s
+    Wait Until Page Contains    Orders    10s
+    Capture Page Screenshot
+    Close Browser
+
+Reports Route Keeps Admin Shell And Shows Deferred Links
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_REPORTS_URL}
+
+    Wait Until Page Contains    Reports    10s
+    Wait Until Page Contains    Recent Reports    10s
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains    Logout    10s
+    Capture Page Screenshot
+    Close Browser
+
+Inventory Route Keeps Admin Shell And Shows Deferred Links
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_INVENTORY_URL}
+
+    Wait Until Page Contains    Inventory    10s
+    Wait Until Page Contains    Recent Inventory Reports    10s
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains    Logout    10s
+    Capture Page Screenshot
+    Close Browser
+
+Catalog Route Keeps Admin Shell And Shows Product Catalog
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_CATALOG_URL}
+
+    Wait Until Page Contains    Product Catalog    10s
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'CREATE NEW PRODUCT')]    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'ADD SUPPLIER')]    10s
+    Capture Page Screenshot
+    Close Browser
+
+Orders Route Keeps Admin Shell And Shows Orders Page
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_ORDERS_URL}
+
+    Wait Until Page Contains    Orders    10s
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains    Recent Orders    10s
+    Capture Page Screenshot
+    Close Browser
+
+Dashboard Nav Cards Route To All Admin Sections
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_URL}
+
+    Wait Until Page Contains    Dashboard Home    10s
+
+    Click Link    Reports
+    Wait Until Page Contains    Reports    10s
+
+    Go To    ${ADMIN_URL}
+    Click Link    Inventory
+    Wait Until Page Contains    Inventory    10s
+
+    Go To    ${ADMIN_URL}
+    Click Link    Product Catalog
+    Wait Until Page Contains    Product Catalog    10s
+
+    Go To    ${ADMIN_URL}
+    Click Link    Orders
+    Wait Until Page Contains    Orders    10s
+
+    Capture Page Screenshot
+    Close Browser
+
+Account Settings Opens From Admin Shell
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Login As Business User
+    Go To    ${ADMIN_URL}
+
+    Wait Until Page Contains Element    xpath=//a[contains(@href, '/admin/account')]    10s
+    Click Element    xpath=//a[contains(@href, '/admin/account')]
+    Wait Until Location Contains    /admin/account    10s
+    Wait Until Page Contains    Account Settings    10s
+    Capture Page Screenshot
+    Close Browser
+
+Logged Out User Is Redirected To Admin Login
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Go To    ${ADMIN_URL}
+
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains    Sign In    10s
+    Capture Page Screenshot
+    Close Browser
+
+Customer User Cannot Access Admin Shell
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
     Login As Customer User
-    Wait Until Location Is    ${BASE_URL}/    10s
-    Wait Until Page Contains    Home    10s
-    Page Should Not Contain Link    Admin Dashboard
+    Go To    ${ADMIN_URL}
 
-Customer Is Redirected Home From Admin Inventory
-    Login As Customer User
-    Wait Until Location Is    ${BASE_URL}/    10s
-
-    Go To    ${BASE_URL}/admin/inventory
-
-    Wait Until Location Is    ${BASE_URL}/    10s
-    Wait Until Page Contains    Filter the Menu    10s
-    Page Should Not Contain    Admin Inventory
-
-Business User Sees Persistent Admin Nav On Admin Home
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin
-    Wait Until Page Contains Element    xpath=//h2[normalize-space()='Admin Dashboard']    10s
-    Page Should Contain Element    xpath=//a[@href='/admin']
-    Page Should Contain Element    xpath=//a[@href='/admin/products']
-    Page Should Contain Element    xpath=//a[@href='/admin/suppliers']
-    Page Should Contain Element    xpath=//a[@href='/admin/inventory']
-
-Business User Can Route To Products
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Page Should Contain Element    xpath=//h2[normalize-space()='Admin Dashboard']
-    Page Should Contain Element    xpath=//a[@href='/admin/products']
-
-Business User Can Route To Suppliers
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin/suppliers
-    Wait Until Page Contains    Admin Suppliers    10s
-    Page Should Contain Element    xpath=//h2[normalize-space()='Admin Dashboard']
-    Page Should Contain Element    xpath=//a[@href='/admin/suppliers']
-
-Business User Can Route To Inventory
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin/inventory
-    Wait Until Page Contains    Admin Inventory    10s
-    Page Should Contain Element    xpath=//h2[normalize-space()='Admin Dashboard']
-    Page Should Contain Element    xpath=//a[@href='/admin/inventory']
-
-*** Keywords ***
-Sync Auth Token Key For Frontend
-    ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
-    ${current}=    Execute JavaScript    return window.localStorage.getItem('accessToken');
-    IF    '${current}' == 'None' and '${legacy}' != 'None'
-        Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
-        Reload Page
-    END
-
-Seed Frontend Session As Business User
-    Go To    ${BASE_URL}
-    Execute JavaScript
-    ...    window.localStorage.setItem('accessToken', 'fake-business-token');
-    ...    window.localStorage.setItem('user', JSON.stringify({
-    ...      firstName: 'Biz',
-    ...      role: 'BUSINESS'
-    ...    }));
-    Reload Page
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains    Sign In    10s
+    Capture Page Screenshot
+    Close Browser

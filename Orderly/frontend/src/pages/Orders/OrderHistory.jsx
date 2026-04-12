@@ -86,7 +86,11 @@ export default function OrderHistory({}){
     }
 
     if (errorMessage) {
-        return <p>{errorMessage}</p>
+        return (
+            <div style={{ textAlign: "center", padding: "2rem" }}>
+                <p>{errorMessage}</p>
+            </div>
+        );
     }
 
     return (

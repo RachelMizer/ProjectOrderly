@@ -16,7 +16,7 @@ def custom_exception_handler(exc, context):
             return Response(
                 {
                     "error": "INVALID_ROLE",
-                    "message": "user does not have this permission",
+                    "message": "User does not have this permission.",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )

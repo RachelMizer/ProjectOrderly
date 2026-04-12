@@ -1,27 +1,3 @@
-/**
- * AdminProductsPage
- *
- * Business-only admin interface for managing product catalog data.
- *
- * Responsibilities:
- * - Display all products available in the admin catalog
- * - Create, edit, and delete products
- * - Display variants associated with each product
- * - Create, edit, and delete variants for a selected product
- * - Enforce frontend alignment with backend admin product/variant endpoints
- * - Handle validation, RBAC/authorization errors, and loading states
- *
- * Backend Endpoints Used:
- * - GET/POST    /api/v1/admin/products
- * - PATCH/DELETE /api/v1/admin/products/{productId}
- * - GET/POST    /api/v1/admin/products/{productId}/variants
- * - PATCH/DELETE /api/v1/admin/products/{productId}/variants/{variantId}
- *
- * Access:
- * - Protected by ProtectedAdminRoute
- * - Intended for BUSINESS role users only
- */
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleApiError } from "../../api/handleApiError";
@@ -57,19 +33,19 @@ export default function AdminProductsPage() {
   const [variantLoading, setVariantLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [creating, setCreating] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [sortKey, setSortKey] = useState("id");
+  const [sortDir, setSortDir] = useState("asc");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  function stampUpdated() {
+    setLastUpdated(new Date());
+  }
 
   const [savingVariant, setSavingVariant] = useState(false);
   const [editingVariant, setEditingVariant] = useState(null);
   const [variantProductId, setVariantProductId] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    supplier: "",
-    description: "",
-  });
 
   const [variantFormData, setVariantFormData] = useState({
     name: "",
@@ -78,6 +54,7 @@ export default function AdminProductsPage() {
     stock_quantity: "",
     reorder_level: "",
   });
+
 
   useEffect(() => {
     loadPageData();
@@ -137,6 +114,7 @@ export default function AdminProductsPage() {
       setProducts(Array.isArray(productsData.results) ? productsData.results : []);
       setCategories(Array.isArray(categoriesData.results) ? categoriesData.results : []);
       setSuppliers(Array.isArray(suppliersData.results) ? suppliersData.results : []);
+      stampUpdated();
     } catch (error) {
       if (error.status === 401 || error.status === 403) {
         handleApiError(error, navigate);
@@ -149,30 +127,12 @@ export default function AdminProductsPage() {
     }
   }
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-
   function handleVariantChange(e) {
     const { name, value } = e.target;
     setVariantFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  }
-
-  function resetForm() {
-    setEditingProduct(null);
-    setFormData({
-      name: "",
-      category: "",
-      supplier: "",
-      description: "",
-    });
   }
 
   function resetVariantForm() {
@@ -184,17 +144,6 @@ export default function AdminProductsPage() {
       unit_price: "",
       stock_quantity: "",
       reorder_level: "",
-    });
-  }
-
-  function startEdit(product) {
-    setErrorMessage("");
-    setEditingProduct(product);
-    setFormData({
-      name: product.name || "",
-      category: String(product.category?.id || product.category || ""),
-      supplier: String(product.supplier?.id || product.supplier || ""),
-      description: product.description || "",
     });
   }
 
@@ -302,7 +251,6 @@ export default function AdminProductsPage() {
 
     setExpandedProductId(productId);
     setVariantProductId(productId);
-    setEditingProduct(null);
 
     setVariantFormData({
       name: "",
@@ -317,81 +265,8 @@ export default function AdminProductsPage() {
     }
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setCreating(true);
-    setErrorMessage("");
-
-    const payload = {
-      name: formData.name,
-      category: Number(formData.category),
-      supplier: Number(formData.supplier),
-      description: formData.description,
-      has_variants: true,
-      has_modifiers: false,
-    };
-
-    try {
-      const url = editingProduct
-        ? `${API_BASE}/admin/products/${editingProduct.id}`
-        : `${API_BASE}/admin/products`;
-
-      const method = editingProduct ? "PATCH" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify(payload),
-      });
-
-      let data = {};
-      const contentType = response.headers.get("content-type") || "";
-      if (contentType.includes("application/json")) {
-        data = await response.json();
-      }
-
-      if (response.status === 401 || response.status === 403) {
-        throw { status: response.status };
-      }
-
-      if (response.status === 400) {
-        throw { status: 400, data };
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          editingProduct ? "Failed to update product" : "Failed to create product"
-        );
-      }
-
-      if (editingProduct) {
-        setProducts((prev) =>
-          prev.map((product) =>
-            product.id === editingProduct.id ? data : product
-          )
-        );
-      } else {
-        setProducts((prev) => [data, ...prev]);
-      }
-
-      resetForm();
-    } catch (error) {
-      if (error.status === 401 || error.status === 403) {
-        handleApiError(error, navigate);
-      } else if (error.status === 400) {
-        setErrorMessage(buildValidationMessage(error.data));
-      } else {
-        setErrorMessage(error.message || "Failed to save product");
-      }
-    } finally {
-      setCreating(false);
-    }
-  }
-
   async function handleDelete(productId) {
+    if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
     try {
       setErrorMessage("");
 
@@ -411,6 +286,7 @@ export default function AdminProductsPage() {
       }
 
       setProducts((prev) => prev.filter((p) => p.id !== productId));
+      stampUpdated();
 
       setVariantsByProduct((prev) => {
         const updated = { ...prev };
@@ -420,10 +296,6 @@ export default function AdminProductsPage() {
 
       if (expandedProductId === productId) {
         setExpandedProductId(null);
-      }
-
-      if (editingProduct?.id === productId) {
-        resetForm();
       }
 
       if (variantProductId === productId) {
@@ -517,6 +389,7 @@ export default function AdminProductsPage() {
         };
       });
 
+      stampUpdated();
       resetVariantForm();
       setExpandedProductId(variantProductId);
     } catch (error) {
@@ -533,6 +406,7 @@ export default function AdminProductsPage() {
   }
 
   async function handleVariantDelete(productId, variantId) {
+    if (!window.confirm("Are you sure you want to delete this variant? This action cannot be undone.")) return;
     try {
       setErrorMessage("");
 
@@ -560,6 +434,7 @@ export default function AdminProductsPage() {
           (variant) => variant.id !== variantId
         ),
       }));
+      stampUpdated();
 
       if (editingVariant?.id === variantId) {
         resetVariantForm();
@@ -573,74 +448,86 @@ export default function AdminProductsPage() {
     }
   }
 
+  function handleSort(key) {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
+
+  function getSortValue(product, key) {
+    switch (key) {
+      case "id":        return product.id;
+      case "name":      return product.name?.toLowerCase() ?? "";
+      case "category":  return getCategoryName(product).toLowerCase();
+      case "supplier":  return getSupplierName(product).toLowerCase();
+      case "description": return (product.description ?? "").toLowerCase();
+      default:          return "";
+    }
+  }
+
+  const filteredProducts = searchQuery.trim()
+    ? products.filter((p) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          p.name?.toLowerCase().includes(q) ||
+          getCategoryName(p).toLowerCase().includes(q) ||
+          getSupplierName(p).toLowerCase().includes(q) ||
+          (p.description ?? "").toLowerCase().includes(q)
+        );
+      })
+    : products;
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const av = getSortValue(a, sortKey);
+    const bv = getSortValue(b, sortKey);
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  function SortIndicator({ col }) {
+    if (sortKey !== col) return <span className="sort-indicator sort-indicator--inactive">⇅</span>;
+    return <span className="sort-indicator">{sortDir === "asc" ? "▲" : "▼"}</span>;
+  }
+
   return (
     <div>
-      <h2>Admin Products</h2>
-
-      <h3>{editingProduct ? "Edit Product" : "Create Product"}</h3>
-
-      <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
+      <div className="submenu-bar">
+        <span className="submenu-label">Product Catalog</span>
         <input
-          name="name"
-          placeholder="Name"
-          required
-          value={formData.name}
-          onChange={handleChange}
+          className="submenu-search"
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-
-        <select
-          name="category"
-          required
-          value={formData.category}
-          onChange={handleChange}
-        >
-          <option value="">Select Category</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="supplier"
-          required
-          value={formData.supplier}
-          onChange={handleChange}
-        >
-          <option value="">Select Supplier</option>
-          {suppliers.map((supplier) => (
-            <option key={supplier.id} value={supplier.id}>
-              {supplier.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-
-        <button type="submit" disabled={creating}>
-          {creating
-            ? editingProduct
-              ? "Updating..."
-              : "Creating..."
-            : editingProduct
-            ? "Update Product"
-            : "Create Product"}
-        </button>
-
-        {editingProduct && (
-          <button type="button" onClick={resetForm}>
-            Cancel
+        <div className="submenu-actions">
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/catalog/new")}>
+            + CREATE NEW PRODUCT
           </button>
-        )}
-      </form>
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/suppliers/new")}>
+            + ADD SUPPLIER
+          </button>
+          <button type="button" className="submenu-action" title="Pending further development">
+            &gt; OPEN FILE
+          </button>
+          <button type="button" className="submenu-action" title="Pending further development">
+            &gt; EXPORT
+          </button>
+          <button type="button" className="submenu-action" title="Pending further development">
+            &gt; PRINT
+          </button>
+        </div>
+      </div>
 
-      <hr />
+      {lastUpdated && (
+        <p className="catalog-last-updated">
+          Last updated: {lastUpdated.toLocaleDateString()} at {lastUpdated.toLocaleTimeString()}
+        </p>
+      )}
 
       {loading && <p>Loading products...</p>}
       {!loading && errorMessage && <p>{errorMessage}</p>}
@@ -649,81 +536,72 @@ export default function AdminProductsPage() {
       )}
 
       {!loading && !errorMessage && products.length > 0 && (
-        <table>
+        <table className="admin-table">
           <thead>
             <tr>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>ID</th>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>Name</th>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                Category
+              <th className="admin-th" onClick={() => handleSort("id")}>
+                ID <SortIndicator col="id" />
               </th>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                Supplier
+              <th className="admin-th" onClick={() => handleSort("name")}>
+                Name <SortIndicator col="name" />
               </th>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                Description
+              <th className="admin-th" onClick={() => handleSort("category")}>
+                Category <SortIndicator col="category" />
               </th>
-              <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                Actions
+              <th className="admin-th" onClick={() => handleSort("supplier")} style={{minWidth: "140px"}}>
+                Supplier <SortIndicator col="supplier" />
               </th>
+              <th className="admin-th" onClick={() => handleSort("description")}>
+                Description <SortIndicator col="description" />
+              </th>
+              <th className="admin-th admin-th--no-sort">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {products.map((product) => (
+            {sortedProducts.map((product) => (
               <>
                 <tr key={product.id}>
-                  <td style={{ paddingRight: "1rem" }}>{product.id}</td>
-                  <td style={{ paddingRight: "1rem" }}>{product.name}</td>
-                  <td style={{ paddingRight: "1rem" }}>
-                    {getCategoryName(product)}
-                  </td>
-                  <td style={{ paddingRight: "1rem" }}>
-                    {getSupplierName(product)}
-                  </td>
-                  <td style={{ paddingRight: "1rem" }}>
-                    {product.description || "—"}
-                  </td>
-                  <td style={{ paddingRight: "1rem" }}>
+                  <td>{product.id}</td>
+                  <td className="td-name">{product.name}</td>
+                  <td>{getCategoryName(product)}</td>
+                  <td>{getSupplierName(product)}</td>
+                  <td className="td-description">{product.description || "—"}</td>
+                  <td className="td-actions">
                     <button
                       type="button"
-                      onClick={() => startEdit(product)}
-                      style={{ marginRight: "0.5rem" }}
+                      className="table-action-btn"
+                      onClick={() => navigate(`/admin/catalog/edit/${product.id}`)}
                     >
                       Edit
                     </button>
-
                     <button
                       type="button"
+                      className="table-action-btn"
                       onClick={() => handleDelete(product.id)}
-                      style={{ marginRight: "0.5rem" }}
                     >
                       Delete
                     </button>
-
                     <button
                       type="button"
+                      className="table-action-btn"
                       onClick={() => toggleVariants(product.id)}
-                      style={{ marginRight: "0.5rem" }}
                     >
-                      {expandedProductId === product.id
-                        ? "Hide Options"
-                        : "Manage Options"}
+                      {expandedProductId === product.id ? "Hide Options" : "Edit Options"}
                     </button>
-                    
                   </td>
                 </tr>
 
                 {expandedProductId === product.id && (
                   <tr key={`variants-${product.id}`}>
-                    <td colSpan="6" style={{ padding: "1rem", background: "#f8f8f8" }}>
+                    <td colSpan="6" className="variants-row-cell">
                       <h4>
                         {editingVariant
                           ? `Edit Option for ${product.name}`
                           : `Options for ${product.name}`}
                       </h4>
 
-                      <form onSubmit={handleVariantSubmit} style={{ marginBottom: "1rem" }}>
+                      <form className="variant-form" onSubmit={handleVariantSubmit}>
                         <input
                           name="name"
                           placeholder="Variant name"
@@ -731,7 +609,6 @@ export default function AdminProductsPage() {
                           value={variantFormData.name}
                           onChange={handleVariantChange}
                         />
-
                         <input
                           name="sku"
                           placeholder="SKU"
@@ -739,7 +616,6 @@ export default function AdminProductsPage() {
                           value={variantFormData.sku}
                           onChange={handleVariantChange}
                         />
-
                         <input
                           name="unit_price"
                           placeholder="Unit price"
@@ -747,33 +623,25 @@ export default function AdminProductsPage() {
                           value={variantFormData.unit_price}
                           onChange={handleVariantChange}
                         />
-
                         <input
                           name="stock_quantity"
                           placeholder="Stock quantity"
                           value={variantFormData.stock_quantity}
                           onChange={handleVariantChange}
                         />
-
                         <input
                           name="reorder_level"
                           placeholder="Reorder level"
                           value={variantFormData.reorder_level}
                           onChange={handleVariantChange}
                         />
-
-                        <button type="submit" disabled={savingVariant}>
+                        <button type="submit" className="variant-action-btn" disabled={savingVariant}>
                           {savingVariant
-                            ? editingVariant
-                              ? "Updating Variant..."
-                              : "Creating Variant..."
-                            : editingVariant
-                            ? "Save Option"
-                            : "Add Option"}
+                            ? editingVariant ? "Updating..." : "Creating..."
+                            : editingVariant ? "Save Option" : "Add Option"}
                         </button>
-
                         {(editingVariant || variantProductId === product.id) && (
-                          <button type="button" onClick={resetVariantForm}>
+                          <button type="button" className="variant-action-btn" onClick={resetVariantForm}>
                             Cancel
                           </button>
                         )}
@@ -781,78 +649,53 @@ export default function AdminProductsPage() {
 
                       {variantLoading && <p>Loading variants...</p>}
 
-                      {!variantLoading &&
-                        (variantsByProduct[product.id] || []).length === 0 && (
-                          <p>No variants found for this product.</p>
-                        )}
+                      {!variantLoading && (variantsByProduct[product.id] || []).length === 0 && (
+                        <p>No variants found for this product.</p>
+                      )}
 
-                      {!variantLoading &&
-                        (variantsByProduct[product.id] || []).length > 0 && (
-                          <table>
-                            <thead>
-                              <tr>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  ID
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  Name
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  SKU
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  Unit Price
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  Stock
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  Reorder
-                                </th>
-                                <th style={{ textAlign: "left", paddingRight: "1rem" }}>
-                                  Actions
-                                </th>
+                      {!variantLoading && (variantsByProduct[product.id] || []).length > 0 && (
+                        <table className="admin-table">
+                          <thead>
+                            <tr>
+                              <th className="admin-th admin-th--no-sort">ID</th>
+                              <th className="admin-th admin-th--no-sort">Name</th>
+                              <th className="admin-th admin-th--no-sort">SKU</th>
+                              <th className="admin-th admin-th--no-sort">Unit Price</th>
+                              <th className="admin-th admin-th--no-sort">Stock</th>
+                              <th className="admin-th admin-th--no-sort">Reorder</th>
+                              <th className="admin-th admin-th--no-sort">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {(variantsByProduct[product.id] || []).map((variant) => (
+                              <tr key={variant.id}>
+                                <td>{variant.id}</td>
+                                <td>{variant.name}</td>
+                                <td>{variant.sku ?? "—"}</td>
+                                <td>{variant.unit_price ?? "—"}</td>
+                                <td>{variant.stock_quantity ?? "—"}</td>
+                                <td>{variant.reorder_level ?? "—"}</td>
+                                <td className="td-actions">
+                                  <button
+                                    type="button"
+                                    className="variant-action-btn"
+                                    onClick={() => startEditVariant(product.id, variant)}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="variant-action-btn"
+                                    onClick={() => handleVariantDelete(product.id, variant.id)}
+                                  >
+                                    Delete
+                                  </button>
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody>
-                              {(variantsByProduct[product.id] || []).map((variant) => (
-                                <tr key={variant.id}>
-                                  <td style={{ paddingRight: "1rem" }}>{variant.id}</td>
-                                  <td style={{ paddingRight: "1rem" }}>{variant.name}</td>
-                                  <td style={{ paddingRight: "1rem" }}>{variant.sku}</td>
-                                  <td style={{ paddingRight: "1rem" }}>
-                                    {variant.unit_price}
-                                  </td>
-                                  <td style={{ paddingRight: "1rem" }}>
-                                    {variant.stock_quantity ?? "—"}
-                                  </td>
-                                  <td style={{ paddingRight: "1rem" }}>
-                                    {variant.reorder_level ?? "—"}
-                                  </td>
-                                  <td style={{ paddingRight: "1rem" }}>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        startEditVariant(product.id, variant)
-                                      }
-                                      style={{ marginRight: "0.5rem" }}
-                                    >
-                                      Edit
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleVariantDelete(product.id, variant.id)
-                                      }
-                                    >
-                                      Delete
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        )}
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
                     </td>
                   </tr>
                 )}
@@ -861,6 +704,7 @@ export default function AdminProductsPage() {
           </tbody>
         </table>
       )}
+
     </div>
   );
 }

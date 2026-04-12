@@ -8,50 +8,64 @@ ${CUSTOMER_EMAIL}       Customer1@example.com
 ${CUSTOMER_PASSWORD}    Password123!
 
 *** Test Cases ***
-Logged Out User Is Redirected To Login From Admin Route
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains Element    name=email    10s
-    Page Should Contain Element    name=password
-    Location Should Contain    /login
+Logged Out User Is Redirected To Admin Login From Admin Route
+    Go To    ${BASE_URL}/admin/catalog
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains Element    id=email    10s
+    Page Should Contain Element    id=password
+    Page Should Contain    Sign In
 
-Customer Does Not See Admin Dashboard Link
+Customer Does Not See Admin Navigation On Storefront
     Login As Customer User
     Sync Auth Token Key For Frontend
-    Wait Until Page Contains Element    xpath=//a[@href='/']    10s
-    Page Should Not Contain Link    Admin Dashboard
-
-Customer Is Redirected Home From Admin Route
-    Login As Customer User
-    Sync Auth Token Key For Frontend
-    Go To    ${BASE_URL}/admin/products
+    Go To    ${BASE_URL}/
     Wait Until Page Contains    Filter the Menu    10s
-    Location Should Be    ${BASE_URL}/
-    Page Should Not Contain    Admin Products
+    Page Should Not Contain Link    Product Catalog
+    Page Should Not Contain Link    Reports
+    Page Should Not Contain Link    Inventory
+    Page Should Not Contain Link    Orders
 
-Business User Sees Admin Dashboard Link
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}
-    Wait Until Page Contains    Admin Dashboard    10s
+Customer Is Redirected To Admin Login From Admin Route
+    Login As Customer User
+    Sync Auth Token Key For Frontend
+    Go To    ${BASE_URL}/admin/catalog
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains Element    id=email    10s
+    Page Should Contain Element    id=password
+    Page Should Contain    Sign In
+    Page Should Not Contain    Product Catalog
 
-Business User Can Open Admin Products Page
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Dashboard    10s
-    Wait Until Page Contains    Products    10s
-    Location Should Be    ${BASE_URL}/admin/products
+Business User Sees Admin Navigation On Dashboard
+    Login As Business User
+    Go To    ${BASE_URL}/admin
+    Wait Until Page Contains    Dashboard Home    10s
+    Wait Until Page Contains    Reports    10s
+    Wait Until Page Contains    Inventory    10s
+    Wait Until Page Contains    Product Catalog    10s
+    Wait Until Page Contains    Orders    10s
 
-Business User Can Open Admin Suppliers Page
-    Seed Frontend Session As Business User
-    Go To    ${BASE_URL}/admin/suppliers
-    Wait Until Page Contains    Admin Suppliers    10s
-    Location Should Be    ${BASE_URL}/admin/suppliers
+Business User Can Open Admin Product Catalog Page
+    Login As Business User
+    Go To    ${BASE_URL}/admin/catalog
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Search products...']    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'CREATE NEW PRODUCT')]    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'ADD SUPPLIER')]    10s
+    Location Should Be    ${BASE_URL}/admin/catalog
+
+Business User Can Open Add Supplier Page
+    Login As Business User
+    Go To    ${BASE_URL}/admin/suppliers/new
+    Wait Until Page Contains    Add New Supplier    10s
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Supplier name']    10s
+    Location Should Be    ${BASE_URL}/admin/suppliers/new
 
 Business User Can Open Admin Inventory Page
-    Seed Frontend Session As Business User
+    Login As Business User
     Go To    ${BASE_URL}/admin/inventory
-    Wait Until Page Contains    Admin Inventory    10s
+    Wait Until Page Contains    Inventory    10s
+    Wait Until Page Contains    Recent Inventory Reports    10s
     Location Should Be    ${BASE_URL}/admin/inventory
-
+    
 *** Keywords ***
 Sync Auth Token Key For Frontend
     ${legacy}=    Execute JavaScript    return window.localStorage.getItem('access');
@@ -60,13 +74,3 @@ Sync Auth Token Key For Frontend
         Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
         Reload Page
     END
-
-Seed Frontend Session As Business User
-    Go To    ${BASE_URL}
-    Execute JavaScript
-    ...    window.localStorage.setItem('accessToken', 'fake-business-token');
-    ...    window.localStorage.setItem('user', JSON.stringify({
-    ...      firstName: 'Biz',
-    ...      role: 'BUSINESS'
-    ...    }));
-    Reload Page

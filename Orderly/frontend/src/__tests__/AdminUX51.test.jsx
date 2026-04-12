@@ -8,6 +8,9 @@ import * as auth from "../api/auth";
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
   logout: jest.fn(),
+  getAuthHeaders: jest.fn(() => ({
+    Authorization: "Bearer fake-business-token",
+  })),
 }));
 
 function mockFetch({
@@ -196,7 +199,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       screen.getByRole("link", { name: /product catalog/i })
     );
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/recent catalogs/i)).toBeInTheDocument();
 
@@ -242,7 +245,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/catalog");
 
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("navigation")).toBeInTheDocument();
@@ -328,7 +331,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/catalog");
 
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
 
     const openCatalog = screen.getByText(/open catalog/i);
