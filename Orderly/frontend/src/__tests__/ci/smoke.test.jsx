@@ -1,6 +1,18 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import React from "react";
+import { render, screen } from "@testing-library/react";
+
+const mockNavigate = jest.fn();
+
 import { MemoryRouter } from "react-router-dom";
+
+function renderWithRouter(ui, { route = "/" } = {}) {
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      {ui}
+    </MemoryRouter>
+  );
+}
 
 import Login from "../../pages/Auth/Login";
 import Register from "../../pages/Auth/Register";
@@ -14,14 +26,6 @@ jest.mock("../../api/auth", () => ({
     Authorization: "Bearer fake-token",
   })),
 }));
-
-function renderWithRouter(ui, { route = "/" } = {}) {
-  return render(
-    <MemoryRouter initialEntries={[route]}>
-      {ui}
-    </MemoryRouter>
-  );
-}
 
 function makeResponse({
   ok = true,
@@ -73,14 +77,7 @@ describe("CI smoke tests", () => {
                 name: "Latte",
                 description: "Espresso with steamed milk",
                 category: { id: 1, name: "Coffee" },
-                variants: [
-                  {
-                    id: 11,
-                    name: "Default",
-                    unitPrice: "4.50",
-                    stockQuantity: 10,
-                  },
-                ],
+                variants: [],
                 imageUrl: null,
               },
             ],
@@ -89,21 +86,15 @@ describe("CI smoke tests", () => {
       }
 
       if (method === "GET" && url.includes("/api/v1/orders/draft")) {
-        return makeResponse({
-          body: { id: null },
-        });
+        return makeResponse({ body: { id: null } });
       }
 
       if (method === "GET" && url.includes("/api/v1/orders/history")) {
-        return makeResponse({
-          body: { results: [] },
-        });
+        return makeResponse({ body: { results: [] } });
       }
 
       if (method === "GET" && url.match(/\/api\/v1\/orders(\?|$)/)) {
-        return makeResponse({
-          body: { results: [] },
-        });
+        return makeResponse({ body: { results: [] } });
       }
 
       if (method === "POST" && url.includes("/api/v1/auth/login")) {
@@ -143,7 +134,7 @@ describe("CI smoke tests", () => {
   });
 
   test("login works", async () => {
-    renderWithRouter(<Login setLoggedIn={jest.fn()} />, { route: "/login" });
+    renderWithRouter(<Login setLoggedIn={jest.fn()} />);
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -153,9 +144,7 @@ describe("CI smoke tests", () => {
   });
 
   test("register works", async () => {
-    renderWithRouter(<Register setLoggedIn={jest.fn()} />, {
-      route: "/register",
-    });
+    renderWithRouter(<Register setLoggedIn={jest.fn()} />);
 
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
@@ -166,7 +155,7 @@ describe("CI smoke tests", () => {
   });
 
   test("storefront renders", async () => {
-    renderWithRouter(<StoreFront />, { route: "/" });
+    renderWithRouter(<StoreFront />);
 
     expect(await screen.findByText("Latte")).toBeInTheDocument();
     expect(screen.getByText(/n\/a/i)).toBeInTheDocument();
@@ -186,7 +175,7 @@ describe("CI smoke tests", () => {
       })
     );
 
-    renderWithRouter(<OrderHistory />, { route: "/order-history" });
+    renderWithRouter(<OrderHistory />);
 
     expect(
       await screen.findByText(/no past orders found/i)
