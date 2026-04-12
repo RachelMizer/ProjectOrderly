@@ -66,7 +66,11 @@ function setupFetch({
       return makeResponse(override.response);
     }
 
-    if (method === "GET" && url.includes("/api/v1/admin/products/") && url.includes("/variants")) {
+    if (
+      method === "GET" &&
+      url.includes("/api/v1/admin/products/") &&
+      url.includes("/variants")
+    ) {
       const match = url.match(/\/admin\/products\/(\d+)\/variants/);
       const productId = Number(match?.[1]);
       return makeResponse({
@@ -112,20 +116,21 @@ function renderPage() {
 }
 
 function getProductTable() {
-  const actionsHeader = screen.getByRole("columnheader", { name: /actions/i });
-  return actionsHeader.closest("table");
-}
-
-function getCreateProductForm() {
-  const heading = screen.getByRole("heading", { name: /create product/i });
-  return heading.nextElementSibling;
+  return screen.getByRole("table");
 }
 
 describe("AdminProductsPage", () => {
+  const originalConfirm = window.confirm;
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
     localStorage.setItem("accessToken", "fake-token");
+    window.confirm = jest.fn(() => true);
+  });
+
+  afterEach(() => {
+    window.confirm = originalConfirm;
   });
 
   test("shows loading state", () => {
@@ -153,8 +158,7 @@ describe("AdminProductsPage", () => {
 
     renderPage();
 
-    await screen.findByRole("columnheader", { name: /actions/i });
-    const table = getProductTable();
+    const table = await screen.findByRole("table");
 
     expect(within(table).getByText(/^latte$/i)).toBeInTheDocument();
     expect(within(table).getByText(/^coffee$/i)).toBeInTheDocument();
@@ -220,57 +224,43 @@ describe("AdminProductsPage", () => {
     });
   });
 
-  test("creates a product and updates UI immediately", async () => {
+  test("create new product button navigates to create product page", async () => {
     setupFetch({
       products: [],
       categories: [{ id: 1, name: "Coffee" }],
       suppliers: [{ id: 1, name: "Main Supplier" }],
-      overrides: [
-        {
-          method: "POST",
-          path: "/api/v1/admin/products",
-          response: {
-            ok: true,
-            status: 201,
-            body: {
-              id: 2,
-              name: "Mocha",
-              category: { id: 1, name: "Coffee" },
-              supplier: { id: 1, name: "Main Supplier" },
-              description: "Chocolate espresso drink",
-            },
-          },
-        },
-      ],
     });
 
     renderPage();
 
     await screen.findByText(/no products found/i);
-    const form = getCreateProductForm();
-
-    fireEvent.change(within(form).getByPlaceholderText(/name/i), {
-      target: { value: "Mocha" },
-    });
-
-    const selects = within(form).getAllByRole("combobox");
-    fireEvent.change(selects[0], { target: { value: "1" } });
-    fireEvent.change(selects[1], { target: { value: "1" } });
-
-    fireEvent.change(within(form).getByPlaceholderText(/description/i), {
-      target: { value: "Chocolate espresso drink" },
-    });
 
     fireEvent.click(
-      within(form).getByRole("button", { name: /^create product$/i })
+      screen.getByRole("button", { name: /\+ create new product/i })
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/chocolate espresso drink/i)).toBeInTheDocument();
-    });
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog/new");
   });
 
-  test("enters edit mode and updates a product in the UI", async () => {
+  test("add supplier button navigates to supplier page", async () => {
+    setupFetch({
+      products: [],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
+
+    renderPage();
+
+    await screen.findByText(/no products found/i);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /\+ add supplier/i })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/suppliers/new");
+  });
+
+  test("edit button navigates to edit product page", async () => {
     setupFetch({
       products: [
         {
@@ -283,104 +273,39 @@ describe("AdminProductsPage", () => {
       ],
       categories: [{ id: 1, name: "Coffee" }],
       suppliers: [{ id: 1, name: "Main Supplier" }],
-      overrides: [
-        {
-          method: "PATCH",
-          path: "/api/v1/admin/products/1",
-          response: {
-            ok: true,
-            status: 200,
-            body: {
-              id: 1,
-              name: "House Coffee Updated",
-              category: { id: 1, name: "Coffee" },
-              supplier: { id: 1, name: "Main Supplier" },
-              description: "Updated description",
-            },
-          },
-        },
-      ],
     });
 
     renderPage();
 
     await screen.findByText(/original description/i);
+
     fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
 
-    expect(
-      screen.getByRole("heading", { name: /edit product/i })
-    ).toBeInTheDocument();
-
-    const form = screen.getByRole("heading", { name: /edit product/i }).nextElementSibling;
-
-    fireEvent.change(within(form).getByPlaceholderText(/name/i), {
-      target: { value: "House Coffee Updated" },
-    });
-
-    fireEvent.change(within(form).getByPlaceholderText(/description/i), {
-      target: { value: "Updated description" },
-    });
-
-    fireEvent.click(
-      within(form).getByRole("button", { name: /^update product$/i })
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/updated description/i)).toBeInTheDocument();
-    });
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog/edit/1");
   });
 
-  test("cancel edit resets form and returns to create mode", async () => {
+  test("shows backend validation error on variant save", async () => {
     setupFetch({
       products: [
         {
           id: 1,
-          name: "Chai Tea Latte",
-          category: { id: 1, name: "Tea" },
-          supplier: { id: 1, name: "Tea Supplier" },
-          description: "Spiced tea",
+          name: "Latte",
+          category: { id: 1, name: "Coffee" },
+          supplier: { id: 1, name: "Main Supplier" },
+          description: "Hot drink",
         },
       ],
-      categories: [{ id: 1, name: "Tea" }],
-      suppliers: [{ id: 1, name: "Tea Supplier" }],
-    });
-
-    renderPage();
-
-    await screen.findByText(/spiced tea/i);
-    fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
-
-    const form = screen.getByRole("heading", { name: /edit product/i }).nextElementSibling;
-
-    fireEvent.change(within(form).getByPlaceholderText(/name/i), {
-      target: { value: "Temporary Name" },
-    });
-
-    fireEvent.click(within(form).getByRole("button", { name: /^cancel$/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /create product/i })
-      ).toBeInTheDocument();
-    });
-
-    const createForm = getCreateProductForm();
-    expect(within(createForm).getByPlaceholderText(/name/i)).toHaveValue("");
-  });
-
-  test("shows backend validation error on product save", async () => {
-    setupFetch({
-      products: [],
       categories: [{ id: 1, name: "Coffee" }],
       suppliers: [{ id: 1, name: "Main Supplier" }],
+      variantsByProduct: { 1: [] },
       overrides: [
         {
           method: "POST",
-          path: "/api/v1/admin/products",
+          path: "/api/v1/admin/products/1/variants",
           response: {
             ok: false,
             status: 400,
-            body: { message: "Name already exists" },
+            body: { message: "Variant already exists" },
           },
         },
       ],
@@ -388,22 +313,25 @@ describe("AdminProductsPage", () => {
 
     renderPage();
 
-    await screen.findByText(/no products found/i);
-    const form = getCreateProductForm();
+    await screen.findByText(/hot drink/i);
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+    await screen.findByText(/options for latte/i);
 
-    fireEvent.change(within(form).getByPlaceholderText(/name/i), {
-      target: { value: "Duplicate" },
+    fireEvent.change(screen.getByPlaceholderText(/variant name/i), {
+      target: { value: "Small" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/^sku$/i), {
+      target: { value: "LATTE-S" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/unit price/i), {
+      target: { value: "4.50" },
     });
 
-    const selects = within(form).getAllByRole("combobox");
-    fireEvent.change(selects[0], { target: { value: "1" } });
-    fireEvent.change(selects[1], { target: { value: "1" } });
+    fireEvent.click(screen.getByRole("button", { name: /add option/i }));
 
-    fireEvent.click(
-      within(form).getByRole("button", { name: /^create product$/i })
-    );
-
-    expect(await screen.findByText(/name already exists/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/variant already exists/i)
+    ).toBeInTheDocument();
   });
 
   test("deletes a product and removes it from the UI", async () => {
@@ -438,8 +366,10 @@ describe("AdminProductsPage", () => {
     await screen.findByText(/remove this item/i);
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
+    expect(window.confirm).toHaveBeenCalled();
+
     await waitFor(() => {
-      expect(screen.queryByText(/remove this item/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^delete me$/i)).not.toBeInTheDocument();
     });
   });
 
@@ -473,6 +403,8 @@ describe("AdminProductsPage", () => {
 
     await screen.findByText(/delete should fail/i);
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    expect(window.confirm).toHaveBeenCalled();
 
     expect(
       await screen.findByText(/failed to delete product/i)
@@ -509,20 +441,15 @@ describe("AdminProductsPage", () => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
 
     expect(await screen.findByText(/options for latte/i)).toBeInTheDocument();
 
-// wait for loading text to go away
-await waitFor(() => {
-  expect(screen.queryByText(/loading variants/i)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(/loading variants/i)).not.toBeInTheDocument();
     });
 
-    // now assert variants
     expect(screen.getByText(/^large$/i)).toBeInTheDocument();
-    expect(screen.getByText(/latte-l/i)).toBeInTheDocument();
     expect(screen.getByText(/latte-l/i)).toBeInTheDocument();
   });
 
@@ -547,9 +474,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
 
     expect(
       await screen.findByText(/no variants found for this product/i)
@@ -577,9 +502,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/options for latte/i);
 
     fireEvent.click(screen.getByRole("button", { name: /hide options/i }));
@@ -626,9 +549,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/options for latte/i);
 
     fireEvent.change(screen.getByPlaceholderText(/variant name/i), {
@@ -701,9 +622,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/^large$/i);
 
     const variantTable = screen.getAllByRole("table")[1];
@@ -757,9 +676,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/options for latte/i);
 
     fireEvent.change(screen.getByPlaceholderText(/variant name/i), {
@@ -808,9 +725,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
 
     expect(
       await screen.findByText(/failed to load variants/i)
@@ -859,9 +774,7 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/^large$/i);
 
     const variantTable = screen.getAllByRole("table")[1];
@@ -870,8 +783,10 @@ await waitFor(() => {
     });
     fireEvent.click(deleteButtons[0]);
 
+    expect(window.confirm).toHaveBeenCalled();
+
     await waitFor(() => {
-      expect(screen.queryByText(/^large$/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/latte-l/i)).not.toBeInTheDocument();
     });
   });
 
@@ -906,16 +821,16 @@ await waitFor(() => {
     renderPage();
 
     await screen.findByText(/hot drink/i);
-    fireEvent.click(
-      screen.getByRole("button", { name: /manage options/i })
-    );
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
     await screen.findByText(/options for latte/i);
 
     const table = getProductTable();
     fireEvent.click(within(table).getByRole("button", { name: /^delete$/i }));
 
+    expect(window.confirm).toHaveBeenCalled();
+
     await waitFor(() => {
-      expect(screen.queryByText(/options for latte/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^latte$/i)).not.toBeInTheDocument();
     });
   });
 });

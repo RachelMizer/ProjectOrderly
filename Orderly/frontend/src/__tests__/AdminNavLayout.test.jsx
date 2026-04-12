@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import App from "../App";
 import * as auth from "../api/auth";
 
@@ -18,61 +18,85 @@ function setUser(role, firstName = "Biz") {
   );
 }
 
-describe("Admin navigation and layout (US4.2)", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    jest.clearAllMocks();
+function mockFetch({
+  meResponse = {
+    firstName: "Biz",
+    lastName: "Admin",
+    email: "business1@example.com",
+    role: "BUSINESS",
+  },
+  categoriesResponse = { results: [] },
+  storefrontProductsResponse = { results: [] },
+  adminProductsResponse = { results: [] },
+  suppliersResponse = { results: [] },
+} = {}) {
+  global.fetch = jest.fn((url) => {
+    const requestUrl = String(url);
 
-    global.fetch = jest.fn((url) => {
-      const requestUrl = String(url);
-
-      if (requestUrl.includes("/api/v1/categories")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        });
-      }
-
-      if (
-        requestUrl.includes("/api/v1/products") &&
-        !requestUrl.includes("/api/v1/admin/products")
-      ) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ results: [] }),
-        });
-      }
-
-      if (requestUrl.includes("/api/v1/orders/draft")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ id: null }),
-        });
-      }
-
-      if (requestUrl.includes("/api/v1/users/me")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ firstName: "Biz", role: "BUSINESS" }),
-        });
-      }
-
-      if (requestUrl.includes("/api/v1/admin/products")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => [],
-        });
-      }
-
+    if (requestUrl.includes("/api/v1/users/me")) {
       return Promise.resolve({
         ok: true,
-        json: async () => ({}),
+        json: async () => meResponse,
       });
+    }
+
+    if (requestUrl.includes("/api/v1/categories")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => categoriesResponse,
+      });
+    }
+
+    if (
+      requestUrl.includes("/api/v1/products?pageSize=100") ||
+      (requestUrl.includes("/api/v1/products") &&
+        !requestUrl.includes("/api/v1/admin/products"))
+    ) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => storefrontProductsResponse,
+      });
+    }
+
+    if (requestUrl.includes("/api/v1/admin/products")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => adminProductsResponse,
+      });
+    }
+
+    if (requestUrl.includes("/api/v1/admin/suppliers")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => suppliersResponse,
+      });
+    }
+
+    if (requestUrl.includes("/api/v1/orders/draft")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ id: null }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
     });
+  });
+}
+
+describe("Admin navigation and layout (US4.2)", () => {
+  beforeEach(() => {
+    cleanup();
+    localStorage.clear();
+    jest.clearAllMocks();
+    mockFetch();
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    cleanup();
   });
 
   test("business user sees persistent admin nav links on admin home", async () => {
@@ -84,50 +108,38 @@ describe("Admin navigation and layout (US4.2)", () => {
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", { name: /admin dashboard/i })
+      await screen.findByRole("heading", { name: /dashboard home/i })
     ).toBeInTheDocument();
 
+    expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^reports$/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /dashboard home/i })
+      screen.getByRole("link", { name: /product catalog/i })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /^products$/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /suppliers/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /inventory/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^orders$/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /account settings/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/^logout$/i)).toBeInTheDocument();
   });
 
-  test("business user can route to products and keeps admin layout", async () => {
+  test("business user can route to catalog and keeps admin layout", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
     setUser("BUSINESS");
 
-    window.history.pushState({}, "", "/admin/products");
+    window.history.pushState({}, "", "/admin/catalog");
     render(<App />);
 
-    expect(await screen.findByText(/admin products/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /admin dashboard/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /dashboard home/i })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /suppliers/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /inventory/i })).toBeInTheDocument();
-  });
+    const elements = await screen.findAllByText(/product catalog/i);
+    expect(elements.length).toBeGreaterThan(0);
 
-  test("business user can route to suppliers and keeps admin layout", async () => {
-    auth.isAuthenticated.mockReturnValue(true);
-    localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS");
-
-    window.history.pushState({}, "", "/admin/suppliers");
-    render(<App />);
-
-    expect(await screen.findByText(/admin suppliers/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /admin dashboard/i })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /^products$/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /inventory/i })).toBeInTheDocument();
+    expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText(/recent catalogs/i)).toBeInTheDocument();
+    expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
   test("business user can route to inventory and keeps admin layout", async () => {
@@ -138,54 +150,128 @@ describe("Admin navigation and layout (US4.2)", () => {
     window.history.pushState({}, "", "/admin/inventory");
     render(<App />);
 
-    expect(await screen.findByText(/admin inventory/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /admin dashboard/i })
+      await screen.findByRole("heading", { name: /^inventory$/i })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /^products$/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /suppliers/i })).toBeInTheDocument();
+
+    expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText(/recent inventory reports/i)).toBeInTheDocument();
+    expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
-  test("admin nav is not visible to customer", () => {
+  test("business user can route to reports and keeps admin layout", async () => {
     auth.isAuthenticated.mockReturnValue(true);
+    localStorage.setItem("accessToken", "fake-business-token");
+    setUser("BUSINESS");
+
+    window.history.pushState({}, "", "/admin/reports");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: /^reports$/i })
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText(/recent reports/i)).toBeInTheDocument();
+    expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
+  });
+
+  test("business user can route to orders and keeps admin layout", async () => {
+    auth.isAuthenticated.mockReturnValue(true);
+    localStorage.setItem("accessToken", "fake-business-token");
+    setUser("BUSINESS");
+
+    window.history.pushState({}, "", "/admin/orders");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: /^orders$/i })
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByText(/recent orders/i)).toBeInTheDocument();
+    expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
+  });
+
+  test("admin nav is not visible to customer on storefront", () => {
+    auth.isAuthenticated.mockReturnValue(true);
+    localStorage.setItem("accessToken", "fake-customer-token");
     setUser("CUSTOMER", "Customer");
 
     window.history.pushState({}, "", "/");
     render(<App />);
 
+    expect(screen.getByText(/filter the menu/i)).toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /admin dashboard/i })
+      screen.queryByRole("link", { name: /product catalog/i })
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /dashboard home/i })
+      screen.queryByRole("link", { name: /^reports$/i })
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /suppliers/i })
+      screen.queryByRole("link", { name: /^inventory$/i })
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /inventory/i })
+      screen.queryByRole("link", { name: /^orders$/i })
     ).not.toBeInTheDocument();
   });
 
-  test("logged out user is redirected to login from admin route", async () => {
+  test("logged out user is redirected to storefront from admin route", async () => {
     auth.isAuthenticated.mockReturnValue(false);
 
     window.history.pushState({}, "", "/admin");
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", { name: /^login$/i })
+      await screen.findByRole("heading", { name: /orderly/i })
     ).toBeInTheDocument();
+
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /dashboard home/i })
+    ).not.toBeInTheDocument();
   });
 
-  test("customer is redirected home from admin route", async () => {
+  test("customer cannot access admin route and remains on storefront", async () => {
     auth.isAuthenticated.mockReturnValue(true);
+    localStorage.setItem("accessToken", "fake-customer-token");
     setUser("CUSTOMER", "Customer");
+
+    mockFetch({
+      meResponse: {
+        firstName: "Customer",
+        lastName: "User",
+        email: "customer@example.com",
+        role: "CUSTOMER",
+      },
+    });
 
     window.history.pushState({}, "", "/admin/inventory");
     render(<App />);
 
-    expect(await screen.findByText(/filter the menu/i)).toBeInTheDocument();
-    expect(screen.queryByText(/admin inventory/i)).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: /orderly/i })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", { name: /sign in/i })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", { name: /^inventory$/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /^inventory$/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /product catalog/i })
+    ).not.toBeInTheDocument();
   });
 });

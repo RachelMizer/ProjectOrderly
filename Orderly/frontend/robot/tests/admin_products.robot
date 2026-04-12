@@ -1,173 +1,121 @@
 *** Settings ***
-Documentation    Admin product management tests for US4.3 / 5.2
+Documentation    Admin product management tests for US4.3 / UX5.2 (UPDATED)
 Library    SeleniumLibrary
 Variables  ../variables/variables.py
 Resource   ../resources/keywords.robot
 Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
+*** Variables ***
+${ADMIN_CATALOG_URL}    ${BASE_URL}/admin/catalog
+
 *** Test Cases ***
 Admin Products Page Requires Login
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Location Contains    /login    10s
-    Page Should Contain Element    id=email
-    Page Should Contain Element    id=password
+    Go To    ${ADMIN_CATALOG_URL}
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains    Sign In    10s
 
 Customer Cannot Access Admin Products
     Login As Customer User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Location Is    ${BASE_URL}/    10s
-    Page Should Not Contain    Admin Products
+    Go To    ${ADMIN_CATALOG_URL}
+    Wait Until Page Contains    Orderly    10s
+    Wait Until Page Contains    Sign In    10s
 
 Business User Can Access Admin Products
     Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Location Should Be    ${BASE_URL}/admin/products
+    Go To    ${ADMIN_CATALOG_URL}
 
-Admin Can Create Product
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Search products...']    10s
+    Wait Until Page Contains    Welcome,    10s
+
+Admin Can Navigate To Create Product Page
     Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Wait For Product Form Options
+    Go To    ${ADMIN_CATALOG_URL}
 
-    ${unique}=    Evaluate    str(int(__import__('time').time() * 1000))
-    ${product_name}=    Set Variable    Robot Product ${unique}
-    ${description}=    Set Variable    Created by Robot
+    Wait Until Page Contains Element    xpath=//button[contains(., 'CREATE NEW PRODUCT')]    10s
+    Click Element    xpath=//button[contains(., 'CREATE NEW PRODUCT')]
 
-    Input Text    name=name    ${product_name}
-    Select Product Category
-    Select Product Supplier
-    Input Text    name=description    ${description}
-    Click Button    xpath=//button[normalize-space()='Create Product']
+    Wait Until Location Contains    /admin/catalog/new    10s
+    Wait Until Page Contains    Create A New Product    10s
 
-    Wait Until Keyword Succeeds    10s    1s    Page Should Contain    ${product_name}
-
-Admin Can Edit Product
+Admin Can Navigate To Edit Product Page
     Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Wait For Product Form Options
+    Go To    ${ADMIN_CATALOG_URL}
 
-    ${unique}=    Evaluate    str(int(__import__('time').time() * 1000))
-    ${original_name}=    Set Variable    Robot Edit Source ${unique}
-    ${updated_name}=    Set Variable    Robot Product Updated ${unique}
-    ${updated_desc}=    Set Variable    Updated by Robot
+    Wait Until Page Contains Element    xpath=//button[normalize-space()='Edit']    10s
+    Click Element    xpath=(//button[normalize-space()='Edit'])[1]
 
-    Create Admin Product    ${original_name}    Original description
-
-    Click Edit For Product    ${original_name}
-    Wait Until Page Contains    Edit Product    10s
-
-    Clear Element Text    name=name
-    Input Text    name=name    ${updated_name}
-    Clear Element Text    name=description
-    Input Text    name=description    ${updated_desc}
-    Click Button    xpath=//button[normalize-space()='Update Product']
-
-    Wait Until Keyword Succeeds    10s    1s    Page Should Contain    ${updated_name}
-
-Admin Can Cancel Edit Product
-    Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Wait For Product Form Options
-
-    ${unique}=    Evaluate    str(int(__import__('time').time() * 1000))
-    ${product_name}=    Set Variable    Robot Cancel Source ${unique}
-    Create Admin Product    ${product_name}    Cancel me
-
-    Click Edit For Product    ${product_name}
-    Wait Until Page Contains    Edit Product    10s
-
-    Clear Element Text    name=name
-    Input Text    name=name    Temp Changed Name
-    Click Button    xpath=//button[normalize-space()='Cancel']
-
-    Wait Until Page Contains    Create Product    10s
-    Element Attribute Value Should Be    name=name    value    ${EMPTY}
-    Page Should Contain    ${product_name}
+    Wait Until Location Contains    /admin/catalog/edit    10s
+    Wait Until Page Contains    Update Product    10s
 
 Admin Can Delete Product
     Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Wait For Product Form Options
+    Go To    ${ADMIN_CATALOG_URL}
 
-    ${product_name}=    Set Variable    Robot Delete Source ${TEST NAME}
-    Create Admin Product    ${product_name}    Delete me
+    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//tr[td]    10s
 
-    Click Delete For Product    ${product_name}
-    Wait Until Page Does Not Contain    ${product_name}    10s
+    ${product}=    Get Text    xpath=(//table[contains(@class,'admin-table')]//tr[td])[1]/td[2]
+    Click Element    xpath=((//table[contains(@class,'admin-table')]//tr[td])[1]//button[normalize-space()='Delete'])[1]
+    Handle Alert    ACCEPT
 
-Backend Validation Error Surfaces In UI
+    Reload Page
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Search products...']    10s
+    Wait Until Page Does Not Contain    ${product}    10s
+
+Admin Can Expand Options Panel
     Login As Business User
-    Go To    ${BASE_URL}/admin/products
-    Wait Until Page Contains    Admin Products    10s
-    Wait For Product Form Options
+    Go To    ${ADMIN_CATALOG_URL}
 
-    Input Text    name=name    Robot Validation Test
-    Select Product Category
-    Select Product Supplier
-    Input Text    name=description    Validation check
-    Click Button    xpath=//button[normalize-space()='Create Product']
+    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options']    10s
+    Click Element    xpath=(//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options'])[1]
 
-    # try creating same product again to trigger backend validation if duplicates are blocked
-    Input Text    name=name    Robot Validation Test
-    Select Product Category
-    Select Product Supplier
-    Input Text    name=description    Validation check
-    Click Button    xpath=//button[normalize-space()='Create Product']
+    Wait Until Page Contains    Options for    10s
 
-    Wait Until Page Contains Element    xpath=//*[contains(text(),'Validation') or contains(text(),'required') or contains(text(),'already exists') or contains(text(),'error') or contains(text(),'Name')]    10s
+Admin Can Add Variant Inline
+    Login As Business User
+    Go To    ${ADMIN_CATALOG_URL}
 
+    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options']    10s
+    Click Element    xpath=(//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options'])[1]
+    Wait Until Page Contains    Options for    10s
 
-*** Keywords ***
-Wait For Product Form Options
-    Wait Until Page Contains Element    name=category    10s
-    Wait Until Page Contains Element    name=supplier    10s
-    Wait Until Keyword Succeeds    10s    1s    Category Options Should Be Loaded
-    Wait Until Keyword Succeeds    10s    1s    Supplier Options Should Be Loaded
+    ${unique}=    Evaluate    str(int(__import__('time').time() * 1000))
+    ${variant_name}=    Set Variable    Robot Variant ${unique}
+    ${variant_sku}=     Set Variable    ROBOT-${unique}
 
-Category Options Should Be Loaded
-    ${count}=    Get Element Count    xpath=//select[@name='category']/option
-    Should Be True    ${count} > 1
+    Input Text    xpath=//input[@placeholder='Variant name']    ${variant_name}
+    Input Text    xpath=//input[@placeholder='SKU']    ${variant_sku}
+    Input Text    xpath=//input[@placeholder='Unit price']    5.00
+    Input Text    xpath=//input[@placeholder='Stock quantity']    8
+    Input Text    xpath=//input[@placeholder='Reorder level']    2
 
-Supplier Options Should Be Loaded
-    ${count}=    Get Element Count    xpath=//select[@name='supplier']/option
-    Should Be True    ${count} > 1
+    Click Element    xpath=//button[normalize-space()='Add Option']
 
-Select Product Category
-    ${value}=    Get First Selectable Option Value    category
-    Select From List By Value    name=category    ${value}
+    Wait Until Page Contains    ${variant_name}    10s
+    Wait Until Page Contains    ${variant_sku}    10s
 
-Select Product Supplier
-    ${value}=    Get First Selectable Option Value    supplier
-    Select From List By Value    name=supplier    ${value}
+Admin Can Delete Variant Inline
+    Login As Business User
+    Go To    ${ADMIN_CATALOG_URL}
 
-Get First Selectable Option Value
-    [Arguments]    ${select_name}
-    ${value}=    Execute JavaScript
-    ...    const select = document.querySelector(`select[name="${select_name}"]`);
-    ...    const option = Array.from(select.options).find(o => o.value && o.value.trim() !== "");
-    ...    return option ? option.value : "";
-    Should Not Be Empty    ${value}
-    [Return]    ${value}
+    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options']    10s
+    Click Element    xpath=(//table[contains(@class,'admin-table')]//button[normalize-space()='Edit Options'])[1]
+    Wait Until Page Contains    Options for    10s
 
-Create Admin Product
-    [Arguments]    ${product_name}    ${description}
-    Wait For Product Form Options
-    Input Text    name=name    ${product_name}
-    Select Product Category
-    Select Product Supplier
-    Input Text    name=description    ${description}
-    Click Button    xpath=//button[normalize-space()='Create Product']
-    Wait Until Page Contains    ${product_name}    10s
+    ${unique}=    Evaluate    str(int(__import__('time').time() * 1000))
+    ${variant_name}=    Set Variable    Robot Delete Variant ${unique}
+    ${variant_sku}=     Set Variable    ROBOT-DEL-${unique}
 
-Click Edit For Product
-    [Arguments]    ${product_name}
-    Click Element    xpath=//tr[td[normalize-space()='${product_name}']]//button[normalize-space()='Edit']
+    Input Text    xpath=//input[@placeholder='Variant name']    ${variant_name}
+    Input Text    xpath=//input[@placeholder='SKU']    ${variant_sku}
+    Input Text    xpath=//input[@placeholder='Unit price']    5.00
+    Input Text    xpath=//input[@placeholder='Stock quantity']    8
+    Input Text    xpath=//input[@placeholder='Reorder level']    2
+    Click Element    xpath=//button[normalize-space()='Add Option']
 
-Click Delete For Product
-    [Arguments]    ${product_name}
-    Click Element    xpath=//tr[td[normalize-space()='${product_name}']]//button[normalize-space()='Delete']
+    Wait Until Page Contains    ${variant_sku}    10s
+
+    Click Element    xpath=//tr[td[normalize-space()='${variant_sku}']]/td/following-sibling::td//button[normalize-space()='Delete']
+    Handle Alert    ACCEPT
+
+    Wait Until Page Does Not Contain    ${variant_sku}    10s
