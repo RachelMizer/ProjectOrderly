@@ -75,3 +75,49 @@ CI Regression - Customer Can Edit Profile Information
     Update Profile With CI Data
     Profile Save Success Should Be Visible
     Profile Should Contain Updated Data
+
+CI Regression - View And Customize Opens Product Page
+    Go To Storefront
+    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains Element    xpath=(//a[contains(normalize-space(.), 'View & Customize')])[1]    10s
+    Click Element    xpath=(//a[contains(normalize-space(.), 'View & Customize')])[1]
+    Wait Until Location Contains    /product/    10s
+    Wait Until Page Contains    Add to Cart    10s
+
+CI Regression - Cart Persists After Refresh
+    Login As Test User
+    Add Customized Breakfast Sandwich To Cart
+    Go To Cart Page
+    Cart Should Contain At Least One Item
+    Reload Page
+    Wait Until Page Contains    Your Cart    10s
+    Cart Should Contain At Least One Item
+    Page Should Contain    ${BREAKFAST_PRODUCT}
+
+CI Regression - Business User Can Open Admin Dashboard
+    Login As Business User
+    Go To    ${BASE_URL}/admin
+    Wait Until Page Contains    Dashboard Home    10s
+    Wait Until Page Contains    Reports    10s
+    Wait Until Page Contains    Inventory    10s
+    Wait Until Page Contains    Product Catalog    10s
+    Wait Until Page Contains    Orders    10s
+
+CI Regression - Logged Out User Is Redirected From Admin
+    Go To    ${BASE_URL}/admin
+    Wait Until Page Contains    Orderly    10s
+    Page Should Contain    Sign In
+    Page Should Contain Element    id=email
+    Page Should Contain Element    id=password
+
+CI Regression - Customer Cannot Access Admin
+    Login As Test User
+    Go To    ${BASE_URL}/admin
+    Wait Until Keyword Succeeds    10s    1s    Customer Admin Redirect Should Be Visible
+
+CI Regression - Admin Catalog Loads For Business User
+    Login As Business User
+    Go To    ${BASE_URL}/admin/catalog
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Search products...']    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'CREATE NEW PRODUCT')]    10s
+    Wait Until Page Contains Element    xpath=//button[contains(normalize-space(.), 'ADD SUPPLIER')]    10s
