@@ -366,6 +366,14 @@
     letter-spacing: .03rem;
 }
 
+.dash-file-last-visited {
+    margin: 4px 0 0 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .65rem;
+    color: #8aabb8;
+    letter-spacing: .03rem;
+}
+
 
 /*      CONTENT AREA        */
 
@@ -511,6 +519,10 @@ button.submenu-action.submenu-action--disabled {
 
 button.submenu-action.submenu-action--clear {
     color: #404754;
+}
+
+button.submenu-action.rpt-clear-filters {
+    margin-right: 1rem;
 }
 
 .submenu-filter-group {

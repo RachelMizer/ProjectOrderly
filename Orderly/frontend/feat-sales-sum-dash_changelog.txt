@@ -1,0 +1,173 @@
+CHANGELOG — feat-sales-sum-dash
+Date: 2026-04-12
+Author: Rachel Mizer
+====================================================
+
+
+OVERVIEW
+--------
+Implements the admin sales summary dashboard (UX5.4.1–5.4.6), nested
+under the Reports section of the admin UI. Includes a reports hub
+landing page, a fully styled sales summary dashboard with stat tiles,
+a sortable and filterable data table, and a live bar chart powered by
+Recharts. Sales data is served from generated CSV seed files via a
+new backend API endpoint. Filtering by year and month is supported,
+with the current year loaded by default.
+
+
+====================================================
+BACKEND
+====================================================
+
+inventory/api/admin_reports_view.py  [NEW FILE]
+  - AdminSalesSummaryView (GET /api/v1/admin/reports/sales-summary).
+  - Reads *_sales.csv files from accounts/management/commands/.
+  - Parses MONTHLY SUMMARY section for table data (product, variant,
+    unit_price, units_sold, revenue per product-variant).
+  - Parses DAILY SALES section for chart data: daily aggregates when
+    a month is selected, monthly aggregates when viewing a year or all.
+  - Accepts ?year= and ?month= query parameters for filtering.
+    ?month= takes precedence and reads a single file; ?year= filters
+    the file list; neither reads all files and aggregates.
+  - Returns: total_revenue, order_count, available_years,
+    available_months (filtered to selected year), chart_data, products.
+  - Permission: IsAuthenticated + IsBusinessUser.
+
+inventory/api/admin_urls.py
+  - Added route: path("reports/sales-summary", AdminSalesSummaryView).
+
+inventory/api/admin_serializers.py
+  - Updates related to sales summary response shape.
+
+accounts/management/commands/generate_sales_csv.py  [NEW FILE]
+  - Django management command: python manage.py generate_sales_csv
+  - Generates one CSV per month with three sections:
+      1. DAILY SALES — one row per product-variant per day
+      2. MONTHLY SUMMARY — aggregated totals per product-variant
+      3. MONTH TOTALS — grand total units and revenue
+  - Products and prices match seed_data.py variants exactly.
+  - Day-of-week multipliers applied (Saturday highest, Sunday lowest).
+  - Special date overrides: Christmas Eve (+50%), Christmas Day (-80%),
+    New Year's Day (-75%), Valentine's Day (+20%), etc.
+  - Seasonal adjustments: PSL on menu Aug–Nov, off menu Dec–Apr.
+    Cold Brew peaks in summer, slower in winter.
+  - Output is deterministic via seeded RNG (--seed flag, default 42).
+
+accounts/management/commands/  [CSV FILES GENERATED]
+  - 08-2025_sales.csv — August 2025
+  - 09-2025_sales.csv — September 2025
+  - 10-2025_sales.csv — October 2025
+  - 11-2025_sales.csv — November 2025
+  - 12-2025_sales.csv — December 2025
+  - 01-2026_sales.csv — January 2026
+  - 02-2026_sales.csv — February 2026
+  - 03-2026_sales.csv — March 2026
+  - 04-2026_sales.csv — April 2026 (to-date: Apr 1–11)
+
+accounts/api/serializers.py
+  - User serializer now includes the user's role in its response.
+    role is read from user.profile.role and returned alongside
+    existing user fields. Allows the frontend to determine access
+    level from the login response without a separate API call.
+
+accounts/api/permissions.py
+  - Minor updates alongside feature work.
+
+accounts/api/exceptions.py
+  - Minor updates alongside feature work.
+
+orders/services.py
+  - Minor updates alongside feature work.
+
+orderly/settings.py
+  - Minor updates alongside feature work.
+
+orderly/urls.py
+  - Minor updates alongside feature work.
+
+tests/test_admin_rbac.py
+  - Updated RBAC tests to cover new reports endpoint permissions.
+
+
+====================================================
+FRONTEND
+====================================================
+
+src/pages/Admin/AdminSalesDashboard.jsx  [NEW FILE]
+  - New page component mounted at /admin/reports/sales.
+  - Submenu bar with search input, year dropdown, month dropdown,
+    and disabled OPEN FILE / EXPORT / PRINT action buttons.
+  - Period label displayed above stat tiles: shows
+    "Year-to-Date Sales for {year}", a specific month name, or
+    "All Years" depending on active filter state.
+  - Two stat tiles: Total Revenue (UX5.4.2) and Units Sold (UX5.4.3).
+    All currency values formatted with commas via toLocaleString.
+  - Bar chart (Recharts BarChart): shows daily revenue bars when a
+    month is selected, monthly revenue bars when viewing a year or all.
+    Tooltip displays both revenue and units sold.
+  - Sortable data table (UX5.4.4): columns are Product, Variant,
+    Unit Price, Units Sold, Total Revenue. Sortable on all five
+    columns with ▲/▼/⇅ indicators. Defaults to Units Sold descending.
+  - Search bar filters table by product name or variant.
+  - Year dropdown defaults to current calendar year on load.
+    Changing year resets month selection and refetches.
+    Month dropdown shows only months available in the selected year.
+  - Loading, error, and empty states implemented (UX5.4.5).
+  - All styles use Admin.css classes; no inline styles (UX5.4.6).
+
+src/pages/Admin/reports.jsx
+  - Replaced placeholder <h1> with a full Reports hub page.
+  - Added submenu bar with disabled OPEN FILE, EXPORT, and PRINT
+    action buttons (title="Pending further development").
+  - Added rpt-hub-grid with a Sales Summary card linking to
+    /admin/reports/sales.
+
+src/pages/Admin/dashboard.jsx
+  - "Pick Up Where You Left Off" tiles now show a "Last visited [date]"
+    line using the existing timestamp saved by recentViews.js.
+
+src/api/adminReports.js  [NEW FILE]
+  - fetchSalesSummary({ year, month }) — GET
+    /api/v1/admin/reports/sales-summary with optional ?year= and
+    ?month= query parameters. Follows same auth header pattern as
+    adminInventory.js.
+
+src/Admin.js
+  - Added import for AdminSalesDashboard.
+  - Added route: <Route path="/reports/sales" element={<AdminSalesDashboard />} />.
+
+src/Admin.css
+  - Added Reports hub styles: rpt-hub-grid, rpt-hub-card,
+    rpt-hub-card__title, rpt-hub-card__desc.
+  - Added Sales Dashboard styles: rpt-period-label, rpt-stat-row,
+    rpt-stat-card, rpt-stat-label, rpt-stat-value, rpt-empty,
+    rpt-loading, rpt-month-select.
+  - Added .dash-file-last-visited for "Last visited" line on
+    dashboard tiles.
+
+src/utils/recentViews.js
+  - Confirmed timestamp field is saved with each recent view entry
+    (no change needed; already present).
+
+package.json / package-lock.json
+  - Added recharts dependency for the sales bar chart.
+
+
+====================================================
+KNOWN ISSUES / FUTURE WORK
+====================================================
+
+1. EXPORT / OPEN FILE / PRINT
+   Action buttons are present but disabled pending further development.
+   Export will eventually download the filtered CSV. Chart PNG export
+   via Recharts SVG ref is planned separately.
+
+2. APRIL TO-DATE CUTOFF
+   The April 2026 CSV is hardcoded to Apr 1–11. As the month
+   progresses the file must be regenerated, or replaced by a live
+   orders query.
+
+3. LIVE DATA
+   All sales data is currently CSV-based seed data. Long-term, the
+   CSV read should be replaced or supplemented by a live query against
+   the Order model once order history is populated in production.

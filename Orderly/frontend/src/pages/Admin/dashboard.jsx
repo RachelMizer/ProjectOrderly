@@ -76,6 +76,9 @@ export default function Dashboard() {
                 <div className="dash-file-info">
                   <p className="dash-file-name">{view.label}</p>
                   <p className="dash-file-accessed">{view.sublabel}</p>
+                  {view.timestamp && (
+                    <p className="dash-file-last-visited">Last visited {formatDate(new Date(view.timestamp))}</p>
+                  )}
                 </div>
               </div>
             ))}

@@ -374,19 +374,17 @@ export default function AdminInventoryPage() {
       {/* Submenu bar */}
       <div className="submenu-bar">
         <span className="submenu-label">Inventory Management</span>
-        <input
-          className="submenu-search"
-          type="text"
-          placeholder="Search inventory..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
+        <div className="submenu-actions">
+          <input
+            className="submenu-search"
+            type="text"
+            placeholder="Search inventory..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="button" className="submenu-action submenu-action--clear rpt-clear-filters" onClick={() => setSearchQuery("")}>
             &times;&#x202F;CLEAR FILTERS
           </button>
-        )}
-        <div className="submenu-actions">
           <button
             type="button"
             className="submenu-action"

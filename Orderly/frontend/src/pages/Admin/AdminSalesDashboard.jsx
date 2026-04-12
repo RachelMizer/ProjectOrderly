@@ -183,6 +183,11 @@ export default function AdminSalesDashboard() {
               <option key={m.value} value={m.value}>{m.label}</option>
             ))}
           </select>
+          {(selectedYear || selectedMonth) && (
+            <button type="button" className="submenu-action submenu-action--clear rpt-clear-filters" onClick={() => { setSelectedYear(""); setSelectedMonth(""); }}>
+              &times;&#x202F;CLEAR FILTERS
+            </button>
+          )}
           <button type="button" className="submenu-action" title="Pending further development">
             &gt; EXPORT
           </button>
