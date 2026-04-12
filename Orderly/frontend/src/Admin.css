@@ -132,6 +132,18 @@
     margin: 0 0 10px 0;
 }
 
+.sidebar-desc {
+    color: #2a4f6b;
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    line-height: 1.2;
+    letter-spacing: .04rem;
+    margin: 6px -8px 16px 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding: 8px 10px;
+}
+
 .sidebar-back {
     color: white;
     font-family: 'Renner', sans-serif;
@@ -455,6 +467,8 @@
     border-radius: 4px;
     padding: 6px 14px;
     margin-bottom: 16px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .submenu-label {
@@ -463,12 +477,16 @@
     color: #33638B;
     letter-spacing: .1rem;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .submenu-actions {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 button.submenu-action {
@@ -489,6 +507,29 @@ button.submenu-action.submenu-action--disabled {
     color: #a0b8c8;
     cursor: not-allowed;
     text-decoration: none;
+}
+
+button.submenu-action.submenu-action--clear {
+    color: #404754;
+}
+
+.submenu-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 16px;
+}
+
+.submenu-search--sm {
+    width: 120px;
+}
+
+.submenu-divider {
+    width: 1px;
+    height: 14px;
+    background-color: #a0b8c8;
+    margin: 0 6px;
+    flex-shrink: 0;
 }
 
 button.submenu-action[title="Pending further development"] {
@@ -1059,4 +1100,239 @@ label.inv-toggle {
     letter-spacing: .02rem;
     margin: 0;
     white-space: nowrap;
+}
+
+
+/*      REPORTS — HUB       */
+
+.rpt-nav-section {
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.rpt-nav-section__header {
+    font-family: 'Renner', sans-serif;
+    font-size: .75rem;
+    font-weight: 800;
+    color: #5a85a0;
+    letter-spacing: .15rem;
+    text-transform: uppercase;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #c4d9e8;
+}
+
+.rpt-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.rpt-hub-card {
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 18px 20px;
+    text-decoration: none;
+    display: block;
+    border: 2px solid transparent;
+    transition: background-color .15s, box-shadow .15s;
+}
+
+.rpt-hub-card:hover {
+    background-color: #c9dcea;
+    box-shadow: 0 2px 8px rgba(51, 99, 139, 0.15);
+    color: inherit;
+}
+
+.rpt-hub-card--pending {
+    background-color: #f0f4f7;
+    opacity: 0.7;
+    cursor: default;
+}
+
+.rpt-hub-card--pending:hover {
+    background-color: #f0f4f7;
+    box-shadow: none;
+}
+
+.rpt-hub-card__badge {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08rem;
+    text-transform: uppercase;
+    color: #8aaabb;
+}
+
+.rpt-hub-card__title {
+    margin: 0 0 6px 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+}
+
+.rpt-hub-card__desc {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .85rem;
+    color: #5a85a0;
+    letter-spacing: .03rem;
+}
+
+
+/*      REPORTS — SALES DASHBOARD       */
+
+.rpt-period-label {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+}
+
+.rpt-stat-row {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.rpt-stat-card {
+    background-color: white;
+    border-radius: 6px;
+    padding: 16px 22px;
+    min-width: 180px;
+    flex: 1;
+    max-width: 280px;
+}
+
+.rpt-stat-label {
+    margin: 0 0 6px 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #5a85a0;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+}
+
+.rpt-stat-value {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .05rem;
+}
+
+.rpt-stat-value--product {
+    font-size: 0.8rem;
+}
+
+.rpt-stat-subrow {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.rpt-stat-sublabel {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #5a85a0;
+    letter-spacing: 0.04rem;
+}
+
+.rpt-empty {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    font-style: italic;
+    color: #5a85a0;
+    letter-spacing: .03rem;
+}
+
+.rpt-month-select {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    letter-spacing: .05rem;
+    color: #33638B;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    background: transparent;
+    padding: 2px 6px;
+    outline: none;
+    cursor: pointer;
+}
+
+.rpt-product-select {
+    min-width: 220px;
+}
+
+.rpt-ranking-row {
+    cursor: pointer;
+}
+
+.rpt-ranking-row:hover td {
+    background-color: #eaf2f8;
+}
+
+.rpt-chart-wrap {
+    background-color: white;
+    border-radius: 6px;
+    padding: 16px 8px 8px 8px;
+    margin-bottom: 8px;
+}
+
+.rpt-chart-title {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #5a85a0;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+    margin: 0 0 10px 8px;
+}
+
+.rpt-tooltip {
+    background-color: white;
+    border: 1px solid #c4d9e8;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Renner', sans-serif;
+}
+
+.rpt-tooltip__label {
+    margin: 0 0 4px 0;
+    font-size: .85rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .05rem;
+}
+
+.rpt-tooltip__value {
+    margin: 0;
+    font-size: .8rem;
+    color: #2a4f6b;
+    letter-spacing: .03rem;
+}
+
+.rpt-loading {
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    color: #5a85a0;
+    letter-spacing: .05rem;
+    font-style: italic;
+    padding: 20px 0;
 }

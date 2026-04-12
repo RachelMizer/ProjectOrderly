@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveRecentView } from "../../utils/recentViews";
 import { handleApiError } from "../../api/handleApiError";
 import { getAuthHeaders } from "../../api/auth";
 
@@ -111,10 +112,18 @@ export default function AdminProductsPage() {
       const categoriesData = await categoriesResponse.json();
       const suppliersData = await suppliersResponse.json();
 
-      setProducts(Array.isArray(productsData.results) ? productsData.results : []);
+      const productList = Array.isArray(productsData.results) ? productsData.results : [];
+      setProducts(productList);
       setCategories(Array.isArray(categoriesData.results) ? categoriesData.results : []);
       setSuppliers(Array.isArray(suppliersData.results) ? suppliersData.results : []);
       stampUpdated();
+      saveRecentView({
+        section:  "catalog",
+        label:    "Product Catalog",
+        sublabel: `${productList.length} product${productList.length !== 1 ? "s" : ""}`,
+        path:     "/admin/catalog",
+        state:    null,
+      });
     } catch (error) {
       if (error.status === 401 || error.status === 403) {
         handleApiError(error, navigate);
@@ -504,6 +513,11 @@ export default function AdminProductsPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        {searchQuery && (
+          <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
+            &times;&#x202F;CLEAR FILTERS
+          </button>
+        )}
         <div className="submenu-actions">
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/catalog/new")}>
             + CREATE NEW PRODUCT

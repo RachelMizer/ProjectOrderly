@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .admin_views import AdminInventoryListCreateView, AdminInventoryDetailView
+from .admin_reports_view import AdminSalesSummaryView, AdminProductPerformanceView
 
 urlpatterns = [
     path("inventory", AdminInventoryListCreateView.as_view(), name="admin_inventory"),
@@ -8,5 +9,15 @@ urlpatterns = [
         "inventory/<int:itemId>",
         AdminInventoryDetailView.as_view(),
         name="admin_inventory_detail",
+    ),
+    path(
+        "reports/sales-summary",
+        AdminSalesSummaryView.as_view(),
+        name="admin_sales_summary",
+    ),
+    path(
+        "reports/product-performance",
+        AdminProductPerformanceView.as_view(),
+        name="admin_product_performance",
     ),
 ]

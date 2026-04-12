@@ -7,6 +7,8 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import Dashboard from "./pages/Admin/dashboard";
 import Reports from "./pages/Admin/reports";
 import AdminInventoryPage from "./pages/Admin/AdminInventoryPage";
+import AdminSalesDashboard from "./pages/Admin/AdminSalesDashboard";
+import AdminProductPerformance from "./pages/Admin/AdminProductPerformance";
 import ProductCatalog from "./pages/Admin/AdminProductsPage";
 import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
 import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
@@ -60,13 +62,7 @@ function AdminLayout() {
     if (path.startsWith("/admin/reports")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Reports</p>
-        <p className="sidebar-sub">Recent Reports</p>
-        {/* fetch recent reports here when endpoint is available */}
-        <p className="sidebar-empty">No recent files.</p>
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Report</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Generate Report</span>
-        </div>
+        <p className="sidebar-desc">View sales performance, product trends, and business metrics. Use filters to drill down by date, product, or category.</p>
         <Link to="/admin" className="sidebar-back">« Go Back</Link>
       </div>
     );
@@ -147,6 +143,8 @@ function AdminLayout() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/reports/sales" element={<AdminSalesDashboard />} />
+            <Route path="/reports/products" element={<AdminProductPerformance />} />
             <Route path="/inventory" element={<AdminInventoryPage />} />
             <Route path="/catalog" element={<ProductCatalog />} />
             <Route path="/catalog/new" element={<AdminProductFormPage />} />

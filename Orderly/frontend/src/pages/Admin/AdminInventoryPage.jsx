@@ -26,6 +26,7 @@ import {
   createInventoryItem,
 } from "../../api/adminInventory";
 import { handleApiError } from "../../api/handleApiError";
+import { saveRecentView } from "../../utils/recentViews";
 
 const UNIT_LABELS = {
   units: "Units",
@@ -79,6 +80,13 @@ export default function AdminInventoryPage() {
         setErrorMessage("");
         const data = await fetchInventory();
         setInventoryItems(data);
+        saveRecentView({
+          section:  "inventory",
+          label:    "Inventory",
+          sublabel: `${data.length} item${data.length !== 1 ? "s" : ""}`,
+          path:     "/admin/inventory",
+          state:    null,
+        });
       } catch (error) {
         if (error?.response?.status === 403) {
           handleApiError(error, navigate);
@@ -365,7 +373,7 @@ export default function AdminInventoryPage() {
     <div>
       {/* Submenu bar */}
       <div className="submenu-bar">
-        <span className="submenu-label">Inventory</span>
+        <span className="submenu-label">Inventory Management</span>
         <input
           className="submenu-search"
           type="text"
@@ -373,6 +381,11 @@ export default function AdminInventoryPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        {searchQuery && (
+          <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
+            &times;&#x202F;CLEAR FILTERS
+          </button>
+        )}
         <div className="submenu-actions">
           <button
             type="button"
@@ -488,7 +501,7 @@ export default function AdminInventoryPage() {
           </h3>
 
           {ingredientItems.length === 0 ? (
-            <p>No dependency-controlled ingredients found.</p>
+            <p className="rpt-empty">No dependency-controlled ingredients found.</p>
           ) : (
             <table className="admin-table">
               <thead>

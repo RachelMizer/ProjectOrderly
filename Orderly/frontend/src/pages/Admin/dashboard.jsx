@@ -1,5 +1,7 @@
 // DASHBOARD.JSX - Admin dashboard overview
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getRecentViews } from "../../utils/recentViews";
 
 function formatDate(date) {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -16,6 +18,8 @@ export default function Dashboard() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recentViews, setRecentViews] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -37,6 +41,10 @@ export default function Dashboard() {
     load();
   }, []);
 
+  useEffect(() => {
+    setRecentViews(getRecentViews());
+  }, []);
+
   const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
   if (loading) return <p className="admin-loading">Loading...</p>;
@@ -44,31 +52,30 @@ export default function Dashboard() {
   const today = formatDate(new Date());
   const newMessages = 0; // placeholder until messages feature is built
 
-  // placeholder until file access tracking is built
-  const recentFiles = [];
-
   return (
     <div className="admin-dash">
       <h1>Dashboard Home</h1>
 
       <div className="dash-info-bar">
         <p>Today is {today}</p>
-        {/* calendar widget placeholder */}
         <span className="dash-inbox-disabled" title="Pending further development">✉ Inbox ({newMessages})</span>
       </div>
 
       <div className="dash-recent-file">
         <p className="dash-recent-label">Pick Up Where You Left Off</p>
-        {recentFiles.length === 0 ? (
-          <p className="dash-recent-value">No recently accessed files.</p>
+        {recentViews.length === 0 ? (
+          <p className="dash-recent-value">No recent activity yet. Visit a section to get started.</p>
         ) : (
           <div className="dash-recent-grid">
-            {recentFiles.map((file, i) => (
-              <div className="dash-file-card" key={i}>
-                <div className="dash-file-icon">{file.type}</div>
+            {recentViews.map((view) => (
+              <div
+                className="dash-file-card"
+                key={view.section}
+                onClick={() => navigate(view.path, view.state ? { state: view.state } : undefined)}
+              >
                 <div className="dash-file-info">
-                  <p className="dash-file-name">{file.name}</p>
-                  <p className="dash-file-accessed">Accessed {file.accessed}</p>
+                  <p className="dash-file-name">{view.label}</p>
+                  <p className="dash-file-accessed">{view.sublabel}</p>
                 </div>
               </div>
             ))}

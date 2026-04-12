@@ -10,7 +10,7 @@ from django.utils.text import slugify
 
 from accounts.models import UserRole, CustomerProfile, UserRoleChoices
 from suppliers.models import Supplier
-from inventory.models import InventoryItem, UnitOfMeasure
+from inventory.models import InventoryItem, UnitOfMeasure, VariantInventoryUsage
 from catalog.models import (
     Category,
     Product,
@@ -729,7 +729,68 @@ class Command(BaseCommand):
         )
 
         # ------------------------------------------------------------
-        # 9) Final summary
+        # 9) Inventory usage — links ingredients to product variants
+        # ------------------------------------------------------------
+        def link(variant, item_name, qty):
+            item = InventoryItem.objects.filter(name=item_name).first()
+            if not item:
+                return
+            VariantInventoryUsage.objects.get_or_create(
+                variant=variant,
+                inventory_item=item,
+                defaults={"quantity_used": Decimal(qty)},
+            )
+
+        espresso = [
+            ("Latte",               ["Small", "Medium", "Large"]),
+            ("Cappuccino",          ["Small", "Medium", "Large"]),
+            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
+        ]
+        milk_drinks = [
+            ("Latte",               ["Small", "Medium", "Large"]),
+            ("Cappuccino",          ["Small", "Medium", "Large"]),
+            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Chai Tea Latte",      ["Small", "Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
+        ]
+        mocha_syrup_drinks = [
+            ("Mocha", ["Small", "Medium", "Large"]),
+        ]
+        green_tea_drinks = [
+            ("Green Tea", ["Small", "Medium", "Large"]),
+        ]
+        coffee_bean_drinks = [
+            ("House Coffee", ["Small", "Medium", "Large"]),
+            ("Cold Brew",    ["Small", "Large"]),
+        ]
+
+        for product_name, sizes in espresso:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Espresso Beans", "0.04")
+
+        for product_name, sizes in milk_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Milk", "0.24")
+
+        for product_name, sizes in mocha_syrup_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Mocha Syrup", "0.03")
+
+        for product_name, sizes in green_tea_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Green Tea Leaves", "0.02")
+
+        for product_name, sizes in coffee_bean_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Coffee Beans", "0.04")
+
+        self.stdout.write(
+            self.style.SUCCESS("Inventory usage seeded: ingredients linked to variants")
+        )
+
+        # ------------------------------------------------------------
+        # 10) Final summary
         # ------------------------------------------------------------
         self.stdout.write(self.style.SUCCESS("Seed data loaded successfully."))
         self.stdout.write(self.style.SUCCESS("✅ Seed complete for Sprint 3 testing."))
