@@ -30,22 +30,21 @@ class SalesSummaryView(APIView):
 
         qs = Order.objects.filter(
             status="COMPLETED",
-            orderDate__date__gte=start_date,
-            orderDate__date__lte=end_date,
+            order_date__date__range=[start_date, end_date],
         )
 
-        total_revenue = qs.aggregate(total=Sum("totalPaymentDue"))["total"] or 0
+        total_revenue = qs.aggregate(total=Sum("total_payment_due"))["total"] or 0
         total_orders = qs.count()
-        avg_order = qs.aggregate(avg=Avg("totalPaymentDue"))["avg"] or 0
+        avg_order = qs.aggregate(avg=Avg("total_payment_due"))["avg"] or 0
 
         trunc_map = {"day": TruncDay, "week": TruncWeek, "month": TruncMonth}
         trunc_func = trunc_map[group_by]
 
         breakdown_qs = (
-            qs.annotate(period=trunc_func("orderDate"))
+            qs.annotate(period=trunc_func("order_date"))
             .values("period")
             .annotate(
-                revenue=Sum("totalPaymentDue"),
+                revenue=Sum("total_payment_due"),
                 orders=Count("id"),
             )
             .order_by("period")
@@ -93,18 +92,17 @@ class BestSellersView(APIView):
 
         qs = OrderItem.objects.filter(
             order__status="COMPLETED",
-            order__orderDate__date__gte=start_date,
-            order__orderDate__date__lte=end_date,
+            order__order_date__date__range=[start_date, end_date],
         )
 
         results = (
             qs.values(
                 "variant__product__id",
-                "variant__product__productName",
+                "variant__product__name",
             )
             .annotate(
                 quantitySold=Sum("quantity"),
-                grossSales=Sum("itemTotal"),
+                grossSales=Sum("item_total"),
             )
             .order_by("-quantitySold")[:limit]
         )
@@ -116,7 +114,7 @@ class BestSellersView(APIView):
             "results": [
                 {
                     "productId": r["variant__product__id"],
-                    "productName": r["variant__product__productName"],
+                    "productName": r["variant__product__name"],
                     "quantitySold": r["quantitySold"] or 0,
                     "grossSales": r["grossSales"] or 0,
                 }
@@ -141,18 +139,17 @@ class WorstSellersView(APIView):
 
         qs = OrderItem.objects.filter(
             order__status="COMPLETED",
-            order__orderDate__date__gte=start_date,
-            order__orderDate__date__lte=end_date,
+            order__order_date__date__range=[start_date, end_date],
         )
 
         results = (
             qs.values(
                 "variant__product__id",
-                "variant__product__productName",
+                "variant__product__name",
             )
             .annotate(
                 quantitySold=Sum("quantity"),
-                grossSales=Sum("itemTotal"),
+                grossSales=Sum("item_total"),
             )
             .order_by("quantitySold")[:limit]
         )
@@ -164,7 +161,7 @@ class WorstSellersView(APIView):
             "results": [
                 {
                     "productId": r["variant__product__id"],
-                    "productName": r["variant__product__productName"],
+                    "productName": r["variant__product__name"],
                     "quantitySold": r["quantitySold"] or 0,
                     "grossSales": r["grossSales"] or 0,
                 }
@@ -188,8 +185,7 @@ class SalesByCategoryView(APIView):
 
         qs = OrderItem.objects.filter(
             order__status="COMPLETED",
-            order__orderDate__date__gte=start_date,
-            order__orderDate__date__lte=end_date,
+            order__order_date__date__range=[start_date, end_date],
         )
 
         results = (
@@ -199,7 +195,7 @@ class SalesByCategoryView(APIView):
             )
             .annotate(
                 quantitySold=Sum("quantity"),
-                grossSales=Sum("itemTotal"),
+                grossSales=Sum("item_total"),
             )
             .order_by("-grossSales")
         )
