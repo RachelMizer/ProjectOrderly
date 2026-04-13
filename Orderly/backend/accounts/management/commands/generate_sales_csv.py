@@ -11,7 +11,7 @@ Output files (written alongside this script):
     01-2026_sales.csv
     02-2026_sales.csv
     03-2026_sales.csv
-    04-2026_sales.csv  (to-date: Apr 1–11)
+    04-2026_sales.csv  (to-date: current date at generation time)
 
 Each file contains three sections:
     1. DAILY SALES     — one row per product-variant per day
@@ -21,7 +21,7 @@ Each file contains three sections:
 
 import csv
 import random
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -137,7 +137,7 @@ MONTHS = [
     (2026,  1, "01-2026_sales.csv", None),
     (2026,  2, "02-2026_sales.csv", None),
     (2026,  3, "03-2026_sales.csv", None),
-    (2026,  4, "04-2026_sales.csv", date(2026, 4, 11)),  # to-date
+    (2026,  4, "04-2026_sales.csv", date.today()),  # to-date
 ]
 
 
