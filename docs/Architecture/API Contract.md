@@ -2373,18 +2373,424 @@ Content-Type: application/json
 
 
 # Reporting API
-## View Sales
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+## View Sales Summary  
+**Endpoint:** `<GET> /api/v1/reports/sales/summary?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&groupBy=day`  
+**Description:** Returns aggregated sales data over a specified time range. Includes total revenue, total orders, average order value, and optional breakdown grouped by day, week, or month. Aggregates are based on completed orders only.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ groupBy (optional: day, week, month)  
+
+**Request Parameters:** None  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```
+
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings (YYYY-MM-DD or full timestamp)  
++ endDate must be greater than or equal to startDate  
++ groupBy defaults to day if not provided  
++ Only orders with status COMPLETED are included in calculations  
++ Monetary values are returned as decimal numbers  
++ If no data exists in the given range, returns zeroed summary with empty breakdown  
+
+**Success Response (200 OK)**:  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-07",
+    "groupBy": "day",
+    "totalRevenue": 12500.50,
+    "totalOrders": 320,
+    "averageOrderValue": 39.06,
+    "breakdown": [
+        {
+            "period": "2026-04-01",
+            "revenue": 1200.00,
+            "orders": 30
+        },
+        {
+            "period": "2026-04-02",
+            "revenue": 1500.00,
+            "orders": 40
+        }
+    ]
+}
+
+or
+
+{
+    "startDate": "2026-01-01",
+    "endDate": "2026-03-31",
+    "groupBy": "month",
+    "totalRevenue": 38500.75,
+    "totalOrders": 980,
+    "averageOrderValue": 39.29,
+    "breakdown": [
+        {
+            "period": "2026-01",
+            "revenue": 12000.25,
+            "orders": 300
+        },
+        {
+            "period": "2026-02",
+            "revenue": 13500.50,
+            "orders": 340
+        },
+        {
+            "period": "2026-03",
+            "revenue": 13000.00,
+            "orders": 340
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400)**:  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+or
+
+{
+    "error": "INVALID_GROUP_BY",
+    "message": "groupBy must be one of: day, week, month"
+}
+```
+
+**Unauthorized (401)**:  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## View Best Sellers  
+**Endpoint:** `<GET> /api/v1/reports/sales/best-sellers?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&limit=10`  
+**Description:** Returns the top-selling products within a specified time range. Aggregates total quantity sold and gross sales at the **product level**, summing across all child variants using historical OrderItem data. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ limit (optional, integer, default 10, max 100)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ limit defaults to 10 and cannot exceed 100  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the product level (summing all child variants)  
++ quantitySold is the sum of OrderItem.quantity  
++ grossSales is the sum of OrderItem.itemTotal (derived from unitPriceCharged * quantity)  
++ Results are sorted in descending order by quantitySold  
+
+**Success Response (200 OK)**:  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "limit": 5,
+    "results": [
+        {
+            "productId": 100,
+            "productName": "Pizza",
+            "quantitySold": 250,
+            "grossSales": 3125.00
+        },
+        {
+            "productId": 105,
+            "productName": "Burger",
+            "quantitySold": 180,
+            "grossSales": 1980.00
+        },
+        {
+            "productId": 110,
+            "productName": "Pasta",
+            "quantitySold": 140,
+            "grossSales": 2100.00
+        }
+    ]
+}
+```
+**Missing / Invalid Fields (400)**:  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+or
+
+{
+    "error": "INVALID_LIMIT",
+    "message": "limit must be between 1 and 100"
+}
+```
+
+**Unauthorized (401)**:  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Forbidden (403)**:  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## View Worst Sellers  
+**Endpoint:** `<GET> /api/v1/reports/sales/worst-sellers?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&limit=10`  
+**Description:** Returns the lowest-selling products within a specified time range. Aggregates total quantity sold and gross sales at the product level, summing across all child variants using historical OrderItem data. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ limit (optional, integer, default 10, max 100)  
+
+**Request Parameters:** None  
+
+### Request 
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```  
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ limit defaults to 10 and cannot exceed 100  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the product level (summing all child variants)  
++ quantitySold is the sum of OrderItem.quantity  
++ grossSales is the sum of OrderItem.itemTotal  
++ Results are sorted in ascending order by quantitySold  
+
+**Success Response (200 OK):**  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "limit": 5,
+    "results": [
+        {
+            "productId": 120,
+            "productName": "Salad",
+            "quantitySold": 12,
+            "grossSales": 96.00
+        },
+        {
+            "productId": 130,
+            "productName": "Soup",
+            "quantitySold": 18,
+            "grossSales": 135.00
+        },
+        {
+            "productId": 140,
+            "productName": "Smoothie",
+            "quantitySold": 22,
+            "grossSales": 176.00
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400):**  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
 
 
+or
+
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+
+or
+
+
+{
+    "error": "INVALID_LIMIT",
+    "message": "limit must be between 1 and 100"
+}
+```
+
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403):**  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+## View Sales by Category  
+**Endpoint:** `<GET> /api/v1/reports/sales/by-category?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`  
+**Description:** Returns aggregated sales data grouped by product category within a specified time range. Totals are calculated at the category level by aggregating OrderItem data across all product variants belonging to products within each category. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```  
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the category level through Product → Variant → OrderItem relationships  
++ quantitySold is the sum of OrderItem.quantity across all variants in the category  
++ grossSales is the sum of OrderItem.itemTotal across all variants in the category  
++ Categories with no sales in the given range are not included in results  
++ Results are sorted in descending order by grossSales  
+
+**Success Response (200 OK):**  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "results": [
+        {
+            "categoryId": 10,
+            "categoryName": "Food",
+            "quantitySold": 820,
+            "grossSales": 10250.75
+        },
+        {
+            "categoryId": 20,
+            "categoryName": "Beverages",
+            "quantitySold": 430,
+            "grossSales": 2150.50
+        },
+        {
+            "categoryId": 30,
+            "categoryName": "Desserts",
+            "quantitySold": 210,
+            "grossSales": 1680.00
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400):**  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+```
+
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403):**  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
 ---
