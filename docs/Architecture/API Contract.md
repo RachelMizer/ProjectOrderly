@@ -1912,6 +1912,412 @@ Authorization: Bearer <accessToken>
 }
 ```
 
+## Create Categories (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/categories`  
+**Description:** Creates a new category  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:**  
++ name
+
+### Request
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**  
+```
+{
+    "name": "desserts",
+}
+```
+**Rules:**  
++ accessToken must link to a user with the BUSINESS role
++ must include a unique name
+
+**Success Response (201 Created):** 
+```
+{
+    "message": "category desserts created",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/desserts.png"
+    }
+}
+``` 
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "category name not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+
+## Update Categories (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/categories/{categoryId}`  
+**Description:** Updates an existing category   
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** categoryId  
+**Request Parameters:**  
++ name (OPTIONAL)
++ isActive (OPTIONL)
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+
+**Body:**
+```
+{
+    "name": "sweets"
+}
+```
+**Rules:**
++ Must use an existing categoryId  
++ Category names must remain unique
++ Request body must include at least one field  
++ Success response will return the changed field and the new value
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+
+**Success Response (200 OK):**
+```
+{
+    "message": "category desserts updated",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/cake.png"
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing changes or name in use"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+
+
+## Create Modifiers Group (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/variants/{variantId}/modifier-groups`  
+**Description:** Create a new modifier group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ variantId 
+**Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
+  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "name": "toppings",
+    "required": false,
+    "minSelections": 0,
+    "maxSelections": 5
+}
+```
+**Rules:**
++ Must use existing variant
++ name bust be unique per variant
++ minSelections must be >= 0
++ maxSelections must be >= minSelections
++ if required is true, minSelections must be >= 1
++ creating a modifier group automatically updates the related variant product's hasModifiers to true
+**Success Response (201 Created):**
+```
+{
+    "message": "modifier group toppings created",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 5
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Update Modifiers Group (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
+**Description:** Update an existing modifier group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** 
++ groupId
+**Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
++ isActive
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "maxSelections": 3
+}
+```
+**Rules:**
++ must use existing group
++ All fields are optional
++ name must remain unique per variant
++ min and max selections must remain valid
++ required must remain consistent with min selections
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+**Success Response (200 OK):**
+```
+{
+    "message": "modifier group toppings updated",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 3
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Create Modifiers Option (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/modifier-groups/{groupId}/options`  
+**Description:** Create new modifier option in a group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ groupId
+**Request Parameters:**
++ name
++ priceAdjustment
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "name": "pepperoni",
+    "priceAdjustment": 1.50,
+}
+```
+**Rules:**
++ Must use an existing group
++ name must be unique per group
++ priceAdjustment can be positive or negative
+
+**Success Response (201 Created):**
+{
+    "message": "modifier option pepperoni created",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 1.50,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
+}
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Update Modifiers Option (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/modifiers/options/{optionId}`  
+**Description:** Updates an existing modifier option
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ optionId
+**Request Parameters:**
++ name
++ priceAdjustment
++ isActive
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "priceAdjustment": 2.00
+}
+```
+**Rules:**
++ must use an existing option
++ all fields are optional
++ name must remain unique per group
++ price adjustment can be positive or negative
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+
+**Success Response (200 OK):**
+```
+{
+    "message": "modifier option pepperoni updated",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 2.00,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
 # Inventory API
 ## View Inventory levels
 **Endpoint:**
