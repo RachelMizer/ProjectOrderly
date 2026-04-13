@@ -50,3 +50,50 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+    
+from catalog.models import ProductVariant
+
+from rest_framework import serializers
+from inventory.models import InventoryItem
+
+
+class LowStockInventorySerializer(serializers.ModelSerializer):
+    stockQuantity = serializers.DecimalField(
+        source="stock_quantity",
+        max_digits=12,
+        decimal_places=2,
+        read_only=True,
+    )
+    reorderLevel = serializers.DecimalField(
+        source="reorder_level",
+        max_digits=12,
+        decimal_places=2,
+        read_only=True,
+    )
+    ingredientName = serializers.CharField(source="name", read_only=True)
+    isLowStock = serializers.SerializerMethodField()
+    variantNames = serializers.SerializerMethodField()
+
+    class Meta:
+        model = InventoryItem
+        fields = [
+            "id",
+            "ingredientName",
+            "stockQuantity",
+            "reorderLevel",
+            "isLowStock",
+            "variantNames",
+        ]
+
+    def get_isLowStock(self, obj):
+        if obj.reorder_level is None:
+            return False
+        return obj.stock_quantity <= obj.reorder_level
+
+    def get_variantNames(self, obj):
+        return sorted(
+            {
+                str(usage.variant)
+                for usage in obj.variant_usages.select_related("variant", "variant__product")
+            }
+        )
