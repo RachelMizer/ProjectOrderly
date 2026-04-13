@@ -37,5 +37,5 @@ urlpatterns = [
     # Orders API
     path("api/v1/orders/", include("orders.urls")),
     # Sales Reporting API
-    path("api/v1/reports/", include("reports.api.urls")),
+    path("api/v1/reports/", include("reporting.api.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
