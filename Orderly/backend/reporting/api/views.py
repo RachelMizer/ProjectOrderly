@@ -191,7 +191,7 @@ class SalesByCategoryView(APIView):
         results = (
             qs.values(
                 "variant__product__category__id",
-                "variant__product__category__categoryName",
+                "variant__product__category__name",
             )
             .annotate(
                 quantitySold=Sum("quantity"),
@@ -206,7 +206,7 @@ class SalesByCategoryView(APIView):
             "results": [
                 {
                     "categoryId": r["variant__product__category__id"],
-                    "categoryName": r["variant__product__category__categoryName"],
+                    "categoryName": r["variant__product__category__name"],
                     "quantitySold": r["quantitySold"] or 0,
                     "grossSales": r["grossSales"] or 0,
                 }
