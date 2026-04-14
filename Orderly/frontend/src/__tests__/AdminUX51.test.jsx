@@ -8,7 +8,23 @@ import * as auth from "../api/auth";
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
   logout: jest.fn(),
+  getAuthHeaders: jest.fn(() => ({
+    Authorization: "Bearer fake-business-token",
+  })),
 }));
+
+function makeJsonResponse(body, ok = true) {
+  return Promise.resolve({
+    ok,
+    headers: {
+      get: (name) =>
+        String(name).toLowerCase() === "content-type"
+          ? "application/json"
+          : null,
+    },
+    json: async () => body,
+  });
+}
 
 function mockFetch({
   meResponse = {
@@ -19,35 +35,28 @@ function mockFetch({
   },
   categoriesResponse = { results: [] },
   productsResponse = { results: [] },
+  inventoryResponse = [],
 } = {}) {
   global.fetch = jest.fn((url) => {
     const requestUrl = String(url);
 
     if (requestUrl.includes("/api/v1/users/me")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => meResponse,
-      });
+      return makeJsonResponse(meResponse);
     }
 
     if (requestUrl.includes("/api/v1/categories")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => categoriesResponse,
-      });
+      return makeJsonResponse(categoriesResponse);
     }
 
     if (requestUrl.includes("/api/v1/products?pageSize=100")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => productsResponse,
-      });
+      return makeJsonResponse(productsResponse);
     }
 
-    return Promise.resolve({
-      ok: true,
-      json: async () => ({}),
-    });
+    if (requestUrl.includes("/api/v1/admin/inventory")) {
+      return makeJsonResponse(inventoryResponse);
+    }
+
+    return makeJsonResponse({});
   });
 }
 
@@ -97,7 +106,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       screen.getByRole("button", { name: /sign in/i })
     ).toBeInTheDocument();
-    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+    expect(screen.queryByText(/welcome,\s*biz!/i)).not.toBeInTheDocument();
   });
 
   test("non-business user is redirected to admin login", async () => {
@@ -121,9 +130,9 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       screen.getByRole("button", { name: /sign in/i })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { name: /^inventory$/i })
+      screen.queryByText(/ingredient-controlled beverage availability/i)
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+    expect(screen.queryByText(/welcome,\s*customer!/i)).not.toBeInTheDocument();
   });
 
   test("business user can access admin dashboard", async () => {
@@ -136,7 +145,8 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       await screen.findByRole("heading", { name: /dashboard home/i })
     ).toBeInTheDocument();
-    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^reports$/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
   });
 
   test("admin shell shows all active routes on dashboard", async () => {
@@ -149,18 +159,17 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       await screen.findByRole("heading", { name: /dashboard home/i })
     ).toBeInTheDocument();
 
-    const nav = screen.getByRole("navigation");
     expect(
-      within(nav).getByRole("link", { name: /^reports$/i })
+      screen.getByRole("link", { name: /^reports$/i })
     ).toBeInTheDocument();
     expect(
-      within(nav).getByRole("link", { name: /^inventory$/i })
+      screen.getByRole("link", { name: /^inventory$/i })
     ).toBeInTheDocument();
     expect(
-      within(nav).getByRole("link", { name: /product catalog/i })
+      screen.getByRole("link", { name: /product catalog/i })
     ).toBeInTheDocument();
     expect(
-      within(nav).getByRole("link", { name: /^orders$/i })
+      screen.getByRole("link", { name: /^orders$/i })
     ).toBeInTheDocument();
 
     expect(
@@ -173,6 +182,19 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
   test("admin link states are routable to reports, inventory, catalog, and orders", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
+
+    mockFetch({
+      inventoryResponse: [
+        {
+          id: 1,
+          name: "Milk",
+          stock_quantity: 10,
+          reorder_level: 2,
+          unit_of_measure: "l",
+          affected_products: ["Latte"],
+        },
+      ],
+    });
 
     renderAdminAt("/admin");
 
@@ -188,7 +210,10 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     await userEvent.click(screen.getByRole("link", { name: /^inventory$/i }));
     expect(
-      await screen.findByRole("heading", { name: /^inventory$/i })
+      await screen.findByText(/ingredient-controlled beverage availability/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /count-based inventory/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/recent inventory reports/i)).toBeInTheDocument();
 
@@ -196,7 +221,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       screen.getByRole("link", { name: /product catalog/i })
     );
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/recent catalogs/i)).toBeInTheDocument();
 
@@ -217,7 +242,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       await screen.findByRole("heading", { name: /^reports$/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
-    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
@@ -225,13 +250,29 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
 
+    mockFetch({
+      inventoryResponse: [
+        {
+          id: 1,
+          name: "Milk",
+          stock_quantity: 10,
+          reorder_level: 2,
+          unit_of_measure: "l",
+          affected_products: ["Latte"],
+        },
+      ],
+    });
+
     renderAdminAt("/admin/inventory");
 
     expect(
-      await screen.findByRole("heading", { name: /^inventory$/i })
+      await screen.findByText(/ingredient-controlled beverage availability/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /count-based inventory/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
-    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^orders$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
@@ -242,10 +283,10 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/catalog");
 
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
-    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^reports$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
@@ -259,7 +300,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       await screen.findByRole("heading", { name: /^orders$/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
-    expect(screen.getByRole("navigation")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
   });
 
@@ -310,10 +351,14 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
 
+    mockFetch({
+      inventoryResponse: [],
+    });
+
     renderAdminAt("/admin/inventory");
 
     expect(
-      await screen.findByRole("heading", { name: /^inventory$/i })
+      await screen.findByText(/ingredient-controlled beverage availability/i)
     ).toBeInTheDocument();
 
     const openInventoryReport = screen.getByText(/open inventory report/i);
@@ -328,7 +373,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/catalog");
 
     expect(
-      await screen.findByRole("heading", { name: /product catalog/i })
+      await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
 
     const openCatalog = screen.getByText(/open catalog/i);

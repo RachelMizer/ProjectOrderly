@@ -58,6 +58,14 @@ Login As Test User
     Sync Auth Token Key For Frontend
     Wait Until Keyword Succeeds    12x    1s    Authenticated Navigation Should Be Visible
 
+Login As Business User
+    Go To    ${BASE_URL}/admin/login
+    Wait Until Page Contains Element    id=email    10s
+    Input Text    id=email    business1@example.com
+    Input Password    id=password    Password123!
+    Click Button    xpath=//button[contains(normalize-space(.), 'Sign In')]
+    Wait Until Page Contains    Welcome,    10s
+
 Open Product By Exact Name
     [Arguments]    ${product_name}
     Go To    ${BASE_URL}/
@@ -312,3 +320,9 @@ Profile Should Contain Updated Data
     Textfield Value Should Be    id=firstName    ${UPDATED_FIRST_NAME}
     Textfield Value Should Be    id=city    ${UPDATED_CITY}
     Textfield Value Should Be    id=phone    ${CI_PHONE}
+
+Customer Admin Redirect Should Be Visible
+    ${login_visible}=    Run Keyword And Return Status    Page Should Contain    Sign In
+    ${store_visible}=    Run Keyword And Return Status    Page Should Contain    Filter the Menu
+    Should Be True    ${login_visible} or ${store_visible}
+    Page Should Not Contain    Dashboard Home

@@ -3,12 +3,24 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AdminProductsPage from "../pages/Admin/AdminProductsPage";
 import * as auth from "../api/auth";
+import { handleApiError } from "../api/handleApiError";
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
 
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
   getAuthHeaders: jest.fn(() => ({
     Authorization: "Bearer fake-token",
   })),
+}));
+
+jest.mock("../api/handleApiError", () => ({
+  handleApiError: jest.fn(),
 }));
 
 global.fetch = jest.fn();
@@ -85,15 +97,18 @@ function setupFetch({
   });
 }
 
-function getFormSelects() {
-  return screen.getAllByRole("combobox");
-}
-
 describe("Admin Products CRUD UI", () => {
+  const originalConfirm = window.confirm;
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
     window.alert = jest.fn();
+    window.confirm = jest.fn(() => true);
+  });
+
+  afterEach(() => {
+    window.confirm = originalConfirm;
   });
 
   test("loads and displays product list", async () => {
@@ -143,30 +158,13 @@ describe("Admin Products CRUD UI", () => {
     expect(await screen.findByText(/no products found/i)).toBeInTheDocument();
   });
 
-  test("creates a product and updates UI immediately", async () => {
+  test("create button navigates to create product page", async () => {
     setBusinessUser();
 
     setupFetch({
       products: [],
       categories: [{ id: 1, name: "Coffee" }],
       suppliers: [{ id: 1, name: "Main Supplier" }],
-      overrides: [
-        {
-          method: "POST",
-          path: "/admin/products",
-          response: {
-            ok: true,
-            status: 201,
-            body: {
-              id: 2,
-              name: "Mocha",
-              category: 1,
-              supplier: 1,
-              description: "Chocolate espresso drink",
-            },
-          },
-        },
-      ],
     });
 
     render(
@@ -177,27 +175,14 @@ describe("Admin Products CRUD UI", () => {
 
     await screen.findByText(/no products found/i);
 
-    fireEvent.change(screen.getByPlaceholderText(/name/i), {
-      target: { value: "Mocha" },
-    });
+    fireEvent.click(
+      screen.getByRole("button", { name: /\+ create new product/i })
+    );
 
-    const selects = getFormSelects();
-    fireEvent.change(selects[0], { target: { value: "1" } });
-    fireEvent.change(selects[1], { target: { value: "1" } });
-
-    fireEvent.change(screen.getByPlaceholderText(/description/i), {
-      target: { value: "Chocolate espresso drink" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /^create product$/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/mocha/i)).toBeInTheDocument();
-    });
-    expect(screen.getByText(/chocolate espresso drink/i)).toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog/new");
   });
 
-  test("enters edit mode and updates a product in the UI", async () => {
+  test("edit button navigates to edit product page", async () => {
     setBusinessUser();
 
     setupFetch({
@@ -212,23 +197,6 @@ describe("Admin Products CRUD UI", () => {
       ],
       categories: [{ id: 1, name: "Coffee" }],
       suppliers: [{ id: 1, name: "Main Supplier" }],
-      overrides: [
-        {
-          method: "PATCH",
-          path: "/admin/products/1",
-          response: {
-            ok: true,
-            status: 200,
-            body: {
-              id: 1,
-              name: "House Coffee Updated",
-              category: 1,
-              supplier: 1,
-              description: "Updated description",
-            },
-          },
-        },
-      ],
     });
 
     render(
@@ -241,40 +209,16 @@ describe("Admin Products CRUD UI", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
 
-    expect(screen.getByText(/edit product/i)).toBeInTheDocument();
-
-    fireEvent.change(screen.getByPlaceholderText(/name/i), {
-      target: { value: "House Coffee Updated" },
-    });
-
-    fireEvent.change(screen.getByPlaceholderText(/description/i), {
-      target: { value: "Updated description" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /^update product$/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/house coffee updated/i)).toBeInTheDocument();
-    });
-    expect(screen.getByText(/updated description/i)).toBeInTheDocument();
-    expect(screen.queryByText(/^house coffee$/i)).not.toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog/edit/1");
   });
 
-  test("cancel edit resets form and returns to create mode", async () => {
+  test("add supplier button navigates to add supplier page", async () => {
     setBusinessUser();
 
     setupFetch({
-      products: [
-        {
-          id: 1,
-          name: "Chai Tea Latte",
-          category: 1,
-          supplier: 1,
-          description: "Spiced tea",
-        },
-      ],
-      categories: [{ id: 1, name: "Tea" }],
-      suppliers: [{ id: 1, name: "Tea Supplier" }],
+      products: [],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
     });
 
     render(
@@ -283,24 +227,13 @@ describe("Admin Products CRUD UI", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText(/chai tea latte/i)).toBeInTheDocument();
+    await screen.findByText(/no products found/i);
 
-    fireEvent.click(screen.getByRole("button", { name: /^edit$/i }));
-    expect(screen.getByText(/edit product/i)).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: /\+ add supplier/i })
+    );
 
-    fireEvent.change(screen.getByPlaceholderText(/name/i), {
-      target: { value: "Temporary Name" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /^create product$/i })
-      ).toBeInTheDocument();
-    });
-    expect(screen.getByPlaceholderText(/name/i)).toHaveValue("");
-    expect(screen.getByText(/chai tea latte/i)).toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/suppliers/new");
   });
 
   test("deletes a product and removes it from the UI", async () => {
@@ -342,56 +275,11 @@ describe("Admin Products CRUD UI", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
+    expect(window.confirm).toHaveBeenCalled();
+
     await waitFor(() => {
       expect(screen.queryByText(/delete me/i)).not.toBeInTheDocument();
     });
-  });
-
-  test("shows backend validation error in the UI", async () => {
-    setBusinessUser();
-
-    setupFetch({
-      products: [],
-      categories: [{ id: 1, name: "Coffee" }],
-      suppliers: [{ id: 1, name: "Main Supplier" }],
-      overrides: [
-        {
-          method: "POST",
-          path: "/admin/products",
-          response: {
-            ok: false,
-            status: 400,
-            body: {
-              message: "Name already exists",
-            },
-          },
-        },
-      ],
-    });
-
-    render(
-      <MemoryRouter>
-        <AdminProductsPage />
-      </MemoryRouter>
-    );
-
-    await screen.findByText(/no products found/i);
-
-    fireEvent.change(screen.getByPlaceholderText(/name/i), {
-      target: { value: "Duplicate Product" },
-    });
-
-    const selects = getFormSelects();
-    fireEvent.change(selects[0], { target: { value: "1" } });
-    fireEvent.change(selects[1], { target: { value: "1" } });
-
-    fireEvent.change(screen.getByPlaceholderText(/description/i), {
-      target: { value: "Duplicate description" },
-    });
-
-    fireEvent.click(screen.getByRole("button", { name: /^create product$/i }));
-
-    expect(await screen.findByText(/name already exists/i)).toBeInTheDocument();
   });
 
   test("shows delete error when backend delete fails", async () => {
@@ -434,6 +322,8 @@ describe("Admin Products CRUD UI", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
 
+    expect(window.confirm).toHaveBeenCalled();
+
     expect(
       await screen.findByText(/failed to delete product/i)
     ).toBeInTheDocument();
@@ -463,9 +353,7 @@ describe("Admin Products CRUD UI", () => {
     );
 
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith(
-        "You do not have permission to access this page."
-      );
+      expect(handleApiError).toHaveBeenCalled();
     });
   });
 });

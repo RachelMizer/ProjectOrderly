@@ -36,68 +36,82 @@ B5.3 Inventory Management API (Backend) -- **Kim M.**
 UX5.3 Inventory Management Page (UI) -- **Rachel M.**
 F5.3 Inventory Management Page (Frontend Integration) -- **Kim M.**
 
-**Ongoing — Wave 4 (Documentation, QA, PM):**
-DC5.1 API Contract Updates -- **Tristin G.**
-DC5.3 Sprint 5 Code Reviews -- **Caleb F.**
-QA5.1 Sprint 5 QA Execution -- **Kenny B.**
-PM5.1 Sprint 5 PM Tasks -- **Serina R.**
-
 ##### 🌊 Wave 2 — Sales Dashboard 
+
 **Target:** April 13 | **Hard Deadline:** April 14
 
 B5.4 Sales Summary API (Backend) -- **Tristin G.** 
 UX5.4 Sales Summary Dashboard (UI) -- **Rachel M.** 
 F5.4 Sales Summary Dashboard (Frontend Integration) -- **Tristin G.**
 
+🌊 **Ongoing — Wave 4 (Documentation, QA, PM):**
+DC5.1 API Contract Updates -- **Tristin G.**
+DC5.3 Sprint 5 Code Reviews -- **Caleb F.**
+QA5.1 Sprint 5 QA Execution -- **Kenny B.**
+PM5.1 Sprint 5 PM Tasks -- **Serina R.**
+
 ---
 
 ## Tasks Completed This Week by Team Members:
 
-F4.1 Role-Based Access Control (Frontend) *(Done ✅)* -- **Kim M.** 
-F5.1 Admin Dashboard Navigation (Frontend Integration) *(Done ✅)* -- **Kim M.**
-B5.2 Product & Variant Management API (Backend) *(Done ✅)* -- **Kim M.**
-F5.2 Product Management Page (Frontend Integration) *(Done ✅)* -- **Kim M.**
-B5.3 Inventory Management API (Backend) *(Done ✅)* -- **Kim M.**
-F5.3 Inventory Management Page (Frontend Integration) *(Done ✅)* -- **Kim M.**
-PM4.1CI/CD Pipeline Maintenance & Stability *(Done ✅)* -- **Serina R./Kenny B.**
-UX5.1 Admin Dashboard Navigation (UI) *(Done ✅)* -- **Rachel M.**
-FE Image Support for Frontend *(Sidecar to UX5.1)* *(Done ✅)* -- **Rachel M.** 
+#### Done 🎉:
+
+F4.1 Role-Based Access Control (Frontend)  —  **Kim M.** 
+F5.1 Admin Dashboard Navigation (Frontend Integration)  — **Kim M.**
+B5.2 Product & Variant Management API (Backend) —  **Kim M.**
+F5.2 Product Management Page (Frontend Integration) —  **Kim M.**
+B5.3 Inventory Management API (Backend) —  **Kim M.**
+F5.3 Inventory Management Page (Frontend Integration) —  **Kim M.**
+PM4.1CI/CD Pipeline Maintenance & Stability —  **Serina R./Kenny B.**
+UX5.1 Admin Dashboard Navigation (UI) — **Rachel M.**
+FE Image Support for Frontend *(Sidecar to UX5.1)*  —  **Rachel M.** 
+UX5.2 — Product Management Page (UI) — **Rachel M.**
 
 #### In Progress:
 
-US3.10 Sprint 3 QA Execution *(In Progress — carry-over)* -- **Kenny B.** 
-UX5.3 Inventory Management Page (UI) *(In Progress)*-- **Rachel M.**
-QA5.1 Sprint 5 QA Execution *(In Progress)* -- **Kenny B.**
-DC5.1 API Contract Updates *(In Progress)* -- **Tristin G.**
-DC5.3 Sprint 5 Code Reviews *(In Progress)* -- **Caleb F.**
-PM5.1 Sprint 5 PM Tasks *(In Progress)* -- **Serina R.**
+**DC5.1 — API Contract Updates** — Tristin G.
+**DC5.2 — Sprint 5 Demo Materials** — Caleb F.
+**DC5.3 — Sprint 5 Code Reviews** — Caleb F.
+**QA5.1 — Sprint 5 QA Execution** — Kenny B.
+**PM5.1 — Sprint 5 PM Tasks** — Serina R.
+**UX5.4 — Sales Summary Dashboard Page (UI)** — Rachel M.
 
 #### In Review:
 
 
-UX5.2 Product Management Page (UI) *(In Review)* -- **Rachel M.**
+*No cards currently in Review.*
 
 #### In QA / Testing:
 
-UX5.1 Admin Dashboard Navigation (UI) *(In Testing)* -- **Rachel M.**
+**UX5.3 — Inventory Management Page (UI)** — Rachel M.
+**FE - Image Support for Frontend** — Rachel M.
 
 #### Code Reviews Completed:
 
-B5.2 Product & Variant Management API (Backend) -- **Caleb F.** 
-FE Image Support for Frontend *(no user story assigned)* -- **Serina R.**
-UX5.1 Admin Dashboard Navigation (UI) -- **Kim M.**
+B5.2 Product & Variant Management API (Backend) — **Caleb F.** 
+FE Image Support for Frontend *(no user story assigned)* — **Serina R.**
+UX5.1 Admin Dashboard Navigation (UI)— **Kim M.**
+UX5.2 Product Management Page (UI) — **Kim M.**
+F5.1 Admin Dashboard Navigation (Frontend Integration), _secondary review_ — **Kim M.**
+F5.2 — Product Management Page (Frontend Integration) — **Caleb F.**
+B5.3 — Inventory Management API (Backend) —  **Caleb F.**
+F5.3 — Inventory Management Page (Frontend Integration) —  **Caleb F.**
+PM4.1 — CI/CD Pipeline Maintenance & Stability —  **Kenny B./Serina R.**
 
 #### Testing Activities:
 
-F4.1 Role-Based Access Control *(All tests passed — Done ✅)* -- **Kenny B.** 
-F5.1 Admin Dashboard Navigation (All tests passed — Done ✅) -- **Kenny B.** 
-UX5.1 Admin Dashboard Navigation (Majority tests passed — Done ✅)  -- **Kenny B.**
-B5.2 Product & Variant Management API (All tests passed — Done ✅) -- **Kenny B.**
-F5.2 Product Management Page (Frontend Integration) (All tests passed — Done ✅) -- **Kenny B.**
-B5.3 Inventory Management API (Backend) (All tests passed — Done ✅)-- **Kim M.**
-F5.3 Inventory Management Page (Frontend Integration) (All tests passed — Done ✅)-- **Kim M.**
-PM4.1 CI/CD Pipeline Maintenance & Stability  (All tests passed — Done ✅)-- **Kenny B.**
-Achieved over 95% testing coverage on Frontend/Backend -- **Kenny B.**
+F4.1 Role-Based Access Control *(All tests passed — Done ✅)*  — **Kenny B.** 
+F5.1 Admin Dashboard Navigation (All tests passed — Done ✅)  — **Kenny B.** 
+UX5.1 Admin Dashboard Navigation (Majority tests passed — Done ✅)   —**Kenny B.**
+B5.2 Product & Variant Management API (All tests passed — Done ✅)  — **Kenny B.**
+F5.2 Product Management Page (Frontend Integration) (All tests passed — Done ✅)  — **Kenny B.**
+B5.3 Inventory Management API (Backend) (All tests passed — Done ✅)   — **Kenny B.** 
+F5.3 Inventory Management Page (Frontend Integration) (All tests passed — Done ✅)   — **Kenny B.** 
+PM4.1 CI/CD Pipeline Maintenance & Stability  (All tests passed — Done ✅)  — **Kenny B.** 
+Achieved over 95% testing coverage on Frontend/Backend  — **Kenny B.** 
+UX5.2 Product Management Page (UI) (All tests passed — Done ✅)  — **Kenny B.** 
+UX5.3 — Inventory Management Page (UI)  — **Kenny B.** 
+FE - Image Support for Frontend  — **Kenny B.** 
 
 ---
 
@@ -111,10 +125,17 @@ Achieved over 95% testing coverage on Frontend/Backend -- **Kenny B.**
 **Status:** In Progress ⚠️ *(Rachel M. leading resolution; Kim M. supporting)*
 
 **Description:** UX5.1 passed majority of testing but revealed a separation between Rachel's UI work and Kim's frontend integration. On the customer-facing branch, Kenny was able to pull up the admin dashboard on the customer portal with all navigation and functionality passing -- which is not the intended behavior. On the correct admin branch, the admin dashboard was accessible on the business portal as expected, but navigation links and functionality were not yet wired. The plan is to proceed with merging UX5.1 and allow F5.1/UX5.2 progress to resolve the frontend wiring on the admin side. 
-**Status:** In Progress ⚠️ *(UX5.1 merging; frontend wiring to be resolved through F5.1 and UX5.2)*
+**Status:** Resolved ✅ *(UX5.1 merging; frontend wiring resolved through F5.1 and UX5.2)*
 
+**Description:** Scope and ownership gaps were identified on US5.4 (Sales Summary Dashboard). Front end work had been partially completed using mock CSV file-based data rather than live database APIs, as API contracts were not yet available. Resolved through a impromptu, four-team member meeting on April 12 — backend implementation and front end wiring ownership have been confirmed and reassigned accordingly. 
+**Status:** Resolved ✅
 
+**Description:** Order seed data does not yet exist in the project and is a blocking dependency for US5.4 front end wiring and testing. Team members have been identified and outreach made on April 12. 
+**Status:** Not Resolved ❎
+
+**Description:** A `*.png` line in `.gitignore` was silently blocking all image files from being committed to the repository, causing product images to not render across the team. Identified and resolved on April 12. Admin-side images are now visible after pulling and reseeding. Customer-side image display is still being investigated. 
+**Status:** Partially Resolved ⚠️
 
 ---
 
-*Last updated: April 10, 2026 — Serina Rodriguez, Scrum Master / PM*
+*Last updated: April 12, 2026 — Serina Rodriguez, Scrum Master / PM*
