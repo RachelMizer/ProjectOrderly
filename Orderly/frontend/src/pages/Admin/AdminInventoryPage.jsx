@@ -191,7 +191,9 @@ export default function AdminInventoryPage() {
     const isAvailable = Number(item.stock_quantity) > 0;
 
     if (isAvailable) {
-      // Toggle OFF: immediately zero out stock and save
+      // Toggle OFF: zero out stock in DB but preserve previous values in edit fields
+      const prevStock = item.stock_quantity;
+      const prevReorder = item.reorder_level;
       try {
         setSavingItemId(item.id);
         setSaveError("");
@@ -202,7 +204,13 @@ export default function AdminInventoryPage() {
         setInventoryItems((prev) =>
           prev.map((i) => (i.id === updatedItem.id ? updatedItem : i))
         );
-        setEditValues((prev) => ({ ...prev, [item.id]: {} }));
+        setEditValues((prev) => ({
+          ...prev,
+          [item.id]: {
+            stock_quantity: prevStock !== null && prevStock !== undefined ? String(prevStock) : "",
+            reorder_level: prevReorder !== null && prevReorder !== undefined ? String(prevReorder) : "",
+          },
+        }));
         flashSuccess(item.id);
       } catch (error) {
         if (error?.response?.status === 403) {
@@ -375,16 +383,19 @@ export default function AdminInventoryPage() {
       <div className="submenu-bar">
         <span className="submenu-label">Inventory Management</span>
         <div className="submenu-actions">
-          <input
-            className="submenu-search"
-            type="text"
-            placeholder="Search inventory..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button type="button" className="submenu-action submenu-action--clear rpt-clear-filters" onClick={() => setSearchQuery("")}>
-            &times;&#x202F;CLEAR FILTERS
-          </button>
+          <div className="submenu-filter-group">
+            <input
+              className="submenu-search"
+              type="text"
+              placeholder="Search inventory..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
+              &times;&#x202F;CLEAR FILTERS
+            </button>
+          </div>
+          <span className="submenu-divider" />
           <button
             type="button"
             className="submenu-action"
@@ -501,7 +512,7 @@ export default function AdminInventoryPage() {
           {ingredientItems.length === 0 ? (
             <p className="rpt-empty">No dependency-controlled ingredients found.</p>
           ) : (
-            <table className="admin-table">
+            <table className="admin-table admin-table--compact">
               <thead>
                 <tr>
                   <th

@@ -506,27 +506,25 @@ export default function AdminProductsPage() {
     <div>
       <div className="submenu-bar">
         <span className="submenu-label">Product Catalog</span>
-        <input
-          className="submenu-search"
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
-            &times;&#x202F;CLEAR FILTERS
-          </button>
-        )}
         <div className="submenu-actions">
+          <div className="submenu-filter-group">
+            <input
+              className="submenu-search"
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
+              &times;&#x202F;CLEAR FILTERS
+            </button>
+          </div>
+          <span className="submenu-divider" />
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/catalog/new")}>
             + CREATE NEW PRODUCT
           </button>
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/suppliers/new")}>
             + ADD SUPPLIER
-          </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; OPEN FILE
           </button>
           <button type="button" className="submenu-action" title="Pending further development">
             &gt; EXPORT

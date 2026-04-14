@@ -151,18 +151,19 @@ export default function AdminSalesDashboard() {
       <div className="submenu-bar">
         <span className="submenu-label">Sales Summary</span>
         <div className="submenu-actions">
-          <input
-            className="submenu-search"
-            type="text"
-            placeholder="Search product or variant..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
+          <div className="submenu-filter-group">
+            <input
+              className="submenu-search"
+              type="text"
+              placeholder="Search product or variant..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
               &times;&#x202F;CLEAR FILTERS
             </button>
-          )}
+          </div>
+          <span className="submenu-divider" />
           <select
             className="rpt-month-select"
             value={selectedYear}
@@ -183,11 +184,10 @@ export default function AdminSalesDashboard() {
               <option key={m.value} value={m.value}>{m.label}</option>
             ))}
           </select>
-          {(selectedYear || selectedMonth) && (
-            <button type="button" className="submenu-action submenu-action--clear rpt-clear-filters" onClick={() => { setSelectedYear(""); setSelectedMonth(""); }}>
-              &times;&#x202F;CLEAR FILTERS
-            </button>
-          )}
+          <button type="button" className="submenu-action submenu-action--clear" onClick={() => { setSelectedYear(""); setSelectedMonth(""); }}>
+            &times;&#x202F;CLEAR FILTERS
+          </button>
+          <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
             &gt; EXPORT
           </button>

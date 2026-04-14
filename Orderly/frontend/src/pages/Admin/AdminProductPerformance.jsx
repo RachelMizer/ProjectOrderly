@@ -53,8 +53,8 @@ export default function AdminProductPerformance() {
   const [loading, setLoading]             = useState(true);
   const [dataLoading, setDataLoading]     = useState(false);
   const [error, setError]                 = useState(null);
-  const [sortKey, setSortKey]             = useState("units_sold");
-  const [sortDir, setSortDir]             = useState("desc");
+  const [sortKey, setSortKey]             = useState("rank");
+  const [sortDir, setSortDir]             = useState("asc");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchQuery, setSearchQuery]     = useState("");
 
@@ -75,6 +75,7 @@ export default function AdminProductPerformance() {
 
   function getSortValue(item, key) {
     switch (key) {
+      case "rank":       return rankings.indexOf(item);
       case "name":       return item.name?.toLowerCase() ?? "";
       case "variant":    return item.variant?.toLowerCase() ?? "";
       case "category":   return item.category?.toLowerCase() ?? "";
@@ -266,21 +267,19 @@ export default function AdminProductPerformance() {
                 ))}
               </select>
             )}
-            {(selectedKey || selectedMonth || searchQuery || categoryFilter || selectedYear !== CURRENT_YEAR) && (
-              <button
-                type="button"
-                className="submenu-action submenu-action--clear"
-                onClick={() => {
-                  setSelectedKey("");
-                  setSelectedYear(CURRENT_YEAR);
-                  setSelectedMonth(CURRENT_MONTH_KEY);
-                  setCategoryFilter("");
-                  setSearchQuery("");
-                }}
-              >
-                &times;&#x202F;CLEAR FILTERS
-              </button>
-            )}
+            <button
+              type="button"
+              className="submenu-action submenu-action--clear"
+              onClick={() => {
+                setSelectedKey("");
+                setSelectedYear(CURRENT_YEAR);
+                setSelectedMonth(CURRENT_MONTH_KEY);
+                setCategoryFilter("");
+                setSearchQuery("");
+              }}
+            >
+              &times;&#x202F;CLEAR FILTERS
+            </button>
           </div>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
@@ -298,13 +297,21 @@ export default function AdminProductPerformance() {
       {!selectedKey && !loading && (
         <>
           <p className="rpt-period-label">Product Rankings — {rankLabel}</p>
+          <div className="rpt-rank-legend">
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--1">1st</span>
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--2">2nd</span>
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--3">3rd</span>
+            <span className="rpt-rank-legend__label">Top performers by original ranking</span>
+          </div>
           {sortedRankings.length === 0 ? (
             <p className="rpt-empty">No sales data available for this period.</p>
           ) : (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th className="admin-th admin-th--no-sort">#</th>
+                  <th className="admin-th" onClick={() => handleSort("rank")}>
+                    # <SortIndicator col="rank" />
+                  </th>
                   <th className="admin-th inv-th-left" onClick={() => handleSort("name")}>
                     Product <SortIndicator col="name" />
                   </th>
@@ -323,21 +330,28 @@ export default function AdminProductPerformance() {
                 </tr>
               </thead>
               <tbody>
-                {sortedRankings.map((row, index) => (
+                {sortedRankings.map((row, index) => {
+                  const originalRank = rankings.indexOf(row);
+                  const rankClass = originalRank === 0 ? "rpt-rank-1"
+                                  : originalRank === 1 ? "rpt-rank-2"
+                                  : originalRank === 2 ? "rpt-rank-3"
+                                  : "";
+                  return (
                   <tr
                     key={`${row.name}-${row.variant}`}
-                    className="rpt-ranking-row"
+                    className={`rpt-ranking-row${rankClass ? ` ${rankClass}` : ""}`}
                     onClick={() => setSelectedKey(`${row.name}|||${row.variant}`)}
                     title="Click to view full performance"
                   >
-                    <td>{index + 1}</td>
+                    <td>{rankings.indexOf(row) + 1}</td>
                     <td className="inv-td-left td-name">{row.name}</td>
                     <td>{row.variant}</td>
                     <td>{row.category}</td>
                     <td>{row.units_sold.toLocaleString()}</td>
                     <td>${formatCurrency(row.revenue)}</td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
