@@ -3,7 +3,7 @@ from django.urls import path
 from .admin_views import (
     AdminInventoryListCreateView,
     AdminInventoryDetailView,
-    AdminLowStockView,   # ✅ add this
+    AdminLowStockView,   
 )
 
 urlpatterns = [
@@ -15,7 +15,7 @@ urlpatterns = [
         name="admin_inventory_detail",
     ),
 
-    # ✅ NEW endpoint
+    
     path(
         "inventory/low-stock",
         AdminLowStockView.as_view(),

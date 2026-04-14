@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from inventory.models import InventoryItem
+from catalog.models import ProductVariant
 
 
 class AdminInventoryItemSerializer(serializers.ModelSerializer):
@@ -64,11 +65,19 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
             )
 
         return attrs
-    
-from catalog.models import ProductVariant
 
-from rest_framework import serializers
-from inventory.models import InventoryItem
+
+class LowStockVariantSerializer(serializers.ModelSerializer):
+    stockQuantity = serializers.IntegerField(source="stock_quantity", read_only=True)
+    reorderLevel = serializers.IntegerField(source="reorder_level", read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "id",
+            "stockQuantity",
+            "reorderLevel",
+        ]
 
 
 class LowStockInventorySerializer(serializers.ModelSerializer):
@@ -84,30 +93,11 @@ class LowStockInventorySerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True,
     )
-    ingredientName = serializers.CharField(source="name", read_only=True)
-    isLowStock = serializers.SerializerMethodField()
-    variantNames = serializers.SerializerMethodField()
 
     class Meta:
         model = InventoryItem
         fields = [
             "id",
-            "ingredientName",
             "stockQuantity",
             "reorderLevel",
-            "isLowStock",
-            "variantNames",
         ]
-
-    def get_isLowStock(self, obj):
-        if obj.reorder_level is None:
-            return False
-        return obj.stock_quantity <= obj.reorder_level
-
-    def get_variantNames(self, obj):
-        return sorted(
-            {
-                str(usage.variant)
-                for usage in obj.variant_usages.select_related("variant", "variant__product")
-            }
-        )
