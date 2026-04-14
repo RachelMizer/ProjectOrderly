@@ -971,7 +971,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**   
 + Customers can view their orders
-+ Business can view any order
++ Business can view any non-draft order
   
 **Success Response (200 OK):**  
 ```
