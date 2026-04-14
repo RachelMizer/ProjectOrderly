@@ -5,6 +5,7 @@ import {
   fireEvent,
   waitFor,
   within,
+  act,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AdminInventoryPage from "../pages/Admin/AdminInventoryPage";
@@ -42,12 +43,27 @@ function inventoryData(items) {
   return items;
 }
 
+async function openCreatePanel() {
+  fireEvent.click(screen.getByRole("button", { name: /\+ add item/i }));
+  return await screen.findByText(/new inventory item/i);
+}
+
+function getCreatePanel() {
+  return screen.getByText(/new inventory item/i).closest(".inv-create-panel");
+}
+
 describe("AdminInventoryPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
   });
 
-  test("shows loading state first", async () => {
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
+  test("shows loading state first", () => {
     mockFetchInventory.mockReturnValue(new Promise(() => {}));
 
     renderPage();
@@ -64,6 +80,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 10,
           reorder_level: 2,
           unit_of_measure: "l",
+          affected_products: ["Latte", "Cappuccino", "Mocha"],
         },
         {
           id: 2,
@@ -71,6 +88,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 5,
           reorder_level: 1,
           unit_of_measure: "lb",
+          affected_products: [],
         },
       ])
     );
@@ -84,12 +102,12 @@ describe("AdminInventoryPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("heading", { name: /count-based inventory items/i })
+      screen.getByRole("heading", { name: /count-based inventory/i })
     ).toBeInTheDocument();
 
     expect(screen.getByText(/^milk$/i)).toBeInTheDocument();
     expect(screen.getByText(/^flour$/i)).toBeInTheDocument();
-    expect(screen.getByText(/affects: latte, cappuccino, mocha/i)).toBeInTheDocument();
+    expect(screen.getByText(/latte, cappuccino, mocha/i)).toBeInTheDocument();
   });
 
   test("shows generic load error", async () => {
@@ -103,14 +121,13 @@ describe("AdminInventoryPage", () => {
   });
 
   test("403 on load calls unauthorized handler", async () => {
-    mockFetchInventory.mockRejectedValue({
-      response: { status: 403 },
-    });
+    const error403 = { response: { status: 403 } };
+    mockFetchInventory.mockRejectedValue(error403);
 
     renderPage();
 
     await waitFor(() => {
-      expect(mockHandleApiError).toHaveBeenCalled();
+      expect(mockHandleApiError).toHaveBeenCalledWith(error403, mockNavigate);
     });
   });
 
@@ -123,6 +140,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 5,
           reorder_level: 1,
           unit_of_measure: "lb",
+          affected_products: [],
         },
       ])
     );
@@ -143,6 +161,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 10,
           reorder_level: 2,
           unit_of_measure: "l",
+          affected_products: ["Latte"],
         },
       ])
     );
@@ -154,7 +173,7 @@ describe("AdminInventoryPage", () => {
     ).toBeInTheDocument();
   });
 
-  test("updates ingredient stock and reflects unavailable state immediately", async () => {
+  test("updates ingredient stock and shows unavailable badge after save", async () => {
     mockFetchInventory.mockResolvedValue(
       inventoryData([
         {
@@ -163,6 +182,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 10,
           reorder_level: 2,
           unit_of_measure: "l",
+          affected_products: ["Latte"],
         },
       ])
     );
@@ -173,13 +193,14 @@ describe("AdminInventoryPage", () => {
       stock_quantity: 0,
       reorder_level: 0,
       unit_of_measure: "l",
+      affected_products: ["Latte"],
     });
 
     renderPage();
 
     await screen.findByText(/^milk$/i);
 
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
     const inputs = within(milkRow).getAllByRole("spinbutton");
 
     fireEvent.change(inputs[0], { target: { value: "0" } });
@@ -188,13 +209,13 @@ describe("AdminInventoryPage", () => {
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/\(unavailable\)/i)).toBeInTheDocument();
+      expect(mockUpdateInventoryItem).toHaveBeenCalledWith(1, {
+        stock_quantity: 0,
+        reorder_level: 0,
+      });
     });
 
-    expect(mockUpdateInventoryItem).toHaveBeenCalledWith(1, {
-      stock_quantity: 0,
-      reorder_level: 0,
-    });
+    expect(await screen.findByText(/unavailable/i)).toBeInTheDocument();
   });
 
   test("shows out of stock badge for count-based item", async () => {
@@ -206,13 +227,14 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 0,
           reorder_level: 0,
           unit_of_measure: "lb",
+          affected_products: [],
         },
       ])
     );
 
     renderPage();
 
-    expect(await screen.findByText(/\(out of stock\)/i)).toBeInTheDocument();
+    expect(await screen.findByText(/^out of stock$/i)).toBeInTheDocument();
   });
 
   test("creates inventory item and updates UI", async () => {
@@ -224,6 +246,7 @@ describe("AdminInventoryPage", () => {
           stock_quantity: 10,
           reorder_level: 2,
           unit_of_measure: "l",
+          affected_products: ["Latte"],
         },
       ])
     );
@@ -234,25 +257,25 @@ describe("AdminInventoryPage", () => {
       stock_quantity: 5,
       reorder_level: 2,
       unit_of_measure: "units",
+      affected_products: [],
     });
 
     renderPage();
+    await screen.findByText(/^milk$/i);
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
+    const createPanel = getCreatePanel();
 
-    fireEvent.change(within(createSection).getByRole("textbox"), {
+    fireEvent.change(within(createPanel).getByPlaceholderText(/item name/i), {
       target: { value: "Brownies" },
     });
 
-    const createInputs = within(createSection).getAllByRole("spinbutton");
+    const createInputs = within(createPanel).getAllByRole("spinbutton");
     fireEvent.change(createInputs[0], { target: { value: "5" } });
     fireEvent.change(createInputs[1], { target: { value: "2" } });
 
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     await waitFor(() => {
@@ -267,31 +290,37 @@ describe("AdminInventoryPage", () => {
     });
   });
 
-  test("cancel create resets form", async () => {
+  test("cancel create hides panel and resets form when reopened", async () => {
     mockFetchInventory.mockResolvedValue([]);
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
+    let createPanel = getCreatePanel();
 
-    fireEvent.change(within(createSection).getByRole("textbox"), {
+    fireEvent.change(within(createPanel).getByPlaceholderText(/item name/i), {
       target: { value: "Temp Item" },
     });
 
-    const createInputs = within(createSection).getAllByRole("spinbutton");
+    const createInputs = within(createPanel).getAllByRole("spinbutton");
     fireEvent.change(createInputs[0], { target: { value: "7" } });
     fireEvent.change(createInputs[1], { target: { value: "3" } });
 
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^cancel$/i })
+      within(createPanel).getByRole("button", { name: /^cancel$/i })
     );
 
-    expect(within(createSection).getByRole("textbox")).toHaveValue("");
-    expect(createInputs[0]).toHaveValue(null);
-    expect(createInputs[1]).toHaveValue(null);
+    await waitFor(() => {
+      expect(screen.queryByText(/new inventory item/i)).not.toBeInTheDocument();
+    });
+
+    await openCreatePanel();
+    createPanel = getCreatePanel();
+
+    expect(within(createPanel).getByPlaceholderText(/item name/i)).toHaveValue("");
+    const reopenedInputs = within(createPanel).getAllByRole("spinbutton");
+    expect(reopenedInputs[0]).toHaveValue(null);
+    expect(reopenedInputs[1]).toHaveValue(null);
   });
 
   test("create error uses name validation message", async () => {
@@ -301,14 +330,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/name already exists/i)).toBeInTheDocument();
@@ -321,14 +347,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/stock must be positive/i)).toBeInTheDocument();
@@ -341,14 +364,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/reorder level invalid/i)).toBeInTheDocument();
@@ -361,14 +381,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/invalid unit/i)).toBeInTheDocument();
@@ -381,14 +398,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(
@@ -403,14 +417,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/create failed/i)).toBeInTheDocument();
@@ -423,14 +434,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(await screen.findByText(/detail error/i)).toBeInTheDocument();
@@ -443,14 +451,11 @@ describe("AdminInventoryPage", () => {
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     expect(
@@ -459,24 +464,20 @@ describe("AdminInventoryPage", () => {
   });
 
   test("403 on create calls unauthorized handler", async () => {
+    const error403 = { response: { status: 403 } };
     mockFetchInventory.mockResolvedValue([]);
-    mockCreateInventoryItem.mockRejectedValue({
-      response: { status: 403 },
-    });
+    mockCreateInventoryItem.mockRejectedValue(error403);
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
-
+    const createPanel = getCreatePanel();
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     await waitFor(() => {
-      expect(mockHandleApiError).toHaveBeenCalled();
+      expect(mockHandleApiError).toHaveBeenCalledWith(error403, mockNavigate);
     });
   });
 
@@ -488,6 +489,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -498,7 +500,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -513,6 +515,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -523,7 +526,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -538,6 +541,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -548,7 +552,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -563,6 +567,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -573,7 +578,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -588,6 +593,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -598,7 +604,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -613,6 +619,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -623,7 +630,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -638,6 +645,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -648,7 +656,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
@@ -658,6 +666,8 @@ describe("AdminInventoryPage", () => {
   });
 
   test("403 on save calls unauthorized handler", async () => {
+    const error403 = { response: { status: 403 } };
+
     mockFetchInventory.mockResolvedValue([
       {
         id: 1,
@@ -665,22 +675,21 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
-    mockUpdateInventoryItem.mockRejectedValue({
-      response: { status: 403 },
-    });
+    mockUpdateInventoryItem.mockRejectedValue(error403);
 
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
 
     fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
 
     await waitFor(() => {
-      expect(mockHandleApiError).toHaveBeenCalled();
+      expect(mockHandleApiError).toHaveBeenCalledWith(error403, mockNavigate);
     });
   });
 
@@ -692,6 +701,7 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         reorder_level: 2,
         unit_of_measure: "l",
+        affected_products: ["Latte"],
       },
     ]);
 
@@ -701,12 +711,13 @@ describe("AdminInventoryPage", () => {
       stock_quantity: null,
       reorder_level: null,
       unit_of_measure: "l",
+      affected_products: ["Latte"],
     });
 
     renderPage();
 
     await screen.findByText(/^milk$/i);
-    const milkRow = screen.getByText(/^milk$/i).closest("div").parentElement;
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
     const inputs = within(milkRow).getAllByRole("spinbutton");
 
     fireEvent.change(inputs[0], { target: { value: "" } });
@@ -730,21 +741,20 @@ describe("AdminInventoryPage", () => {
       stock_quantity: null,
       reorder_level: null,
       unit_of_measure: "units",
+      affected_products: [],
     });
 
     renderPage();
+    await openCreatePanel();
 
-    const createHeading = await screen.findByRole("heading", {
-      name: /create inventory item/i,
-    });
-    const createSection = createHeading.closest("section");
+    const createPanel = getCreatePanel();
 
-    fireEvent.change(within(createSection).getByRole("textbox"), {
+    fireEvent.change(within(createPanel).getByPlaceholderText(/item name/i), {
       target: { value: "Tea Bags" },
     });
 
     fireEvent.click(
-      within(createSection).getByRole("button", { name: /^create$/i })
+      within(createPanel).getByRole("button", { name: /^create$/i })
     );
 
     await waitFor(() => {
@@ -754,6 +764,47 @@ describe("AdminInventoryPage", () => {
         unit_of_measure: "units",
         reorder_level: null,
       });
+    });
+  });
+
+  test("shows saved feedback briefly after successful save", async () => {
+    mockFetchInventory.mockResolvedValue([
+      {
+        id: 1,
+        name: "Milk",
+        stock_quantity: 10,
+        reorder_level: 2,
+        unit_of_measure: "l",
+        affected_products: ["Latte"],
+      },
+    ]);
+
+    mockUpdateInventoryItem.mockResolvedValue({
+      id: 1,
+      name: "Milk",
+      stock_quantity: 8,
+      reorder_level: 2,
+      unit_of_measure: "l",
+      affected_products: ["Latte"],
+    });
+
+    renderPage();
+
+    await screen.findByText(/^milk$/i);
+    const milkRow = screen.getByText(/^milk$/i).closest("tr");
+
+    fireEvent.click(within(milkRow).getByRole("button", { name: /^save$/i }));
+
+    expect(await within(milkRow).findByText(/saved!/i)).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(2600);
+    });
+
+    await waitFor(() => {
+      expect(
+        within(milkRow).getByRole("button", { name: /^save$/i })
+      ).toBeInTheDocument();
     });
   });
 });
