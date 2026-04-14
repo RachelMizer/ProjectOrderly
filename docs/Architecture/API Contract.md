@@ -971,7 +971,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**   
 + Customers can view their orders
-+ Business can view any order
++ Business can view any non-draft order
   
 **Success Response (200 OK):**  
 ```
@@ -1111,9 +1111,9 @@ Authorization: Bearer <accessToken>
 
 ## List Orders  
 **Endpoint:** `<GET> /api/v1/orders`, `<GET> /api/v1/orders?page=2&pageSize=20`, `<GET> /api/v1/orders?dateCreated=YYYY-MM-DD`, `<GET> /api/v1/orders?status=pending`  
-**Description:** Returns a list of orders  
+**Description:** Returns a list of orders. Excludes Draft orders  
 **Authentication:** `Bearer <accessToken>`  
-**Role:** Business owner  
+**Role:** Business  
 **URL Parameters:**  
 + page (optional)
 + pageSize (optional. default pageSize is 25, max is 200)
@@ -1130,6 +1130,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**
 + Endpoint only available to users with the business role
++ Will NOT return Draft orders
 + Returns number of returned objects
 + Returns next and previous page urls
 + Returns a collection of orders
@@ -2319,57 +2320,297 @@ Content-Type: application/json
 ```
 
 # Inventory API
-## View Inventory levels
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
 
-## Adjust inventory
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+## View ProductVariant Inventory  
+**Endpoint:** `<GET> /api/v1/inventory/variants?page=2&pageSize=25`  
+**Description:** Returns a paginated collection of all ProductVariants with their current stock levels  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ page (optional, default = 1)  
++ pageSize (optional, default = 25, max = 200)
 
-## Low-stock report
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:** None  
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns a paginated collection of ProductVariants  
++ Includes all variants regardless of stock level  
++ stockQuantity and reorderLevel may be null  
 
-## (Optional) Inventory usage
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+### Success Response (200 OK):  
+```
+body
+{
+    "count": 50,
+    "pageSize": 25,
+    "next": "/api/v1/inventory/variants?page=2&pageSize=25",
+    "previous": null,
+    "results": [
+        {
+            "id": 2001,
+            "stockQuantity": 15,
+            "reorderLevel": 5
+        },
+        {
+            "id": 2002,
+            "stockQuantity": 5,
+            "reorderLevel": 5
+        }
+    ]
+}
+```
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "user does not have this permission"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_QUERY_PARAMS",
+    "message": "invalid page or pageSize value"
+}
+```
+
+## View InventoryItem Inventory  
+**Endpoint:** `<GET> /api/v1/inventory/items?page=2&pageSize=25`  
+**Description:** Returns a paginated collection of all InventoryItems with their current stock levels  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ page (optional, default = 1)  
++ pageSize (optional, default = 25, max = 200)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:** None  
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns a paginated collection of InventoryItems  
++ Includes all items regardless of stock level  
++ stockQuantity and reorderLevel may be null  
+
+### Success Response (200 OK):  
+```
+body
+{
+    "count": 30,
+    "pageSize": 25,
+    "next": "/api/v1/inventory/items?page=2&pageSize=25",
+    "previous": null,
+    "results": [
+        {
+            "id": 8001,
+            "stockQuantity": 40,
+            "reorderLevel": 10
+        },
+        {
+            "id": 8002,
+            "stockQuantity": 120,
+            "reorderLevel": 30
+        }
+    ]
+}
+```
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_QUERY_PARAMS",
+    "message": "invalid page or pageSize value"
+}
+```
+
+## Update InventoryItem  
+**Endpoint:** `<PATCH> /api/v1/inventory/items/{inventoryItemId}`  
+**Description:** Updates fields of an existing InventoryItem  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ inventoryItemId  
+
+**Request Parameters:**  
++ name (optional)  
++ stockQuantity (optional)  
++ unitOfMeasure (optional)  
++ reorderLevel (optional)  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+Content-Type: application/json
+```
+**Body:**  
+```
+{
+    "name": "Pizza Dough",
+    "stockQuantity": 50,
+    "unitOfMeasure": "units",
+    "reorderLevel": 15
+}
+```
+**Rules:**  
++ Must have Only available to users with the BUSINESS role  
++ inventoryItemId must reference an existing InventoryItem  
++ All fields are optional, but at least one field must be provided  
++ if included, name must be unique and a non-empty string  
++ stockQuantity must be >= 0 if provided  
++ reorderLevel must be >= 0 if provided  
++ unitOfMeasure must be "units", "oz", "lb", "g" (grams), "ml", or "l" (liters)
++ unitOfMeasure CANNOT be updated if stockQuantity is not null (existing value in database)  
+
+### Success Response (200 OK):  
+```
+{
+    "id": 8001,
+    "name": "Pizza Dough",
+    "stockQuantity": 50,
+    "unitOfMeasure": "units",
+    "reorderLevel": 15
+}
+```
+
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or no fields provided"
+}
+```
+### Conflict (409):  
+```
+{
+    "error": "UNIT_OF_MEASURE_LOCKED",
+    "message": "unitOfMeasure cannot be changed when stockQuantity is not null"
+}
+```
+### Not Found (404):  
+```
+{
+    "error": "NOT_FOUND",
+    "message": "inventory item not found"
+}
+```
+
+
+## Low-stock report  
+**Endpoint:** `<GET> /api/v1/inventory/low-stock`  
+**Description:** Returns collections of ProductVariants and InventoryItems where stockQuantity <= reorderLevel  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:** None  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+
+**Body:** None  
+
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns two collections: productVariants and inventoryItems  
++ Includes only records where stockQuantity <= reorderLevel  
++ stockQuantity and reorderLevel must not be null to be included  
++ Results are not paginated (can be added later if needed)  
+
+### Success Response (200 OK):  
+```
+body
+
+{
+    "productVariants": [
+        {
+            "id": 2002,
+            "stockQuantity": 5,
+            "reorderLevel": 5
+        },
+        {
+            "id": 2005,
+            "stockQuantity": 2,
+            "reorderLevel": 10
+        }
+    ],
+    "inventoryItems": [
+        {
+            "id": 8001,
+            "stockQuantity": 10,
+            "reorderLevel": 10
+        },
+        {
+            "id": 8003,
+            "stockQuantity": 20,
+            "reorderLevel": 25
+        }
+    ]
+}
+```
+
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "user does not have this permission"
+}
+```
+
 
 
 # Reporting API
