@@ -23,8 +23,8 @@ App Navigation Shows Auth Links When Authenticated
     Login As Customer User
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
-    Page Should Contain Link    Profile
-    Page Should Contain Link    Orders
+    Page Should Contain Element    xpath=//a[@href='/profile']
+    Page Should Contain Element    xpath=//a[@href='/order-history']
     Page Should Contain Button    Logout
 
 Login Page Renders Form
