@@ -42,7 +42,7 @@ export default function Reports() {
   useEffect(() => {
     fetchSalesSummary({ year: currentYear })
       .then((data) => {
-        const raw = data.chart_data || [];
+        const raw = data.chartData || [];
         const byLabel = Object.fromEntries(raw.map((m) => [m.label, m]));
         const padded = ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, units_sold: 0 });
         setChartData(padded);

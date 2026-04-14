@@ -91,11 +91,11 @@ export default function AdminSalesDashboard() {
     })
       .then((data) => {
         setStats({
-          totalRevenue: parseFloat(data.total_revenue),
-          orderCount: data.order_count,
+          totalRevenue: parseFloat(data.totalRevenue),
+          orderCount: data.totalOrders,
         });
         setProducts((data.products || []).map((p, i) => ({ ...p, rank: i + 1 })));
-        const rawChart = data.chart_data || [];
+        const rawChart = data.chartData || [];
         if (!selectedMonth) {
           const ALL_MONTHS = [
             "January","February","March","April","May","June",
@@ -106,8 +106,8 @@ export default function AdminSalesDashboard() {
         } else {
           setChartData(rawChart);
         }
-        setAvailableYears(data.available_years || []);
-        setAvailableMonths(data.available_months || []);
+        setAvailableYears(data.availableYears || []);
+        setAvailableMonths(data.availableMonths || []);
         const monthObj = (data.available_months || []).find((m) => m.value === selectedMonth);
         const sublabel = selectedMonth
           ? (monthObj?.label ?? selectedMonth)

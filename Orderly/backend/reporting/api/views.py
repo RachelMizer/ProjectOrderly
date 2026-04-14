@@ -111,12 +111,21 @@ class SalesSummaryView(APIView):
             for m in all_months_qs2
         ]
 
+        average_order_value = (
+            (total_revenue / total_units).quantize(Decimal("0.01"))
+            if total_units else Decimal("0.00")
+        )
+
         return Response({
-            "total_revenue": str(Decimal(str(total_revenue)).quantize(Decimal("0.01"))),
-            "order_count": total_units,
-            "available_years": available_years,
-            "available_months": available_months,
-            "chart_data": chart_data,
+            "startDate": str(start_date),
+            "endDate": str(end_date),
+            "groupBy": group_by,
+            "totalRevenue": str(Decimal(str(total_revenue)).quantize(Decimal("0.01"))),
+            "totalOrders": total_units,
+            "averageOrderValue": str(average_order_value),
+            "availableYears": available_years,
+            "availableMonths": available_months,
+            "chartData": chart_data,
             "products": products,
         })
 
