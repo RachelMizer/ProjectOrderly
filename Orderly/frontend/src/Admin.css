@@ -943,6 +943,11 @@ button.submenu-action[title="Pending further development"] {
     padding-bottom: 4px;
 }
 
+/* Compact padding for count-based inventory table */
+.admin-table--compact td {
+    padding: 5px 8px;
+}
+
 /* Table alignment helpers */
 .inv-th-left {
     text-align: left !important;

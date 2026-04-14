@@ -695,7 +695,7 @@ export default function AdminInventoryPage() {
           {countBasedItems.length === 0 ? (
             <p>No count-based inventory items found.</p>
           ) : (
-            <table className="admin-table">
+            <table className="admin-table admin-table--compact">
               <thead>
                 <tr>
                   <th

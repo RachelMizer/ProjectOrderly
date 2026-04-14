@@ -63,34 +63,26 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Reports</p>
         <p className="sidebar-desc">View sales performance, product trends, and business metrics. Use filters to drill down by date, product, or category.</p>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        {path !== "/admin/reports" && (
+          <Link to="/admin/reports" className="sidebar-back">« Back to Reports Dashboard</Link>
+        )}
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/inventory")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Inventory</p>
-        <p className="sidebar-sub">Recent Inventory Reports</p>
-        {/* fetch recent inventory reports here when endpoint is available */}
-        <p className="sidebar-empty">No recent files.</p>
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Inventory Report</span>
-        </div>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <p className="sidebar-desc">Track and update stock levels for all inventory items. Toggle ingredient availability to control which beverages are offered, and manage count-based items by quantity and reorder level.</p>
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/catalog")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Product Catalog</p>
-        <p className="sidebar-sub">Recent Catalogs</p>
-        {/* fetch recent catalogs here when endpoint is available */}
-        <p className="sidebar-empty">No recent files.</p>
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Catalog</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Product Lookup</span>
-        </div>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <p className="sidebar-desc">Browse and manage the full product catalog. Add new items, edit existing products, update pricing, and control which items are active and visible to customers.</p>
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
@@ -106,7 +98,7 @@ function AdminLayout() {
           <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
           <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
         </div>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
