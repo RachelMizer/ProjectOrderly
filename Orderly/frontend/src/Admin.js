@@ -6,7 +6,7 @@ import { isAuthenticated, logout } from "./api/auth";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import Dashboard from "./pages/Admin/dashboard";
 import Reports from "./pages/Admin/reports";
-import Inventory from "./pages/Admin/inventory";
+import AdminInventoryPage from "./pages/Admin/AdminInventoryPage";
 import ProductCatalog from "./pages/Admin/AdminProductsPage";
 import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
 import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
@@ -147,7 +147,7 @@ function AdminLayout() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/inventory" element={<AdminInventoryPage />} />
             <Route path="/catalog" element={<ProductCatalog />} />
             <Route path="/catalog/new" element={<AdminProductFormPage />} />
             <Route path="/catalog/edit/:productId" element={<AdminProductFormPage />} />

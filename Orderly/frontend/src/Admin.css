@@ -576,7 +576,7 @@ button.submenu-action[title="Pending further development"] {
 }
 
 .admin-table td {
-    padding: 0px 10px;
+    padding: 10px;
     line-height: 1rem;
     color: #2a4f6b;
     border-bottom: 1px solid #c4d9e8;
@@ -797,4 +797,266 @@ button.submenu-action[title="Pending further development"] {
 
 .form-actions button {
     font-size: .9rem;
+}
+
+
+/*      INVENTORY PAGE      */
+
+/* Fix button margin inside tables globally */
+.admin-table button {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+/* Create item panel */
+.inv-create-panel {
+    background-color: white;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.inv-create-panel__title {
+    margin: 0 0 10px 0;
+}
+
+.inv-create-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    align-items: flex-end;
+}
+
+.inv-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.inv-field label {
+    font-size: .75rem;
+    margin-bottom: 0;
+}
+
+.inv-text-input {
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 3px 7px;
+    width: 180px;
+    color: #2a4f6b;
+}
+
+.inv-text-input:focus {
+    outline: none;
+    border-color: #33638B;
+}
+
+.inv-unit-select {
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 3px 5px;
+    color: #2a4f6b;
+}
+
+.inv-unit-select:focus {
+    outline: none;
+    border-color: #33638B;
+}
+
+.inv-create-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 2px;
+}
+
+.inv-create-actions button {
+    margin-bottom: 0;
+}
+
+/* Section headers */
+.inv-section-header {
+    font-size: .9rem;
+    font-weight: 800;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 20px 0 8px 0;
+    border-bottom: 2px solid #c4d9e8;
+    padding-bottom: 4px;
+}
+
+/* Table alignment helpers */
+.inv-th-left {
+    text-align: left !important;
+    padding-left: 10px !important;
+}
+
+.inv-td-left {
+    text-align: left !important;
+}
+
+/* Dimmed row for out-of-stock / unavailable items */
+.inv-row--dim {
+    opacity: 0.72;
+}
+
+/* Status badges */
+.inv-badge {
+    display: inline-block;
+    font-size: .68rem;
+    color: white;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 7px;
+    font-family: 'Renner', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .04rem;
+    vertical-align: middle;
+    font-weight: 700;
+}
+
+.inv-badge--unavailable {
+    background-color: #c0392b;
+}
+
+.inv-badge--out {
+    background-color: #c0392b;
+}
+
+/* Affected drinks label */
+.inv-affects {
+    font-size: .82rem;
+    color: #5a85a0;
+    font-family: 'Renner', sans-serif;
+    font-style: italic;
+}
+
+/* Inline quantity inputs */
+.inv-qty-input {
+    width: 78px;
+    font-family: 'Renner', sans-serif;
+    font-size: .85rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 2px 5px;
+    text-align: right;
+    color: #2a4f6b;
+}
+
+.inv-qty-input:focus {
+    outline: none;
+    border-color: #33638B;
+}
+
+/* Highlighted input when ingredient is being re-enabled */
+.inv-qty-input--activate {
+    border-color: #33638B;
+    border-width: 2px;
+    background-color: #eef5fa;
+}
+
+/* Invalid / negative value state */
+.inv-input-error {
+    border: 2px solid #c0392b !important;
+    background-color: #fff0f0 !important;
+}
+
+/* Error message */
+.inv-error {
+    color: #c0392b;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .04rem;
+    margin: 6px 0;
+}
+
+/* Save success feedback */
+.inv-save-success {
+    color: #2e7d32;
+    font-family: 'Renner', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .04rem;
+}
+
+/* Toggle switch */
+label.inv-toggle {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+    vertical-align: middle;
+    /* Reset global label overrides */
+    color: inherit;
+    text-transform: none;
+    letter-spacing: normal;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.inv-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.inv-toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #c4d9e8;
+    border-radius: 20px;
+    transition: background-color .2s;
+}
+
+.inv-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    top: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform .2s;
+}
+
+.inv-toggle input:checked + .inv-toggle-slider {
+    background-color: #33638B;
+}
+
+.inv-toggle input:checked + .inv-toggle-slider:before {
+    transform: translateX(18px);
+}
+
+.inv-toggle input:disabled + .inv-toggle-slider {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* Toggle cell layout (toggle + optional hint stacked) */
+.inv-toggle-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.inv-activate-hint {
+    font-family: 'Renner', sans-serif;
+    font-size: .7rem;
+    color: #33638B;
+    font-style: italic;
+    letter-spacing: .02rem;
+    margin: 0;
+    white-space: nowrap;
 }

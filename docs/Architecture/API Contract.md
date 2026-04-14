@@ -971,7 +971,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**   
 + Customers can view their orders
-+ Business can view any order
++ Business can view any non-draft order
   
 **Success Response (200 OK):**  
 ```
@@ -1111,9 +1111,9 @@ Authorization: Bearer <accessToken>
 
 ## List Orders  
 **Endpoint:** `<GET> /api/v1/orders`, `<GET> /api/v1/orders?page=2&pageSize=20`, `<GET> /api/v1/orders?dateCreated=YYYY-MM-DD`, `<GET> /api/v1/orders?status=pending`  
-**Description:** Returns a list of orders  
+**Description:** Returns a list of orders. Excludes Draft orders  
 **Authentication:** `Bearer <accessToken>`  
-**Role:** Business owner  
+**Role:** Business  
 **URL Parameters:**  
 + page (optional)
 + pageSize (optional. default pageSize is 25, max is 200)
@@ -1130,6 +1130,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**
 + Endpoint only available to users with the business role
++ Will NOT return Draft orders
 + Returns number of returned objects
 + Returns next and previous page urls
 + Returns a collection of orders
@@ -1912,73 +1913,1125 @@ Authorization: Bearer <accessToken>
 }
 ```
 
+## Create Categories (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/categories`  
+**Description:** Creates a new category  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:**  
++ name
+
+### Request
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**  
+```
+{
+    "name": "desserts",
+}
+```
+**Rules:**  
++ accessToken must link to a user with the BUSINESS role
++ must include a unique name
+
+**Success Response (201 Created):** 
+```
+{
+    "message": "category desserts created",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/desserts.png"
+    }
+}
+``` 
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "category name not unique"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+
+## Update Categories (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/categories/{categoryId}`  
+**Description:** Updates an existing category   
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** categoryId  
+**Request Parameters:**  
++ name (OPTIONAL)
++ isActive (OPTIONL)
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+
+**Body:**
+```
+{
+    "name": "sweets"
+}
+```
+**Rules:**
++ Must use an existing categoryId  
++ Category names must remain unique
++ Request body must include at least one field  
++ Success response will return the changed field and the new value
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+
+**Success Response (200 OK):**
+```
+{
+    "message": "category desserts updated",
+    "category": {
+        "id": 1,
+        "name": "desserts",
+        "imageUrl": "https://storename.com/media/categories/cake.png"
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "missing changes or name in use"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+
+
+## Create Modifiers Group (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/variants/{variantId}/modifier-groups`  
+**Description:** Create a new modifier group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ variantId 
+**Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
+  
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "name": "toppings",
+    "required": false,
+    "minSelections": 0,
+    "maxSelections": 5
+}
+```
+**Rules:**
++ Must use existing variant
++ name bust be unique per variant
++ minSelections must be >= 0
++ maxSelections must be >= minSelections
++ if required is true, minSelections must be >= 1
++ creating a modifier group automatically updates the related variant product's hasModifiers to true
+**Success Response (201 Created):**
+```
+{
+    "message": "modifier group toppings created",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 5
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Update Modifiers Group (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/modifiers/groups/{groupId}`  
+**Description:** Update an existing modifier group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** 
++ groupId
+**Request Parameters:**
++ name
++ required
++ minSelections
++ maxSelections
++ isActive
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "maxSelections": 3
+}
+```
+**Rules:**
++ must use existing group
++ All fields are optional
++ name must remain unique per variant
++ min and max selections must remain valid
++ required must remain consistent with min selections
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+**Success Response (200 OK):**
+```
+{
+    "message": "modifier group toppings updated",
+    "modifierGroup": {
+        "id": 1,
+        "variantId": 5,
+        "name": "toppings",
+        "required": false,
+        "minSelections": 0,
+        "maxSelections": 3
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid selection rules or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Create Modifiers Option (OUT OF SCOPE)
+**Endpoint:** `POST /api/v1/modifier-groups/{groupId}/options`  
+**Description:** Create new modifier option in a group
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ groupId
+**Request Parameters:**
++ name
++ priceAdjustment
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "name": "pepperoni",
+    "priceAdjustment": 1.50,
+}
+```
+**Rules:**
++ Must use an existing group
++ name must be unique per group
++ priceAdjustment can be positive or negative
+
+**Success Response (201 Created):**
+{
+    "message": "modifier option pepperoni created",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 1.50,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
+}
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
+## Update Modifiers Option (OUT OF SCOPE)
+**Endpoint:** `PATCH /api/v1/modifiers/options/{optionId}`  
+**Description:** Updates an existing modifier option
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**
++ optionId
+**Request Parameters:**
++ name
++ priceAdjustment
++ isActive
+
+### Request
+**Header:**
+```
+Authorization: Bearer <accessToken>
+Content-Type: application/json
+```
+**Body:**
+```
+{
+    "priceAdjustment": 2.00
+}
+```
+**Rules:**
++ must use an existing option
++ all fields are optional
++ name must remain unique per group
++ price adjustment can be positive or negative
++ isActive can be used to deactivate or activate catalog items, WARNING: 'isActive = false' has a cascading effect, meaning **all child objects** will also set isActive to false. Inventory usages are not affected.
++ When using 'isActive = true', the parent objects MUST be active AND the effect **does not cascade**
+
+**Success Response (200 OK):**
+```
+{
+    "message": "modifier option pepperoni updated",
+    "modifierOption": {
+        "id": 1,
+        "groupId": 2,
+        "name": "pepperoni",
+        "priceAdjustment": 2.00,
+        "imageUrl": "https://storename.com/media/modifiers/pepperoni.png"
+    }
+}
+```
+**Bad Request (400)**:
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or duplicate name"
+}
+```
+
+**Unauthorized (401)**:
+```
+{
+    "error": "UNAUTHORIZED",
+    "message": "missing or expired access token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+
 # Inventory API
-## View Inventory levels
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
 
-## Adjust inventory
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+## View ProductVariant Inventory  
+**Endpoint:** `<GET> /api/v1/inventory/variants?page=2&pageSize=25`  
+**Description:** Returns a paginated collection of all ProductVariants with their current stock levels  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ page (optional, default = 1)  
++ pageSize (optional, default = 25, max = 200)
 
-## Low-stock report
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:** None  
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns a paginated collection of ProductVariants  
++ Includes all variants regardless of stock level  
++ stockQuantity and reorderLevel may be null  
 
-## (Optional) Inventory usage
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+### Success Response (200 OK):  
+```
+body
+{
+    "count": 50,
+    "pageSize": 25,
+    "next": "/api/v1/inventory/variants?page=2&pageSize=25",
+    "previous": null,
+    "results": [
+        {
+            "id": 2001,
+            "stockQuantity": 15,
+            "reorderLevel": 5
+        },
+        {
+            "id": 2002,
+            "stockQuantity": 5,
+            "reorderLevel": 5
+        }
+    ]
+}
+```
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "user does not have this permission"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_QUERY_PARAMS",
+    "message": "invalid page or pageSize value"
+}
+```
+
+## View InventoryItem Inventory  
+**Endpoint:** `<GET> /api/v1/inventory/items?page=2&pageSize=25`  
+**Description:** Returns a paginated collection of all InventoryItems with their current stock levels  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ page (optional, default = 1)  
++ pageSize (optional, default = 25, max = 200)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:** None  
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns a paginated collection of InventoryItems  
++ Includes all items regardless of stock level  
++ stockQuantity and reorderLevel may be null  
+
+### Success Response (200 OK):  
+```
+body
+{
+    "count": 30,
+    "pageSize": 25,
+    "next": "/api/v1/inventory/items?page=2&pageSize=25",
+    "previous": null,
+    "results": [
+        {
+            "id": 8001,
+            "stockQuantity": 40,
+            "reorderLevel": 10
+        },
+        {
+            "id": 8002,
+            "stockQuantity": 120,
+            "reorderLevel": 30
+        }
+    ]
+}
+```
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_QUERY_PARAMS",
+    "message": "invalid page or pageSize value"
+}
+```
+
+## Update InventoryItem  
+**Endpoint:** `<PATCH> /api/v1/inventory/items/{inventoryItemId}`  
+**Description:** Updates fields of an existing InventoryItem  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ inventoryItemId  
+
+**Request Parameters:**  
++ name (optional)  
++ stockQuantity (optional)  
++ unitOfMeasure (optional)  
++ reorderLevel (optional)  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+Content-Type: application/json
+```
+**Body:**  
+```
+{
+    "name": "Pizza Dough",
+    "stockQuantity": 50,
+    "unitOfMeasure": "units",
+    "reorderLevel": 15
+}
+```
+**Rules:**  
++ Must have Only available to users with the BUSINESS role  
++ inventoryItemId must reference an existing InventoryItem  
++ All fields are optional, but at least one field must be provided  
++ if included, name must be unique and a non-empty string  
++ stockQuantity must be >= 0 if provided  
++ reorderLevel must be >= 0 if provided  
++ unitOfMeasure must be "units", "oz", "lb", "g" (grams), "ml", or "l" (liters)
++ unitOfMeasure CANNOT be updated if stockQuantity is not null (existing value in database)  
+
+### Success Response (200 OK):  
+```
+{
+    "id": 8001,
+    "name": "Pizza Dough",
+    "stockQuantity": 50,
+    "unitOfMeasure": "units",
+    "reorderLevel": 15
+}
+```
+
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+### Bad Request (400):  
+```
+{
+    "error": "INVALID_DATA",
+    "message": "invalid input or no fields provided"
+}
+```
+### Conflict (409):  
+```
+{
+    "error": "UNIT_OF_MEASURE_LOCKED",
+    "message": "unitOfMeasure cannot be changed when stockQuantity is not null"
+}
+```
+### Not Found (404):  
+```
+{
+    "error": "NOT_FOUND",
+    "message": "inventory item not found"
+}
+```
+
+
+## Low-stock report  
+**Endpoint:** `<GET> /api/v1/inventory/low-stock`  
+**Description:** Returns collections of ProductVariants and InventoryItems where stockQuantity <= reorderLevel  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:** None  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+
+**Body:** None  
+
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Returns two collections: productVariants and inventoryItems  
++ Includes only records where stockQuantity <= reorderLevel  
++ stockQuantity and reorderLevel must not be null to be included  
++ Results are not paginated (can be added later if needed)  
+
+### Success Response (200 OK):  
+```
+body
+
+{
+    "productVariants": [
+        {
+            "id": 2002,
+            "stockQuantity": 5,
+            "reorderLevel": 5
+        },
+        {
+            "id": 2005,
+            "stockQuantity": 2,
+            "reorderLevel": 10
+        }
+    ],
+    "inventoryItems": [
+        {
+            "id": 8001,
+            "stockQuantity": 10,
+            "reorderLevel": 10
+        },
+        {
+            "id": 8003,
+            "stockQuantity": 20,
+            "reorderLevel": 25
+        }
+    ]
+}
+```
+
+### Unauthorized (401):  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+### Forbidden (403):  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "user does not have this permission"
+}
+```
+
 
 
 # Reporting API
-## View Sales
-**Endpoint:**
-**Description:**
-**Authentication:**
-**Role:**
-**URL Parameters:**
-**Request Parameters:**
-### Request
-**Header:**
-**Body:**
-**Rules:**
-**Success Response (200 OK):**
+## View Sales Summary  
+**Endpoint:** `<GET> /api/v1/reports/sales/summary?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&groupBy=day`  
+**Description:** Returns aggregated sales data over a specified time range. Includes total revenue, total orders, average order value, and optional breakdown grouped by day, week, or month. Aggregates are based on completed orders only.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ groupBy (optional: day, week, month)  
+
+**Request Parameters:** None  
+
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```
+
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings (YYYY-MM-DD or full timestamp)  
++ endDate must be greater than or equal to startDate  
++ groupBy defaults to day if not provided  
++ Only orders with status COMPLETED are included in calculations  
++ Monetary values are returned as decimal numbers  
++ If no data exists in the given range, returns zeroed summary with empty breakdown  
+
+**Success Response (200 OK)**:  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-07",
+    "groupBy": "day",
+    "totalRevenue": 12500.50,
+    "totalOrders": 320,
+    "averageOrderValue": 39.06,
+    "breakdown": [
+        {
+            "period": "2026-04-01",
+            "revenue": 1200.00,
+            "orders": 30
+        },
+        {
+            "period": "2026-04-02",
+            "revenue": 1500.00,
+            "orders": 40
+        }
+    ]
+}
+
+or
+
+{
+    "startDate": "2026-01-01",
+    "endDate": "2026-03-31",
+    "groupBy": "month",
+    "totalRevenue": 38500.75,
+    "totalOrders": 980,
+    "averageOrderValue": 39.29,
+    "breakdown": [
+        {
+            "period": "2026-01",
+            "revenue": 12000.25,
+            "orders": 300
+        },
+        {
+            "period": "2026-02",
+            "revenue": 13500.50,
+            "orders": 340
+        },
+        {
+            "period": "2026-03",
+            "revenue": 13000.00,
+            "orders": 340
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400)**:  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+or
+
+{
+    "error": "INVALID_GROUP_BY",
+    "message": "groupBy must be one of: day, week, month"
+}
+```
+
+**Unauthorized (401)**:  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403)**:  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## View Best Sellers  
+**Endpoint:** `<GET> /api/v1/reports/sales/best-sellers?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&limit=10`  
+**Description:** Returns the top-selling products within a specified time range. Aggregates total quantity sold and gross sales at the **product level**, summing across all child variants using historical OrderItem data. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ limit (optional, integer, default 10, max 100)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```
+**Body:** None  
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ limit defaults to 10 and cannot exceed 100  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the product level (summing all child variants)  
++ quantitySold is the sum of OrderItem.quantity  
++ grossSales is the sum of OrderItem.itemTotal (derived from unitPriceCharged * quantity)  
++ Results are sorted in descending order by quantitySold  
+
+**Success Response (200 OK)**:  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "limit": 5,
+    "results": [
+        {
+            "productId": 100,
+            "productName": "Pizza",
+            "quantitySold": 250,
+            "grossSales": 3125.00
+        },
+        {
+            "productId": 105,
+            "productName": "Burger",
+            "quantitySold": 180,
+            "grossSales": 1980.00
+        },
+        {
+            "productId": 110,
+            "productName": "Pasta",
+            "quantitySold": 140,
+            "grossSales": 2100.00
+        }
+    ]
+}
+```
+**Missing / Invalid Fields (400)**:  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+or
+
+{
+    "error": "INVALID_LIMIT",
+    "message": "limit must be between 1 and 100"
+}
+```
+
+**Unauthorized (401)**:  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Forbidden (403)**:  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+
+## View Worst Sellers  
+**Endpoint:** `<GET> /api/v1/reports/sales/worst-sellers?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&limit=10`  
+**Description:** Returns the lowest-selling products within a specified time range. Aggregates total quantity sold and gross sales at the product level, summing across all child variants using historical OrderItem data. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
++ limit (optional, integer, default 10, max 100)  
+
+**Request Parameters:** None  
+
+### Request 
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```  
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ limit defaults to 10 and cannot exceed 100  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the product level (summing all child variants)  
++ quantitySold is the sum of OrderItem.quantity  
++ grossSales is the sum of OrderItem.itemTotal  
++ Results are sorted in ascending order by quantitySold  
+
+**Success Response (200 OK):**  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "limit": 5,
+    "results": [
+        {
+            "productId": 120,
+            "productName": "Salad",
+            "quantitySold": 12,
+            "grossSales": 96.00
+        },
+        {
+            "productId": 130,
+            "productName": "Soup",
+            "quantitySold": 18,
+            "grossSales": 135.00
+        },
+        {
+            "productId": 140,
+            "productName": "Smoothie",
+            "quantitySold": 22,
+            "grossSales": 176.00
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400):**  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
 
 
+or
+
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+
+
+or
+
+
+{
+    "error": "INVALID_LIMIT",
+    "message": "limit must be between 1 and 100"
+}
+```
+
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403):**  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
+## View Sales by Category  
+**Endpoint:** `<GET> /api/v1/reports/sales/by-category?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`  
+**Description:** Returns aggregated sales data grouped by product category within a specified time range. Totals are calculated at the category level by aggregating OrderItem data across all product variants belonging to products within each category. Only completed orders are included.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+
+**URL Parameters:**  
++ startDate (required, ISO 8601 date string)  
++ endDate (required, ISO 8601 date string)  
+
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>
+```  
+**Body:** None  
+
+**Rules:**  
++ startDate and endDate are required and must be valid ISO 8601 date strings  
++ endDate must be greater than or equal to startDate  
++ Only orders with status COMPLETED are included  
++ Aggregation is performed at the category level through Product → Variant → OrderItem relationships  
++ quantitySold is the sum of OrderItem.quantity across all variants in the category  
++ grossSales is the sum of OrderItem.itemTotal across all variants in the category  
++ Categories with no sales in the given range are not included in results  
++ Results are sorted in descending order by grossSales  
+
+**Success Response (200 OK):**  
+```
+body
+
+{
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-30",
+    "results": [
+        {
+            "categoryId": 10,
+            "categoryName": "Food",
+            "quantitySold": 820,
+            "grossSales": 10250.75
+        },
+        {
+            "categoryId": 20,
+            "categoryName": "Beverages",
+            "quantitySold": 430,
+            "grossSales": 2150.50
+        },
+        {
+            "categoryId": 30,
+            "categoryName": "Desserts",
+            "quantitySold": 210,
+            "grossSales": 1680.00
+        }
+    ]
+}
+```
+
+**Missing / Invalid Fields (400):**  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "startDate and endDate are required",
+    "fields": {
+        "startDate": "required",
+        "endDate": "required"
+    }
+}
+
+or
+
+{
+    "error": "INVALID_DATE_RANGE",
+    "message": "endDate must be greater than or equal to startDate"
+}
+```
+
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+
+**Forbidden (403):**  
+```
+{
+    "error": "INVALID_ROLE",
+    "message": "user does not have this permission"
+}
+```
 ---

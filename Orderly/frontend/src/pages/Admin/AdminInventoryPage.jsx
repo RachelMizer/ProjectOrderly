@@ -6,6 +6,7 @@
  * Inventory is separated into two categories:
  * 1. Ingredient-Controlled Beverage Availability
  *    - Core ingredients whose stock determines drink availability
+ *    - Toggle switch marks ingredient in/out of stock
  *    - Example: Milk affects Latte, Cappuccino, and Mocha
  *
  * 2. Count-Based Inventory Items
@@ -28,26 +29,18 @@ import { handleApiError } from "../../api/handleApiError";
 
 const UNIT_LABELS = {
   units: "Units",
-  oz: "Ounces",
-  lb: "Pounds",
-  g: "Grams",
-  ml: "Milliliters",
-  l: "Liters",
+  oz: "oz",
+  lb: "lb",
+  g: "g",
+  ml: "ml",
+  l: "L",
 };
 
-const DEPENDENCY_INGREDIENTS = [
-  "Milk",
-  "Espresso Beans",
-  "Mocha Syrup",
-  "Green Tea Leaves",
-];
 
-const AFFECTED_DRINKS = {
-  Milk: ["Latte", "Cappuccino", "Mocha"],
-  "Espresso Beans": ["Latte", "Cappuccino", "Mocha"],
-  "Mocha Syrup": ["Mocha"],
-  "Green Tea Leaves": ["Green Tea"],
-};
+function isNegative(value) {
+  if (value === "" || value === null || value === undefined) return false;
+  return Number(value) < 0;
+}
 
 export default function AdminInventoryPage() {
   const navigate = useNavigate();
@@ -58,8 +51,19 @@ export default function AdminInventoryPage() {
   const [saveError, setSaveError] = useState("");
   const [savingItemId, setSavingItemId] = useState(null);
   const [editValues, setEditValues] = useState({});
+  const [successItemId, setSuccessItemId] = useState(null);
+  const [activatingItemId, setActivatingItemId] = useState(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [ingredientSortKey, setIngredientSortKey] = useState("name");
+  const [ingredientSortDir, setIngredientSortDir] = useState("asc");
+  const [countSortKey, setCountSortKey] = useState("name");
+  const [countSortDir, setCountSortDir] = useState("asc");
+
+  const [showCreate, setShowCreate] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [createSuccess, setCreateSuccess] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newItem, setNewItem] = useState({
     name: "",
@@ -73,7 +77,6 @@ export default function AdminInventoryPage() {
       try {
         setLoading(true);
         setErrorMessage("");
-
         const data = await fetchInventory();
         setInventoryItems(data);
       } catch (error) {
@@ -87,21 +90,30 @@ export default function AdminInventoryPage() {
         setLoading(false);
       }
     }
-
     loadInventory();
   }, [navigate]);
 
-  function getEditValue(itemId, fieldName, fallbackValue) {
-    return editValues[itemId]?.[fieldName] ?? fallbackValue ?? "";
+  function flashSuccess(itemId) {
+    setSuccessItemId(itemId);
+    setTimeout(
+      () => setSuccessItemId((prev) => (prev === itemId ? null : prev)),
+      2500
+    );
+  }
+
+  function flashCreateSuccess() {
+    setCreateSuccess(true);
+    setTimeout(() => setCreateSuccess(false), 2500);
+  }
+
+  function getEditValue(itemId, fieldName, fallback) {
+    return editValues[itemId]?.[fieldName] ?? fallback ?? "";
   }
 
   function handleEditChange(itemId, fieldName, value) {
     setEditValues((prev) => ({
       ...prev,
-      [itemId]: {
-        ...prev[itemId],
-        [fieldName]: value,
-      },
+      [itemId]: { ...prev[itemId], [fieldName]: value },
     }));
   }
 
@@ -115,7 +127,6 @@ export default function AdminInventoryPage() {
         "stock_quantity",
         item.stock_quantity
       );
-
       const reorderLevel = getEditValue(
         item.id,
         "reorder_level",
@@ -136,23 +147,17 @@ export default function AdminInventoryPage() {
       const updatedItem = await updateInventoryItem(item.id, payload);
 
       setInventoryItems((prev) =>
-        prev.map((inventoryItem) =>
-          inventoryItem.id === updatedItem.id ? updatedItem : inventoryItem
-        )
+        prev.map((i) => (i.id === updatedItem.id ? updatedItem : i))
       );
-
-      setEditValues((prev) => ({
-        ...prev,
-        [item.id]: {},
-      }));
+      setEditValues((prev) => ({ ...prev, [item.id]: {} }));
+      setActivatingItemId(null);
+      flashSuccess(item.id);
     } catch (error) {
       if (error?.response?.status === 403) {
         handleApiError(error, navigate);
       } else {
         console.error("Failed to update inventory item:", error);
-
         const backendData = error?.response?.data;
-
         if (backendData?.stock_quantity?.length) {
           setSaveError(backendData.stock_quantity[0]);
         } else if (backendData?.reorder_level?.length) {
@@ -174,11 +179,58 @@ export default function AdminInventoryPage() {
     }
   }
 
+  async function handleToggleAvailability(item) {
+    const isAvailable = Number(item.stock_quantity) > 0;
+
+    if (isAvailable) {
+      // Toggle OFF: immediately zero out stock and save
+      try {
+        setSavingItemId(item.id);
+        setSaveError("");
+        const updatedItem = await updateInventoryItem(item.id, {
+          stock_quantity: 0,
+          reorder_level: null,
+        });
+        setInventoryItems((prev) =>
+          prev.map((i) => (i.id === updatedItem.id ? updatedItem : i))
+        );
+        setEditValues((prev) => ({ ...prev, [item.id]: {} }));
+        flashSuccess(item.id);
+      } catch (error) {
+        if (error?.response?.status === 403) {
+          handleApiError(error, navigate);
+        } else {
+          const backendData = error?.response?.data;
+          if (backendData?.reorder_level?.length) {
+            setSaveError(backendData.reorder_level[0]);
+          } else if (backendData?.stock_quantity?.length) {
+            setSaveError(backendData.stock_quantity[0]);
+          } else if (backendData?.non_field_errors?.length) {
+            setSaveError(backendData.non_field_errors[0]);
+          } else if (backendData?.detail) {
+            setSaveError(backendData.detail);
+          } else {
+            setSaveError("Unable to mark ingredient unavailable");
+          }
+        }
+      } finally {
+        setSavingItemId(null);
+      }
+    } else {
+      // Toggle ON: prompt admin to enter a new stock quantity
+      setActivatingItemId(item.id);
+      setEditValues((prev) => ({
+        ...prev,
+        [item.id]: {
+          ...prev[item.id],
+          stock_quantity: prev[item.id]?.stock_quantity ?? "",
+        },
+      }));
+    }
+  }
+
   function handleCreateChange(fieldName, value) {
-    setNewItem((prev) => ({
-      ...prev,
-      [fieldName]: value,
-    }));
+    setNewItem((prev) => ({ ...prev, [fieldName]: value }));
   }
 
   async function handleCreateItem() {
@@ -200,21 +252,19 @@ export default function AdminInventoryPage() {
       setInventoryItems((prev) =>
         [...prev, createdItem].sort((a, b) => a.name.localeCompare(b.name))
       );
-
       setNewItem({
         name: "",
         stock_quantity: "",
         unit_of_measure: "units",
         reorder_level: "",
       });
+      flashCreateSuccess();
     } catch (error) {
       if (error?.response?.status === 403) {
         handleApiError(error, navigate);
       } else {
         console.error("Failed to create inventory item:", error);
-
         const backendData = error?.response?.data;
-
         if (backendData?.name?.length) {
           setCreateError(backendData.name[0]);
         } else if (backendData?.stock_quantity?.length) {
@@ -238,8 +288,53 @@ export default function AdminInventoryPage() {
     }
   }
 
+  function handleSort(key, currentKey, currentDir, setKey, setDir) {
+    if (currentKey === key) {
+      setDir((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setKey(key);
+      setDir("asc");
+    }
+  }
+
+  function getSortValue(item, key) {
+    switch (key) {
+      case "name":
+        return item.name?.toLowerCase() ?? "";
+      case "stock_quantity":
+        return Number(item.stock_quantity) ?? 0;
+      case "reorder_level":
+        return item.reorder_level === null || item.reorder_level === undefined
+          ? Infinity
+          : Number(item.reorder_level);
+      default:
+        return "";
+    }
+  }
+
+  function sortItems(items, key, dir) {
+    return [...items].sort((a, b) => {
+      const av = getSortValue(a, key);
+      const bv = getSortValue(b, key);
+      if (av < bv) return dir === "asc" ? -1 : 1;
+      if (av > bv) return dir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  function SortIndicator({ tableKey, col, tableDir }) {
+    if (tableKey !== col)
+      return (
+        <span className="sort-indicator sort-indicator--inactive">⇅</span>
+      );
+    return (
+      <span className="sort-indicator">{tableDir === "asc" ? "▲" : "▼"}</span>
+    );
+  }
+
   function handleCancelCreate() {
     setCreateError("");
+    setShowCreate(false);
     setNewItem({
       name: "",
       stock_quantity: "",
@@ -248,99 +343,117 @@ export default function AdminInventoryPage() {
     });
   }
 
-  const ingredientItems = inventoryItems.filter((item) =>
-    DEPENDENCY_INGREDIENTS.includes(item.name)
+  const query = searchQuery.trim().toLowerCase();
+
+  const ingredientItems = sortItems(
+    inventoryItems
+      .filter((item) => item.affected_products?.length > 0)
+      .filter((item) => !query || item.name.toLowerCase().includes(query)),
+    ingredientSortKey,
+    ingredientSortDir
   );
 
-  const countBasedItems = inventoryItems.filter(
-    (item) => !DEPENDENCY_INGREDIENTS.includes(item.name)
+  const countBasedItems = sortItems(
+    inventoryItems
+      .filter((item) => !item.affected_products?.length)
+      .filter((item) => !query || item.name.toLowerCase().includes(query)),
+    countSortKey,
+    countSortDir
   );
 
   return (
     <div>
-      <h2>Admin Inventory</h2>
+      {/* Submenu bar */}
+      <div className="submenu-bar">
+        <span className="submenu-label">Inventory</span>
+        <input
+          className="submenu-search"
+          type="text"
+          placeholder="Search inventory..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <div className="submenu-actions">
+          <button
+            type="button"
+            className="submenu-action"
+            onClick={() => setShowCreate((v) => !v)}
+          >
+            {showCreate ? "CANCEL" : "+ ADD ITEM"}
+          </button>
+        </div>
+      </div>
 
-      {loading && <p>Loading inventory...</p>}
+      {/* Create item panel */}
+      {showCreate && (
+        <div className="inv-create-panel">
+          <p className="submenu-label inv-create-panel__title">
+            New Inventory Item
+          </p>
+          <div className="inv-create-grid">
+            <div className="inv-field">
+              <label>Name</label>
+              <input
+                type="text"
+                value={newItem.name}
+                onChange={(e) => handleCreateChange("name", e.target.value)}
+                placeholder="Item name"
+                className="inv-text-input"
+              />
+            </div>
 
-      {!loading && errorMessage && <p>{errorMessage}</p>}
+            <div className="inv-field">
+              <label>Stock Qty</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newItem.stock_quantity}
+                onChange={(e) =>
+                  handleCreateChange("stock_quantity", e.target.value)
+                }
+                className={`inv-qty-input${isNegative(newItem.stock_quantity) ? " inv-input-error" : ""}`}
+              />
+            </div>
 
-      {!loading && saveError && saveError !== "{}" && (
-        <p style={{ color: "red", fontWeight: "bold" }}>{saveError}</p>
-      )}
+            <div className="inv-field">
+              <label>Unit</label>
+              <select
+                value={newItem.unit_of_measure}
+                onChange={(e) =>
+                  handleCreateChange("unit_of_measure", e.target.value)
+                }
+                className="inv-unit-select"
+              >
+                <option value="units">Units</option>
+                <option value="oz">Ounces</option>
+                <option value="lb">Pounds</option>
+                <option value="g">Grams</option>
+                <option value="ml">Milliliters</option>
+                <option value="l">Liters</option>
+              </select>
+            </div>
 
-      {!loading && createError && (
-        <p style={{ color: "red", fontWeight: "bold" }}>{createError}</p>
-      )}
+            <div className="inv-field">
+              <label>Reorder Level</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newItem.reorder_level}
+                onChange={(e) =>
+                  handleCreateChange("reorder_level", e.target.value)
+                }
+                className={`inv-qty-input${isNegative(newItem.reorder_level) ? " inv-input-error" : ""}`}
+              />
+            </div>
 
-      {!loading && !errorMessage && (
-        <>
-          <section style={{ marginBottom: "2rem" }}>
-            <h3>Create Inventory Item</h3>
-
-            <div style={{ marginBottom: "0.75rem" }}>
-              <label style={{ marginRight: "1rem" }}>
-                Name:{" "}
-                <input
-                  type="text"
-                  value={newItem.name}
-                  onChange={(event) =>
-                    handleCreateChange("name", event.target.value)
-                  }
-                />
-              </label>
-
-              <label style={{ marginRight: "1rem" }}>
-                Stock Quantity:{" "}
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newItem.stock_quantity}
-                  onChange={(event) =>
-                    handleCreateChange("stock_quantity", event.target.value)
-                  }
-                  style={{ width: "90px" }}
-                />
-              </label>
-
-              <label style={{ marginRight: "1rem" }}>
-                Unit of Measure:{" "}
-                <select
-                  value={newItem.unit_of_measure}
-                  onChange={(event) =>
-                    handleCreateChange("unit_of_measure", event.target.value)
-                  }
-                >
-                  <option value="units">Units</option>
-                  <option value="oz">Ounces</option>
-                  <option value="lb">Pounds</option>
-                  <option value="g">Grams</option>
-                  <option value="ml">Milliliters</option>
-                  <option value="l">Liters</option>
-                </select>
-              </label>
-
-              <label style={{ marginRight: "1rem" }}>
-                Reorder Level:{" "}
-                <input
-                  type="number"
-                  step="0.01"
-                  value={newItem.reorder_level}
-                  onChange={(event) =>
-                    handleCreateChange("reorder_level", event.target.value)
-                  }
-                  style={{ width: "90px" }}
-                />
-              </label>
-
+            <div className="inv-create-actions">
               <button
                 type="button"
                 onClick={handleCreateItem}
                 disabled={creating}
-                style={{ marginRight: "0.5rem" }}
               >
                 {creating ? "Creating..." : "Create"}
               </button>
-
               <button
                 type="button"
                 onClick={handleCancelCreate}
@@ -349,185 +462,378 @@ export default function AdminInventoryPage() {
                 Cancel
               </button>
             </div>
-          </section>
+          </div>
 
-          <section>
-            <h3>Ingredient-Controlled Beverage Availability</h3>
+          {createError && <p className="inv-error">{createError}</p>}
+          {createSuccess && (
+            <p className="inv-save-success">Item created successfully.</p>
+          )}
+        </div>
+      )}
 
-            {ingredientItems.length === 0 && (
-              <p>No dependency-controlled ingredients found.</p>
-            )}
+      {/* Load / global error / save error */}
+      {loading && <p>Loading inventory...</p>}
+      {!loading && errorMessage && (
+        <p className="inv-error">{errorMessage}</p>
+      )}
+      {!loading && saveError && saveError !== "{}" && (
+        <p className="inv-error">{saveError}</p>
+      )}
 
-            {ingredientItems.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  marginBottom: "1rem",
-                  opacity: Number(item.stock_quantity) === 0 ? 0.7 : 1,
-                }}
-              >
-                <strong>
-                  {item.name}
-                  {Number(item.stock_quantity) === 0 && (
-                    <span style={{ color: "red", marginLeft: "0.5rem" }}>
-                      (UNAVAILABLE)
-                    </span>
-                  )}
-                </strong>
+      {!loading && !errorMessage && (
+        <>
+          {/* ── Section 1: Ingredient-Controlled ── */}
+          <h3 className="inv-section-header">
+            Ingredient-Controlled Beverage Availability
+          </h3>
 
-                <div>
-                  Stock: {item.stock_quantity}{" "}
-                  {UNIT_LABELS[item.unit_of_measure] || item.unit_of_measure}
-                </div>
-
-                <div>Reorder Level: {item.reorder_level ?? "—"}</div>
-
-                <div>
-                  Affects: {AFFECTED_DRINKS[item.name]?.join(", ") || "—"}
-                </div>
-
-                <div style={{ marginTop: "0.5rem" }}>
-                  <label style={{ marginRight: "1rem" }}>
-                    Stock Quantity:{" "}
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={getEditValue(
-                        item.id,
-                        "stock_quantity",
-                        item.stock_quantity
-                      )}
-                      onChange={(event) =>
-                        handleEditChange(
-                          item.id,
-                          "stock_quantity",
-                          event.target.value
-                        )
-                      }
-                      style={{ width: "90px" }}
-                    />
-                  </label>
-
-                  <label style={{ marginRight: "1rem" }}>
-                    Reorder Level:{" "}
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={getEditValue(
-                        item.id,
-                        "reorder_level",
-                        item.reorder_level
-                      )}
-                      onChange={(event) =>
-                        handleEditChange(
-                          item.id,
-                          "reorder_level",
-                          event.target.value
-                        )
-                      }
-                      style={{ width: "90px" }}
-                    />
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSave(item)}
-                    disabled={savingItemId === item.id}
+          {ingredientItems.length === 0 ? (
+            <p>No dependency-controlled ingredients found.</p>
+          ) : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th
+                    className="admin-th inv-th-left"
+                    onClick={() =>
+                      handleSort(
+                        "name",
+                        ingredientSortKey,
+                        ingredientSortDir,
+                        setIngredientSortKey,
+                        setIngredientSortDir
+                      )
+                    }
                   >
-                    {savingItemId === item.id ? "Saving..." : "Save"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </section>
-
-          <hr />
-
-          <section>
-            <h3>Count-Based Inventory Items</h3>
-
-            {countBasedItems.length === 0 && (
-              <p>No count-based inventory items found.</p>
-            )}
-
-            {countBasedItems.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  marginBottom: "1rem",
-                  opacity: Number(item.stock_quantity) === 0 ? 0.7 : 1,
-                }}
-              >
-                <strong>
-                  {item.name}
-                  {Number(item.stock_quantity) === 0 && (
-                    <span style={{ color: "red", marginLeft: "0.5rem" }}>
-                      (OUT OF STOCK)
-                    </span>
-                  )}
-                </strong>
-
-                <div>
-                  Stock: {item.stock_quantity}{" "}
-                  {UNIT_LABELS[item.unit_of_measure] || item.unit_of_measure}
-                </div>
-
-                <div>Reorder Level: {item.reorder_level ?? "—"}</div>
-
-                <div style={{ marginTop: "0.5rem" }}>
-                  <label style={{ marginRight: "1rem" }}>
-                    Stock Quantity:{" "}
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={getEditValue(
-                        item.id,
+                    Ingredient{" "}
+                    <SortIndicator
+                      tableKey={ingredientSortKey}
+                      col="name"
+                      tableDir={ingredientSortDir}
+                    />
+                  </th>
+                  <th className="admin-th admin-th--no-sort">Affects</th>
+                  <th
+                    className="admin-th"
+                    onClick={() =>
+                      handleSort(
                         "stock_quantity",
-                        item.stock_quantity
-                      )}
-                      onChange={(event) =>
-                        handleEditChange(
-                          item.id,
-                          "stock_quantity",
-                          event.target.value
-                        )
-                      }
-                      style={{ width: "90px" }}
-                    />
-                  </label>
-
-                  <label style={{ marginRight: "1rem" }}>
-                    Reorder Level:{" "}
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={getEditValue(
-                        item.id,
-                        "reorder_level",
-                        item.reorder_level
-                      )}
-                      onChange={(event) =>
-                        handleEditChange(
-                          item.id,
-                          "reorder_level",
-                          event.target.value
-                        )
-                      }
-                      style={{ width: "90px" }}
-                    />
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSave(item)}
-                    disabled={savingItemId === item.id}
+                        ingredientSortKey,
+                        ingredientSortDir,
+                        setIngredientSortKey,
+                        setIngredientSortDir
+                      )
+                    }
                   >
-                    {savingItemId === item.id ? "Saving..." : "Save"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </section>
+                    Current Stock{" "}
+                    <SortIndicator
+                      tableKey={ingredientSortKey}
+                      col="stock_quantity"
+                      tableDir={ingredientSortDir}
+                    />
+                  </th>
+                  <th className="admin-th admin-th--no-sort">Available</th>
+                  <th className="admin-th admin-th--no-sort">Update Stock</th>
+                  <th
+                    className="admin-th"
+                    onClick={() =>
+                      handleSort(
+                        "reorder_level",
+                        ingredientSortKey,
+                        ingredientSortDir,
+                        setIngredientSortKey,
+                        setIngredientSortDir
+                      )
+                    }
+                  >
+                    Reorder Level{" "}
+                    <SortIndicator
+                      tableKey={ingredientSortKey}
+                      col="reorder_level"
+                      tableDir={ingredientSortDir}
+                    />
+                  </th>
+                  <th className="admin-th admin-th--no-sort">Save</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ingredientItems.map((item) => {
+                  const isAvailable = Number(item.stock_quantity) > 0;
+                  const isActivating = activatingItemId === item.id;
+                  const stockVal = getEditValue(
+                    item.id,
+                    "stock_quantity",
+                    item.stock_quantity
+                  );
+                  const reorderVal = getEditValue(
+                    item.id,
+                    "reorder_level",
+                    item.reorder_level
+                  );
+
+                  return (
+                    <tr
+                      key={item.id}
+                      className={!isAvailable ? "inv-row--dim" : ""}
+                    >
+                      <td className="td-name inv-td-left">
+                        {item.name}
+                        {!isAvailable && (
+                          <span className="inv-badge inv-badge--unavailable">
+                            Unavailable
+                          </span>
+                        )}
+                      </td>
+
+                      <td>
+                        <span className="inv-affects">
+                          {item.affected_products?.join(", ") || "—"}
+                        </span>
+                      </td>
+
+                      <td>
+                        {item.stock_quantity}{" "}
+                        {UNIT_LABELS[item.unit_of_measure] ||
+                          item.unit_of_measure}
+                      </td>
+
+                      <td>
+                        <div className="inv-toggle-cell">
+                          <label
+                            className="inv-toggle"
+                            aria-label={`Toggle ${item.name} availability`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isAvailable}
+                              disabled={savingItemId === item.id}
+                              onChange={() => handleToggleAvailability(item)}
+                            />
+                            <span className="inv-toggle-slider" />
+                          </label>
+                          {isActivating && (
+                            <span className="inv-activate-hint">
+                              Enter qty &amp; save
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      <td>
+                        <input
+                          type="number"
+                          step="0.01"
+                          className={[
+                            "inv-qty-input",
+                            isNegative(stockVal) ? "inv-input-error" : "",
+                            isActivating ? "inv-qty-input--activate" : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          value={stockVal}
+                          onChange={(e) =>
+                            handleEditChange(
+                              item.id,
+                              "stock_quantity",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          type="number"
+                          step="0.01"
+                          className={`inv-qty-input${isNegative(reorderVal) ? " inv-input-error" : ""}`}
+                          value={reorderVal}
+                          onChange={(e) =>
+                            handleEditChange(
+                              item.id,
+                              "reorder_level",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+
+                      <td>
+                        {successItemId === item.id ? (
+                          <span className="inv-save-success">Saved!</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="table-action-btn"
+                            onClick={() => handleSave(item)}
+                            disabled={savingItemId === item.id}
+                          >
+                            {savingItemId === item.id ? "Saving..." : "Save"}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+
+          {/* ── Section 2: Count-Based ── */}
+          <h3 className="inv-section-header">Count-Based Inventory</h3>
+
+          {countBasedItems.length === 0 ? (
+            <p>No count-based inventory items found.</p>
+          ) : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th
+                    className="admin-th inv-th-left"
+                    onClick={() =>
+                      handleSort(
+                        "name",
+                        countSortKey,
+                        countSortDir,
+                        setCountSortKey,
+                        setCountSortDir
+                      )
+                    }
+                  >
+                    Item{" "}
+                    <SortIndicator
+                      tableKey={countSortKey}
+                      col="name"
+                      tableDir={countSortDir}
+                    />
+                  </th>
+                  <th
+                    className="admin-th"
+                    onClick={() =>
+                      handleSort(
+                        "stock_quantity",
+                        countSortKey,
+                        countSortDir,
+                        setCountSortKey,
+                        setCountSortDir
+                      )
+                    }
+                  >
+                    Current Stock{" "}
+                    <SortIndicator
+                      tableKey={countSortKey}
+                      col="stock_quantity"
+                      tableDir={countSortDir}
+                    />
+                  </th>
+                  <th className="admin-th admin-th--no-sort">Update Stock</th>
+                  <th
+                    className="admin-th"
+                    onClick={() =>
+                      handleSort(
+                        "reorder_level",
+                        countSortKey,
+                        countSortDir,
+                        setCountSortKey,
+                        setCountSortDir
+                      )
+                    }
+                  >
+                    Reorder Level{" "}
+                    <SortIndicator
+                      tableKey={countSortKey}
+                      col="reorder_level"
+                      tableDir={countSortDir}
+                    />
+                  </th>
+                  <th className="admin-th admin-th--no-sort">Save</th>
+                </tr>
+              </thead>
+              <tbody>
+                {countBasedItems.map((item) => {
+                  const isOutOfStock = Number(item.stock_quantity) === 0;
+                  const stockVal = getEditValue(
+                    item.id,
+                    "stock_quantity",
+                    item.stock_quantity
+                  );
+                  const reorderVal = getEditValue(
+                    item.id,
+                    "reorder_level",
+                    item.reorder_level
+                  );
+
+                  return (
+                    <tr
+                      key={item.id}
+                      className={isOutOfStock ? "inv-row--dim" : ""}
+                    >
+                      <td className="td-name inv-td-left">
+                        {item.name}
+                        {isOutOfStock && (
+                          <span className="inv-badge inv-badge--out">
+                            Out of Stock
+                          </span>
+                        )}
+                      </td>
+
+                      <td>
+                        {item.stock_quantity}{" "}
+                        {UNIT_LABELS[item.unit_of_measure] ||
+                          item.unit_of_measure}
+                      </td>
+
+                      <td>
+                        <input
+                          type="number"
+                          step="0.01"
+                          className={`inv-qty-input${isNegative(stockVal) ? " inv-input-error" : ""}`}
+                          value={stockVal}
+                          onChange={(e) =>
+                            handleEditChange(
+                              item.id,
+                              "stock_quantity",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+
+                      <td>
+                        <input
+                          type="number"
+                          step="0.01"
+                          className={`inv-qty-input${isNegative(reorderVal) ? " inv-input-error" : ""}`}
+                          value={reorderVal}
+                          onChange={(e) =>
+                            handleEditChange(
+                              item.id,
+                              "reorder_level",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+
+                      <td>
+                        {successItemId === item.id ? (
+                          <span className="inv-save-success">Saved!</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="table-action-btn"
+                            onClick={() => handleSave(item)}
+                            disabled={savingItemId === item.id}
+                          >
+                            {savingItemId === item.id ? "Saving..." : "Save"}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </>
       )}
     </div>
