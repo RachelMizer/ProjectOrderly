@@ -59,6 +59,24 @@ function AdminLayout() {
   const path = location.pathname;
 
   function SidebarMenu() {
+    if (path.startsWith("/admin/reports/sales")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Sales Summary</p>
+        <p className="sidebar-desc">View total revenue, units sold, top products, and revenue trends. Filter by year or month to drill into specific periods.</p>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/reports/products")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Product Performance</p>
+        <p className="sidebar-desc">Browse product rankings or select a product to view its revenue trend, best period, and detailed breakdown by day or month.</p>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/reports")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Reports</p>
@@ -70,12 +88,7 @@ function AdminLayout() {
     if (path.startsWith("/admin/inventory")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Inventory</p>
-        <p className="sidebar-sub">Recent Inventory Reports</p>
-        {/* fetch recent inventory reports here when endpoint is available */}
-        <p className="sidebar-empty">No recent files.</p>
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Inventory Report</span>
-        </div>
+        <p className="sidebar-desc">Track and update stock levels for all inventory items. Toggle ingredient availability to control which beverages are offered, and manage count-based items by quantity and reorder level.</p>
         <Link to="/admin" className="sidebar-back">« Go Back</Link>
       </div>
     );

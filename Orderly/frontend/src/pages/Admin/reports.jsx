@@ -28,6 +28,11 @@ function ChartTooltip({ active, payload, label }) {
   );
 }
 
+const ALL_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
 export default function Reports() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +41,12 @@ export default function Reports() {
 
   useEffect(() => {
     fetchSalesSummary({ year: currentYear })
-      .then((data) => setChartData(data.chart_data || []))
+      .then((data) => {
+        const raw = data.chart_data || [];
+        const byLabel = Object.fromEntries(raw.map((m) => [m.label, m]));
+        const padded = ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, units_sold: 0 });
+        setChartData(padded);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -55,7 +65,7 @@ export default function Reports() {
         </div>
       </div>
 
-      {!loading && chartData.length > 0 && (
+      {!loading && (
         <div className="rpt-chart-wrap">
           <p className="rpt-chart-title">Revenue by Month — {currentYear}</p>
           <ResponsiveContainer width="100%" height={260}>

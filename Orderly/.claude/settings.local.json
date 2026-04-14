@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(grep -n \"MONTHLY SUMMARY\" /c/ProjectOrderly/Orderly/backend/sales/data/*.csv)"
     ]
   }
 }

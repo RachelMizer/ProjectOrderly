@@ -1,9 +1,13 @@
-from django.db.models import Sum, Count, Avg
+from decimal import Decimal
+
+from django.db.models import Max, Sum, Count, Avg
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from orders.models import Order, OrderItem
+from sales.models import DailySale
+from catalog.models import Product as CatalogProduct
 from accounts.api.permissions import IsBusinessUser
 
 from .serializers import (
@@ -14,6 +18,13 @@ from .serializers import (
     ProductSalesQuerySerializer,
     DateRangeSerializer,
 )
+
+
+_MONTH_NAMES = {
+    1: "January", 2: "February", 3: "March", 4: "April",
+    5: "May", 6: "June", 7: "July", 8: "August",
+    9: "September", 10: "October", 11: "November", 12: "December",
+}
 
 
 class SalesSummaryView(APIView):
@@ -28,54 +39,86 @@ class SalesSummaryView(APIView):
         end_date = params["endDate"]
         group_by = params["groupBy"]
 
-        qs = Order.objects.filter(
-            status="COMPLETED",
-            order_date__date__range=[start_date, end_date],
-        )
+        qs = DailySale.objects.filter(sale_date__range=[start_date, end_date])
 
-        total_revenue = qs.aggregate(total=Sum("total_payment_due"))["total"] or 0
-        total_orders = qs.count()
-        avg_order = qs.aggregate(avg=Avg("total_payment_due"))["avg"] or 0
+        total_revenue = qs.aggregate(total=Sum("daily_revenue"))["total"] or Decimal("0.00")
+        total_units = qs.aggregate(total=Sum("units_sold"))["total"] or 0
 
-        trunc_map = {"day": TruncDay, "week": TruncWeek, "month": TruncMonth}
-        trunc_func = trunc_map[group_by]
-
-        breakdown_qs = (
-            qs.annotate(period=trunc_func("order_date"))
+        # Chart data
+        trunc_fn = TruncDay if group_by == "day" else TruncMonth
+        chart_qs = (
+            qs.annotate(period=trunc_fn("sale_date"))
             .values("period")
-            .annotate(
-                revenue=Sum("total_payment_due"),
-                orders=Count("id"),
-            )
+            .annotate(rev=Sum("daily_revenue"), units=Sum("units_sold"))
             .order_by("period")
         )
+        chart_data = []
+        for item in chart_qs:
+            label = str(item["period"].day) if group_by == "day" else _MONTH_NAMES[item["period"].month]
+            chart_data.append({
+                "label": label,
+                "revenue": float((item["rev"] or Decimal("0.00")).quantize(Decimal("0.01"))),
+                "units_sold": item["units"] or 0,
+            })
 
-        breakdown = []
-        for item in breakdown_qs:
-            if group_by == "month":
-                period = item["period"].strftime("%Y-%m")
-            else:
-                period = str(item["period"].date())
-
-            breakdown.append(
-                {
-                    "period": period,
-                    "revenue": item["revenue"] or 0,
-                    "orders": item["orders"] or 0,
-                }
-            )
-
-        data = {
-            "startDate": start_date,
-            "endDate": end_date,
-            "groupBy": group_by,
-            "totalRevenue": total_revenue,
-            "totalOrders": total_orders,
-            "averageOrderValue": avg_order,
-            "breakdown": breakdown,
+        # Products breakdown
+        categories = {
+            p.name: p.category.name
+            for p in CatalogProduct.objects.select_related("category").all()
         }
+        products_qs = (
+            qs.values("product_name", "variant_name")
+            .annotate(
+                units_sold=Sum("units_sold"),
+                revenue=Sum("daily_revenue"),
+                unit_price=Max("unit_price"),
+            )
+            .order_by("-units_sold")
+        )
+        products = [
+            {
+                "name": r["product_name"],
+                "variant": r["variant_name"],
+                "category": categories.get(r["product_name"], "—"),
+                "unit_price": str((r["unit_price"] or Decimal("0.00")).quantize(Decimal("0.01"))),
+                "units_sold": r["units_sold"] or 0,
+                "revenue": str((r["revenue"] or Decimal("0.00")).quantize(Decimal("0.01"))),
+            }
+            for r in products_qs
+        ]
 
-        return Response(SalesSummarySerializer(data).data)
+        # Available years and months across all data (for filter dropdowns)
+        all_months_qs = (
+            DailySale.objects
+            .annotate(period=TruncMonth("sale_date"))
+            .values("period")
+            .distinct()
+            .order_by("period")
+        )
+        available_years = sorted({m["period"].year for m in all_months_qs})
+        all_months_qs2 = (
+            DailySale.objects
+            .annotate(period=TruncMonth("sale_date"))
+            .values("period")
+            .distinct()
+            .order_by("period")
+        )
+        available_months = [
+            {
+                "value": f"{m['period'].month:02d}-{m['period'].year}",
+                "label": f"{_MONTH_NAMES[m['period'].month]} {m['period'].year}",
+            }
+            for m in all_months_qs2
+        ]
+
+        return Response({
+            "total_revenue": str(Decimal(str(total_revenue)).quantize(Decimal("0.01"))),
+            "order_count": total_units,
+            "available_years": available_years,
+            "available_months": available_months,
+            "chart_data": chart_data,
+            "products": products,
+        })
 
 
 class BestSellersView(APIView):

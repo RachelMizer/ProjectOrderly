@@ -116,7 +116,6 @@ export default function AdminProductsPage() {
       setProducts(productList);
       setCategories(Array.isArray(categoriesData.results) ? categoriesData.results : []);
       setSuppliers(Array.isArray(suppliersData.results) ? suppliersData.results : []);
-      stampUpdated();
       saveRecentView({
         section:  "catalog",
         label:    "Product Catalog",

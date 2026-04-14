@@ -14,9 +14,8 @@ from catalog.models import Product
 
 _COMMANDS_DIR = (
     Path(__file__).resolve().parent.parent.parent
-    / "accounts"
-    / "management"
-    / "commands"
+    / "sales"
+    / "data"
 )
 
 _MONTH_NAMES = {
