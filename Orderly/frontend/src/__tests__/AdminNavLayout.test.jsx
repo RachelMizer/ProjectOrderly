@@ -6,6 +6,9 @@ import * as auth from "../api/auth";
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
   logout: jest.fn(),
+  getAuthHeaders: jest.fn(() => ({
+    Authorization: "Bearer fake-business-token",
+  })),
 }));
 
 function setUser(role, firstName = "Biz") {
@@ -16,6 +19,19 @@ function setUser(role, firstName = "Biz") {
       role,
     })
   );
+}
+
+function makeJsonResponse(body, ok = true) {
+  return Promise.resolve({
+    ok,
+    headers: {
+      get: (name) =>
+        String(name).toLowerCase() === "content-type"
+          ? "application/json"
+          : null,
+    },
+    json: async () => body,
+  });
 }
 
 function mockFetch({
@@ -29,22 +45,17 @@ function mockFetch({
   storefrontProductsResponse = { results: [] },
   adminProductsResponse = { results: [] },
   suppliersResponse = { results: [] },
+  inventoryResponse = [],
 } = {}) {
   global.fetch = jest.fn((url) => {
     const requestUrl = String(url);
 
     if (requestUrl.includes("/api/v1/users/me")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => meResponse,
-      });
+      return makeJsonResponse(meResponse);
     }
 
     if (requestUrl.includes("/api/v1/categories")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => categoriesResponse,
-      });
+      return makeJsonResponse(categoriesResponse);
     }
 
     if (
@@ -52,37 +63,26 @@ function mockFetch({
       (requestUrl.includes("/api/v1/products") &&
         !requestUrl.includes("/api/v1/admin/products"))
     ) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => storefrontProductsResponse,
-      });
+      return makeJsonResponse(storefrontProductsResponse);
     }
 
     if (requestUrl.includes("/api/v1/admin/products")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => adminProductsResponse,
-      });
+      return makeJsonResponse(adminProductsResponse);
     }
 
     if (requestUrl.includes("/api/v1/admin/suppliers")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => suppliersResponse,
-      });
+      return makeJsonResponse(suppliersResponse);
+    }
+
+    if (requestUrl.includes("/api/v1/admin/inventory")) {
+      return makeJsonResponse(inventoryResponse);
     }
 
     if (requestUrl.includes("/api/v1/orders/draft")) {
-      return Promise.resolve({
-        ok: true,
-        json: async () => ({ id: null }),
-      });
+      return makeJsonResponse({ id: null });
     }
 
-    return Promise.resolve({
-      ok: true,
-      json: async () => ({}),
-    });
+    return makeJsonResponse({});
   });
 }
 
@@ -147,13 +147,29 @@ describe("Admin navigation and layout (US4.2)", () => {
     localStorage.setItem("accessToken", "fake-business-token");
     setUser("BUSINESS");
 
+    mockFetch({
+      inventoryResponse: [
+        {
+          id: 1,
+          name: "Milk",
+          stock_quantity: 10,
+          reorder_level: 2,
+          unit_of_measure: "l",
+          affected_products: ["Latte"],
+        },
+      ],
+    });
+
     window.history.pushState({}, "", "/admin/inventory");
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", { name: /^inventory$/i })
+      await screen.findByText(/ingredient-controlled beverage availability/i)
     ).toBeInTheDocument();
 
+    expect(
+      screen.getByRole("heading", { name: /count-based inventory/i })
+    ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("navigation")).toBeInTheDocument();
     expect(screen.getByText(/recent inventory reports/i)).toBeInTheDocument();
