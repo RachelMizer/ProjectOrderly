@@ -64,7 +64,7 @@ function AdminLayout() {
         <p className="sidebar-title">Reports</p>
         <p className="sidebar-desc">View sales performance, product trends, and business metrics. Use filters to drill down by date, product, or category.</p>
         {path !== "/admin/reports" && (
-          <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Back to Reports Dashboard</Link>
+          <Link to="/admin/reports" className="sidebar-back">« Back to Reports Dashboard</Link>
         )}
         <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
