@@ -971,7 +971,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**   
 + Customers can view their orders
-+ Business can view any order
++ Business can view any non-draft order
   
 **Success Response (200 OK):**  
 ```
@@ -1111,9 +1111,9 @@ Authorization: Bearer <accessToken>
 
 ## List Orders  
 **Endpoint:** `<GET> /api/v1/orders`, `<GET> /api/v1/orders?page=2&pageSize=20`, `<GET> /api/v1/orders?dateCreated=YYYY-MM-DD`, `<GET> /api/v1/orders?status=pending`  
-**Description:** Returns a list of orders  
+**Description:** Returns a list of orders. Excludes Draft orders  
 **Authentication:** `Bearer <accessToken>`  
-**Role:** Business owner  
+**Role:** Business  
 **URL Parameters:**  
 + page (optional)
 + pageSize (optional. default pageSize is 25, max is 200)
@@ -1130,6 +1130,7 @@ Authorization: Bearer <accessToken>
 **Body:** None  
 **Rules:**
 + Endpoint only available to users with the business role
++ Will NOT return Draft orders
 + Returns number of returned objects
 + Returns next and previous page urls
 + Returns a collection of orders
