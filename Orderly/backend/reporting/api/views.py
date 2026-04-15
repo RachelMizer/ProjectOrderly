@@ -52,7 +52,7 @@ class SalesSummaryView(APIView):
         )
         breakdown = [
             {
-                "period": str(item["period"].date()),
+                "period": item["period"].strftime("%Y-%m") if group_by == "month" else str(item["period"].date()),
                 "revenue": float((item["revenue"] or Decimal("0.00")).quantize(Decimal("0.01"))),
                 "orders": item["orders"] or 0,
             }
