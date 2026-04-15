@@ -11,7 +11,9 @@
       "Bash(ls backend/*.cfg backend/*.toml backend/*.ini)",
       "Bash(ls /c/ProjectOrderly/Orderly/.venv/Scripts/pytest*)",
       "Bash(pip list:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(python -m pip install pytest pytest-django -q)",
+      "Bash(python -m pytest --tb=short)"
     ]
   }
 }
