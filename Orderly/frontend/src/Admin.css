@@ -150,6 +150,7 @@
     font-size: .9rem;
     letter-spacing: .08rem;
     text-decoration: none;
+    line-height: 1.3;
     margin-top: auto;
 }
 
@@ -163,6 +164,8 @@
 
 .sidebar-back--sub {
     line-height: 1.1;
+    margin-top: auto;
+    margin-bottom: 0.5rem;
 }
 
 
@@ -525,8 +528,13 @@ button.submenu-action.submenu-action--disabled {
     text-decoration: none;
 }
 
-button.submenu-action.submenu-action--clear {
+button.submenu-action.submenu-action--clear,
+button.submenu-action.submenu-action--clear:hover,
+button.submenu-action.submenu-action--clear:active,
+button.submenu-action.submenu-action--clear:focus {
     color: #404754;
+    font-weight: 600;
+    letter-spacing: .03rem;
 }
 
 button.submenu-action.rpt-clear-filters {
@@ -1287,6 +1295,42 @@ label.inv-toggle {
     color: #5a85a0;
     letter-spacing: .03rem;
 }
+
+/* Sales ranking row highlights */
+.rpt-rank--gold {
+    background-color: #fffbeb !important;
+}
+.rpt-rank--silver {
+    background-color: #f4f4f5 !important;
+}
+.rpt-rank--bronze {
+    background-color: #fff7ed !important;
+}
+
+/* Legend above rankings table */
+.rpt-rank-legend {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.8rem;
+    color: #2a4f6b;
+}
+.rpt-rank-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.rpt-rank-legend__swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid #c4d9e8;
+}
+.rpt-rank-legend__swatch--gold   { background-color: #fffbeb; }
+.rpt-rank-legend__swatch--silver { background-color: #f4f4f5; }
+.rpt-rank-legend__swatch--bronze { background-color: #fff7ed; }
 
 .rpt-month-select {
     font-family: 'Renner', sans-serif;

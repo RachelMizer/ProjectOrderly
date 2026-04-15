@@ -1,4 +1,6 @@
-from django.db.models import Sum, Count, Avg
+from decimal import Decimal
+
+from django.db.models import Max, Sum, Count, Avg
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,7 +9,6 @@ from orders.models import Order, OrderItem
 from accounts.api.permissions import IsBusinessUser
 
 from .serializers import (
-    SalesSummarySerializer,
     ProductSalesListSerializer,
     CategorySalesListSerializer,
     SalesSummaryQuerySerializer,
@@ -33,49 +34,40 @@ class SalesSummaryView(APIView):
             order_date__date__range=[start_date, end_date],
         )
 
-        total_revenue = qs.aggregate(total=Sum("total_payment_due"))["total"] or 0
-        total_orders = qs.count()
-        avg_order = qs.aggregate(avg=Avg("total_payment_due"))["avg"] or 0
+        totals = qs.aggregate(total=Sum("total_payment_due"), count=Count("id"))
+        total_revenue = totals["total"] or Decimal("0.00")
+        total_orders = totals["count"] or 0
 
-        trunc_map = {"day": TruncDay, "week": TruncWeek, "month": TruncMonth}
-        trunc_func = trunc_map[group_by]
-
-        breakdown_qs = (
-            qs.annotate(period=trunc_func("order_date"))
-            .values("period")
-            .annotate(
-                revenue=Sum("total_payment_due"),
-                orders=Count("id"),
-            )
-            .order_by("period")
+        average_order_value = (
+            (total_revenue / total_orders).quantize(Decimal("0.01"))
+            if total_orders else Decimal("0.00")
         )
 
-        breakdown = []
-        for item in breakdown_qs:
-            if group_by == "month":
-                period = item["period"].strftime("%Y-%m")
-            else:
-                period = str(item["period"].date())
+        trunc_fn = TruncDay if group_by == "day" else TruncMonth
+        breakdown_qs = (
+            qs.annotate(period=trunc_fn("order_date"))
+            .values("period")
+            .annotate(revenue=Sum("total_payment_due"), orders=Count("id"))
+            .order_by("period")
+        )
+        breakdown = [
+            {
+                "period": str(item["period"].date()),
+                "revenue": float((item["revenue"] or Decimal("0.00")).quantize(Decimal("0.01"))),
+                "orders": item["orders"] or 0,
+            }
+            for item in breakdown_qs
+        ]
 
-            breakdown.append(
-                {
-                    "period": period,
-                    "revenue": item["revenue"] or 0,
-                    "orders": item["orders"] or 0,
-                }
-            )
-
-        data = {
-            "startDate": start_date,
-            "endDate": end_date,
+        return Response({
+            "startDate": str(start_date),
+            "endDate": str(end_date),
             "groupBy": group_by,
-            "totalRevenue": total_revenue,
+            "totalRevenue": str(Decimal(str(total_revenue)).quantize(Decimal("0.01"))),
             "totalOrders": total_orders,
-            "averageOrderValue": avg_order,
+            "averageOrderValue": str(average_order_value),
             "breakdown": breakdown,
-        }
-
-        return Response(SalesSummarySerializer(data).data)
+        })
 
 
 class BestSellersView(APIView):

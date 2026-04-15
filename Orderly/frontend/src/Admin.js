@@ -59,6 +59,24 @@ function AdminLayout() {
   const path = location.pathname;
 
   function SidebarMenu() {
+    if (path.startsWith("/admin/reports/sales")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Sales Summary</p>
+        <p className="sidebar-desc">View total revenue, units sold, top products, and revenue trends. Filter by year or month to drill into specific periods.</p>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/reports/products")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Product Performance</p>
+        <p className="sidebar-desc">Browse product rankings or select a product to view its revenue trend, best period, and detailed breakdown by day or month.</p>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/reports")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Reports</p>

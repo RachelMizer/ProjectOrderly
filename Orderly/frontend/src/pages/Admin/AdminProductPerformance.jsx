@@ -75,7 +75,7 @@ export default function AdminProductPerformance() {
 
   function getSortValue(item, key) {
     switch (key) {
-      case "rank":       return rankings.indexOf(item);
+      case "rank":       return item.rank ?? 0;
       case "name":       return item.name?.toLowerCase() ?? "";
       case "variant":    return item.variant?.toLowerCase() ?? "";
       case "category":   return item.category?.toLowerCase() ?? "";
@@ -105,7 +105,7 @@ export default function AdminProductPerformance() {
       month: selectedMonth || null,
     })
       .then((data) => {
-        setRankings(data.products);
+        setRankings((data.products || []).map((p, i) => ({ ...p, rank: i + 1 })));
         setAvailableYears(data.available_years || []);
         setAvailableMonths(data.available_months || []);
         const monthObj = (data.available_months || []).find((m) => m.value === selectedMonth);
@@ -185,12 +185,33 @@ export default function AdminProductPerformance() {
       return 0;
     });
 
-  const isDaily     = perfData?.granularity === "daily";
-  const breakdown   = perfData?.breakdown ?? [];
-  const chartData   = breakdown.map((row) => ({
-    ...row,
-    displayLabel: isDaily ? row.label.replace("Day ", "") : formatMonthLabel(row.label),
-  }));
+  const isDaily   = perfData?.granularity === "daily";
+  const breakdown = perfData?.breakdown ?? [];
+
+  let chartData;
+  if (isDaily && selectedMonth) {
+    const [mm, yyyy] = selectedMonth.split("-");
+    const daysInMonth = new Date(parseInt(yyyy), parseInt(mm), 0).getDate();
+    const byDay = Object.fromEntries(
+      breakdown.map((row) => [row.label.replace("Day ", ""), row])
+    );
+    chartData = Array.from({ length: daysInMonth }, (_, i) => {
+      const dayNum = String(i + 1);
+      const row = byDay[dayNum];
+      return {
+        label: row?.label ?? `Day ${dayNum}`,
+        date_key: row?.date_key ?? `${yyyy}-${mm}-${String(i + 1).padStart(2, "0")}`,
+        units_sold: row?.units_sold ?? 0,
+        revenue: row?.revenue ?? 0,
+        displayLabel: dayNum,
+      };
+    });
+  } else {
+    chartData = breakdown.map((row) => ({
+      ...row,
+      displayLabel: isDaily ? row.label.replace("Day ", "") : formatMonthLabel(row.label),
+    }));
+  }
 
   const bestPeriodLabel = isDaily ? "Best Day" : "Best Month";
   const chartTitle = isDaily
@@ -306,6 +327,7 @@ export default function AdminProductPerformance() {
           {sortedRankings.length === 0 ? (
             <p className="rpt-empty">No sales data available for this period.</p>
           ) : (
+<<<<<<< HEAD
             <table className="admin-table">
               <thead>
                 <tr>
@@ -354,6 +376,72 @@ export default function AdminProductPerformance() {
                 })}
               </tbody>
             </table>
+=======
+            <>
+              <div className="rpt-rank-legend">
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--gold" />
+                  1st
+                </span>
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--silver" />
+                  2nd
+                </span>
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--bronze" />
+                  3rd
+                </span>
+              </div>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th className="admin-th" onClick={() => handleSort("rank")}>
+                      # <SortIndicator col="rank" />
+                    </th>
+                    <th className="admin-th inv-th-left" onClick={() => handleSort("name")}>
+                      Product <SortIndicator col="name" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("variant")}>
+                      Variant <SortIndicator col="variant" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("category")}>
+                      Category <SortIndicator col="category" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("units_sold")}>
+                      Units Sold <SortIndicator col="units_sold" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("revenue")}>
+                      Revenue <SortIndicator col="revenue" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedRankings.map((row) => {
+                    const rankClass =
+                      row.rank === 1 ? "rpt-rank--gold"
+                      : row.rank === 2 ? "rpt-rank--silver"
+                      : row.rank === 3 ? "rpt-rank--bronze"
+                      : "";
+                    return (
+                      <tr
+                        key={`${row.name}-${row.variant}`}
+                        className={`rpt-ranking-row${rankClass ? ` ${rankClass}` : ""}`}
+                        onClick={() => setSelectedKey(`${row.name}|||${row.variant}`)}
+                        title="Click to view full performance"
+                      >
+                        <td>{row.rank}</td>
+                        <td className="inv-td-left td-name">{row.name}</td>
+                        <td>{row.variant}</td>
+                        <td>{row.category}</td>
+                        <td>{row.units_sold.toLocaleString()}</td>
+                        <td>${formatCurrency(row.revenue)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
+>>>>>>> feat-sales-sum-dash
           )}
         </>
       )}

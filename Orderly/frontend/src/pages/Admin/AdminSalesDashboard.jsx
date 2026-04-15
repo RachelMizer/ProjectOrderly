@@ -6,6 +6,11 @@ import {
 import { fetchSalesSummary } from "../../api/adminReports";
 import { saveRecentView } from "../../utils/recentViews";
 
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length || payload[0]?.value === 0) return null;
   return (
@@ -17,7 +22,7 @@ function ChartTooltip({ active, payload, label }) {
         })}
       </p>
       <p className="rpt-tooltip__value">
-        Units Sold: {(payload[0]?.payload?.units_sold ?? 0).toLocaleString()}
+        Orders: {(payload[0]?.payload?.orders ?? 0).toLocaleString()}
       </p>
     </div>
   );
@@ -54,6 +59,7 @@ export default function AdminSalesDashboard() {
 
   function getSortValue(item, key) {
     switch (key) {
+      case "rank":       return item.rank ?? 0;
       case "name":       return item.name?.toLowerCase() ?? "";
       case "variant":    return item.variant?.toLowerCase() ?? "";
       case "unit_price": return parseFloat(item.unit_price) ?? 0;
@@ -90,13 +96,27 @@ export default function AdminSalesDashboard() {
     })
       .then((data) => {
         setStats({
-          totalRevenue: parseFloat(data.total_revenue),
-          orderCount: data.order_count,
+          totalRevenue: parseFloat(data.totalRevenue),
+          orderCount: data.totalOrders,
         });
-        setProducts(data.products);
-        setChartData(data.chart_data || []);
-        setAvailableYears(data.available_years || []);
-        setAvailableMonths(data.available_months || []);
+        setProducts([]);
+        const rawBreakdown = data.breakdown || [];
+        const groupBy = data.groupBy || "month";
+        const mapped = rawBreakdown.map((item) => {
+          const date = new Date(item.period + "T00:00:00");
+          const label = groupBy === "day"
+            ? String(date.getDate())
+            : MONTH_NAMES[date.getMonth()];
+          return { label, revenue: item.revenue, orders: item.orders };
+        });
+        if (groupBy === "month") {
+          const byLabel = Object.fromEntries(mapped.map((m) => [m.label, m]));
+          setChartData(MONTH_NAMES.map((month) => byLabel[month] || { label: month, revenue: 0, orders: 0 }));
+        } else {
+          setChartData(mapped);
+        }
+        setAvailableYears(data.availableYears || []);
+        setAvailableMonths(data.availableMonths || []);
         const monthObj = (data.available_months || []).find((m) => m.value === selectedMonth);
         const sublabel = selectedMonth
           ? (monthObj?.label ?? selectedMonth)
@@ -153,40 +173,42 @@ export default function AdminSalesDashboard() {
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
-              className="submenu-search"
+              className="submenu-search submenu-search--sm"
               type="text"
               placeholder="Search product or variant..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="button" className="submenu-action submenu-action--clear" onClick={() => setSearchQuery("")}>
-              &times;&#x202F;CLEAR FILTERS
-            </button>
+            <select
+              className="rpt-month-select"
+              value={selectedYear}
+              onChange={(e) => handleYearChange(e.target.value)}
+            >
+              <option value="">All Years</option>
+              {availableYears.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            <select
+              className="rpt-month-select"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              <option value="">All Months</option>
+              {availableMonths.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+            {(searchQuery || selectedYear || selectedMonth) && (
+              <button
+                type="button"
+                className="submenu-action submenu-action--clear"
+                onClick={() => { setSearchQuery(""); setSelectedYear(""); setSelectedMonth(""); }}
+              >
+                &times;&#x202F;CLEAR FILTERS
+              </button>
+            )}
           </div>
-          <span className="submenu-divider" />
-          <select
-            className="rpt-month-select"
-            value={selectedYear}
-            onChange={(e) => handleYearChange(e.target.value)}
-          >
-            <option value="">All Years</option>
-            {availableYears.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-          <select
-            className="rpt-month-select"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="">All Months</option>
-            {availableMonths.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-          <button type="button" className="submenu-action submenu-action--clear" onClick={() => { setSelectedYear(""); setSelectedMonth(""); }}>
-            &times;&#x202F;CLEAR FILTERS
-          </button>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
             &gt; EXPORT
@@ -247,8 +269,8 @@ export default function AdminSalesDashboard() {
           {chartData.length > 0 && (
             <div className="rpt-chart-wrap">
               <p className="rpt-chart-title">Revenue by {chartXLabel}</p>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }}>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={chartData} margin={{ top: 20, right: 16, left: 16, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#c4d9e8" vertical={false} />
                   <XAxis
                     dataKey="label"
@@ -287,40 +309,65 @@ export default function AdminSalesDashboard() {
               {searchQuery ? "No results match your search." : "No sales data to display yet."}
             </p>
           ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th className="admin-th admin-th--no-sort">#</th>
-                  <th className="admin-th inv-th-left" onClick={() => handleSort("name")}>
-                    Product <SortIndicator col="name" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("variant")}>
-                    Variant <SortIndicator col="variant" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("unit_price")}>
-                    Unit Price <SortIndicator col="unit_price" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("units_sold")}>
-                    Units Sold <SortIndicator col="units_sold" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("revenue")}>
-                    Total Revenue <SortIndicator col="revenue" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product, index) => (
-                  <tr key={`${product.name}-${product.variant}`}>
-                    <td>{index + 1}</td>
-                    <td className="inv-td-left td-name">{product.name}</td>
-                    <td>{product.variant}</td>
-                    <td>${formatCurrency(product.unit_price)}</td>
-                    <td>{product.units_sold.toLocaleString()}</td>
-                    <td>${formatCurrency(product.revenue)}</td>
+            <>
+              <div className="rpt-rank-legend">
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--gold" />
+                  1st
+                </span>
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--silver" />
+                  2nd
+                </span>
+                <span className="rpt-rank-legend__item">
+                  <span className="rpt-rank-legend__swatch rpt-rank-legend__swatch--bronze" />
+                  3rd
+                </span>
+              </div>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th className="admin-th" onClick={() => handleSort("rank")}>
+                      # <SortIndicator col="rank" />
+                    </th>
+                    <th className="admin-th inv-th-left" onClick={() => handleSort("name")}>
+                      Product <SortIndicator col="name" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("variant")}>
+                      Variant <SortIndicator col="variant" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("unit_price")}>
+                      Unit Price <SortIndicator col="unit_price" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("units_sold")}>
+                      Units Sold <SortIndicator col="units_sold" />
+                    </th>
+                    <th className="admin-th" onClick={() => handleSort("revenue")}>
+                      Total Revenue <SortIndicator col="revenue" />
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => {
+                    const rankClass =
+                      product.rank === 1 ? "rpt-rank--gold"
+                      : product.rank === 2 ? "rpt-rank--silver"
+                      : product.rank === 3 ? "rpt-rank--bronze"
+                      : "";
+                    return (
+                      <tr key={`${product.name}-${product.variant}`} className={rankClass}>
+                        <td>{product.rank}</td>
+                        <td className="inv-td-left td-name">{product.name}</td>
+                        <td>{product.variant}</td>
+                        <td>${formatCurrency(product.unit_price)}</td>
+                        <td>{product.units_sold.toLocaleString()}</td>
+                        <td>${formatCurrency(product.revenue)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
           )}
         </>
       )}

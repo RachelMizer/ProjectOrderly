@@ -22,11 +22,16 @@ function ChartTooltip({ active, payload, label }) {
         })}
       </p>
       <p className="rpt-tooltip__value">
-        Units Sold: {(payload[0]?.payload?.units_sold ?? 0).toLocaleString()}
+        Orders: {(payload[0]?.payload?.orders ?? 0).toLocaleString()}
       </p>
     </div>
   );
 }
+
+const ALL_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
 
 export default function Reports() {
   const [chartData, setChartData] = useState([]);
@@ -36,7 +41,15 @@ export default function Reports() {
 
   useEffect(() => {
     fetchSalesSummary({ year: currentYear })
-      .then((data) => setChartData(data.chart_data || []))
+      .then((data) => {
+        const raw = data.breakdown || [];
+        const byLabel = Object.fromEntries(raw.map((m) => {
+          const month = ALL_MONTHS[new Date(m.period + "T00:00:00").getMonth()];
+          return [month, { label: month, revenue: m.revenue, orders: m.orders }];
+        }));
+        const padded = ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, orders: 0 });
+        setChartData(padded);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -55,7 +68,7 @@ export default function Reports() {
         </div>
       </div>
 
-      {!loading && chartData.length > 0 && (
+      {!loading && (
         <div className="rpt-chart-wrap">
           <p className="rpt-chart-title">Revenue by Month — {currentYear}</p>
           <ResponsiveContainer width="100%" height={260}>
