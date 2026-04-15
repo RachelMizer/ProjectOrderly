@@ -6,6 +6,11 @@ import {
 import { fetchSalesSummary } from "../../api/adminReports";
 import { saveRecentView } from "../../utils/recentViews";
 
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length || payload[0]?.value === 0) return null;
   return (
@@ -17,7 +22,7 @@ function ChartTooltip({ active, payload, label }) {
         })}
       </p>
       <p className="rpt-tooltip__value">
-        Units Sold: {(payload[0]?.payload?.units_sold ?? 0).toLocaleString()}
+        Orders: {(payload[0]?.payload?.orders ?? 0).toLocaleString()}
       </p>
     </div>
   );
@@ -94,17 +99,21 @@ export default function AdminSalesDashboard() {
           totalRevenue: parseFloat(data.totalRevenue),
           orderCount: data.totalOrders,
         });
-        setProducts((data.products || []).map((p, i) => ({ ...p, rank: i + 1 })));
-        const rawChart = data.chartData || [];
-        if (!selectedMonth) {
-          const ALL_MONTHS = [
-            "January","February","March","April","May","June",
-            "July","August","September","October","November","December",
-          ];
-          const byLabel = Object.fromEntries(rawChart.map((m) => [m.label, m]));
-          setChartData(ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, units_sold: 0 }));
+        setProducts([]);
+        const rawBreakdown = data.breakdown || [];
+        const groupBy = data.groupBy || "month";
+        const mapped = rawBreakdown.map((item) => {
+          const date = new Date(item.period + "T00:00:00");
+          const label = groupBy === "day"
+            ? String(date.getDate())
+            : MONTH_NAMES[date.getMonth()];
+          return { label, revenue: item.revenue, orders: item.orders };
+        });
+        if (groupBy === "month") {
+          const byLabel = Object.fromEntries(mapped.map((m) => [m.label, m]));
+          setChartData(MONTH_NAMES.map((month) => byLabel[month] || { label: month, revenue: 0, orders: 0 }));
         } else {
-          setChartData(rawChart);
+          setChartData(mapped);
         }
         setAvailableYears(data.availableYears || []);
         setAvailableMonths(data.availableMonths || []);

@@ -22,7 +22,7 @@ function ChartTooltip({ active, payload, label }) {
         })}
       </p>
       <p className="rpt-tooltip__value">
-        Units Sold: {(payload[0]?.payload?.units_sold ?? 0).toLocaleString()}
+        Orders: {(payload[0]?.payload?.orders ?? 0).toLocaleString()}
       </p>
     </div>
   );
@@ -42,9 +42,12 @@ export default function Reports() {
   useEffect(() => {
     fetchSalesSummary({ year: currentYear })
       .then((data) => {
-        const raw = data.chartData || [];
-        const byLabel = Object.fromEntries(raw.map((m) => [m.label, m]));
-        const padded = ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, units_sold: 0 });
+        const raw = data.breakdown || [];
+        const byLabel = Object.fromEntries(raw.map((m) => {
+          const month = ALL_MONTHS[new Date(m.period + "T00:00:00").getMonth()];
+          return [month, { label: month, revenue: m.revenue, orders: m.orders }];
+        }));
+        const padded = ALL_MONTHS.map((month) => byLabel[month] || { label: month, revenue: 0, orders: 0 });
         setChartData(padded);
       })
       .catch(() => {})
