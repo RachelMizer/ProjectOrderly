@@ -38,11 +38,6 @@ class InventoryItem(models.Model):
                 | models.Q(reorder_level__gte=0),
                 name="inv_item_reorder_level_gte_0_or_null",
             ),
-            models.CheckConstraint(
-                condition=models.Q(reorder_level__isnull=True)
-                | models.Q(stock_quantity__gte=models.F("reorder_level")),
-                name="inv_item_stock_qty_gte_reorder_level",
-            ),
         ]
 
     def clean(self):
@@ -51,15 +46,10 @@ class InventoryItem(models.Model):
                 {"stock_quantity": "Stock quantity cannot be negative."}
             )
 
-        if self.reorder_level is not None:
-            if self.reorder_level < 0:
-                raise ValidationError(
-                    {"reorder_level": "Reorder level cannot be negative."}
-                )
-            if self.stock_quantity is not None and self.reorder_level > self.stock_quantity:
-                raise ValidationError(
-                    {"reorder_level": "Reorder level cannot exceed stock quantity."}
-                )
+        if self.reorder_level is not None and self.reorder_level < 0:
+            raise ValidationError(
+                {"reorder_level": "Reorder level cannot be negative."}
+            )
 
         if not self.pk:
             return
