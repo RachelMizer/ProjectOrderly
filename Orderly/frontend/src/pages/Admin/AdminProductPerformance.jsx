@@ -327,56 +327,6 @@ export default function AdminProductPerformance() {
           {sortedRankings.length === 0 ? (
             <p className="rpt-empty">No sales data available for this period.</p>
           ) : (
-<<<<<<< HEAD
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th className="admin-th" onClick={() => handleSort("rank")}>
-                    # <SortIndicator col="rank" />
-                  </th>
-                  <th className="admin-th inv-th-left" onClick={() => handleSort("name")}>
-                    Product <SortIndicator col="name" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("variant")}>
-                    Variant <SortIndicator col="variant" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("category")}>
-                    Category <SortIndicator col="category" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("units_sold")}>
-                    Units Sold <SortIndicator col="units_sold" />
-                  </th>
-                  <th className="admin-th" onClick={() => handleSort("revenue")}>
-                    Revenue <SortIndicator col="revenue" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedRankings.map((row, index) => {
-                  const originalRank = rankings.indexOf(row);
-                  const rankClass = originalRank === 0 ? "rpt-rank-1"
-                                  : originalRank === 1 ? "rpt-rank-2"
-                                  : originalRank === 2 ? "rpt-rank-3"
-                                  : "";
-                  return (
-                  <tr
-                    key={`${row.name}-${row.variant}`}
-                    className={`rpt-ranking-row${rankClass ? ` ${rankClass}` : ""}`}
-                    onClick={() => setSelectedKey(`${row.name}|||${row.variant}`)}
-                    title="Click to view full performance"
-                  >
-                    <td>{rankings.indexOf(row) + 1}</td>
-                    <td className="inv-td-left td-name">{row.name}</td>
-                    <td>{row.variant}</td>
-                    <td>{row.category}</td>
-                    <td>{row.units_sold.toLocaleString()}</td>
-                    <td>${formatCurrency(row.revenue)}</td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-=======
             <>
               <div className="rpt-rank-legend">
                 <span className="rpt-rank-legend__item">
@@ -441,7 +391,6 @@ export default function AdminProductPerformance() {
                 </tbody>
               </table>
             </>
->>>>>>> feat-sales-sum-dash
           )}
         </>
       )}

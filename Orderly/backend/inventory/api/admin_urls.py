@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .admin_views import AdminInventoryListCreateView, AdminInventoryDetailView, AdminLowStockView, 
+from .admin_views import AdminInventoryListCreateView, AdminInventoryDetailView, AdminLowStockView
 from .admin_reports_view import AdminSalesSummaryView, AdminProductPerformanceView
 
 urlpatterns = [
