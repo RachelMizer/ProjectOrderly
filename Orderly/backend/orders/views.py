@@ -619,3 +619,51 @@ class CompleteOrderView(APIView):
 
         serializer = CompleteOrderResponseSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CancelOrderView(APIView):
+    """
+    Customer order cancellation endpoint.
+
+    Endpoint:
+        PATCH /api/v1/orders/{orderId}/cancel
+
+    Behavior:
+        - authenticated customers can cancel their own pending orders
+        - only PENDING -> CANCELLED is allowed
+        - returns 403 if the order does not belong to the requesting customer
+        - returns 400 if the order is not in PENDING status
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, orderId):
+        customer_profile = get_customer_profile_for_user(request.user)
+
+        order = get_object_or_404(Order, pk=orderId)
+
+        if order.customer != customer_profile:
+            return Response(
+                {
+                    "error": "FORBIDDEN",
+                    "message": "You do not have permission to cancel this order.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if order.status != OrderStatus.PENDING:
+            return Response(
+                {
+                    "error": "INVALID_STATUS_TRANSITION",
+                    "message": "Only pending orders can be cancelled.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order.status = OrderStatus.CANCELLED
+        order.save()
+
+        return Response(
+            {"message": "Order cancelled successfully."},
+            status=status.HTTP_200_OK,
+        )

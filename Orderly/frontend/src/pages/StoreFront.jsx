@@ -2,6 +2,14 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
+const CATEGORY_ICONS = {
+  "Coffee":    "☕",
+  "Tea":       "🍵",
+  "Bakery":    "🥐",
+  "Breakfast": "🍳",
+  "Seasonal":  "🍂",
+};
+
 const StoreFront = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -84,7 +92,14 @@ const StoreFront = () => {
   return (
     <div className="store">
 
+      {/* DIVIDER */}
+      <hr className="store-divider" />
+
+      {/* HEADER */}
+      <h2 className="store-heading" style={{ fontFamily: "'AddAff', serif", fontSize: "7rem", marginBottom: "-15px", marginTop: "-15px", fontWeight: "normal" }}>Menu</h2>
+
       {/* FILTER */}
+      <div className="filter-container">
       <h3 className="filterhead">Filter the Menu</h3>
       <div className="filter">
 
@@ -95,9 +110,11 @@ const StoreFront = () => {
               checked={selectedCategories.has(cat.id)}
               onChange={() => handleCheckbox(cat.id)}
             />
+            {CATEGORY_ICONS[cat.name] && <span style={{ marginRight: "3px" }}>{CATEGORY_ICONS[cat.name]}</span>}
             {cat.name}
           </label>
         ))}
+      </div>
       </div>
 
       {/* PRODUCT GRID */}

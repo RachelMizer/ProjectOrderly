@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from decimal import Decimal
 import random
+import shutil
+from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -418,7 +421,7 @@ class Command(BaseCommand):
             ("Chai Tea Latte",      "Tea",       suppliers[1], True, True,  "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla."),
             ("Blueberry Muffin",    "Bakery",    suppliers[3], True, False, "Warm, soft, and bursting with juicy blueberries, this muffin is everything you want from a morning treat."),
             ("Chocolate Croissant", "Bakery",    suppliers[3], True, False, "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within."),
-            ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. From there, make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
+            ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. Each sandwich comes with a freshly cooked egg, and you can make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
             ("Pumpkin Spice Latte", "Seasonal",  suppliers[4], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
             ("Cake Pop",           "Bakery",    suppliers[5], True, False, "A decadent 'pop' of confectionery goodness, our sweet cake pops will quickly brighten up your day!"),
         ]
@@ -461,6 +464,55 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(f"Products seeded: {len(products_spec)}")
+        )
+
+        # ------------------------------------------------------------
+        # 6.5) Product images — copy from frontend/public/img into media
+        # ------------------------------------------------------------
+        product_images = {
+            "House Coffee":        ("bev", "house-coffee.png"),
+            "Latte":               ("bev", "latte.png"),
+            "Cappuccino":          ("bev", "capp.png"),
+            "Mocha":               ("bev", "mocha.png"),
+            "Cold Brew":           ("bev", "cold-brew.png"),
+            "Green Tea":           ("bev", "green-tea.png"),
+            "Chai Tea Latte":      ("bev", "chai-latte.png"),
+            "Blueberry Muffin":    ("food", "muffin.png"),
+            "Chocolate Croissant": ("food", "croissant.png"),
+            "Breakfast Sandwich":  ("food", "sandwich.png"),
+            "Pumpkin Spice Latte": ("bev", "PSL.png"),
+            "Cake Pop":            ("food", "choc_pop.png"),
+        }
+
+        frontend_img_root = settings.BASE_DIR.parent / "frontend" / "public" / "img"
+        media_products_dir = Path(settings.MEDIA_ROOT) / "products"
+        media_products_dir.mkdir(parents=True, exist_ok=True)
+
+        images_seeded = 0
+        for product_name, (subfolder, filename) in product_images.items():
+            product = products.get(product_name)
+            if not product:
+                continue
+
+            src = frontend_img_root / subfolder / filename
+            if not src.exists():
+                self.stdout.write(
+                    self.style.WARNING(f"  Image not found, skipping: {src}")
+                )
+                continue
+
+            dest = media_products_dir / filename
+            shutil.copy2(src, dest)
+
+            relative_path = f"products/{filename}"
+            if product.image.name != relative_path:
+                product.image = relative_path
+                product.save(update_fields=["image"])
+
+            images_seeded += 1
+
+        self.stdout.write(
+            self.style.SUCCESS(f"Product images seeded: {images_seeded}")
         )
 
         # ------------------------------------------------------------

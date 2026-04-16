@@ -55,8 +55,8 @@ function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
   const [cartCount, setCartCount] = useState(0);
+  const [user, setUser] = useState(getStoredUser);
 
-  const user = getStoredUser();
   const role = user?.role?.toUpperCase();
   const firstName = user?.firstName || "";
 
@@ -84,6 +84,7 @@ function AppContent() {
           };
 
           localStorage.setItem("user", JSON.stringify(mergedUser));
+          setUser(mergedUser);
         }
       } catch (err) {
         console.error("Failed to load profile:", err);
@@ -92,6 +93,8 @@ function AppContent() {
 
     if (loggedIn) {
       loadProfile();
+    } else {
+      setUser(null);
     }
   }, [loggedIn]);
 
@@ -160,13 +163,26 @@ async function fetchCartCount() {
     <div className="wrapper">
       <header>
         <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
+        <div className="header-side-info">
+          <div className="header-info">
+            <p><strong style={{ fontSize: "1rem", color: "#482e1d" }}>Visit Us</strong></p>
+            <p>412 Fayetteville St</p>
+            <p>Raleigh, NC 27601</p>
+            <p style={{ color: "#873818" }}>📞 (919) 555-0184</p>
+          </div>
+          <div className="header-hours">
+            <p><strong style={{ fontSize: "1rem", color: "#482e1d" }}>Hours</strong></p>
+            <p>Mon – Sat &nbsp; 6:00 AM – 8:00 PM</p>
+            <p>Sunday &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7:00 AM – 5:00 PM</p>
+          </div>
+        </div>
       </header>
 
       <nav>
         <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
 
         {" | "}
-        <Link to="/">Home</Link>
+        <Link to="/">Store</Link>
 
         {!loggedIn && (
           <>
@@ -180,12 +196,7 @@ async function fetchCartCount() {
         {loggedIn && (
           <>
             {" | "}
-            <Link to="/profile">Profile</Link>
-            {" | "}
-            <Link to="/order-history">Order History</Link>
-
-            {" | "}
-            <button onClick={handleLogout}>Logout</button>
+            <Link to="/profile"><span style={{ fontWeight: "normal", fontFamily: "sans-serif", marginRight: "3px", fontSize: "1.1em" }}>⚙</span>Your Account</Link>
           </>
         )}
 
@@ -194,6 +205,13 @@ async function fetchCartCount() {
           <Link to="/cart">Cart</Link>
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </div>
+
+        {loggedIn && (
+          <>
+            {" | "}
+            <button onClick={handleLogout} style={{ fontSize: "0.85rem", padding: "3px 10px" }}>Logout</button>
+          </>
+        )}
       </nav>
 
       <Routes>
@@ -221,7 +239,7 @@ async function fetchCartCount() {
 
       <footer>
         <p>All Content © Quick Sip Cafe 2026</p>
-        <p>Powered by Orderly</p>
+        <p>Powered by <span style={{ fontFamily: "'Renner', sans-serif", letterSpacing: "0.09rem", fontWeight: "bold" }}>Orderly</span></p>
       </footer>
     </div>
   );

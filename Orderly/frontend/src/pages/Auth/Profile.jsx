@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getProfile, updateProfile } from "../../api/auth";
 
 export default function Profile() {
@@ -151,8 +152,22 @@ export default function Profile() {
 
   return (
     <div className="prof-pg">
-      <h1>Profile</h1>
-      <p>To update your profile, enter the new<br />information and click save.</p>
+
+      <div className="account-submenu">
+        <div className="account-submenu-tile account-submenu-tile--active">
+          <p className="account-submenu-tile__title">Profile</p>
+          <p className="account-submenu-tile__desc">View and update your personal information, address, and contact details.</p>
+        </div>
+        <Link to="/order-history" className="account-submenu-tile">
+          <p className="account-submenu-tile__title">Order History</p>
+          <p className="account-submenu-tile__desc">Browse your past orders and check on their status.</p>
+        </Link>
+      </div>
+      <hr className="store-divider" />
+
+      <h1 style={{ marginTop: "20px", marginBottom: "0px" }}>Your Profile</h1>
+      <p style={{ marginTop: "4px", marginBottom: "20px" }}>To update your profile, enter the new<br />information and click save.</p>
+      <hr className="store-divider" />
 
       {message && (
         <div className="prof-success">{message}</div>
@@ -165,112 +180,60 @@ export default function Profile() {
      <form onSubmit={handleSubmit}>
   <fieldset disabled={submitting}>
 
+    <table className="prof-table">
+      <tbody>
 
-      {/* NAME SECTION */}
-      <div className="prof-row">
-        <div className="prof-section-title">Name</div>
+        {/* NAME SECTION */}
+        <tr className="prof-section-row">
+          <td colSpan={2} className="prof-section-title">Name</td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="firstName">First Name</label></td>
+          <td><input id="firstName" name="firstName" type="text" value={form.firstName || ""} onChange={handleChange} /></td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="lastName">Last Name</label></td>
+          <td><input id="lastName" name="lastName" type="text" value={form.lastName || ""} onChange={handleChange} /></td>
+        </tr>
 
-        <div className="prof-cell">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            value={form.firstName || ""}
-            onChange={handleChange}
-          />
-        </div>
+        {/* ADDRESS SECTION */}
+        <tr className="prof-section-row">
+          <td colSpan={2} className="prof-section-title">Address</td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="streetAddress">Street Address</label></td>
+          <td><input id="streetAddress" name="streetAddress" type="text" value={form.streetAddress || ""} onChange={handleChange} /></td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="city">City</label></td>
+          <td><input id="city" name="city" type="text" value={form.city || ""} onChange={handleChange} /></td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="state">State</label></td>
+          <td><input id="state" name="state" type="text" value={form.state || ""} onChange={handleChange} /></td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="zipcode">Zip Code</label></td>
+          <td><input id="zipcode" name="zipcode" type="text" value={form.zipcode || ""} onChange={handleChange} /></td>
+        </tr>
 
-        <div className="prof-cell">
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            value={form.lastName || ""}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
+        {/* CONTACT SECTION */}
+        <tr className="prof-section-row">
+          <td colSpan={2} className="prof-section-title">Contact</td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="email">Email</label></td>
+          <td><input id="email" name="email" type="email" value={form.email || ""} onChange={handleChange} disabled /></td>
+        </tr>
+        <tr>
+          <td className="prof-label"><label htmlFor="phone">Phone Number</label></td>
+          <td><input id="phone" name="phone" type="text" value={form.phone || ""} onChange={handleChange} /></td>
+        </tr>
 
-      {/* ADDRESS SECTION */}
-      <div className="prof-row">
-        <div className="prof-section-title">Address</div>
+      </tbody>
+    </table>
 
-        <div className="prof-cell full-width">
-          <label htmlFor="streetAddress">Street Address</label>
-          <input
-            id="streetAddress"
-            name="streetAddress"
-            type="text"
-            value={form.streetAddress || ""}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="prof-cell">
-          <label htmlFor="city">City</label>
-          <input
-            id="city"
-            name="city"
-            type="text"
-            value={form.city || ""}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="prof-cell">
-          <label htmlFor="state">State</label>
-          <input
-            id="state"
-            name="state"
-            type="text"
-            value={form.state || ""}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="prof-cell">
-          <label htmlFor="zipcode">Zip Code</label>
-          <input
-            id="zipcode"
-            name="zipcode"
-            type="text"
-            value={form.zipcode || ""}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      {/* CONTACT SECTION */}
-      <div className="prof-row">
-        <div className="prof-section-title">Contact</div>
-
-        <div className="prof-cell">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={form.email || ""}
-            onChange={handleChange}
-            disabled
-          />
-        </div>
-
-        <div className="prof-cell">
-          <label htmlFor="phone">Phone Number</label>
-          <input
-            id="phone"
-            name="phone"
-            type="text"
-            value={form.phone || ""}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-    <button type="submit">
+    <button type="submit" style={{ marginTop: "16px" }}>
       {submitting ? "Saving..." : "Save"}
     </button>
 

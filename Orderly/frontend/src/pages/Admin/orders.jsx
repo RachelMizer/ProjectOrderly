@@ -324,6 +324,12 @@ export default function Orders() {
         <>
           <p className="orders-view-title">{buildTitle()}</p>
 
+          {feedback.message && (
+            <div key={feedback.id + feedback.message} className={`orders-feedback orders-feedback--${feedback.type}`}>
+              {feedback.message}
+            </div>
+          )}
+
           {showEmpty ? (
             <p className="rpt-empty">No orders found.</p>
           ) : (
@@ -361,15 +367,13 @@ export default function Orders() {
                         </span>
                       </td>
                       <td>{formatDate(order.date)}</td>
-                      <td>{order.customerId ?? "—"}</td>
+                      <td>
+                        {order.customerFirstName || order.customerLastName
+                          ? `${order.customerFirstName || ""} ${order.customerLastName || ""}`.trim()
+                          : "—"}
+                      </td>
                       <td>
                         <StatusBadge status={order.status} />
-                        {feedback.id === order.id && feedback.type === "success" && (
-                          <span className="inv-save-success"> {feedback.message}</span>
-                        )}
-                        {feedback.id === order.id && feedback.type === "error" && (
-                          <span className="inv-error"> {feedback.message}</span>
-                        )}
                       </td>
                       <td>${formatCurrency(order.totalDue)}</td>
                       <td className="td-actions">

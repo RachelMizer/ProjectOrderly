@@ -148,6 +148,27 @@ export async function submitOrder(orderId, paymentData) {
   return data;
 }
 
+// Cancel Order
+// PATCH /api/v1/orders/{orderId}/cancel
+export async function cancelOrder(orderId) {
+  const response = await fetch(`${API_BASE}${orderId}/cancel`, {
+    method: "PATCH",
+    headers: {
+      ...JSON_HEADERS,
+      ...getAuthHeaders(),
+    },
+    credentials: "include",
+  });
+
+  const data = await parseJson(response);
+
+  if (!response.ok) {
+    throw buildError("Failed to cancel order", response, data);
+  }
+
+  return data;
+}
+
 // Get Order History
 // GET /api/v1/orders/me?page=&pageSize=
 export async function getOrderHistory({ page = 1, pageSize = 25} = {}) {

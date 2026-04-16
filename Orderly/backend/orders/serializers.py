@@ -550,6 +550,8 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
     """
 
     customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
+    customerFirstName = serializers.CharField(source="customer.user.first_name", read_only=True, allow_null=True, default=None)
+    customerLastName = serializers.CharField(source="customer.user.last_name", read_only=True, allow_null=True, default=None)
     date = serializers.DateTimeField(source="order_date", read_only=True)
     taxAmount = serializers.DecimalField(
         source="tax_amount",
@@ -571,6 +573,8 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "customerId",
+            "customerFirstName",
+            "customerLastName",
             "date",
             "subtotal",
             "taxAmount",
@@ -581,36 +585,39 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
         ]
 
 
-class BusinessOrderDetailItemModifierSerializer(serializers.ModelSerializer):
-    """
-    Serializer for modifiers shown in business-facing order detail.
-    """
-
-    id = serializers.IntegerField(source="modifier_option.id", read_only=True)
-    groupId = serializers.IntegerField(source="modifier_option.group.id", read_only=True)
-
-    class Meta:
-        model = OrderItemModifier
-        fields = [
-            "id",
-            "groupId",
-        ]
-
-
 class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
     """
     Serializer for order items shown in business-facing order detail.
     """
 
-    id = serializers.IntegerField(source="variant.id", read_only=True)
+    itemId = serializers.IntegerField(source="id", read_only=True)
+    variantId = serializers.IntegerField(source="variant.id", read_only=True)
+    productName = serializers.CharField(source="variant.product.name", read_only=True)
     variantName = serializers.CharField(source="variant.name", read_only=True, default=None)
-    modifiers = BusinessOrderDetailItemModifierSerializer(many=True, read_only=True)
+    quantity = serializers.IntegerField(read_only=True)
+    unitPriceCharged = serializers.DecimalField(
+        source="unit_price_charged",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+    itemTotal = serializers.SerializerMethodField()
+    modifiers = OrderItemModifierSerializer(many=True, read_only=True)
+
+    def get_itemTotal(self, obj):
+        modifier_total = sum(m.price_adjustment_charged for m in obj.modifiers.all())
+        return obj.item_total + modifier_total
 
     class Meta:
         model = OrderItem
         fields = [
-            "id",
+            "itemId",
+            "variantId",
+            "productName",
             "variantName",
+            "quantity",
+            "unitPriceCharged",
+            "itemTotal",
             "modifiers",
         ]
 
@@ -624,6 +631,9 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
     """
 
     date = serializers.DateTimeField(source="order_date", read_only=True)
+    customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
+    customerFirstName = serializers.CharField(source="customer.user.first_name", read_only=True, allow_null=True, default=None)
+    customerLastName = serializers.CharField(source="customer.user.last_name", read_only=True, allow_null=True, default=None)
     orderSubtotal = serializers.DecimalField(
         source="subtotal",
         max_digits=10,
@@ -644,20 +654,23 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
-    variants = BusinessOrderDetailItemSerializer(source="items", many=True, read_only=True)
+    items = BusinessOrderDetailItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
         fields = [
             "id",
             "date",
+            "customerId",
+            "customerFirstName",
+            "customerLastName",
             "orderSubtotal",
             "taxAmount",
             "totalDue",
             "status",
             "createdAt",
             "updatedAt",
-            "variants",
+            "items",
         ]
 
 

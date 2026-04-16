@@ -13,6 +13,41 @@ header {
   margin-top: 0px;
   padding: 10px;
   text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.header-side-info {
+  position: absolute;
+  right: 24px;
+  display: flex;
+  flex-direction: row;
+  column-gap: 20px;
+  align-items: center;
+}
+
+.header-info {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: #873818;
+  font-weight: bold;
+  text-align: center;
+}
+
+.header-hours {
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: #873818;
+  font-weight: bold;
+  text-align: center;
+}
+
+.header-info p,
+.header-hours p {
+  margin: 0;
 }
 
 header img {
@@ -143,9 +178,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /*      STORE PAGE    */
 
+.store-divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #a3966a, transparent);
+  margin: 0;
+  width: 100%;
+}
+
 .store {
   width: 100%;
-  padding: 10px;
+  padding: 0px;
   margin-top: 0px;
   text-align: center;
 }
@@ -159,20 +202,25 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0px;
 }
 
+.filter-container {
+  display: inline-block;
+  background-color: #fcf9f2;
+  border: 1px solid #d8cb9f;
+  border-radius: 12px;
+  padding: 10px 20px 14px;
+  margin: 0px auto 8px;
+}
+
 .filter {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   column-gap: 10px;
-  margin: auto;
-  background-color: #f3efeb;
-  border-radius: 10px;
-  width: 450px;
 }
 
 .filterhead {
-  margin-bottom: 5px;
+  margin: 0 0 6px 0;
 }
 
 /*    PRODUCT GRID / CARDS    */
@@ -473,6 +521,62 @@ button {
 }
 
 
+/*    ACCOUNT SUBMENU    */
+
+.account-submenu {
+  display: flex;
+  flex-direction: row;
+  column-gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.account-submenu-tile {
+  display: block;
+  width: 200px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #d8cb9f;
+  background-color: #fcf9f2;
+  text-decoration: none;
+  color: #482e1d;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  text-align: center;
+  letter-spacing: normal;
+}
+
+.account-submenu-tile:hover {
+  background-color: #f0e8d8;
+}
+
+.account-submenu-tile--active {
+  background-color: #e8dfc8;
+  border-color: #a3966a;
+  cursor: default;
+  pointer-events: none;
+}
+
+.account-submenu-tile__title {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #482e1d;
+  letter-spacing: normal;
+  line-height: normal;
+  font-family: inherit;
+}
+
+.account-submenu-tile__desc {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6e5b50;
+  line-height: normal;
+  font-weight: normal;
+  font-family: inherit;
+}
+
 /*    PROFILE PAGE    */
 
 .prof-pg {
@@ -493,30 +597,45 @@ button {
   margin-bottom: 1rem;
 }
 
-.prof-section {
-  padding: 10px;
+.prof-table {
+  margin: 4px auto;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.prof-row {
-  margin-bottom: 30px;
+.prof-table input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.prof-cell {
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.prof-row:last-of-type {
-  margin-bottom: 0px;
+.prof-label {
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+  color: #482e1d;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding-bottom: 6px;
 }
 
 .prof-section-title {
   color: #7a3318;
   font-weight: bold;
+  padding-top: 16px;
+  padding-bottom: 4px;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
-.prof-cell input {
-  margin-left: 10px;
+.prof-section-row:first-child .prof-section-title {
+  padding-top: 0;
+}
+
+.prof-section-hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, #a3966a, transparent);
+  margin: 2px 0 0 0;
 }
 
 
@@ -576,6 +695,10 @@ button {
   gap: 10px;
 }
 
+.cart-item-header a {
+  letter-spacing: normal;
+}
+
 .edit-button {
   margin-top: -18px;
   padding: 3px;
@@ -583,9 +706,9 @@ button {
   background-color: beige;
   border: 1px solid #6e5b50;
   border-radius: 5px;
-  padding: 5px 8px;
+  padding: 2px 6px;
   font-weight: bold;
-  font-size: .9rem;
+  font-size: 0.72rem;
   color: #6e5b50;
   letter-spacing: normal;
   text-transform: none;
@@ -643,6 +766,11 @@ button {
   margin: auto;
 }
 
+.cart-item-controls button {
+  font-size: 0.82rem;
+  padding: 3px 8px;
+}
+
 .checkout-btn {
   background-color: #a3966a;
   color: white;
@@ -653,7 +781,7 @@ button {
   font-family: 'Munson', serif;
   text-decoration-line: none;
   font-weight: bold;
-  letter-spacing: .1rem;
+  letter-spacing: normal;
 }
 
 .checkout-btn:hover {
@@ -836,6 +964,28 @@ button {
 
 /*    ORDER DETAIL PAGE   */
 
+.cancel-order-btn {
+  background-color: #fff0f0;
+  color: #922b21;
+  border: 1px solid #f5c6cb;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  font-family: 'Munson', serif;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: normal;
+}
+
+.cancel-order-btn:hover {
+  background-color: #fdecea;
+  border-color: #e09090;
+}
+
+.cancel-order-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .order-detail-pg {
   width: 50%;
   min-width: 600px;
@@ -843,10 +993,49 @@ button {
 }
 
 .order-detail-items {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 10px;
   background-color: #dfd6ce;
   padding: 15px;
+}
+
+.order-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.order-detail-table th {
+  background-color: #f0e8d8;
+  color: #482e1d;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  letter-spacing: normal;
+}
+
+.order-detail-table td {
+  padding: 8px 12px;
+  border-top: 1px solid #ede8e0;
+  font-size: 0.9rem;
+  vertical-align: top;
+  letter-spacing: normal;
+}
+
+.order-detail-totals-table {
+  margin-left: auto;
+  border-collapse: collapse;
+}
+
+.order-detail-totals-table td {
+  padding: 4px 12px;
+  font-size: 0.95rem;
+  letter-spacing: normal;
+}
+
+.order-detail-totals-table td:last-child {
+  text-align: right;
 }
 
 .order-detail-item p {
@@ -882,31 +1071,31 @@ button {
   margin-bottom: 10px;
 }
 
-.order-detail-totals {
-  background-color: #dfd6ce;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+.order-detail-pg .order-detail-totals {
   padding: 15px;
+  background-color: #faf7f2;
+  border-radius: 10px;
+  display: block;
+  align-items: unset;
+  border-top: none;
 }
 
-.order-detail-totals p {
+.order-detail-pg .order-detail-totals p {
   margin-top: 0px;
   margin-bottom: 0px;
-  background-color: white;
   padding: 0px 10px 10px 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
 
-.order-detail-totals h3 {
+.order-detail-pg .order-detail-totals h3 {
   margin-bottom: 0px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  background-color: white;
   padding: 10px;
 }
 
-.order-detail-totals .total {
+.order-detail-pg .order-detail-totals .total {
   font-size: 1.1rem;
   border-radius: 10px;
   font-weight: bold;
@@ -917,9 +1106,10 @@ button {
 
 .order-hist-pg {
   margin: 20px auto;
-  width: 600px;
+  width: 700px;
   background-color: #dfd6ce;
   padding: 10px;
+  border-radius: 10px;
 }
 
 .order-hist-pg h2 {
@@ -928,16 +1118,52 @@ button {
   margin-bottom: 5px;
 }
 
-.order-hist-item p {
-  margin-bottom: 0px;
-  margin-top: 0px;
+.order-hist-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.order-hist-item {
-  background-color: white;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+.order-hist-table thead tr {
+  background-color: #f0e8d8;
+}
+
+.order-hist-table th {
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #482e1d;
+  letter-spacing: normal;
+  cursor: pointer;
+  user-select: none;
+}
+
+.order-hist-table th:hover {
+  background-color: #e8dfc8;
+}
+
+.order-hist-table td {
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  letter-spacing: normal;
+  border-top: 1px solid #ede8e0;
+}
+
+.order-hist-row {
+  cursor: pointer;
+}
+
+.order-hist-row:hover {
+  background-color: #faf7f2;
+}
+
+.order-hist-pagination {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pg-num {

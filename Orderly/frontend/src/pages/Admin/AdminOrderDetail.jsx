@@ -159,7 +159,9 @@ export default function AdminOrderDetail() {
               <p className="order-detail-id">Order #{order.id}</p>
               <p className="order-detail-date">{formatDateTime(order.date)}</p>
               <p className="order-detail-customer">
-                {`Customer #${order.customerId ?? "—"}`}
+                {order.customerFirstName || order.customerLastName
+                  ? `${order.customerFirstName || ""} ${order.customerLastName || ""}`.trim()
+                  : order.customerId ? `Customer #${order.customerId}` : "—"}
               </p>
             </div>
             <div className="order-detail-status-wrap">
