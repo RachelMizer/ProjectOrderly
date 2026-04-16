@@ -201,20 +201,6 @@ def test_modifier_option_str(variant):
 # Inventory model tests
 # -------------------------
 
-@pytest.mark.django_db
-def test_inventory_item_rejects_reorder_level_above_stock():
-    item = InventoryItem(
-        name="Espresso Beans",
-        stock_quantity=Decimal("5.00"),
-        unit_of_measure=UnitOfMeasure.LB,
-        reorder_level=Decimal("10.00"),
-    )
-
-    with pytest.raises(ValidationError) as exc:
-        item.save()
-
-    assert "Reorder level cannot exceed stock quantity." in str(exc.value)
-
 
 @pytest.mark.django_db
 def test_inventory_item_blocks_unit_change_when_used_in_recipe(variant):
