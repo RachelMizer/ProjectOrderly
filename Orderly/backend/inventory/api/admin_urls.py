@@ -6,15 +6,9 @@ from .admin_views import (
     AdminLowStockView,
 )
 from .admin_reports_view import AdminSalesSummaryView, AdminProductPerformanceView
-from .admin_views import (
-    AdminInventoryListCreateView,
-    AdminInventoryDetailView,
-    AdminLowStockView,   
-)
 
 urlpatterns = [
     path("inventory", AdminInventoryListCreateView.as_view(), name="admin_inventory"),
-
     path(
         "inventory/<int:itemId>",
         AdminInventoryDetailView.as_view(),
@@ -34,11 +28,5 @@ urlpatterns = [
         "reports/product-performance",
         AdminProductPerformanceView.as_view(),
         name="admin_product_performance",
-
-    
-    path(
-        "inventory/low-stock",
-        AdminLowStockView.as_view(),
-        name="admin_low_stock",
     ),
 ]
