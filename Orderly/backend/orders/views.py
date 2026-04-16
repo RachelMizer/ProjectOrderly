@@ -17,8 +17,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import CustomerProfile
+from accounts.api.permissions import IsBusinessUser
 from orders.models import Order, OrderItem, OrderStatus
 from orders.serializers import (
     AddDraftOrderItemSerializer,
@@ -29,6 +31,9 @@ from orders.serializers import (
     OrderStatusSerializer,
     OrderDetailSerializer,
     OrderHistoryItemSerializer,
+    BusinessOrderListSerializer,
+    BusinessOrderDetailSerializer,
+    CompleteOrderResponseSerializer,
 )
 from orders.services import (
     add_item_to_order,
@@ -417,28 +422,52 @@ class OrderDetailView(APIView):
 
     GET /api/v1/orders/{orderId}
 
-    Authenticated: uses customer profile for ownership check.
-    Guest: requires ?guestEmail= query param for ownership check.
+    Behavior:
+        - Business users can view any non-draft order
+        - Customers can view their own orders
+        - Guests must provide ?guestEmail= for ownership check
+        - DRAFT orders return 404 in business/admin workflow context
     """
 
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, orderId):
         if request.user.is_authenticated:
+            if IsBusinessUser().has_permission(request, self):
+                order = get_object_or_404(
+                    Order.objects.prefetch_related("items__modifiers__modifier_option__group", "items__variant"),
+                    pk=orderId,
+                )
+
+                if order.status == OrderStatus.DRAFT:
+                    return Response(
+                        {
+                            "error": "NOT_FOUND",
+                            "message": "Order not found.",
+                        },
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                serializer = BusinessOrderDetailSerializer(order)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
             customer_profile = get_customer_profile_for_user(request.user)
             order = get_order_for_customer(orderId, customer_profile)
-        else:
-            guest_email = request.query_params.get("guestEmail")
-            if not guest_email:
-                return Response(
-                    {
-                        "error": "INVALID_INPUT",
-                        "message": "guestEmail is required for guest cart access.",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            order = get_order_for_guest(orderId, guest_email)
 
+            serializer = OrderDetailSerializer(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        guest_email = request.query_params.get("guestEmail")
+        if not guest_email:
+            return Response(
+                {
+                    "error": "INVALID_INPUT",
+                    "message": "guestEmail is required for guest cart access.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order = get_order_for_guest(orderId, guest_email)
         serializer = OrderDetailSerializer(order)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -502,3 +531,91 @@ class OrderHistoryView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+class BusinessOrderListView(APIView):
+    """
+    Business-only order list endpoint.
+
+    Endpoint:
+        GET /api/v1/orders
+
+    Behavior:
+        - returns non-draft orders only
+        - orders results newest first
+        - supports optional ?status= filter
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get(self, request):
+        queryset = Order.objects.exclude(
+            status=OrderStatus.DRAFT
+        ).select_related("customer").order_by("-created_at")
+
+        status_param = request.query_params.get("status")
+        if status_param:
+            normalized_status = status_param.upper()
+
+            valid_statuses = {choice[0] for choice in OrderStatus.choices}
+            if normalized_status not in valid_statuses:
+                return Response(
+                    {
+                        "error": "INVALID_STATUS",
+                        "message": "status must be one of: DRAFT, PENDING, PAID, COMPLETED, CANCELLED",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            queryset = queryset.filter(status=normalized_status)
+
+        serializer = BusinessOrderListSerializer(queryset, many=True)
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+    
+class CompleteOrderView(APIView):
+    """
+    Business-only order completion endpoint.
+
+    Endpoint:
+        PATCH /api/v1/orders/{orderId}/complete
+
+    Behavior:
+        - business users can complete pending orders
+        - draft orders return 404
+        - only PENDING -> COMPLETED is allowed
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def patch(self, request, orderId):
+        order = get_object_or_404(Order, pk=orderId)
+
+        if order.status == OrderStatus.DRAFT:
+            return Response(
+                {
+                    "error": "NOT_FOUND",
+                    "message": "Order not found.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if order.status != OrderStatus.PENDING:
+            return Response(
+                {
+                    "error": "INVALID_STATUS_TRANSITION",
+                    "message": "Only pending orders can be marked completed.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order.status = OrderStatus.COMPLETED
+        order.save()
+
+        serializer = CompleteOrderResponseSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
