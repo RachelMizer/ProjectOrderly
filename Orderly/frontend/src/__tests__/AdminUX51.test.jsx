@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, within, cleanup } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import Admin from "../Admin";
@@ -203,10 +203,8 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     ).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("link", { name: /^reports$/i }));
-    expect(
-      await screen.findByRole("heading", { name: /^reports$/i })
-    ).toBeInTheDocument();
-    expect(screen.getByText(/recent reports/i)).toBeInTheDocument();
+    expect(await screen.findByText(/generate a report/i)).toBeInTheDocument();
+    expect(screen.getByText(/sales summary/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("link", { name: /^inventory$/i }));
     expect(
@@ -215,7 +213,6 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       screen.getByRole("heading", { name: /count-based inventory/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/recent inventory reports/i)).toBeInTheDocument();
 
     await userEvent.click(
       screen.getByRole("link", { name: /product catalog/i })
@@ -223,7 +220,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
-    expect(screen.getByText(/recent catalogs/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+ create new product/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("link", { name: /^orders$/i }));
     expect(
@@ -238,9 +235,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     renderAdminAt("/admin/reports");
 
-    expect(
-      await screen.findByRole("heading", { name: /^reports$/i })
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/generate a report/i)).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
@@ -320,34 +315,26 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     expect(screen.getByText(/pick up where you left off/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/no recently accessed files\./i)
+      screen.getByText(/no recent activity yet\. visit a section to get started\./i)
     ).toBeInTheDocument();
   });
 
-  test("reports sidebar shows deferred actions as visible but inactive", async () => {
+  test("reports sidebar shows current sidebar content", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
 
     renderAdminAt("/admin/reports");
 
+    expect(await screen.findByText(/generate a report/i)).toBeInTheDocument();
     expect(
-      await screen.findByRole("heading", { name: /^reports$/i })
+      screen.getByText(/view sales performance, product trends, and business metrics/i)
     ).toBeInTheDocument();
-
-    const openReport = screen.getByText(/open report/i);
-    const generateReport = screen.getByText(/generate report/i);
-
-    expect(openReport.tagName).toBe("SPAN");
-    expect(generateReport.tagName).toBe("SPAN");
-    expect(openReport).toHaveClass("sidebar-link-disabled");
-    expect(generateReport).toHaveClass("sidebar-link-disabled");
-    expect(screen.getByRole("link", { name: /go back/i })).toHaveAttribute(
-      "href",
-      "/admin"
-    );
+    expect(
+      screen.getByRole("link", { name: /return to dashboard/i })
+    ).toHaveAttribute("href", "/admin");
   });
 
-  test("inventory sidebar shows deferred actions as visible but inactive", async () => {
+  test("inventory sidebar shows current sidebar content", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
 
@@ -360,13 +347,15 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       await screen.findByText(/ingredient-controlled beverage availability/i)
     ).toBeInTheDocument();
-
-    const openInventoryReport = screen.getByText(/open inventory report/i);
-    expect(openInventoryReport.tagName).toBe("SPAN");
-    expect(openInventoryReport).toHaveClass("sidebar-link-disabled");
+    expect(
+      screen.getByText(/track and update stock levels for all inventory items/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /return to dashboard/i })
+    ).toHaveAttribute("href", "/admin");
   });
 
-  test("catalog sidebar shows deferred actions as visible but inactive", async () => {
+  test("catalog sidebar shows current sidebar content", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
 
@@ -375,14 +364,12 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     expect(
       await screen.findByPlaceholderText(/search products/i)
     ).toBeInTheDocument();
-
-    const openCatalog = screen.getByText(/open catalog/i);
-    const productLookup = screen.getByText(/product lookup/i);
-
-    expect(openCatalog.tagName).toBe("SPAN");
-    expect(productLookup.tagName).toBe("SPAN");
-    expect(openCatalog).toHaveClass("sidebar-link-disabled");
-    expect(productLookup).toHaveClass("sidebar-link-disabled");
+    expect(
+      screen.getByText(/browse and manage the full product catalog/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /return to dashboard/i })
+    ).toHaveAttribute("href", "/admin");
   });
 
   test("orders sidebar shows deferred actions as visible but inactive", async () => {

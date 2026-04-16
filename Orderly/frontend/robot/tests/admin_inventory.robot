@@ -15,9 +15,9 @@ Business Admin Can Open Inventory Page
 
     Wait Until Page Contains    Inventory    10s
     Wait Until Page Contains    Welcome,    10s
-    Wait Until Page Contains    Recent Inventory Reports    10s
-    Wait Until Page Contains    Open Inventory Report    10s
-    Wait Until Page Contains    Go Back    10s
+    Wait Until Page Contains    Track and update stock levels for all inventory items    10s
+    Wait Until Page Contains    Return to Dashboard    10s
+    Wait Until Page Contains    Inventory Management    10s
     Capture Page Screenshot
     Close Browser
 
@@ -36,14 +36,15 @@ Business Admin Sees Admin Layout On Inventory Page
     Capture Page Screenshot
     Close Browser
 
-Inventory Sidebar Shows Deferred Action As Inactive
+Inventory Sidebar Shows Current Sidebar Content
     Open Browser    ${BASE_URL}    ${BROWSER}
     Maximize Browser Window
     Login As Business User
     Go To    ${ADMIN_INVENTORY_URL}
 
     Wait Until Page Contains    Inventory    10s
-    Element Should Be Visible    xpath=//span[contains(normalize-space(.), 'Open Inventory Report')]
+    Wait Until Page Contains    Track and update stock levels for all inventory items    10s
+    Element Should Be Visible    xpath=//a[contains(normalize-space(.), 'Return to Dashboard')]
     Capture Page Screenshot
     Close Browser
 
@@ -53,8 +54,8 @@ Customer Cannot Access Inventory Page
     Login As Customer User
     Go To    ${ADMIN_INVENTORY_URL}
 
-    Wait Until Page Does Not Contain    Recent Inventory Reports    10s
-    Wait Until Page Does Not Contain    Open Inventory Report    10s
+    Wait Until Page Does Not Contain    Track and update stock levels for all inventory items    10s
+    Wait Until Page Does Not Contain    Return to Dashboard    10s
     Wait Until Page Contains    Orderly    10s
     Wait Until Page Contains    Sign In    10s
     Capture Page Screenshot

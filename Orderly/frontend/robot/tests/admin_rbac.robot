@@ -6,6 +6,7 @@ Test Teardown    Close Browser Session
 *** Variables ***
 ${CUSTOMER_EMAIL}       Customer1@example.com
 ${CUSTOMER_PASSWORD}    Password123!
+${ADMIN_INVENTORY_URL}    ${BASE_URL}/admin/inventory
 
 *** Test Cases ***
 Logged Out User Is Redirected To Admin Login From Admin Route
@@ -60,11 +61,18 @@ Business User Can Open Add Supplier Page
     Location Should Be    ${BASE_URL}/admin/suppliers/new
 
 Business User Can Open Admin Inventory Page
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
     Login As Business User
-    Go To    ${BASE_URL}/admin/inventory
+    Go To    ${ADMIN_INVENTORY_URL}
+
     Wait Until Page Contains    Inventory    10s
-    Wait Until Page Contains    Recent Inventory Reports    10s
-    Location Should Be    ${BASE_URL}/admin/inventory
+    Wait Until Page Contains    Welcome,    10s
+    Wait Until Page Contains    Track and update stock levels for all inventory items    10s
+    Wait Until Page Contains    Ingredient-Controlled Beverage Availability    10s
+    Wait Until Page Contains    Count-Based Inventory    10s
+    Capture Page Screenshot
+    Close Browser
     
 *** Keywords ***
 Sync Auth Token Key For Frontend
