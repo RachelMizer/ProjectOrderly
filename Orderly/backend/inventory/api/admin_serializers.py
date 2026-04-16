@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from inventory.models import InventoryItem
-from catalog.models import ProductVariant
 
 
 class AdminInventoryItemSerializer(serializers.ModelSerializer):
@@ -45,44 +44,23 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        stock_quantity = attrs.get(
+            "stock_quantity",
+            getattr(self.instance, "stock_quantity", None),
+        )
+        reorder_level = attrs.get(
+            "reorder_level",
+            getattr(self.instance, "reorder_level", None),
+        )
+
+        if (
+            reorder_level is not None
+            and stock_quantity is not None
+            and stock_quantity > 0
+            and reorder_level > stock_quantity
+        ):
+            raise serializers.ValidationError(
+                {"reorder_level": "Reorder level cannot exceed stock quantity."}
+            )
+
         return attrs
-
-
-class LowStockVariantSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(read_only=True)
-    stockQuantity = serializers.IntegerField(source="stock_quantity", read_only=True)
-    reorderLevel = serializers.IntegerField(source="reorder_level", read_only=True)
-
-    class Meta:
-        model = ProductVariant
-        fields = [
-            "id",
-            "name",
-            "stockQuantity",
-            "reorderLevel",
-        ]
-
-
-class LowStockInventorySerializer(serializers.ModelSerializer):
-    name = serializers.CharField(read_only=True)
-    stockQuantity = serializers.DecimalField(
-        source="stock_quantity",
-        max_digits=12,
-        decimal_places=2,
-        read_only=True,
-    )
-    reorderLevel = serializers.DecimalField(
-        source="reorder_level",
-        max_digits=12,
-        decimal_places=2,
-        read_only=True,
-    )
-
-    class Meta:
-        model = InventoryItem
-        fields = [
-            "id",
-            "name",
-            "stockQuantity",
-            "reorderLevel",
-        ]
