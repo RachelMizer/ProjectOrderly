@@ -10,7 +10,7 @@ from django.utils.text import slugify
 
 from accounts.models import UserRole, CustomerProfile, UserRoleChoices
 from suppliers.models import Supplier
-from inventory.models import InventoryItem, UnitOfMeasure
+from inventory.models import InventoryItem, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
 from catalog.models import (
     Category,
     Product,
@@ -369,6 +369,74 @@ class Command(BaseCommand):
                 "stock_quantity": Decimal("240.00"),
                 "unit_of_measure": UnitOfMeasure.UNITS,
                 "reorder_level": Decimal("100.00"),
+            },
+            # Premade bakery items sourced from supplier
+            {
+                "name": "Croissant",
+                "stock_quantity": Decimal("40.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("15.00"),
+            },
+            {
+                "name": "Bagel",
+                "stock_quantity": Decimal("40.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("15.00"),
+            },
+            {
+                "name": "English Muffin",
+                "stock_quantity": Decimal("40.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("15.00"),
+            },
+            {
+                "name": "Chocolate Croissant",
+                "stock_quantity": Decimal("20.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("8.00"),
+            },
+            {
+                "name": "Cake Pop - Chocolate",
+                "stock_quantity": Decimal("24.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("10.00"),
+            },
+            {
+                "name": "Cake Pop - Birthday Cake",
+                "stock_quantity": Decimal("24.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("10.00"),
+            },
+            {
+                "name": "Cake Pop - Vanilla",
+                "stock_quantity": Decimal("24.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("10.00"),
+            },
+            # Breakfast sandwich proteins and egg
+            {
+                "name": "Eggs",
+                "stock_quantity": Decimal("60.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("24.00"),
+            },
+            {
+                "name": "Bacon",
+                "stock_quantity": Decimal("10.00"),
+                "unit_of_measure": UnitOfMeasure.LB,
+                "reorder_level": Decimal("4.00"),
+            },
+            {
+                "name": "Sausage",
+                "stock_quantity": Decimal("30.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("12.00"),
+            },
+            {
+                "name": "Avocado",
+                "stock_quantity": Decimal("20.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("8.00"),
             },
         ]
 
@@ -729,7 +797,141 @@ class Command(BaseCommand):
         )
 
         # ------------------------------------------------------------
-        # 9) Final summary
+        # 9) Inventory usage — links ingredients to product variants
+        # ------------------------------------------------------------
+        def link(variant, item_name, qty):
+            item = InventoryItem.objects.filter(name=item_name).first()
+            if not item:
+                return
+            VariantInventoryUsage.objects.get_or_create(
+                variant=variant,
+                inventory_item=item,
+                defaults={"quantity_used": Decimal(qty)},
+            )
+
+        def link_modifier(variant, group_name, option_name, item_name, qty):
+            item = InventoryItem.objects.filter(name=item_name).first()
+            option = ModifierOption.objects.filter(
+                group__variant=variant,
+                group__name=group_name,
+                name=option_name,
+            ).first()
+            if not item or not option:
+                return
+            ModifierInventoryUsage.objects.get_or_create(
+                modifier_option=option,
+                inventory_item=item,
+                defaults={"quantity_used": Decimal(qty)},
+            )
+
+        espresso = [
+            ("Latte",               ["Small", "Medium", "Large"]),
+            ("Cappuccino",          ["Small", "Medium", "Large"]),
+            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
+        ]
+        milk_drinks = [
+            ("Latte",               ["Small", "Medium", "Large"]),
+            ("Cappuccino",          ["Small", "Medium", "Large"]),
+            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Chai Tea Latte",      ["Small", "Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
+        ]
+        mocha_syrup_drinks = [
+            ("Mocha", ["Small", "Medium", "Large"]),
+        ]
+        green_tea_drinks = [
+            ("Green Tea", ["Small", "Medium", "Large"]),
+        ]
+        coffee_bean_drinks = [
+            ("House Coffee", ["Small", "Medium", "Large"]),
+            ("Cold Brew",    ["Small", "Large"]),
+        ]
+
+        for product_name, sizes in espresso:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Espresso Beans", "0.04")
+
+        for product_name, sizes in milk_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Milk", "0.24")
+
+        for product_name, sizes in mocha_syrup_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Mocha Syrup", "0.03")
+
+        for product_name, sizes in green_tea_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Green Tea Leaves", "0.02")
+
+        for product_name, sizes in coffee_bean_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Coffee Beans", "0.04")
+
+        small_drinks = [
+            ("House Coffee",        ["Small"]),
+            ("Latte",               ["Small"]),
+            ("Cappuccino",          ["Small"]),
+            ("Mocha",               ["Small"]),
+            ("Cold Brew",           ["Small"]),
+            ("Green Tea",           ["Small"]),
+            ("Chai Tea Latte",      ["Small"]),
+            ("Pumpkin Spice Latte", ["Small"]),
+        ]
+
+        medium_large_drinks = [
+            ("House Coffee",        ["Medium", "Large"]),
+            ("Latte",               ["Medium", "Large"]),
+            ("Cappuccino",          ["Medium", "Large"]),
+            ("Mocha",               ["Medium", "Large"]),
+            ("Cold Brew",           ["Large"]),
+            ("Green Tea",           ["Medium", "Large"]),
+            ("Chai Tea Latte",      ["Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Medium", "Large"]),
+        ]
+
+        for product_name, sizes in small_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Cups (12oz)", "1")
+                link(variants_by_product[product_name][size], "Lids (12oz)", "1")
+
+        for product_name, sizes in medium_large_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Cups (16oz)", "1")
+                link(variants_by_product[product_name][size], "Lids (16oz)", "1")
+
+        # Blueberry Muffin — made in house
+        link(variants_by_product["Blueberry Muffin"]["Standard"], "Flour", "0.25")
+        link(variants_by_product["Blueberry Muffin"]["Standard"], "Blueberries", "0.1")
+
+        # Chocolate Croissant — premade, tracked as a stock unit
+        link(variants_by_product["Chocolate Croissant"]["Standard"], "Chocolate Croissant", "1")
+
+        # Breakfast Sandwich — egg is a base ingredient regardless of build
+        link(variants_by_product["Breakfast Sandwich"]["Standard"], "Eggs", "1")
+
+        # Breakfast Sandwich — bread choices (premade, sourced from supplier)
+        breakfast_variant = variants_by_product["Breakfast Sandwich"]["Standard"]
+        link_modifier(breakfast_variant, "Bread Choice", "Croissant",     "Croissant",      "1")
+        link_modifier(breakfast_variant, "Bread Choice", "Bagel",         "Bagel",          "1")
+        link_modifier(breakfast_variant, "Bread Choice", "English Muffin","English Muffin", "1")
+
+        # Breakfast Sandwich — protein add-ons
+        link_modifier(breakfast_variant, "Protein Add-On", "Bacon",   "Bacon",   "0.1")
+        link_modifier(breakfast_variant, "Protein Add-On", "Sausage", "Sausage", "1")
+        link_modifier(breakfast_variant, "Protein Add-On", "Avocado", "Avocado", "0.5")
+
+        # Cake Pops — premade by supplier, each flavor tracked as its own stock unit
+        link(variants_by_product["Cake Pop"]["Chocolate"],    "Cake Pop - Chocolate",     "1")
+        link(variants_by_product["Cake Pop"]["Birthday Cake"],"Cake Pop - Birthday Cake", "1")
+        link(variants_by_product["Cake Pop"]["Vanilla"],      "Cake Pop - Vanilla",       "1")
+
+        self.stdout.write(
+            self.style.SUCCESS("Inventory usage seeded: ingredients linked to variants")
+        )
+
+        # ------------------------------------------------------------
+        # 10) Final summary
         # ------------------------------------------------------------
         self.stdout.write(self.style.SUCCESS("Seed data loaded successfully."))
         self.stdout.write(self.style.SUCCESS("✅ Seed complete for Sprint 3 testing."))
