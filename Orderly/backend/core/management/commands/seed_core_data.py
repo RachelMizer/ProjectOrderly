@@ -152,12 +152,25 @@ class Command(BaseCommand):
         if InventoryItem:
             # Try to match your UnitOfMeasure choices (units, oz, lb, g, ml, l)
             items = [
-                ("Burger Buns", "units", 200, 50),
-                ("Ground Beef", "lb", 80, 20),
-                ("Lettuce", "units", 40, 10),
-                ("Cheddar Cheese", "lb", 25, 5),
-                ("Fries (Frozen)", "lb", 120, 30),
-                ("Soda Syrup", "l", 20, 5),
+                ("Coffee Beans",    "lb",    25,  10),
+                ("Espresso Beans",  "lb",    20,   8),
+                ("Green Tea Leaves","lb",    12,   5),
+                ("Black Tea Leaves","lb",    12,   5),
+                ("Milk",            "l",     30,  12),
+                ("Oat Milk",        "l",     16,   6),
+                ("Almond Milk",     "l",     16,   6),
+                ("Sugar",           "lb",    18,   8),
+                ("Vanilla Syrup",   "l",     10,   4),
+                ("Caramel Syrup",   "l",     10,   4),
+                ("Mocha Syrup",     "l",     10,   4),
+                ("Flour",           "lb",    40,  15),
+                ("Blueberries",     "lb",    14,   5),
+                ("Chocolate Chips", "lb",    10,   4),
+                ("Whipped Cream",   "units", 20,   8),
+                ("Cups (12oz)",     "units", 300, 120),
+                ("Cups (16oz)",     "units", 260, 100),
+                ("Lids (12oz)",     "units", 280, 120),
+                ("Lids (16oz)",     "units", 240, 100),
             ]
             for name, uom, stock_qty, reorder in items:
                 obj, _ = InventoryItem.objects.get_or_create(

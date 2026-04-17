@@ -96,10 +96,14 @@ export default function AdminSalesDashboard() {
     })
       .then((data) => {
         setStats({
-          totalRevenue: parseFloat(data.totalRevenue),
-          orderCount: data.totalOrders,
+          totalRevenue: parseFloat(
+            data.totalRevenue ?? data.total_revenue ?? 0
+          ),
+          orderCount: Number(
+            data.totalOrders ?? data.order_count ?? 0
+          ),
         });
-        setProducts([]);
+        setProducts(data.products || []);
         const rawBreakdown = data.breakdown || [];
         const groupBy = data.groupBy || "month";
         const mapped = rawBreakdown.map((item) => {

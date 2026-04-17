@@ -1,8 +1,9 @@
 """
 URL routes for the Orders API.
 
-These routes expose the draft order (cart) functionality used by
-the customer ordering workflow.
+These routes expose both:
+- customer draft/cart and order submission workflows
+- business order fulfillment workflows
 """
 
 from django.urls import path
@@ -17,6 +18,8 @@ from orders.views import (
     OrderDetailView,
     OrderStatusView,
     OrderHistoryView,
+    BusinessOrderListView,
+    CompleteOrderView,
 )
 
 urlpatterns = [
@@ -66,6 +69,22 @@ urlpatterns = [
         "<int:orderId>/submit",
         SubmitOrderView.as_view(),
         name="submit-order",
+    ),
+
+    # Finalize order
+    # PATCH /api/v1/orders/{orderId}/complete
+    path(
+        "<int:orderId>/complete",
+        CompleteOrderView.as_view(),
+        name="complete-order",
+    ),
+
+    # GET /api/v1/orders
+    # Business-only order list (non-draft orders, optional status filter)
+    path(
+        "",
+        BusinessOrderListView.as_view(),
+        name="business-order-list",
     ),
 
     # Retrieve full order detail / receipt
