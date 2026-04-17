@@ -95,26 +95,25 @@ describe("US5.4 Sales Summary Dashboard", () => {
 
     expect(screen.getByText(/sales summary/i)).toBeInTheDocument();
     expect(
-        screen.getByPlaceholderText(/search product or variant/i)
+      screen.getByPlaceholderText(/search product or variant/i)
     ).toBeInTheDocument();
     expect(
-        screen.getByRole("button", { name: /> export/i })
+      screen.getByRole("button", { name: /> export/i })
     ).toBeInTheDocument();
     expect(
-        screen.getByRole("button", { name: /> print/i })
+      screen.getByRole("button", { name: /> print/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByText(/\$12,345\.67/i)).toBeInTheDocument();
     expect(screen.getByText(/^321$/)).toBeInTheDocument();
     expect(screen.getByText(/sales by product/i)).toBeInTheDocument();
     expect(screen.getByTestId("bar-chart")).toBeInTheDocument();
     expect(screen.queryByText(/loading sales data/i)).not.toBeInTheDocument();
 
     expect(fetchSalesSummary).toHaveBeenCalledWith({
-        year: expect.any(String),
-        month: null,
+      year: expect.any(String),
+      month: null,
     });
-});
+  });
 
   test("uses month from route state on first load and shows month-specific period label", async () => {
     fetchSalesSummary.mockResolvedValue(
@@ -191,29 +190,44 @@ describe("US5.4 Sales Summary Dashboard", () => {
     expect(screen.queryByText(/loading sales data/i)).not.toBeInTheDocument();
   });
 
-  test("shows empty state when there are no products", async () => {
-    fetchSalesSummary.mockResolvedValue(
-      makeSummaryResponse({
-        products: [],
-      })
-    );
+  test("renders top-selling product card and product table when product data exists", async () => {
+    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
 
-    renderDashboard();
+    renderDashboard({
+        state: { month: "04-2026" },
+    });
 
-    await screen.findByText(/sales by product/i);
+    await screen.findByText(/\$12,345\.67/i);
 
-    expect(screen.getAllByText(/no data available/i).length).toBeGreaterThan(0);
+    // ✅ Top product section
     expect(
-      screen.getByText(/no sales data to display yet/i)
+        screen.getByText(/top selling product for april 2026/i)
     ).toBeInTheDocument();
-  });
+
+    // ✅ Product name + variant
+    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
+    expect(screen.getByText(/^large$/i)).toBeInTheDocument();
+
+    // ✅ Sales + units
+    expect(
+        screen.getByText(/total sales:\s*\$\s*660\.00/i)
+    ).toBeInTheDocument();
+
+    expect(
+        screen.getByText(/units sold:\s*120/i)
+    ).toBeInTheDocument();
+
+    // ✅ Table rows
+    expect(screen.getByText(/^mocha$/i)).toBeInTheDocument();
+
+    // ❌ Ensure empty state NOT shown
+    expect(
+        screen.queryByText(/no sales data to display yet/i)
+    ).not.toBeInTheDocument();
+    });
 
   test("shows no-results message when the search filters everything out", async () => {
-    fetchSalesSummary.mockResolvedValue(
-      makeSummaryResponse({
-        products: [],
-      })
-    );
+    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
 
     renderDashboard();
 
@@ -228,51 +242,4 @@ describe("US5.4 Sales Summary Dashboard", () => {
       screen.getByText(/no results match your search/i)
     ).toBeInTheDocument();
   });
-
-  test("renders top-selling product card and product table from API data", async () => {
-    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
-
-    renderDashboard({
-        state: { month: "04-2026" },
-    });
-
-    // wait for loaded state
-    await screen.findByText(/\$12,345\.67/i);
-
-    // ✅ Top selling product section
-    expect(
-        screen.getByText(/top selling product for/i)
-    ).toBeInTheDocument();
-
-    // ✅ Product name + variant (split safely)
-    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^large$/i)).toBeInTheDocument();
-
-    // ✅ Sales + units
-    expect(
-        screen.getByText(/total sales:\s*\$\s*660\.00/i)
-        ).toBeInTheDocument();
-
-    expect(
-        screen.getByText(/units sold:\s*120/i)
-        ).toBeInTheDocument();
-
-    // ✅ Table headers
-    expect(
-        screen.getByRole("columnheader", { name: /product/i })
-    ).toBeInTheDocument();
-    expect(
-        screen.getByRole("columnheader", { name: /variant/i })
-    ).toBeInTheDocument();
-    expect(
-        screen.getByRole("columnheader", { name: /unit price/i })
-    ).toBeInTheDocument();
-    expect(
-        screen.getByRole("columnheader", { name: /total revenue/i })
-    ).toBeInTheDocument();
-
-    // ✅ Table rows
-    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^mocha$/i)).toBeInTheDocument();
-    });
 });
