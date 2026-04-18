@@ -582,54 +582,61 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
 
 
 class BusinessOrderDetailItemModifierSerializer(serializers.ModelSerializer):
-    """
-    Serializer for modifiers shown in business-facing order detail.
-    """
-
     id = serializers.IntegerField(source="modifier_option.id", read_only=True)
     groupId = serializers.IntegerField(source="modifier_option.group.id", read_only=True)
+    name = serializers.CharField(source="modifier_option.name", read_only=True)
+    priceAdjustmentCharged = serializers.DecimalField(
+        source="price_adjustment_charged",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
 
     class Meta:
         model = OrderItemModifier
         fields = [
             "id",
             "groupId",
+            "name",
+            "priceAdjustmentCharged",
         ]
 
 
 class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
-    """
-    Serializer for order items shown in business-facing order detail.
-    """
-
-    id = serializers.IntegerField(source="variant.id", read_only=True)
-    variantName = serializers.CharField(source="variant.name", read_only=True, default=None)
+    itemId = serializers.IntegerField(source="id", read_only=True)
+    productName = serializers.CharField(source="variant.product.name", read_only=True)
+    variantName = serializers.CharField(source="variant.name", read_only=True)
+    quantity = serializers.IntegerField(read_only=True)
+    unitPriceCharged = serializers.DecimalField(
+        source="unit_price_charged",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+    itemTotal = serializers.DecimalField(
+        source="item_total",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
     modifiers = BusinessOrderDetailItemModifierSerializer(many=True, read_only=True)
 
     class Meta:
         model = OrderItem
         fields = [
-            "id",
+            "itemId",
+            "productName",
             "variantName",
+            "quantity",
+            "unitPriceCharged",
+            "itemTotal",
             "modifiers",
         ]
 
 
 class BusinessOrderDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for business-facing order detail.
-
-    Used by:
-        GET /api/v1/orders/{orderId}
-    """
-
+    customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
     date = serializers.DateTimeField(source="order_date", read_only=True)
-    orderSubtotal = serializers.DecimalField(
-        source="subtotal",
-        max_digits=10,
-        decimal_places=2,
-        read_only=True,
-    )
     taxAmount = serializers.DecimalField(
         source="tax_amount",
         max_digits=10,
@@ -644,20 +651,20 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
-    variants = BusinessOrderDetailItemSerializer(source="items", many=True, read_only=True)
+    items = BusinessOrderDetailItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
         fields = [
             "id",
+            "customerId",
             "date",
-            "orderSubtotal",
+            "status",
+            "items",
             "taxAmount",
             "totalDue",
-            "status",
             "createdAt",
             "updatedAt",
-            "variants",
         ]
 
 

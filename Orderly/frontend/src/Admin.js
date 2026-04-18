@@ -133,7 +133,7 @@ function AdminLayout() {
           <div className="sidebar-recent-orders">
             <p className="sidebar-sub sidebar-sub--boxed">Recent Orders</p>
             {recentOrders.length === 0 ? (
-              <p className="sidebar-empty">No recent orders.</p>
+              <p className="sidebar-empty">No orders yet.</p>
             ) : (
               recentOrders.map((o) => (
                 <Link key={o.id} to={`/admin/orders/${o.id}`} className="sidebar-recent-order">
@@ -144,10 +144,12 @@ function AdminLayout() {
             )}
           </div>
           <div className="sidebar-actions">
+            <span className="sidebar-link-disabled" title="Pending further development">» Open Order</span>
+            <span className="sidebar-link-disabled" title="Pending further development">» Search History</span>
             <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
             <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
           </div>
-          <Link to="/admin" className="sidebar-back">« Go Back</Link>
+          <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
           </div>
     );
 }
