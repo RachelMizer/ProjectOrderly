@@ -13,6 +13,7 @@ import ProductCatalog from "./pages/Admin/AdminProductsPage";
 import AdminProductFormPage from "./pages/Admin/AdminProductFormPage";
 import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
 import Orders from "./pages/Admin/orders";
+import AdminOrderDetail from "./pages/Admin/AdminOrderDetail";
 import AccountSettings from "./pages/Admin/admin-acct";
 
 function AdminLayout() {
@@ -99,26 +100,59 @@ function AdminLayout() {
     if (path.startsWith("/admin/catalog")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Product Catalog</p>
-        <p className="sidebar-desc">Browse and manage the full product catalog. Add new items, edit existing products, update pricing, and control which items are active and visible to customers.</p>
+
+        <div className="sidebar-recent-orders">
+          <p className="sidebar-sub sidebar-sub--boxed">Recent Catalogs</p>
+          <p className="sidebar-empty">No recent files.</p>
+        </div>
+
+        <div className="sidebar-actions">
+          <span className="sidebar-link-disabled" title="Pending further development">
+            Open Catalog
+          </span>
+          <span className="sidebar-link-disabled" title="Pending further development">
+            Product Lookup
+          </span>
+        </div>
+
+        <p className="sidebar-desc">
+          Browse and manage the full product catalog. Add new items, edit existing
+          products, update pricing, and control which items are active and visible
+          to customers.
+        </p>
+
         <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
-    if (path.startsWith("/admin/orders")) return (
-      <div className="sidebar-menu">
-        <p className="sidebar-title">Orders</p>
-        <p className="sidebar-sub">Recent Orders</p>
-        {/* fetch recent orders here when endpoint is available */}
-        <p className="sidebar-empty">No recent files.</p>
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Order</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Search History</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
-        </div>
-        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
-      </div>
+    if (path.startsWith("/admin/orders")) {
+      const recentOrders = JSON.parse(localStorage.getItem("orderly_recent_orders") || "[]");
+      return (
+        <div className="sidebar-menu">
+          <p className="sidebar-title">Orders</p>
+          <div className="sidebar-recent-orders">
+            <p className="sidebar-sub sidebar-sub--boxed">Recent Orders</p>
+            {recentOrders.length === 0 ? (
+              <p className="sidebar-empty">No orders yet.</p>
+            ) : (
+              recentOrders.map((o) => (
+                <Link key={o.id} to={`/admin/orders/${o.id}`} className="sidebar-recent-order">
+                  <span className="sidebar-recent-order__id">#{o.id}</span>
+                  <span className="sidebar-recent-order__name">{o.customerName}</span>
+                </Link>
+              ))
+            )}
+          </div>
+          <div className="sidebar-actions">
+            <span className="sidebar-link-disabled" title="Pending further development">» Open Order</span>
+            <span className="sidebar-link-disabled" title="Pending further development">» Search History</span>
+            <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
+            <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
+          </div>
+          <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+          </div>
     );
+}
 
     return null;
   }
@@ -161,6 +195,7 @@ function AdminLayout() {
             <Route path="/catalog/edit/:productId" element={<AdminProductFormPage />} />
             <Route path="/suppliers/new" element={<AdminSupplierFormPage />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:orderId" element={<AdminOrderDetail />} />
             <Route path="/account" element={<AccountSettings />} />
           </Routes>
         </div>
