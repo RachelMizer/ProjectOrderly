@@ -70,13 +70,18 @@ describe("Order History Page", () => {
     renderWithRoutes();
 
     expect(
-      await screen.findByRole("heading", { name: /order history/i })
+      await screen.findByRole("heading", { name: /your order history/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByText(/status:\s*pending/i)).toBeInTheDocument();
-    expect(screen.getByText(/status:\s*completed/i)).toBeInTheDocument();
-    expect(screen.getByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
-    expect(screen.getByText(/total:\s*\$20\.14/i)).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /order/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /date/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /status/i })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /total/i })).toBeInTheDocument();
+
+    expect(screen.getByText(/^PENDING$/i)).toBeInTheDocument();
+    expect(screen.getByText(/^COMPLETED$/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$10\.07/)).toBeInTheDocument();
+    expect(screen.getByText(/\$20\.14/)).toBeInTheDocument();
     expect(screen.getByText(/page\s*1/i)).toBeInTheDocument();
   });
 
@@ -136,7 +141,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
   });
@@ -160,7 +165,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => {
@@ -170,7 +175,7 @@ describe("Order History Page", () => {
       });
     });
 
-    expect(await screen.findByText(/total:\s*\$20\.14/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$20\.14/)).toBeInTheDocument();
     expect(screen.getByText(/page\s*2/i)).toBeInTheDocument();
   });
 
@@ -200,10 +205,10 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
-    expect(await screen.findByText(/total:\s*\$20\.14/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$20\.14/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /previous/i }));
 
@@ -214,7 +219,7 @@ describe("Order History Page", () => {
       });
     });
 
-    expect(await screen.findByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
     expect(screen.getByText(/page\s*1/i)).toBeInTheDocument();
   });
 
@@ -240,12 +245,10 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    const totalText = await screen.findByText(/total:\s*\$10\.07/i);
-    const clickableOrderCard = totalText.closest("div");
-
-    fireEvent.click(clickableOrderCard);
+    const orderNumber = await screen.findByText(/#\s*28/i);
+    fireEvent.click(orderNumber);
 
     expect(await screen.findByText(/order #28/i)).toBeInTheDocument();
-    expect(await screen.findByText(/total:\s*\$10\.07/i)).toBeInTheDocument();
+    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
   });
 });
