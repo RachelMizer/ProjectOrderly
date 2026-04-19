@@ -53,8 +53,8 @@ export default function AdminProductPerformance() {
   const [loading, setLoading]             = useState(true);
   const [dataLoading, setDataLoading]     = useState(false);
   const [error, setError]                 = useState(null);
-  const [sortKey, setSortKey]             = useState("units_sold");
-  const [sortDir, setSortDir]             = useState("desc");
+  const [sortKey, setSortKey]             = useState("rank");
+  const [sortDir, setSortDir]             = useState("asc");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [searchQuery, setSearchQuery]     = useState("");
 
@@ -288,21 +288,19 @@ export default function AdminProductPerformance() {
                 ))}
               </select>
             )}
-            {(selectedKey || selectedMonth || searchQuery || categoryFilter || selectedYear !== CURRENT_YEAR) && (
-              <button
-                type="button"
-                className="submenu-action submenu-action--clear"
-                onClick={() => {
-                  setSelectedKey("");
-                  setSelectedYear(CURRENT_YEAR);
-                  setSelectedMonth(CURRENT_MONTH_KEY);
-                  setCategoryFilter("");
-                  setSearchQuery("");
-                }}
-              >
-                &times;&#x202F;CLEAR FILTERS
-              </button>
-            )}
+            <button
+              type="button"
+              className="submenu-action submenu-action--clear"
+              onClick={() => {
+                setSelectedKey("");
+                setSelectedYear(CURRENT_YEAR);
+                setSelectedMonth(CURRENT_MONTH_KEY);
+                setCategoryFilter("");
+                setSearchQuery("");
+              }}
+            >
+              &times;&#x202F;CLEAR FILTERS
+            </button>
           </div>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
@@ -320,6 +318,12 @@ export default function AdminProductPerformance() {
       {!selectedKey && !loading && (
         <>
           <p className="rpt-period-label">Product Rankings — {rankLabel}</p>
+          <div className="rpt-rank-legend">
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--1">1st</span>
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--2">2nd</span>
+            <span className="rpt-rank-legend__item rpt-rank-legend__item--3">3rd</span>
+            <span className="rpt-rank-legend__label">Top performers by original ranking</span>
+          </div>
           {sortedRankings.length === 0 ? (
             <p className="rpt-empty">No sales data available for this period.</p>
           ) : (

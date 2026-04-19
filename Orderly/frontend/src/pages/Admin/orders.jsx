@@ -322,7 +322,7 @@ export default function Orders() {
 
       {!loading && !error && (
         <>
-          <p className="orders-view-title">{buildTitle()}</p>
+          <h1 className="orders-view-title">Orders</h1>
 
           {feedback.message && (
             <div key={feedback.id + feedback.message} className={`orders-feedback orders-feedback--${feedback.type}`}>

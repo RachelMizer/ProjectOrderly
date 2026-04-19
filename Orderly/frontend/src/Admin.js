@@ -82,7 +82,10 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Reports</p>
         <p className="sidebar-desc">View sales performance, product trends, and business metrics. Use filters to drill down by date, product, or category.</p>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        {path !== "/admin/reports" && (
+          <Link to="/admin/reports" className="sidebar-back">« Back to Reports Dashboard</Link>
+        )}
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
@@ -90,22 +93,35 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Inventory</p>
         <p className="sidebar-desc">Track and update stock levels for all inventory items. Toggle ingredient availability to control which beverages are offered, and manage count-based items by quantity and reorder level.</p>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/catalog")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">Product Catalog</p>
+
         <div className="sidebar-recent-orders">
           <p className="sidebar-sub sidebar-sub--boxed">Recent Catalogs</p>
           <p className="sidebar-empty">No recent files.</p>
         </div>
+
         <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">» Open Catalog</span>
-          <span className="sidebar-link-disabled" title="Pending further development">» Product Lookup</span>
+          <span className="sidebar-link-disabled" title="Pending further development">
+            Open Catalog
+          </span>
+          <span className="sidebar-link-disabled" title="Pending further development">
+            Product Lookup
+          </span>
         </div>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+
+        <p className="sidebar-desc">
+          Browse and manage the full product catalog. Add new items, edit existing
+          products, update pricing, and control which items are active and visible
+          to customers.
+        </p>
+
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
       </div>
     );
 
@@ -117,7 +133,7 @@ function AdminLayout() {
           <div className="sidebar-recent-orders">
             <p className="sidebar-sub sidebar-sub--boxed">Recent Orders</p>
             {recentOrders.length === 0 ? (
-              <p className="sidebar-empty">No recent orders.</p>
+              <p className="sidebar-empty">No orders yet.</p>
             ) : (
               recentOrders.map((o) => (
                 <Link key={o.id} to={`/admin/orders/${o.id}`} className="sidebar-recent-order">
@@ -128,13 +144,15 @@ function AdminLayout() {
             )}
           </div>
           <div className="sidebar-actions">
+            <span className="sidebar-link-disabled" title="Pending further development">» Open Order</span>
+            <span className="sidebar-link-disabled" title="Pending further development">» Search History</span>
             <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
             <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
           </div>
-          <Link to="/admin" className="sidebar-back">« Go Back</Link>
-        </div>
-      );
-    }
+          <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+          </div>
+    );
+}
 
     return null;
   }

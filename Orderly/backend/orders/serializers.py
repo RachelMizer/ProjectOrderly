@@ -585,6 +585,27 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
         ]
 
 
+class BusinessOrderDetailItemModifierSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="modifier_option.id", read_only=True)
+    groupId = serializers.IntegerField(source="modifier_option.group.id", read_only=True)
+    name = serializers.CharField(source="modifier_option.name", read_only=True)
+    priceAdjustmentCharged = serializers.DecimalField(
+        source="price_adjustment_charged",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
+
+    class Meta:
+        model = OrderItemModifier
+        fields = [
+            "id",
+            "groupId",
+            "name",
+            "priceAdjustmentCharged",
+        ]
+
+
 class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
     """
     Serializer for order items shown in business-facing order detail.
@@ -602,7 +623,7 @@ class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     itemTotal = serializers.SerializerMethodField()
-    modifiers = OrderItemModifierSerializer(many=True, read_only=True)
+    modifiers = BusinessOrderDetailItemModifierSerializer(many=True, read_only=True)
 
     def get_itemTotal(self, obj):
         modifier_total = sum(m.price_adjustment_charged for m in obj.modifiers.all())
@@ -623,17 +644,20 @@ class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
 
 
 class BusinessOrderDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for business-facing order detail.
-
-    Used by:
-        GET /api/v1/orders/{orderId}
-    """
-
-    date = serializers.DateTimeField(source="order_date", read_only=True)
     customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
-    customerFirstName = serializers.CharField(source="customer.user.first_name", read_only=True, allow_null=True, default=None)
-    customerLastName = serializers.CharField(source="customer.user.last_name", read_only=True, allow_null=True, default=None)
+    date = serializers.DateTimeField(source="order_date", read_only=True)
+    customerFirstName = serializers.CharField(
+        source="customer.user.first_name",
+        read_only=True,
+        allow_null=True,
+        default=None,
+    )
+    customerLastName = serializers.CharField(
+        source="customer.user.last_name",
+        read_only=True,
+        allow_null=True,
+        default=None,
+    )
     orderSubtotal = serializers.DecimalField(
         source="subtotal",
         max_digits=10,
@@ -660,14 +684,14 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             "id",
-            "date",
             "customerId",
+            "date",
             "customerFirstName",
             "customerLastName",
+            "status",
             "orderSubtotal",
             "taxAmount",
             "totalDue",
-            "status",
             "createdAt",
             "updatedAt",
             "items",
