@@ -39,24 +39,24 @@ describe("App Profile Navigation", () => {
     jest.clearAllMocks();
   });
 
-  test("shows Profile link when user is authenticated", () => {
+  test("shows Your Account link when user is authenticated", () => {
     auth.isAuthenticated.mockReturnValue(true);
 
     render(<App />);
 
-    expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /your account/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /logout/i })
     ).toBeInTheDocument();
   });
 
-  test("does not show Profile link when user is not authenticated", () => {
+  test("does not show Your Account link when user is not authenticated", () => {
     auth.isAuthenticated.mockReturnValue(false);
 
     render(<App />);
 
     expect(
-      screen.queryByRole("link", { name: /profile/i })
+      screen.queryByRole("link", { name: /your account/i })
     ).not.toBeInTheDocument();
 
     expect(screen.getByRole("link", { name: /login/i })).toBeInTheDocument();
