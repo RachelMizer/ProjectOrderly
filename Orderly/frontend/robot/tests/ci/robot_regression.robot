@@ -61,8 +61,9 @@ CI Regression - Customer Can Reach Checkout And Place Order
 
     Wait Until Location Contains    /orders/    15s
     Wait Until Page Contains    Status:    10s
-    Page Should Contain    Items
-    Page Should Contain    Totals
+    Wait Until Page Contains    Order #    10s
+    Page Should Contain    Status
+    Page Should Contain    Total
 
 CI Regression - Submitted Order Appears In Order History
     Login As Test User

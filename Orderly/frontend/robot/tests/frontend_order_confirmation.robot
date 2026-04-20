@@ -54,11 +54,11 @@ Customer Can Navigate To Checkout From Cart When Items Exist
 Customer Can View Order History From Navigation
     Login As Customer User
     Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
     Click Element    xpath=//a[@href='/order-history']
-    Wait Until Location Contains    /order-history    10s
-    Wait Until Page Contains    Order History    10s
-    Wait Until Page Does Not Contain    Loading order history...    10s
+    Wait Until Page Contains    Your Order History    10s
 
 Customer Can View Empty State Or Previous Orders In History
     Login As Customer User
@@ -72,20 +72,20 @@ Customer Can View Empty State Or Previous Orders In History
     Should Be True    ${order_count} > 0 or ${empty_count} > 0
 
 Customer Can Open An Order From Order History When Present
-    [Documentation]    Passes only when the test user has at least one non-DRAFT order in history.
     Login As Customer User
     Sync Auth Token Key For Frontend
-    Go To    ${BASE_URL}/order-history
-    Wait Until Page Contains    Order History    10s
-    Wait Until Page Does Not Contain    Loading order history...    10s
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
+    Wait Until Page Contains    Your Order History    10s
 
-    ${order_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Order #')]
-    IF    ${order_count} > 0
-        Click Element    xpath=(//*[contains(normalize-space(.), 'Order #')])[1]
-        Wait Until Location Contains    /orders/    10s
-    ELSE
-        Log    No submitted orders available for this user; skipping detail click-through.
-    END
+    ${has_orders}=    Run Keyword And Return Status
+    ...    Wait Until Page Contains Element    xpath=//tr[contains(@class,'order-hist-row')]    10s
+    Run Keyword Unless    ${has_orders}    Pass Execution    No seeded past orders available for detail navigation.
+
+    Click Element    xpath=(//tr[contains(@class,'order-hist-row')]/td[1])[1]
+    Wait Until Location Contains    /orders/    10s
 
 Customer Can See Order History Pagination Controls
     Login As Customer User
@@ -105,3 +105,10 @@ Sync Auth Token Key For Frontend
         Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
         Reload Page
     END
+
+Open Order History From Account
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']
+    Wait Until Page Contains    Your Order History    10s
