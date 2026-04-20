@@ -20,6 +20,7 @@ from orders.views import (
     OrderHistoryView,
     BusinessOrderListView,
     CompleteOrderView,
+    CancelOrderView,
 )
 
 urlpatterns = [
@@ -77,6 +78,14 @@ urlpatterns = [
         "<int:orderId>/complete",
         CompleteOrderView.as_view(),
         name="complete-order",
+    ),
+
+    # Cancel order (customer)
+    # PATCH /api/v1/orders/{orderId}/cancel
+    path(
+        "<int:orderId>/cancel",
+        CancelOrderView.as_view(),
+        name="cancel-order",
     ),
 
     # GET /api/v1/orders

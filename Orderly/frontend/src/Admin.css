@@ -1544,6 +1544,34 @@ label.inv-toggle {
     background-color: #c0392b;
 }
 
+/* Orders feedback banner */
+@keyframes orders-fade-out {
+    0%   { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.orders-feedback {
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: normal;
+    font-size: 0.9rem;
+    animation: orders-fade-out 3s forwards;
+}
+
+.orders-feedback--success {
+    background-color: #e6f4ea;
+    color: #2d6a4f;
+    border: 1px solid #b7dfc5;
+}
+
+.orders-feedback--error {
+    background-color: #fdecea;
+    color: #922b21;
+    border: 1px solid #f5c6cb;
+}
+
 /* Pagination bar */
 .orders-pagination {
     display: flex;

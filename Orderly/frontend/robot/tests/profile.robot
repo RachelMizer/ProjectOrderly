@@ -7,8 +7,8 @@ Test Teardown  Close Browser Session
 Logged Out User Should Not See Profile Link
     Go To    ${BASE_URL}
     Wait Until Page Contains Element    xpath=//a[@href='/']    10s
-    Page Should Contain Link    Home
-    Page Should Not Contain Link    Profile
+    Page Should Contain Link    Store
+    Page Should Not Contain Element    xpath=//a[@href='/profile']
     Page Should Contain Link    Login
     Page Should Contain Link    Register
 
@@ -18,7 +18,7 @@ Logged In User Can View Profile Page
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
-    Page Should Contain    Profile
+    Page Should Contain    Your Profile
     Page Should Contain Element    id=firstName
     Page Should Contain Element    id=lastName
     Page Should Contain Element    id=streetAddress

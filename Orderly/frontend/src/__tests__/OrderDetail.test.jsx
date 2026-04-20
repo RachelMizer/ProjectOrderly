@@ -61,10 +61,12 @@ describe("Order Detail Page", () => {
     expect(await screen.findByText(/order #15/i)).toBeInTheDocument();
     expect(screen.getByText(/status:/i)).toBeInTheDocument();
     expect(screen.getByText(/completed/i)).toBeInTheDocument();
-    expect(screen.getByText(/tax: \$0.50/i)).toBeInTheDocument();
-    expect(screen.getByText(/total: \$9.50/i)).toBeInTheDocument();
+    expect(screen.getByText(/tax:/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$0.50/)).toBeInTheDocument();
+    expect(screen.getByText(/total:/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$9.50/)).toBeInTheDocument();
     expect(screen.getByText(/chai/i)).toBeInTheDocument();
-    expect(screen.getByText(/quantity: 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/x\s*2/i)).toBeInTheDocument();
   });
 
   test("renders modifiers when present", async () => {
@@ -98,9 +100,8 @@ describe("Order Detail Page", () => {
     renderOrderDetail("/orders/21");
 
     expect(await screen.findByText(/order #21/i)).toBeInTheDocument();
-    expect(screen.getByText(/modifiers:/i)).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: /modifications/i })).toBeInTheDocument();
     expect(screen.getByText(/extra shot/i)).toBeInTheDocument();
-    expect(screen.getByText(/\(\+\$2.00\)/i)).toBeInTheDocument();
   });
 
   test("shows empty items message when order has no items", async () => {

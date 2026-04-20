@@ -61,7 +61,7 @@ export default function Orders() {
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
   const [searchQuery, setSearchQuery]   = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("PENDING");
   const [yearFilter, setYearFilter]     = useState("");
   const [monthFilter, setMonthFilter]   = useState("");
   const [dayFilter, setDayFilter]       = useState("");
@@ -324,6 +324,12 @@ export default function Orders() {
         <>
           <h1 className="orders-view-title">Orders</h1>
 
+          {feedback.message && (
+            <div key={feedback.id + feedback.message} className={`orders-feedback orders-feedback--${feedback.type}`}>
+              {feedback.message}
+            </div>
+          )}
+
           {showEmpty ? (
             <p className="rpt-empty">No orders found.</p>
           ) : (
@@ -361,15 +367,13 @@ export default function Orders() {
                         </span>
                       </td>
                       <td>{formatDate(order.date)}</td>
-                      <td>{order.customerId ?? "—"}</td>
+                      <td>
+                        {order.customerFirstName || order.customerLastName
+                          ? `${order.customerFirstName || ""} ${order.customerLastName || ""}`.trim()
+                          : "—"}
+                      </td>
                       <td>
                         <StatusBadge status={order.status} />
-                        {feedback.id === order.id && feedback.type === "success" && (
-                          <span className="inv-save-success"> {feedback.message}</span>
-                        )}
-                        {feedback.id === order.id && feedback.type === "error" && (
-                          <span className="inv-error"> {feedback.message}</span>
-                        )}
                       </td>
                       <td>${formatCurrency(order.totalDue)}</td>
                       <td className="td-actions">

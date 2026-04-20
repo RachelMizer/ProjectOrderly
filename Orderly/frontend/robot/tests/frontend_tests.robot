@@ -13,9 +13,9 @@ ${UPDATED_CITY}        Charlotte
 App Navigation Hides Profile Link When Not Authenticated
     Go To    ${BASE_URL}
     Wait Until Page Contains Element    xpath=//a[@href='/']    10s
-    Page Should Contain Link    Home
-    Page Should Not Contain Link    Profile
-    Page Should Not Contain Link    Orders
+    Page Should Contain Link    Store
+    Page Should Not Contain Element    xpath=//a[@href='/profile']
+    Page Should Not Contain Element    xpath=//a[@href='/order-history']
     Page Should Contain Link    Login
     Page Should Contain Link    Register
 
@@ -24,7 +24,6 @@ App Navigation Shows Auth Links When Authenticated
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Page Should Contain Element    xpath=//a[@href='/profile']
-    Page Should Contain Element    xpath=//a[@href='/order-history']
     Page Should Contain Button    Logout
 
 Login Page Renders Form
@@ -42,7 +41,7 @@ Successful Login Submits Valid Credentials
     Click Button    Login
     Sync Auth Token Key For Frontend
     Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
-    Page Should Contain Link    Profile
+    Page Should Contain Element    xpath=//a[@href='/profile']
 
 Register Page Renders Form
     Go To    ${BASE_URL}/register
@@ -89,9 +88,10 @@ Reset Password Page Accepts Password Input
 Profile Page Loads Existing Data
     Login As Customer User
     Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
-    Page Should Contain    Profile
+    Page Should Contain    Your Profile
     Page Should Contain Element    id=lastName
     Page Should Contain Element    id=streetAddress
     Page Should Contain Element    id=city
@@ -103,6 +103,7 @@ Profile Page Loads Existing Data
 Profile Email Field Is Disabled
     Login As Customer User
     Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=email    10s
     Element Should Be Disabled    id=email
@@ -110,6 +111,7 @@ Profile Email Field Is Disabled
 Profile Allows Editing Editable Fields
     Login As Customer User
     Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
     Clear Element Text    id=firstName
@@ -123,6 +125,7 @@ Profile Allows Editing Editable Fields
 Profile Save Submits Updated Data
     Login As Customer User
     Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
     Click Element    xpath=//a[@href='/profile']
     Wait Until Page Contains Element    id=firstName    10s
     Clear Element Text    id=firstName
@@ -174,18 +177,18 @@ View And Customize Navigates To Product Page
 Order History Page Loads For Authenticated User
     Login As Customer User
     Sync Auth Token Key For Frontend
-    Click Element    xpath=//a[@href='/order-history']
-    Wait Until Page Contains    Order History    10s
+    Open Order History From Account
+    Wait Until Page Contains    Your Order History    10s
     Wait Until Page Does Not Contain    Loading order history...    10s
 
 Order History Shows Empty State Or Orders
     Login As Customer User
     Sync Auth Token Key For Frontend
-    Click Element    xpath=//a[@href='/order-history']
-    Wait Until Page Contains    Order History    10s
+    Open Order History From Account
+    Wait Until Page Contains    Your Order History    10s
     Wait Until Page Does Not Contain    Loading order history...    10s
-    ${order_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Order #')]
-    ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'No past orders found.')]
+    ${order_count}=    Get Element Count    xpath=//table[contains(@class,'order-hist-table')]//tr[contains(@class,'order-hist-row')]
+    ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'No past orders found')]
     Should Be True    ${order_count} > 0 or ${empty_count} > 0
 
 *** Keywords ***
@@ -196,3 +199,9 @@ Sync Auth Token Key For Frontend
         Execute JavaScript    window.localStorage.setItem('accessToken', window.localStorage.getItem('access'));
         Reload Page
     END
+
+Open Order History From Account
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Click Element    xpath=//a[@href='/profile']
+    Wait Until Page Contains Element    xpath=//a[@href='/order-history']    10s
+    Click Element    xpath=//a[@href='/order-history']

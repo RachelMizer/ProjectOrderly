@@ -550,6 +550,8 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
     """
 
     customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
+    customerFirstName = serializers.CharField(source="customer.user.first_name", read_only=True, allow_null=True, default=None)
+    customerLastName = serializers.CharField(source="customer.user.last_name", read_only=True, allow_null=True, default=None)
     date = serializers.DateTimeField(source="order_date", read_only=True)
     taxAmount = serializers.DecimalField(
         source="tax_amount",
@@ -571,6 +573,8 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "customerId",
+            "customerFirstName",
+            "customerLastName",
             "date",
             "subtotal",
             "taxAmount",
@@ -603,9 +607,14 @@ class BusinessOrderDetailItemModifierSerializer(serializers.ModelSerializer):
 
 
 class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
+    """
+    Serializer for order items shown in business-facing order detail.
+    """
+
     itemId = serializers.IntegerField(source="id", read_only=True)
+    variantId = serializers.IntegerField(source="variant.id", read_only=True)
     productName = serializers.CharField(source="variant.product.name", read_only=True)
-    variantName = serializers.CharField(source="variant.name", read_only=True)
+    variantName = serializers.CharField(source="variant.name", read_only=True, default=None)
     quantity = serializers.IntegerField(read_only=True)
     unitPriceCharged = serializers.DecimalField(
         source="unit_price_charged",
@@ -613,18 +622,18 @@ class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True,
     )
-    itemTotal = serializers.DecimalField(
-        source="item_total",
-        max_digits=10,
-        decimal_places=2,
-        read_only=True,
-    )
+    itemTotal = serializers.SerializerMethodField()
     modifiers = BusinessOrderDetailItemModifierSerializer(many=True, read_only=True)
+
+    def get_itemTotal(self, obj):
+        modifier_total = sum(m.price_adjustment_charged for m in obj.modifiers.all())
+        return obj.item_total + modifier_total
 
     class Meta:
         model = OrderItem
         fields = [
             "itemId",
+            "variantId",
             "productName",
             "variantName",
             "quantity",
@@ -637,6 +646,24 @@ class BusinessOrderDetailItemSerializer(serializers.ModelSerializer):
 class BusinessOrderDetailSerializer(serializers.ModelSerializer):
     customerId = serializers.IntegerField(source="customer.id", read_only=True, allow_null=True)
     date = serializers.DateTimeField(source="order_date", read_only=True)
+    customerFirstName = serializers.CharField(
+        source="customer.user.first_name",
+        read_only=True,
+        allow_null=True,
+        default=None,
+    )
+    customerLastName = serializers.CharField(
+        source="customer.user.last_name",
+        read_only=True,
+        allow_null=True,
+        default=None,
+    )
+    orderSubtotal = serializers.DecimalField(
+        source="subtotal",
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+    )
     taxAmount = serializers.DecimalField(
         source="tax_amount",
         max_digits=10,
@@ -659,12 +686,15 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
             "id",
             "customerId",
             "date",
+            "customerFirstName",
+            "customerLastName",
             "status",
-            "items",
+            "orderSubtotal",
             "taxAmount",
             "totalDue",
             "createdAt",
             "updatedAt",
+            "items",
         ]
 
 

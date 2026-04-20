@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getOrderDetail } from "../../api/orders";
+import { useParams, Link } from "react-router-dom";
+import { getOrderDetail, cancelOrder } from "../../api/orders";
 
 export default function OrderDetails() {
     const { orderId } = useParams();
@@ -8,6 +8,8 @@ export default function OrderDetails() {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const [cancelling, setCancelling] = useState(false);
+    const [cancelError, setCancelError] = useState("");
 
     useEffect(function () {
         fetchOrder();
@@ -52,22 +54,23 @@ export default function OrderDetails() {
 
     function renderOrderItem(item) {
         return (
-            <div key={item.itemId} className="order-detail-item">
-                <p><strong>{item.productName}</strong> ({item.variantName})</p>
-
-                <p>Quantity: {item.quantity}</p>
-                <p>Unit Price: ${item.unitPriceCharged}</p>
-                <p>Item Total: ${item.itemTotal}</p>
-
-                {renderModifiers(item.modifiers)}
-
-            </div>
+            <tr key={item.itemId} className="order-detail-item">
+                <td><strong>{item.productName}</strong>{item.variantName !== "Standard" ? ` (${item.variantName})` : ""}</td>
+                <td>x{item.quantity}</td>
+                <td>${item.unitPriceCharged} ea.</td>
+                <td>${item.itemTotal}</td>
+                <td>
+                    {item.modifiers?.length > 0
+                        ? item.modifiers.map(m => m.name).join(", ")
+                        : "—"}
+                </td>
+            </tr>
         );
     }
 
     function renderItems(items) {
         if (!items || items.length === 0) {
-            return <p>No items in this order.</p>;
+            return <tr><td colSpan={5}>No items in this order.</td></tr>;
         }
 
         return items.map(renderOrderItem);
@@ -85,29 +88,79 @@ export default function OrderDetails() {
         return <p>No order found.</p>;
     }
 
+    async function handleCancel() {
+        if (!window.confirm("Are you sure you want to cancel this order?")) return;
+        setCancelling(true);
+        setCancelError("");
+        try {
+            await cancelOrder(order.id);
+            setOrder({ ...order, status: "CANCELLED" });
+        } catch (error) {
+            setCancelError(error.message || "Failed to cancel order.");
+        } finally {
+            setCancelling(false);
+        }
+    }
+
     return (
         <div className="order-detail-pg">
             <h2>Order #{order.id}</h2>
 
-            <p>
+            <p style={{ marginBottom: 0 }}>
                 <strong>Date:</strong>{" "}
                 {new Date(order.date).toLocaleString()}
             </p>
 
-            <p>
+            <p style={{ marginTop: 0 }}>
                 <strong>Status:</strong> {order.status}
             </p>
 
+            {order.status === "PENDING" && (
+                <div style={{ marginBottom: "12px" }}>
+                    <button
+                        onClick={handleCancel}
+                        disabled={cancelling}
+                        className="cancel-order-btn"
+                    >
+                        {cancelling ? "Cancelling..." : "Cancel Order"}
+                    </button>
+                    {cancelError && <p style={{ color: "red", marginTop: "6px", fontSize: "0.85rem" }}>{cancelError}</p>}
+                </div>
+            )}
+
             <div className="order-detail-items">
-            <h3>Items</h3>
-                {renderItems(order.items)}
+                <table className="order-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Modifications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {renderItems(order.items)}
+                    </tbody>
+                </table>
             </div>
 
             <div className="order-detail-totals">
-                <h3>Totals</h3>
-                <p>Tax: ${order.taxAmount}<br />
-                <span className="total">Total: ${order.totalDue}</span></p>
+                <table className="order-detail-totals-table">
+                    <tbody>
+                        <tr>
+                            <td>Tax:</td>
+                            <td>${order.taxAmount}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total:</strong></td>
+                            <td><strong>${order.totalDue}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <Link to="/order-history" style={{ display: "block", marginTop: "16px", letterSpacing: "normal" }}>← Back to Order History</Link>
         </div>
     );
 }
