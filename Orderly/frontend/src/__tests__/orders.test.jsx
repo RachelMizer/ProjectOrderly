@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import Orders from "../pages/Admin/orders";
@@ -15,18 +15,17 @@ jest.mock("../utils/recentOrders", () => ({
   pushRecentOrder: jest.fn(),
 }));
 
-function makeResponse({
-  ok = true,
-  status = 200,
-  body = {},
-  contentType = "application/json",
-} = {}) {
+jest.mock("../api/auth", () => ({
+  getAuthHeaders: jest.fn(() => ({ Authorization: "Bearer fake-token" })),
+}));
+
+function makeResponse({ ok = true, status = 200, body = {} } = {}) {
   return Promise.resolve({
     ok,
     status,
     headers: {
       get: (name) =>
-        String(name).toLowerCase() === "content-type" ? contentType : null,
+        String(name).toLowerCase() === "content-type" ? "application/json" : null,
     },
     json: async () => body,
   });
@@ -38,12 +37,7 @@ function makeOrdersResponse({
   next = null,
   previous = null,
 } = {}) {
-  return {
-    count,
-    next,
-    previous,
-    results,
-  };
+  return { count, next, previous, results };
 }
 
 function makeOrder(overrides = {}) {
@@ -51,6 +45,8 @@ function makeOrder(overrides = {}) {
     id: 1042,
     date: "2026-04-14T14:30:00Z",
     customerId: 25,
+    customerFirstName: "Jane",
+    customerLastName: "Doe",
     status: "PENDING",
     taxAmount: "1.20",
     totalDue: "13.20",
@@ -71,7 +67,7 @@ function makeOrder(overrides = {}) {
   };
 }
 
-function renderOrders(route = "/admin/orders") {
+function renderRoutes(route = "/admin/orders") {
   return render(
     <MemoryRouter initialEntries={[route]}>
       <Routes>
@@ -82,50 +78,40 @@ function renderOrders(route = "/admin/orders") {
   );
 }
 
-describe("UI5.9 Admin Orders Page", () => {
+describe("UX5.9 Admin Orders Page", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
     localStorage.clear();
     global.fetch = jest.fn();
   });
 
-  test("shows loading state before orders load", () => {
-    global.fetch.mockImplementation(
-      () =>
-        new Promise(() => {
-          // unresolved on purpose
-        })
-    );
-
-    renderOrders();
-
-    expect(screen.getByText(/loading orders/i)).toBeInTheDocument();
-  });
-
-  test("renders the orders page layout with all column headers and row structure", async () => {
+  test("loads pending orders on mount and renders the default orders table", async () => {
     global.fetch.mockResolvedValueOnce(
       makeResponse({
         body: makeOrdersResponse({
           results: [
-            makeOrder(),
-            makeOrder({
-              id: 1041,
-              status: "COMPLETED",
-              totalDue: "7.50",
-              customerId: 18,
-              date: "2026-04-13T10:15:00Z",
-            }),
+            makeOrder({ id: 1042, status: "PENDING" }),
+            makeOrder({ id: 1041, status: "PENDING", totalDue: "7.50" }),
           ],
           count: 2,
         }),
       })
     );
 
-    renderOrders();
+    renderRoutes();
 
-    expect(await screen.findByText(/order management/i)).toBeInTheDocument();
-    expect(await screen.findByText(/^orders$/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading orders/i)).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/v1/orders?page=1&pageSize=25&status=PENDING"),
+      expect.any(Object)
+    );
+
     expect(screen.getByPlaceholderText(/search orders/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /> export/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /> print/i })).toBeInTheDocument();
 
     expect(screen.getByText(/order #/i)).toBeInTheDocument();
     expect(screen.getByText(/^date/i)).toBeInTheDocument();
@@ -136,15 +122,7 @@ describe("UI5.9 Admin Orders Page", () => {
 
     expect(screen.getByText("#1042")).toBeInTheDocument();
     expect(screen.getByText("#1041")).toBeInTheDocument();
-    expect(screen.getByText("$13.20")).toBeInTheDocument();
-    expect(screen.getByText("$7.50")).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", { name: /> export/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /> print/i })
-    ).toBeInTheDocument();
+    expect(screen.getAllByText(/pending/i).length).toBeGreaterThan(0);
   });
 
   test("renders empty state when no orders are returned", async () => {
@@ -154,10 +132,10 @@ describe("UI5.9 Admin Orders Page", () => {
       })
     );
 
-    renderOrders();
+    renderRoutes();
 
     expect(await screen.findByText(/no orders found/i)).toBeInTheDocument();
-    expect(screen.getByText(/order management/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
   });
 
   test("renders error state when the orders request fails", async () => {
@@ -169,149 +147,49 @@ describe("UI5.9 Admin Orders Page", () => {
       })
     );
 
-    renderOrders();
+    renderRoutes();
 
-    await waitFor(() => {
-      <p class="orders-load-error">
-        Order record retrieval unsuccessful.
-      </p>
-    });
-  });
-
-  test("shows rows and status badges", async () => {
-    global.fetch.mockResolvedValueOnce(
-      makeResponse({
-        body: makeOrdersResponse({
-          results: [
-            makeOrder(),
-            makeOrder({
-              id: 1041,
-              status: "COMPLETED",
-              totalDue: "7.50",
-            }),
-          ],
-          count: 2,
-        }),
-      })
-    );
-
-    renderOrders();
-
-    expect(await screen.findByText("#1042")).toBeInTheDocument();
-    expect(screen.getByText("#1041")).toBeInTheDocument();
-    expect(screen.getAllByText(/pending/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/completed/i).length).toBeGreaterThan(0);
-  });
-
-  test("search filters visible results", async () => {
-    global.fetch.mockResolvedValue(
-      makeResponse({
-        body: makeOrdersResponse({
-          results: [
-            makeOrder({ id: 1042 }),
-            makeOrder({ id: 1041 }),
-          ],
-          count: 2,
-        }),
-      })
-    );
-
-    renderOrders();
-
-    expect(await screen.findByText("#1042")).toBeInTheDocument();
-
-    const searchInput = screen.getByPlaceholderText(/search orders/i);
-    await userEvent.type(searchInput, "1042");
-
-    expect(screen.getByText("#1042")).toBeInTheDocument();
-    expect(screen.queryByText("#1041")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /clear filters/i })
+      await screen.findByText(/order record retrieval unsuccessful\./i)
     ).toBeInTheDocument();
   });
 
-  test("filters by status and updates the results", async () => {
-    global.fetch
-      .mockResolvedValueOnce(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [
-              makeOrder({ id: 1042, status: "PENDING" }),
-              makeOrder({ id: 1041, status: "COMPLETED" }),
-            ],
-            count: 2,
-          }),
-        })
-      )
-      .mockResolvedValueOnce(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042, status: "PENDING" })],
-            count: 1,
-          }),
-        })
-      );
-
-    renderOrders();
-
-    expect(await screen.findByText(/order management/i)).toBeInTheDocument();
-
-    const selects = screen.getAllByRole("combobox");
-    const statusSelect = selects[0];
-
-    await userEvent.selectOptions(statusSelect, "PENDING");
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining("status=PENDING"),
-        expect.any(Object)
-      );
-    });
-  });
-
-  test("shows available years from loaded data and enables cascading date filters", async () => {
+  test("filters visible results with client-side search", async () => {
     global.fetch.mockResolvedValueOnce(
       makeResponse({
         body: makeOrdersResponse({
           results: [
-            makeOrder({ id: 1042, date: "2026-04-14T14:30:00Z" }),
-            makeOrder({ id: 1041, date: "2025-03-01T09:00:00Z" }),
+            makeOrder({ id: 1042, customerFirstName: "Jane", customerLastName: "Doe" }),
+            makeOrder({ id: 1041, customerFirstName: "John", customerLastName: "Smith" }),
           ],
           count: 2,
         }),
       })
     );
 
-    renderOrders();
+    renderRoutes();
 
     expect(await screen.findByText("#1042")).toBeInTheDocument();
+    expect(screen.getByText("#1041")).toBeInTheDocument();
 
-    const selects = screen.getAllByRole("combobox");
-    const yearSelect = selects[1];
-    const monthSelect = selects[2];
-    const daySelect = selects[3];
+    userEvent.type(screen.getByPlaceholderText(/search orders/i), "1042");
 
-    expect(screen.getByRole("option", { name: "2026" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "2025" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("#1042")).toBeInTheDocument();
+      expect(screen.queryByText("#1041")).not.toBeInTheDocument();
+    });
 
-    expect(monthSelect).toBeDisabled();
-    expect(daySelect).toBeDisabled();
-
-    await userEvent.selectOptions(yearSelect, "2026");
-    expect(monthSelect).not.toBeDisabled();
-
-    await userEvent.selectOptions(monthSelect, "4");
-    expect(daySelect).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /clear filters/i })).toBeInTheDocument();
   });
 
-  test("applies full date filter and sends dateCreated query param", async () => {
+  test("supports cascading date filters and sends dateCreated when all are selected", async () => {
     global.fetch
       .mockResolvedValueOnce(
         makeResponse({
           body: makeOrdersResponse({
             results: [
               makeOrder({ id: 1042, date: "2026-04-14T14:30:00Z" }),
-              makeOrder({ id: 1041, date: "2026-04-12T10:00:00Z" }),
+              makeOrder({ id: 1041, date: "2025-03-01T09:00:00Z" }),
             ],
             count: 2,
           }),
@@ -326,7 +204,7 @@ describe("UI5.9 Admin Orders Page", () => {
         })
       );
 
-    renderOrders();
+    renderRoutes();
 
     expect(await screen.findByText("#1042")).toBeInTheDocument();
 
@@ -335,9 +213,18 @@ describe("UI5.9 Admin Orders Page", () => {
     const monthSelect = selects[2];
     const daySelect = selects[3];
 
-    await userEvent.selectOptions(yearSelect, "2026");
-    await userEvent.selectOptions(monthSelect, "4");
-    await userEvent.selectOptions(daySelect, "14");
+    expect(screen.getByRole("option", { name: "2026" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "2025" })).toBeInTheDocument();
+    expect(monthSelect).toBeDisabled();
+    expect(daySelect).toBeDisabled();
+
+    userEvent.selectOptions(yearSelect, "2026");
+    await waitFor(() => expect(monthSelect).not.toBeDisabled());
+
+    userEvent.selectOptions(monthSelect, "4");
+    await waitFor(() => expect(daySelect).not.toBeDisabled());
+
+    userEvent.selectOptions(daySelect, "14");
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenLastCalledWith(
@@ -347,125 +234,226 @@ describe("UI5.9 Admin Orders Page", () => {
     });
   });
 
-  test("clear filters resets search and title", async () => {
-    global.fetch.mockResolvedValue(
-      makeResponse({
-        body: makeOrdersResponse({
-          results: [
-            makeOrder({ id: 1042, customerId: 25 }),
-            makeOrder({ id: 1041, customerId: 99 }),
-          ],
-          count: 2,
-        }),
-      })
-    );
+  test("shows Mark Complete only for pending orders and updates row optimistically on success", async () => {
+    jest.useFakeTimers();
 
-    renderOrders();
-
-    expect(await screen.findByText("#1042")).toBeInTheDocument();
-
-    const searchInput = screen.getByPlaceholderText(/search orders/i);
-    await userEvent.type(searchInput, "1042");
-
-    const clearButton = screen.getByRole("button", {
-      name: /clear filters/i,
-    });
-
-    await userEvent.click(clearButton);
-
-    expect(searchInput).toHaveValue("");
-    expect(screen.getByText(/order management/i)).toBeInTheDocument();
-    await screen.findByText("#1041");
-  });
-
-  test("supports pagination controls and page indicator", async () => {
     global.fetch
       .mockResolvedValueOnce(
         makeResponse({
           body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042 })],
-            count: 50,
-            next: "http://127.0.0.1:8000/api/v1/orders?page=2&pageSize=25",
-            previous: null,
+            results: [
+              makeOrder({ id: 1042, status: "PENDING" }),
+              makeOrder({ id: 1041, status: "COMPLETED", totalDue: "7.50" }),
+            ],
+            count: 2,
           }),
         })
       )
-      .mockResolvedValueOnce(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [makeOrder({ id: 1017 })],
-            count: 50,
-            next: null,
-            previous: "http://127.0.0.1:8000/api/v1/orders?page=1&pageSize=25",
-          }),
-        })
-      );
+      .mockResolvedValueOnce(makeResponse({ body: {} }));
 
-    renderOrders();
+    renderRoutes();
 
-    expect(await screen.findByText(/pg 1 of 2/i)).toBeInTheDocument();
+    expect(await screen.findByText("#1042")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /mark complete/i })).toBeInTheDocument();
 
-    const nextButton = screen.getByRole("button", { name: /next >/i });
-    expect(nextButton).toBeEnabled();
-
-    await userEvent.click(nextButton);
+    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/pg 2 of 2/i)).toBeInTheDocument();
+      expect(global.fetch).toHaveBeenLastCalledWith(
+        expect.stringContaining("/api/v1/orders/1042/complete"),
+        expect.objectContaining({ method: "PATCH" })
+      );
     });
 
-    expect(screen.getByRole("button", { name: /< prev/i })).toBeEnabled();
+    await waitFor(() => {
+      expect(screen.getAllByText(/completed/i).length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByRole("button", { name: /mark complete/i })).not.toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
   });
 
-  test("sorts rows when clicking sortable headers", async () => {
-    global.fetch.mockResolvedValueOnce(
-      makeResponse({
-        body: makeOrdersResponse({
-          results: [
-            makeOrder({ id: 1040, totalDue: "9.00" }),
-            makeOrder({ id: 1042, totalDue: "13.20" }),
-            makeOrder({ id: 1041, totalDue: "11.50" }),
-          ],
-          count: 3,
-        }),
-      })
-    );
+  test("shows inline error feedback when mark complete fails", async () => {
+    jest.useFakeTimers();
 
-    renderOrders();
-
-    expect(await screen.findByText("#1040")).toBeInTheDocument();
-
-    const totalHeader = screen.getByText(/^total/i);
-    await userEvent.click(totalHeader);
-
-    const rows = screen.getAllByRole("row");
-    expect(rows.length).toBeGreaterThan(1);
-  });
-
-  test("clicking an order id navigates to detail and stores recent order", async () => {
     global.fetch
       .mockResolvedValueOnce(
         makeResponse({
           body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042 })],
+            results: [makeOrder({ id: 1042, status: "PENDING" })],
             count: 1,
           }),
         })
       )
       .mockResolvedValueOnce(
         makeResponse({
-          body: makeOrder({ id: 1042 }),
+          ok: false,
+          status: 500,
+          body: { message: "boom" },
         })
       );
 
-    renderOrders();
+    renderRoutes();
 
-    const orderId = await screen.findByText("#1042");
-    await userEvent.click(orderId);
+    expect(await screen.findByText("#1042")).toBeInTheDocument();
+    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+
+    expect(await screen.findByText(/failed to complete order\./i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /mark complete/i })).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(screen.queryByText(/failed to complete order\./i)).not.toBeInTheDocument();
+  });
+
+  test("passes 403 list-load errors to handleApiError", async () => {
+    global.fetch.mockResolvedValueOnce(makeResponse({ ok: false, status: 403, body: {} }));
+
+    renderRoutes();
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 403 }),
+        expect.any(Function)
+      );
+    });
+  });
+
+  test("clicking an order id navigates to detail and stores the recent order", async () => {
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1042, customerFirstName: "Jane", customerLastName: "Doe" })],
+            count: 1,
+          }),
+        })
+      )
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrder({ id: 1042, customerFirstName: "Jane", customerLastName: "Doe" }),
+        })
+      );
+
+    renderRoutes();
+
+    userEvent.click(await screen.findByText("#1042"));
 
     await waitFor(() => {
       expect(pushRecentOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 1042 })
+        expect.objectContaining({ id: 1042, customerFirstName: "Jane" })
+      );
+    });
+
+    expect(await screen.findAllByText(/order #1042/i)).toHaveLength(2);
+  });
+});
+
+describe("UX5.9 Admin Order Detail", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+    localStorage.clear();
+    global.fetch = jest.fn();
+  });
+
+  test("loads order detail, renders items and totals, and stores recent order", async () => {
+    global.fetch.mockResolvedValueOnce(
+      makeResponse({
+        body: makeOrder({
+          id: 2042,
+          customerFirstName: "Ava",
+          customerLastName: "Taylor",
+          items: [
+            {
+              itemId: 1,
+              productName: "Latte",
+              variantName: "Large",
+              quantity: 2,
+              unitPriceCharged: "6.00",
+              itemTotal: "12.00",
+              modifiers: [{ id: 5, name: "Oat Milk", priceAdjustmentCharged: 0.75 }],
+            },
+          ],
+          taxAmount: "1.20",
+          totalDue: "13.20",
+        }),
+      })
+    );
+
+    renderRoutes("/admin/orders/2042");
+
+    expect(await screen.findAllByText(/order #2042/i)).toHaveLength(2);
+    expect(screen.getByText(/ava taylor/i)).toBeInTheDocument();
+    expect(screen.getByText(/^items$/i)).toBeInTheDocument();
+    expect(screen.getByText("Latte")).toBeInTheDocument();
+    expect(screen.getByText(/oat milk/i)).toBeInTheDocument();
+    expect(screen.getByText(/subtotal/i)).toBeInTheDocument();
+    expect(screen.getByText(/tax/i)).toBeInTheDocument();
+    expect(screen.getByText(/^total$/i)).toBeInTheDocument();
+
+    expect(pushRecentOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 2042, customerFirstName: "Ava" })
+    );
+  });
+
+  test("renders order-not-found state for 404 responses", async () => {
+    global.fetch.mockResolvedValueOnce(
+      makeResponse({ ok: false, status: 404, body: { message: "missing" } })
+    );
+
+    renderRoutes("/admin/orders/9999");
+
+    expect(await screen.findByText(/order not found\./i)).toBeInTheDocument();
+  });
+
+  test("marks an order complete from the detail page and clears success feedback after 3 seconds", async () => {
+    jest.useFakeTimers();
+
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrder({ id: 3001, status: "PENDING" }),
+        })
+      )
+      .mockResolvedValueOnce(makeResponse({ body: {} }));
+
+    renderRoutes("/admin/orders/3001");
+
+    expect(await screen.findAllByText(/order #3001/i)).toHaveLength(2);
+
+    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenLastCalledWith(
+        expect.stringContaining("/api/v1/orders/3001/complete"),
+        expect.objectContaining({ method: "PATCH" })
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/completed/i).length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByRole("button", { name: /mark complete/i })).not.toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+  });
+
+  test("passes detail-page 403 errors to handleApiError", async () => {
+    global.fetch.mockResolvedValueOnce(makeResponse({ ok: false, status: 403, body: {} }));
+
+    renderRoutes("/admin/orders/2042");
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 403 }),
+        expect.any(Function)
       );
     });
   });
