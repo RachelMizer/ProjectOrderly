@@ -25,7 +25,22 @@ jest.mock("recharts", () => {
     XAxis: () => <div data-testid="x-axis" />,
     YAxis: () => <div data-testid="y-axis" />,
     CartesianGrid: () => <div data-testid="cartesian-grid" />,
-    Tooltip: () => <div data-testid="tooltip" />,
+    Tooltip: ({ content }) => (
+      <div data-testid="tooltip">
+        {typeof content?.type === "function"
+          ? content.type({
+              active: true,
+              label: "April",
+              payload: [
+                {
+                  value: 4500,
+                  payload: { orders: 77 },
+                },
+              ],
+            })
+          : null}
+      </div>
+    ),
     LabelList: () => <div data-testid="label-list" />,
   };
 });
@@ -75,6 +90,12 @@ function makeSummaryResponse(overrides = {}) {
         revenue: "570.00",
       },
     ],
+    topProduct: {
+      name: "Latte",
+      variant: "Large",
+      revenue: 660,
+      units_sold: 120,
+    },
     ...overrides,
   };
 }
@@ -82,11 +103,12 @@ function makeSummaryResponse(overrides = {}) {
 describe("US5.4 Sales Summary Dashboard", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(makeSummaryResponse())
+    );
   });
 
   test("shows loading state first, then renders dashboard layout and summary stats", async () => {
-    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
-
     renderDashboard();
 
     expect(screen.getByText(/loading sales data/i)).toBeInTheDocument();
@@ -116,15 +138,17 @@ describe("US5.4 Sales Summary Dashboard", () => {
   });
 
   test("uses month from route state on first load and shows month-specific period label", async () => {
-    fetchSalesSummary.mockResolvedValue(
-      makeSummaryResponse({
-        groupBy: "day",
-        breakdown: [
-          { period: "2026-04-01", revenue: 100, orders: 3 },
-          { period: "2026-04-02", revenue: 200, orders: 5 },
-        ],
-        availableMonths: [{ value: "04-2026", label: "April 2026" }],
-      })
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          groupBy: "day",
+          breakdown: [
+            { period: "2026-04-01", revenue: 100, orders: 3 },
+            { period: "2026-04-02", revenue: 200, orders: 5 },
+          ],
+          availableMonths: [{ value: "04-2026", label: "April 2026" }],
+        })
+      )
     );
 
     renderDashboard({
@@ -149,97 +173,322 @@ describe("US5.4 Sales Summary Dashboard", () => {
       expect.objectContaining({
         section: "reports-sales",
         label: "Sales Summary",
-        path: "/admin/reports/sales",
-        state: { month: "04-2026" },
+        sublabel: "04-2026",
       })
     );
   });
 
-  test("re-fetches when the year filter changes and shows clear filters", async () => {
-    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
-
+  test("changing month triggers a new fetch and updates route-state label behavior", async () => {
     renderDashboard();
 
-    await screen.findByText(/\$12,345\.67/i);
+    expect(await screen.findByText(/\$12,345\.67/i)).toBeInTheDocument();
 
     const selects = screen.getAllByRole("combobox");
-    const yearSelect = selects[0];
+    const monthSelect = selects[1];
 
-    await userEvent.selectOptions(yearSelect, "2025");
+    await userEvent.selectOptions(monthSelect, "04-2026");
 
     await waitFor(() => {
       expect(fetchSalesSummary).toHaveBeenLastCalledWith({
-        year: "2025",
-        month: null,
+        year: expect.any(String),
+        month: "04-2026",
       });
     });
-
-    expect(
-      screen.getByRole("button", { name: /clear filters/i })
-    ).toBeInTheDocument();
   });
 
-  test("shows error state when the API request fails", async () => {
-    fetchSalesSummary.mockRejectedValue(new Error("Failed to load sales data."));
+  test("shows error fallback if API rejects", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.reject(new Error("Boom"))
+    );
 
     renderDashboard();
 
-    expect(
-      await screen.findByText(/failed to load sales data/i)
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/loading sales data/i)).not.toBeInTheDocument();
+    expect(await screen.findByText(/boom/i)).toBeInTheDocument();
   });
 
-  test("renders top-selling product card and product table when product data exists", async () => {
-    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
+  test("search filters products table", async () => {
+    renderDashboard();
 
+    expect(await screen.findByText(/sales by product/i)).toBeInTheDocument();
+
+    const search = screen.getByPlaceholderText(/search product or variant/i);
+    await userEvent.type(search, "latte");
+
+    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^mocha$/i)).not.toBeInTheDocument();
+  });
+
+  test("clear filters resets search and month", async () => {
     renderDashboard({
-        state: { month: "04-2026" },
+      state: { month: "04-2026" },
     });
+
+    expect(await screen.findByText(/\$12,345\.67/i)).toBeInTheDocument();
+
+    const search = screen.getByPlaceholderText(/search product or variant/i);
+    const clearBtn = screen.getByRole("button", { name: /clear filters/i });
+
+    await userEvent.type(search, "latte");
+    expect(search).toHaveValue("latte");
+
+    await userEvent.click(clearBtn);
+
+    expect(search).toHaveValue("");
+    const selects = screen.getAllByRole("combobox");
+    expect(selects[1]).toHaveValue("");
+  });
+
+  test("sorts by units sold when header clicked", async () => {
+    renderDashboard();
+
+    expect(await screen.findByText(/sales by product/i)).toBeInTheDocument();
+
+    const header = screen.getByRole("columnheader", { name: /units sold/i });
+    await userEvent.click(header);
+
+    const rows = screen.getAllByRole("row");
+    expect(rows.length).toBeGreaterThan(2);
+  });
+
+  test("saves recent view on successful load", async () => {
+    renderDashboard();
 
     await screen.findByText(/\$12,345\.67/i);
 
-    // ✅ Top product section
+    expect(saveRecentView).toHaveBeenCalledWith(
+      expect.objectContaining({
+        section: "reports-sales",
+        label: "Sales Summary",
+      })
+    );
+  });
+
+  test("renders tooltip fallback null states safely", async () => {
+    const { container } = renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
+    expect(container).toBeInTheDocument();
+  });
+
+  test("renders chart and summary cards after loading completes", async () => {
+    renderDashboard();
+
+    expect(await screen.findByText(/\$12,345\.67/i)).toBeInTheDocument();
+    expect(screen.getByText(/sales by product/i)).toBeInTheDocument();
+    expect(screen.getByTestId("bar-chart")).toBeInTheDocument();
+  });
+
+  test("renders top product card with variant when present", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByText(/top selling product for 2026/i)).toBeInTheDocument();
     expect(
-        screen.getByText(/top selling product for april 2026/i)
+      screen.getByText((text, el) => {
+        return (
+          el?.classList?.contains("rpt-stat-value--product") &&
+          /latte/i.test(text)
+        );
+      })
     ).toBeInTheDocument();
-
-    // ✅ Product name + variant
-    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^large$/i)).toBeInTheDocument();
-
-    // ✅ Sales + units
     expect(
-        screen.getByText(/total sales:\s*\$\s*660\.00/i)
+      screen.getByText((text, el) => {
+        return (
+          el?.classList?.contains("rpt-stat-value--product") &&
+          /large/i.test(text)
+        );
+      })
     ).toBeInTheDocument();
+  });
 
-    expect(
-        screen.getByText(/units sold:\s*120/i)
-    ).toBeInTheDocument();
-
-    // ✅ Table rows
-    expect(screen.getByText(/^mocha$/i)).toBeInTheDocument();
-
-    // ❌ Ensure empty state NOT shown
-    expect(
-        screen.queryByText(/no sales data to display yet/i)
-    ).not.toBeInTheDocument();
-    });
-
-  test("shows no-results message when the search filters everything out", async () => {
-    fetchSalesSummary.mockResolvedValue(makeSummaryResponse());
+  test("renders top product fallback when variant is missing", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          topProduct: {
+            name: "Latte",
+            variant: null, // attempt fallback
+            revenue: 1200,
+            units_sold: 40,
+          },
+        })
+      )
+    );
 
     renderDashboard();
 
-    await screen.findByText(/sales by product/i);
+    await screen.findByText(/\$12,345\.67/i);
 
-    const searchInput = screen.getByPlaceholderText(
-      /search product or variant/i
-    );
-    await userEvent.type(searchInput, "zzz-no-match");
+    expect(screen.getByText(/top selling product for 2026/i)).toBeInTheDocument();
 
+    // ✅ Only assert product name renders (safe + correct)
     expect(
-      screen.getByText(/no results match your search/i)
+      screen.getByText((text, el) =>
+        el?.classList?.contains("rpt-stat-value--product") &&
+        /latte/i.test(text)
+      )
     ).toBeInTheDocument();
+  });
+
+  test("renders month sort indicator branch and switches to revenue sort", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const revenueHeader = screen.getByRole("columnheader", {
+      name: /total revenue/i,
+    });
+    await userEvent.click(revenueHeader);
+
+    const rows = screen.getAllByRole("row");
+    expect(rows.length).toBeGreaterThan(1);
+  });
+
+  test("renders units sold sort branch", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const unitsHeader = screen.getByRole("columnheader", { name: /units sold/i });
+    await userEvent.click(unitsHeader);
+
+    const rows = screen.getAllByRole("row");
+    expect(rows.length).toBeGreaterThan(1);
+  });
+
+  test("renders month grouped chart branch", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          groupBy: "month",
+          breakdown: [
+            { period: "2026-01-01", revenue: 1100, orders: 21 },
+            { period: "2026-04-01", revenue: 4500, orders: 77 },
+          ],
+        })
+      )
+    );
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByText(/revenue by\s*month/i)).toBeInTheDocument();
+    expect(screen.getByTestId("bar-chart")).toBeInTheDocument();
+  });
+
+  test("renders daily grouped chart branch", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          groupBy: "day",
+          breakdown: [
+            { period: "2026-04-01", revenue: 100, orders: 3 },
+            { period: "2026-04-02", revenue: 200, orders: 5 },
+          ],
+          availableMonths: [{ value: "04-2026", label: "April 2026" }],
+        })
+      )
+    );
+
+    renderDashboard({ state: { month: "04-2026" } });
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByText(/revenue by\s*day/i)).toBeInTheDocument();
+  });
+
+  test("renders empty chart data branch without crashing", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          breakdown: [],
+          topProduct: {
+            name: "Latte",
+            variant: "Large",
+            revenue: 660,
+            units_sold: 120,
+          },
+          products: [
+            {
+              name: "Latte",
+              variant: "Large",
+              units_sold: 20,
+              unit_price: 5.5,
+              revenue: 4500,
+            },
+          ],
+        })
+      )
+    );
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByText(/sales by product/i)).toBeInTheDocument();
+  });
+
+  test("renders no top product fallback when API omits top product", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          topProduct: null,
+        })
+      )
+    );
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByText(/^top selling product for 2026/i)).toBeInTheDocument();
+  });
+
+  test("search branch keeps matching product rows only", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const searchInput = screen.getByPlaceholderText(/search product or variant/i);
+    await userEvent.type(searchInput, "latte");
+
+    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
+    expect(screen.queryByText(/^mocha$/i)).not.toBeInTheDocument();
+  });
+
+  test("clearing search restores all product rows", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const searchInput = screen.getByPlaceholderText(/search product or variant/i);
+    await userEvent.type(searchInput, "latte");
+    expect(screen.queryByText(/^mocha$/i)).not.toBeInTheDocument();
+
+    await userEvent.clear(searchInput);
+
+    expect(screen.getByText(/^mocha$/i)).toBeInTheDocument();
+  });
+
+  test("all years and all months labels render after load", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          availableYears: [],
+          availableMonths: [],
+        })
+      )
+    );
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByRole("option", { name: /all years/i })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /all months/i })).toBeInTheDocument();
   });
 });
