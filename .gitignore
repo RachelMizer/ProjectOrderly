@@ -34,9 +34,6 @@ Orderly/backend/db.sqlite3
 Orderly/backend/staticfiles/
 Orderly/backend/media/
 
-# Backend environment variables
-Orderly/backend/.env
-Orderly/backend/.env.*
 
 #######################################
 # MySQL
