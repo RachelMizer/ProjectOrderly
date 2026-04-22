@@ -1,9 +1,18 @@
 /*      ADMIN GLOBAL LAYOUT     */
 
+body.admin-body {
+    background-color: #33638b; /* Fallback */
+    background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%) !important;
+    background-attachment: fixed !important;
+    min-height: 100vh;
+    min-width: 100%;
+}
+
 .admin-wrap {
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
     background-attachment: fixed;
     min-height: 100vh;
+    min-width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,6 +23,7 @@
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
     background-attachment: fixed;
     min-height: 100vh;
+    min-width: 100%;
     display: flex;
     flex-direction: row;
     font-family: 'Renner', sans-serif;
@@ -1731,7 +1741,7 @@ label.inv-toggle {
 .order-detail-meta {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 1px;
 }
 
 .order-detail-id {
@@ -1746,7 +1756,7 @@ label.inv-toggle {
 .order-detail-date,
 .order-detail-customer {
     font-family: 'Renner', sans-serif;
-    font-size: .85rem;
+    font-size: 1rem;
     color: #5a85a0;
     margin: 0;
 }
@@ -1787,6 +1797,7 @@ label.inv-toggle {
 .order-detail-modifiers {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 4px;
 }
 

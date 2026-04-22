@@ -5,7 +5,7 @@ import { getAuthHeaders } from "../../api/auth";
 import { pushRecentOrder } from "../../utils/recentOrders";
 
 const API_BASE = "http://127.0.0.1:8000/api/v1";
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 100;
 
 const MONTH_NAMES = [
   "January","February","March","April","May","June",
@@ -195,10 +195,14 @@ export default function Orders() {
   const searchedOrders = searchQuery.trim()
     ? orders.filter((o) => {
         const q = searchQuery.toLowerCase();
-        const customer = String(o.customerId || "");
+        const firstName = String(o.customerFirstName || "").toLowerCase();
+        const lastName = String(o.customerLastName || "").toLowerCase();
+        const fullName = `${firstName} ${lastName}`.trim();
         return (
           String(o.id).includes(q) ||
-          customer.toLowerCase().includes(q)
+          firstName.includes(q) ||
+          lastName.includes(q) ||
+          fullName.includes(q)
         );
       })
     : orders;
@@ -322,7 +326,7 @@ export default function Orders() {
 
       {!loading && !error && (
         <>
-          <h1 className="orders-view-title">Orders</h1>
+          <h1 className="orders-view-title">{buildTitle()}</h1>
 
           {feedback.message && (
             <div key={feedback.id + feedback.message} className={`orders-feedback orders-feedback--${feedback.type}`}>
@@ -401,6 +405,14 @@ export default function Orders() {
                   <button
                     type="button"
                     className="submenu-action"
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                  >
+                    &lt;&lt; FIRST
+                  </button>
+                  <button
+                    type="button"
+                    className="submenu-action"
                     onClick={() => setPage((p) => p - 1)}
                     disabled={!hasPrev}
                   >
@@ -416,6 +428,14 @@ export default function Orders() {
                     disabled={!hasNext}
                   >
                     NEXT &gt;
+                  </button>
+                  <button
+                    type="button"
+                    className="submenu-action"
+                    onClick={() => setPage(Math.ceil(totalCount / PAGE_SIZE))}
+                    disabled={page === Math.ceil(totalCount / PAGE_SIZE)}
+                  >
+                    LAST &gt;&gt;
                   </button>
                 </div>
               </div>
