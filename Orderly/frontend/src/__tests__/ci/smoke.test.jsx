@@ -178,7 +178,7 @@ describe("CI smoke tests", () => {
     renderWithRouter(<OrderHistory />);
 
     expect(
-      await screen.findByText(/no past orders found/i)
+      await screen.findByText(/you haven't placed any orders yet/i)
     ).toBeInTheDocument();
   });
 });

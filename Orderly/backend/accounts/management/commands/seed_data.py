@@ -241,8 +241,8 @@ class Command(BaseCommand):
                 "street_address": "123 Sesame St.",
                 "city": "Raleigh",
                 "state": "NC",
-                "zipcode": "276011",
-                "phone": "919-555-4783",
+                "zipcode": "27601",
+                "phone": "9195554783",
             },
         )
         self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
