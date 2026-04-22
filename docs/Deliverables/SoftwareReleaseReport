@@ -1,9 +1,9 @@
 #  Software Release Report  
 **Project Name:** Orderly  
-**Version** 1.1.0
-**Team Number:** 7
+**Version** 1.0.0  
+**Team Number:** 7  
 **Team Project Manager:** Serina Rodriguez  
-**Team Members:** Kenny Bacdayan, Caleb James Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer
+**Team Members:** Kenny Bacdayan, Caleb James Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer  
 
 ---
 
@@ -18,7 +18,8 @@ Version 1.0.0 represents the first fully integrated release of Orderly, combinin
 ##  2. Development Highlights
 
 ### Project Initiation 
-The Project Kickoff Meeting was January 26, 2026 at 7:00 pm, with team formation, discussion of project goals, scope and timeline.
+The Project Kickoff Meeting was held January 26, 2026 at 7:00 pm, with team formation, discussion of project goals, scope and timeline.  
+Roles were assigned as follows:
 
 - Scrum Master: Serina Rodriguez
 - Product Owner: Kim Mayo  
@@ -27,8 +28,8 @@ The Project Kickoff Meeting was January 26, 2026 at 7:00 pm, with team formation
 - Frontend Lead: Rachel Mizer  
 - Technical Writer: Caleb Fowlkes  
  
-
 ---
+
 ### Requirements Gathering 
 The Orderly team gathered requirements through an iterative Agile process that combined stakeholder goals, user stories, and structured specification development. The team defined project objectives and scope to address the need for a flexible, user-friendly ordering system for small and mid-sized businesses, then translated these goals into detailed user stories and use cases representing both customer and business admin interactions (e.g., inventory management, order customization, and sales tracking). These were further refined into business, user, functional, and non-functional requirements using the MoSCoW prioritization method to ensure alignment with system priorities and constraints. Continuous collaboration using tools such as Trello, Microsoft Teams, and GitHub enabled the team to validate requirements, incorporate feedback, and maintain consistency throughout development.
 
@@ -127,35 +128,27 @@ Overall Assessment:
 
 ---
 
-### Bug Fixes and Improvements  
+### Bug Fixes and Improvements (QA)  
 
-- Duplicate email login issue
-    * Confirmed by API validation tests rejecting duplicate registration
-- Authentication + RBAC fixes
-    * Tests heavily validate: 401 (unauthenticated), 403 (unauthorized) and protected endpoints
-- Order/cart validation fixes  
-    * cannot submit empty orders
-    * cannot resubmit non-draft orders
-    * invalid inputs handled correctly
-    * unauthorized access blocked
-- Data integrity + validation improvements
-    * database constraints enforced
-    * invalid data rejected
-    * relational integrity maintained
+- Duplicate email login issue  
+  * Confirmed and resolved through API validation testing  
 
+- Authentication and RBAC enforcement improvements  
+  * Validated handling of 401 (unauthenticated) and 403 (unauthorized) responses  
+  * Confirmed protection of restricted endpoints  
+
+- Order and cart validation fixes  
+  * Prevented submission of empty orders  
+  * Prevented resubmission of non-draft orders  
+  * Improved handling of invalid inputs and unauthorized access  
+
+- Data integrity and validation improvements  
+  * Enforced database constraints and relational integrity  
+  * Rejected invalid and duplicate data inputs  
 ---
 
 ##  3. Deployment
 
-Orderly follows a decoupled architecture:
-
-- Backend: Django REST API  
-- Frontend: React application  
-- API prefix: `/api/v1/`  
-
-The system is structured into modular apps to support scalability and maintainability.
-
-A production deployment strategy (cloud hosting, CI/CD pipelines, environment configuration) is planned for future implementation. All features have been validated in a fully integrated local development environment.
 
 ---
 
@@ -186,25 +179,33 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 - Profile management  
 - Protected admin routes  
 
-### 🐞 Bug Fixes
+---
+
+### Bug Fixes
 - Fixed duplicate email login issue  
-- Resolved order completion errors  
-- Improved API error handling  
-- Fixed order history display issues  
-
-### ⚠️ Known Issues
-- Cart UI may not update dynamically  
-- Some error messages display as `[object Object]`  
-- Minor UI inconsistencies  
-
-### ⏳ Deferred Features
-- Reporting dashboard  
-- Supplier workflows  
-- Production deployment setup  
+- Improved authentication and access control behavior  
+- Resolved order submission and validation errors  
+- Improved API error handling and data validation  
 
 ---
 
-## 🔄 5. Upgrade Guide
+### Known Issues
+- Modifier Management (Admin UI)  
+  - Administrators are unable to create, edit, or delete product modifiers through the admin interface  
+  - This functionality was formally deferred due to scope constraints  
+  - Impact: Modifier data may exist but cannot be managed through the UI 
+
+---
+
+### Deferred Features
+- Modifier management (CRUD): scope risk to Wave 1 deadline, S5 W1
+- Email verification (tasks 2.5): deferred to later sprint during S2 planning, complete
+- Password reset (task 2.7): deferred to later sprint during S2 planning, complete
+- Supplier management (B5.7, UX5.7, F5.7): out of scope for this version
+
+---
+
+## 5. Upgrade Guide
 
 ### Introduction  
 This release introduces the first fully integrated version of Orderly.
