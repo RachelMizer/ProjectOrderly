@@ -203,9 +203,22 @@ class Command(BaseCommand):
             )
 
         # Customer users
+        customer_names = [
+            ("Jamie", "Ortega"),
+            ("Morgan", "Patel"),
+            ("Alex", "Nguyen"),
+            ("Taylor", "Brooks"),
+            ("Jordan", "Kim"),
+            ("Casey", "Rivera"),
+        ]
         customer_cities = ["Apex", "Raleigh", "Cary", "Durham", "Morrisville"]
         for i in range(1, 7):
+            first, last = customer_names[i - 1]
             u = make_user(f"customer{i}", f"customer{i}@example.com")
+            if not u.first_name:
+                u.first_name = first
+                u.last_name = last
+                u.save(update_fields=["first_name", "last_name"])
             UserRole.objects.get_or_create(
                 user=u,
                 defaults={"role": UserRoleChoices.CUSTOMER},
@@ -241,8 +254,8 @@ class Command(BaseCommand):
                 "street_address": "123 Sesame St.",
                 "city": "Raleigh",
                 "state": "NC",
-                "zipcode": "276011",
-                "phone": "919-555-4783",
+                "zipcode": "27601",
+                "phone": "9195554783",
             },
         )
         self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
