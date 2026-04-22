@@ -6,11 +6,16 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+
+jest.mock("../api/handleApiError", () => ({
+  handleApiError: jest.fn(),
+}));
+
+import { handleApiError } from "../api/handleApiError";
 import { MemoryRouter } from "react-router-dom";
 import AdminProductsPage from "../pages/Admin/AdminProductsPage";
 
 const mockNavigate = jest.fn();
-const mockHandleApiError = jest.fn();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -21,10 +26,6 @@ jest.mock("../api/auth", () => ({
   getAuthHeaders: jest.fn(() => ({
     Authorization: "Bearer fake-token",
   })),
-}));
-
-jest.mock("../api/handleApiError", () => ({
-  handleApiError: (...args) => mockHandleApiError(...args),
 }));
 
 function makeResponse({
@@ -220,7 +221,7 @@ describe("AdminProductsPage", () => {
     renderPage();
 
     await waitFor(() => {
-      expect(mockHandleApiError).toHaveBeenCalled();
+      expect(handleApiError).toHaveBeenCalled();
     });
   });
 
@@ -832,5 +833,461 @@ describe("AdminProductsPage", () => {
     await waitFor(() => {
       expect(screen.queryByText(/^latte$/i)).not.toBeInTheDocument();
     });
+  });
+
+  test("shows auth error path when initial load returns 401", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        json: jest.fn().mockResolvedValue({}),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      });
+
+    render(<AdminProductsPage />);
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 401 }),
+        mockNavigate
+      );
+    });
+  });
+
+  test("shows fallback page-load error when initial fetch throws without message", async () => {
+    fetch.mockRejectedValueOnce({});
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText(/unable to load page data/i)).toBeInTheDocument();
+  });
+
+  test("shows explicit load-products error", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: jest.fn().mockResolvedValue({}),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText(/failed to load products/i)).toBeInTheDocument();
+  });
+
+  test("search filters products by description text", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+            {
+              id: 2,
+              name: "Tea",
+              description: "Green tea",
+              category: { id: 2, name: "Tea" },
+              supplier: null,
+              has_variants: false,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText(/search/i), {
+      target: { value: "espresso" },
+    });
+
+    expect(screen.getByText("Latte")).toBeInTheDocument();
+    expect(screen.queryByText("Tea")).not.toBeInTheDocument();
+  });
+
+  test("sort toggles when the same column header is clicked twice", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 2,
+              name: "Tea",
+              description: "Green tea",
+              category: { id: 2, name: "Tea" },
+              supplier: null,
+              has_variants: false,
+              has_modifiers: false,
+            },
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Tea", { selector: ".td-name" }))
+      .toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("columnheader", { name: /name/i }));
+    fireEvent.click(screen.getByRole("columnheader", { name: /name/i }));
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("Tea");
+    expect(rows[2]).toHaveTextContent("Latte");
+  });
+
+  test("loads variants when expanding a product row", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 10,
+              name: "Large",
+              sku: "LATTE-L",
+              unit_price: "5.99",
+              stock_quantity: 12,
+            },
+          ],
+        }),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+
+    expect(await screen.findByText("Large")).toBeInTheDocument();
+    expect(screen.getByText("LATTE-L")).toBeInTheDocument();
+  });
+
+  test("shows fallback variant load error when variants fetch throws", async () => {
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockRejectedValueOnce({});
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+
+    expect(await screen.findByText(/unable to load variants/i)).toBeInTheDocument();
+  });
+
+  test("deletes a product successfully", async () => {
+    window.confirm = jest.fn(() => true);
+
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: jest.fn(),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText("Latte")).not.toBeInTheDocument();
+    });
+  });
+
+  test("does not delete a product when confirmation is cancelled", async () => {
+    window.confirm = jest.fn(() => false);
+
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  test("shows delete failure message when product delete fails", async () => {
+    window.confirm = jest.fn(() => true);
+
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: jest.fn().mockResolvedValue({}),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /delete/i }));
+
+    expect(await screen.findByText(/failed to delete product/i)).toBeInTheDocument();
+  });
+
+  test("shows variant delete failure message", async () => {
+    window.confirm = jest.fn(() => true);
+
+    fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 1,
+              name: "Latte",
+              description: "Espresso with milk",
+              category: { id: 1, name: "Coffee" },
+              supplier: { id: 1, name: "Acme" },
+              has_variants: true,
+              has_modifiers: false,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ results: [] }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            {
+              id: 10,
+              name: "Large",
+              sku: "LATTE-L",
+              unit_price: "5.99",
+              stock_quantity: 12,
+            },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: jest.fn().mockResolvedValue({}),
+      });
+
+    render(<AdminProductsPage />);
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+    expect(await screen.findByText("Large")).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole("button", { name: /delete/i })[1]);
+
+    expect(await screen.findByText(/failed to delete variant/i)).toBeInTheDocument();
   });
 });
