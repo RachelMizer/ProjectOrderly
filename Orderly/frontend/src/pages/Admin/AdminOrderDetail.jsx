@@ -165,6 +165,7 @@ export default function AdminOrderDetail() {
               </p>
             </div>
             <div className="order-detail-status-wrap">
+              <span className="order-detail-status-label">Status:</span>
               <StatusBadge status={order.status} />
               {order.status === "PENDING" && (
                 <button

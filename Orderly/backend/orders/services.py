@@ -135,7 +135,7 @@ def recalculate_order_totals(order):
         .aggregate(total=Sum("price_adjustment_charged"))["total"]
         or Decimal("0.00")
     )
-    subtotal = item_subtotal + modifier_subtotal
+    subtotal = (item_subtotal + modifier_subtotal).quantize(Decimal("0.01"))
 
     # Wake County, NC: 4.75% state + 2.5% county/transit = 7.25%
     WAKE_COUNTY_TAX_RATE = Decimal("0.0725")

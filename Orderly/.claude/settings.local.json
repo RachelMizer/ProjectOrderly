@@ -21,7 +21,19 @@
       "Bash(git commit *)",
       "Bash(git pull *)",
       "Bash(git push *)",
-      "Bash(xargs grep *)"
+      "Bash(sc query *)",
+      "Bash(xargs grep *)",
+      "Bash(npm start *)",
+      "Bash(npm install *)",
+      "Bash(python manage.py runserver)",
+      "Bash(python manage.py migrate)",
+      "Bash(python manage.py help createsuperuser)",
+      "Bash(xargs -0 grep -l \"draft.*order\\\\|POST.*orders\")",
+      "Bash(python -c \"import django; print\\(django.VERSION\\)\")",
+      "Bash(python manage.py shell -c ' *)",
+      "Bash(python -c \"import django; print\\(django.__version__\\)\")",
+      "Bash(python manage.py makemigrations orders --name=\"remove_order_total_check_constraint\")",
+      "Bash(python manage.py seed_data)"
     ]
   }
 }

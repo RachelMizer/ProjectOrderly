@@ -75,6 +75,13 @@ export default function AdminSalesDashboard() {
     return <span className="sort-indicator">{sortDir === "asc" ? "▲" : "▼"}</span>;
   }
 
+  function formatMonthLabel(monthStr) {
+    if (!monthStr) return "";
+    const [mm, yyyy] = monthStr.split("-");
+    const name = MONTH_NAMES[parseInt(mm, 10) - 1];
+    return name ? `${name} ${yyyy}` : monthStr;
+  }
+
   function formatCurrency(value) {
     return parseFloat(value).toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -121,9 +128,8 @@ export default function AdminSalesDashboard() {
         }
         setAvailableYears(data.availableYears || []);
         setAvailableMonths(data.availableMonths || []);
-        const monthObj = (data.available_months || []).find((m) => m.value === selectedMonth);
         const sublabel = selectedMonth
-          ? (monthObj?.label ?? selectedMonth)
+          ? formatMonthLabel(selectedMonth)
           : selectedYear
             ? selectedYear
             : "All Years";
@@ -155,19 +161,19 @@ export default function AdminSalesDashboard() {
   const topProduct = products[0] ?? null;
 
   const topProductLabel = selectedMonth
-    ? `Top Selling Product for ${availableMonths.find((m) => m.value === selectedMonth)?.label ?? selectedMonth}`
+    ? `Top Selling Product for ${formatMonthLabel(selectedMonth)}`
     : selectedYear
       ? `Top Selling Product for ${selectedYear}`
       : "Top Selling Product";
 
   const periodLabel = selectedMonth
-    ? availableMonths.find((m) => m.value === selectedMonth)?.label ?? selectedMonth
+    ? formatMonthLabel(selectedMonth)
     : selectedYear
       ? `Year-to-Date Sales for ${selectedYear}`
       : "All Years";
 
   const chartXLabel = selectedMonth
-    ? `Day — ${availableMonths.find((m) => m.value === selectedMonth)?.label ?? selectedMonth}`
+    ? `Day — ${formatMonthLabel(selectedMonth)}`
     : "Month";
 
   return (

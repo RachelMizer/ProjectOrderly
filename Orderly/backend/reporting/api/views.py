@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from django.db.models import Max, Sum, Count, Avg
+from django.db.models import Max, Sum, Count, Avg, F
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -59,6 +59,32 @@ class SalesSummaryView(APIView):
             for item in breakdown_qs
         ]
 
+        product_qs = (
+            OrderItem.objects.filter(
+                order__status="COMPLETED",
+                order__order_date__date__range=[start_date, end_date],
+            )
+            .values("variant__product__name", "variant__name")
+            .annotate(
+                units_sold=Sum("quantity"),
+                revenue=Sum("item_total"),
+                unit_price=Max("unit_price_charged"),
+            )
+            .order_by("-revenue")
+        )
+
+        products = [
+            {
+                "rank": i + 1,
+                "name": p["variant__product__name"],
+                "variant": p["variant__name"],
+                "unit_price": str(Decimal(str(p["unit_price"] or 0)).quantize(Decimal("0.01"))),
+                "units_sold": p["units_sold"] or 0,
+                "revenue": str(Decimal(str(p["revenue"] or 0)).quantize(Decimal("0.01"))),
+            }
+            for i, p in enumerate(product_qs)
+        ]
+
         return Response({
             "startDate": str(start_date),
             "endDate": str(end_date),
@@ -67,6 +93,7 @@ class SalesSummaryView(APIView):
             "totalOrders": total_orders,
             "averageOrderValue": str(average_order_value),
             "breakdown": breakdown,
+            "products": products,
         })
 
 

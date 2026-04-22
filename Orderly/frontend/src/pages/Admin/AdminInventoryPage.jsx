@@ -57,10 +57,8 @@ export default function AdminInventoryPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [ingredientSortKey, setIngredientSortKey] = useState("name");
-  const [ingredientSortDir, setIngredientSortDir] = useState("asc");
-  const [countSortKey, setCountSortKey] = useState("name");
-  const [countSortDir, setCountSortDir] = useState("asc");
+  const [sortKey, setSortKey] = useState("name");
+  const [sortDir, setSortDir] = useState("asc");
 
   const [showCreate, setShowCreate] = useState(false);
   const [createError, setCreateError] = useState("");
@@ -72,7 +70,6 @@ export default function AdminInventoryPage() {
     unit_of_measure: "units",
     reorder_level: "",
   });
-
   useEffect(() => {
     async function loadInventory() {
       try {
@@ -274,6 +271,7 @@ export default function AdminInventoryPage() {
         unit_of_measure: "units",
         reorder_level: "",
       });
+
       flashCreateSuccess();
     } catch (error) {
       if (error?.response?.status === 403) {
@@ -361,21 +359,42 @@ export default function AdminInventoryPage() {
 
   const query = searchQuery.trim().toLowerCase();
 
-  const ingredientItems = sortItems(
-    inventoryItems
-      .filter((item) => item.affected_products?.length > 0)
-      .filter((item) => !query || item.name.toLowerCase().includes(query)),
-    ingredientSortKey,
-    ingredientSortDir
+  const allItems = sortItems(
+    inventoryItems.filter((item) => !query || item.name.toLowerCase().includes(query)),
+    sortKey,
+    sortDir
   );
 
-  const countBasedItems = sortItems(
+  // Invert ingredient→products into product→ingredients for the dependency table
+  const productDependencyRows = (() => {
+    const statusMap = {};
     inventoryItems
-      .filter((item) => !item.affected_products?.length)
-      .filter((item) => !query || item.name.toLowerCase().includes(query)),
-    countSortKey,
-    countSortDir
-  );
+      .filter((item) => item.affected_products?.length > 0)
+      .forEach((item) => {
+        const stock = Number(item.stock_quantity);
+        const reorder = Number(item.reorder_level);
+        const isOut = stock === 0;
+        const isLow = !isOut && item.reorder_level != null && stock <= reorder;
+        statusMap[item.name] = isOut ? "out" : isLow ? "low" : "normal";
+      });
+
+    const map = {};
+    inventoryItems
+      .filter((item) => item.affected_products?.length > 0)
+      .forEach((item) => {
+        item.affected_products.forEach((productName) => {
+          if (!map[productName]) map[productName] = [];
+          map[productName].push({ name: item.name, status: statusMap[item.name] });
+        });
+      });
+    return Object.entries(map)
+      .map(([product, ingredients]) => ({
+        product,
+        ingredients: ingredients.sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+      .filter(({ ingredients }) => ingredients.some((i) => i.status !== "normal"))
+      .sort((a, b) => a.product.localeCompare(b.product));
+  })();
 
   return (
     <div>
@@ -504,119 +523,114 @@ export default function AdminInventoryPage() {
 
       {!loading && !errorMessage && (
         <>
-          {/* ── Section 1: Ingredient-Controlled ── */}
-          <h3 className="inv-section-header">
-            Ingredient-Controlled Beverage Availability
-          </h3>
+          {productDependencyRows.length > 0 && (
+            <div className="inv-dep-panel">
+              <p className="inv-dep-panel__title">Product Dependencies</p>
+              <table className="admin-table admin-table--compact inv-dep-table">
+                <thead>
+                  <tr>
+                    <th className="admin-th inv-th-left">Product</th>
+                    <th className="admin-th inv-th-left">Depends On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productDependencyRows.map(({ product, ingredients }) => (
+                    <tr key={product}>
+                      <td className="inv-td-left">{product}</td>
+                      <td className="inv-td-left">
+                        {ingredients.map(({ name, status }, idx) => (
+                          <span
+                            key={name}
+                            style={
+                              status === "out" ? { color: "#922b21", fontWeight: 600 } :
+                              status === "low" ? { color: "#c8611a", fontWeight: 600 } :
+                              undefined
+                            }
+                          >
+                            {name}{idx < ingredients.length - 1 ? ", " : ""}
+                          </span>
+                        ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-          {ingredientItems.length === 0 ? (
-            <p className="rpt-empty">No dependency-controlled ingredients found.</p>
+          <h3 className="inv-section-header">Supply Inventory</h3>
+
+          {allItems.length === 0 ? (
+            <p className="rpt-empty">No inventory items found.</p>
           ) : (
             <table className="admin-table admin-table--compact">
               <thead>
                 <tr>
                   <th
                     className="admin-th inv-th-left"
-                    onClick={() =>
-                      handleSort(
-                        "name",
-                        ingredientSortKey,
-                        ingredientSortDir,
-                        setIngredientSortKey,
-                        setIngredientSortDir
-                      )
-                    }
+                    onClick={() => handleSort("name", sortKey, sortDir, setSortKey, setSortDir)}
                   >
-                    Ingredient{" "}
-                    <SortIndicator
-                      tableKey={ingredientSortKey}
-                      col="name"
-                      tableDir={ingredientSortDir}
-                    />
+                    Supply{" "}
+                    <SortIndicator tableKey={sortKey} col="name" tableDir={sortDir} />
                   </th>
                   <th className="admin-th admin-th--no-sort">Affects</th>
                   <th
                     className="admin-th"
-                    onClick={() =>
-                      handleSort(
-                        "stock_quantity",
-                        ingredientSortKey,
-                        ingredientSortDir,
-                        setIngredientSortKey,
-                        setIngredientSortDir
-                      )
-                    }
+                    onClick={() => handleSort("stock_quantity", sortKey, sortDir, setSortKey, setSortDir)}
                   >
                     Current Stock{" "}
-                    <SortIndicator
-                      tableKey={ingredientSortKey}
-                      col="stock_quantity"
-                      tableDir={ingredientSortDir}
-                    />
+                    <SortIndicator tableKey={sortKey} col="stock_quantity" tableDir={sortDir} />
                   </th>
                   <th className="admin-th admin-th--no-sort">Available</th>
                   <th className="admin-th admin-th--no-sort">Update Stock</th>
                   <th
                     className="admin-th"
-                    onClick={() =>
-                      handleSort(
-                        "reorder_level",
-                        ingredientSortKey,
-                        ingredientSortDir,
-                        setIngredientSortKey,
-                        setIngredientSortDir
-                      )
-                    }
+                    onClick={() => handleSort("reorder_level", sortKey, sortDir, setSortKey, setSortDir)}
                   >
                     Reorder Level{" "}
-                    <SortIndicator
-                      tableKey={ingredientSortKey}
-                      col="reorder_level"
-                      tableDir={ingredientSortDir}
-                    />
+                    <SortIndicator tableKey={sortKey} col="reorder_level" tableDir={sortDir} />
                   </th>
                   <th className="admin-th admin-th--no-sort">Save</th>
                 </tr>
               </thead>
               <tbody>
-                {ingredientItems.map((item) => {
-                  const isAvailable = Number(item.stock_quantity) > 0;
+                {allItems.map((item) => {
+                  const isIngredient = item.affected_products?.length > 0;
+                  const isOutOfStock = Number(item.stock_quantity) === 0;
+                  const isLowStock = !isOutOfStock && item.reorder_level != null && Number(item.stock_quantity) <= Number(item.reorder_level);
+                  const isCritical = isLowStock && Number(item.stock_quantity) <= Number(item.reorder_level) * 0.5;
                   const isActivating = activatingItemId === item.id;
-                  const stockVal = getEditValue(
-                    item.id,
-                    "stock_quantity",
-                    item.stock_quantity
-                  );
-                  const reorderVal = getEditValue(
-                    item.id,
-                    "reorder_level",
-                    item.reorder_level
-                  );
+                  const stockVal = getEditValue(item.id, "stock_quantity", item.stock_quantity);
+                  const reorderVal = getEditValue(item.id, "reorder_level", item.reorder_level);
 
                   return (
                     <tr
                       key={item.id}
-                      className={!isAvailable ? "inv-row--dim" : ""}
+                      className={isOutOfStock ? "inv-row--dim" : isLowStock ? "inv-row--low-stock" : ""}
                     >
                       <td className="td-name inv-td-left">
                         {item.name}
-                        {!isAvailable && (
-                          <span className="inv-badge inv-badge--unavailable">
-                            Unavailable
+                        {isOutOfStock && (
+                          <span className="inv-badge inv-badge--out">Out of Stock</span>
+                        )}
+                        {isLowStock && (
+                          <span className={`inv-badge ${isCritical ? "inv-badge--critical" : "inv-badge--low-stock"}`}>
+                            Low Stock
                           </span>
                         )}
                       </td>
 
                       <td>
-                        <span className="inv-affects">
-                          {item.affected_products?.join(", ") || "—"}
-                        </span>
+                        {isIngredient && (
+                          <span className="inv-affects">
+                            {item.affected_products.join(", ")}
+                          </span>
+                        )}
                       </td>
 
                       <td>
                         {item.stock_quantity}{" "}
-                        {UNIT_LABELS[item.unit_of_measure] ||
-                          item.unit_of_measure}
+                        {UNIT_LABELS[item.unit_of_measure] || item.unit_of_measure}
                       </td>
 
                       <td>
@@ -627,16 +641,14 @@ export default function AdminInventoryPage() {
                           >
                             <input
                               type="checkbox"
-                              checked={isAvailable}
+                              checked={!isOutOfStock}
                               disabled={savingItemId === item.id}
                               onChange={() => handleToggleAvailability(item)}
                             />
                             <span className="inv-toggle-slider" />
                           </label>
                           {isActivating && (
-                            <span className="inv-activate-hint">
-                              Enter qty &amp; save
-                            </span>
+                            <span className="inv-activate-hint">Enter qty &amp; save</span>
                           )}
                         </div>
                       </td>
@@ -649,17 +661,9 @@ export default function AdminInventoryPage() {
                             "inv-qty-input",
                             isNegative(stockVal) ? "inv-input-error" : "",
                             isActivating ? "inv-qty-input--activate" : "",
-                          ]
-                            .filter(Boolean)
-                            .join(" ")}
+                          ].filter(Boolean).join(" ")}
                           value={stockVal}
-                          onChange={(e) =>
-                            handleEditChange(
-                              item.id,
-                              "stock_quantity",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleEditChange(item.id, "stock_quantity", e.target.value)}
                         />
                       </td>
 
@@ -669,170 +673,7 @@ export default function AdminInventoryPage() {
                           step="0.01"
                           className={`inv-qty-input${isNegative(reorderVal) ? " inv-input-error" : ""}`}
                           value={reorderVal}
-                          onChange={(e) =>
-                            handleEditChange(
-                              item.id,
-                              "reorder_level",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        {successItemId === item.id ? (
-                          <span className="inv-save-success">Saved!</span>
-                        ) : (
-                          <button
-                            type="button"
-                            className="table-action-btn"
-                            onClick={() => handleSave(item)}
-                            disabled={savingItemId === item.id}
-                          >
-                            {savingItemId === item.id ? "Saving..." : "Save"}
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-
-          {/* ── Section 2: Count-Based ── */}
-          <h3 className="inv-section-header">Count-Based Inventory</h3>
-
-          {countBasedItems.length === 0 ? (
-            <p>No count-based inventory items found.</p>
-          ) : (
-            <table className="admin-table admin-table--compact">
-              <thead>
-                <tr>
-                  <th
-                    className="admin-th inv-th-left"
-                    onClick={() =>
-                      handleSort(
-                        "name",
-                        countSortKey,
-                        countSortDir,
-                        setCountSortKey,
-                        setCountSortDir
-                      )
-                    }
-                  >
-                    Item{" "}
-                    <SortIndicator
-                      tableKey={countSortKey}
-                      col="name"
-                      tableDir={countSortDir}
-                    />
-                  </th>
-                  <th
-                    className="admin-th"
-                    onClick={() =>
-                      handleSort(
-                        "stock_quantity",
-                        countSortKey,
-                        countSortDir,
-                        setCountSortKey,
-                        setCountSortDir
-                      )
-                    }
-                  >
-                    Current Stock{" "}
-                    <SortIndicator
-                      tableKey={countSortKey}
-                      col="stock_quantity"
-                      tableDir={countSortDir}
-                    />
-                  </th>
-                  <th className="admin-th admin-th--no-sort">Update Stock</th>
-                  <th
-                    className="admin-th"
-                    onClick={() =>
-                      handleSort(
-                        "reorder_level",
-                        countSortKey,
-                        countSortDir,
-                        setCountSortKey,
-                        setCountSortDir
-                      )
-                    }
-                  >
-                    Reorder Level{" "}
-                    <SortIndicator
-                      tableKey={countSortKey}
-                      col="reorder_level"
-                      tableDir={countSortDir}
-                    />
-                  </th>
-                  <th className="admin-th admin-th--no-sort">Save</th>
-                </tr>
-              </thead>
-              <tbody>
-                {countBasedItems.map((item) => {
-                  const isOutOfStock = Number(item.stock_quantity) === 0;
-                  const stockVal = getEditValue(
-                    item.id,
-                    "stock_quantity",
-                    item.stock_quantity
-                  );
-                  const reorderVal = getEditValue(
-                    item.id,
-                    "reorder_level",
-                    item.reorder_level
-                  );
-
-                  return (
-                    <tr
-                      key={item.id}
-                      className={isOutOfStock ? "inv-row--dim" : ""}
-                    >
-                      <td className="td-name inv-td-left">
-                        {item.name}
-                        {isOutOfStock && (
-                          <span className="inv-badge inv-badge--out">
-                            Out of Stock
-                          </span>
-                        )}
-                      </td>
-
-                      <td>
-                        {item.stock_quantity}{" "}
-                        {UNIT_LABELS[item.unit_of_measure] ||
-                          item.unit_of_measure}
-                      </td>
-
-                      <td>
-                        <input
-                          type="number"
-                          step="0.01"
-                          className={`inv-qty-input${isNegative(stockVal) ? " inv-input-error" : ""}`}
-                          value={stockVal}
-                          onChange={(e) =>
-                            handleEditChange(
-                              item.id,
-                              "stock_quantity",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        <input
-                          type="number"
-                          step="0.01"
-                          className={`inv-qty-input${isNegative(reorderVal) ? " inv-input-error" : ""}`}
-                          value={reorderVal}
-                          onChange={(e) =>
-                            handleEditChange(
-                              item.id,
-                              "reorder_level",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleEditChange(item.id, "reorder_level", e.target.value)}
                         />
                       </td>
 

@@ -287,6 +287,7 @@ class MeSerializer(serializers.Serializer):
         user_role = getattr(getattr(user, "profile", None), "role", None)
 
         return {
+            "username": user.username,
             "firstName": user.first_name,
             "lastName": user.last_name,
             "email": user.email,

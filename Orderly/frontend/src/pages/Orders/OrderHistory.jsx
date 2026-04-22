@@ -99,13 +99,8 @@ export default function OrderHistory({}){
         return <p>Loading order history...</p>
     }
 
-    if (errorMessage) {
-        return (
-            <div style={{ textAlign: "center", padding: "2rem" }}>
-                <p>{errorMessage}</p>
-            </div>
-        );
-    }
+    const isEmpty = !errorMessage && (!orders || orders.length === 0);
+    const showEmpty = isEmpty || !!errorMessage;
 
     return (
         <>
@@ -125,8 +120,8 @@ export default function OrderHistory({}){
 
                 <h2 style={{ textAlign: "center" }}>Your Order History</h2>
 
-                {!orders || orders.length === 0 ? (
-                    <p>No past orders found.</p>
+                {showEmpty ? (
+                    <p style={{ textAlign: "center" }}>You haven't placed any orders yet.</p>
                 ) : (
                     <table className="order-hist-table">
                         <thead>

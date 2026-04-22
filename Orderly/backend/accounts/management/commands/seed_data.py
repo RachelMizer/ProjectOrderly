@@ -180,6 +180,20 @@ class Command(BaseCommand):
                 user.save(update_fields=["password"])
             return user
 
+        # Dev account (superuser + business role)
+        dev_user, dev_created = User.objects.get_or_create(
+            username="ramizer",
+            defaults={"email": "ramizer@my.waketech.edu", "is_staff": True, "is_superuser": True},
+        )
+        if dev_created:
+            dev_user.set_password("rmdevpass")
+            dev_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=dev_user,
+            defaults={"role": UserRoleChoices.BUSINESS},
+        )
+        self.stdout.write(self.style.SUCCESS("Dev account seeded: ramizer"))
+
         # Business users
         for i in range(1, 4):
             u = make_user(f"business{i}", f"business{i}@example.com")
@@ -208,8 +222,33 @@ class Command(BaseCommand):
                 },
             )
 
+        # Personal customer account
+        rachel_user, rachel_created = User.objects.get_or_create(
+            username="Rachel",
+            defaults={"email": "rei.mizer@gmail.com"},
+        )
+        if rachel_created:
+            rachel_user.set_password("rmuserpass")
+            rachel_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=rachel_user,
+            defaults={"role": UserRoleChoices.CUSTOMER},
+        )
+        CustomerProfile.objects.get_or_create(
+            user=rachel_user,
+            defaults={
+                "email_verified": True,
+                "street_address": "123 Sesame St.",
+                "city": "Raleigh",
+                "state": "NC",
+                "zipcode": "276011",
+                "phone": "919-555-4783",
+            },
+        )
+        self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
+
         self.stdout.write(
-            self.style.SUCCESS("Users seeded: 3 business, 6 customers")
+            self.style.SUCCESS("Users seeded: 3 business, 6 customers + dev + personal")
         )
 
         # ------------------------------------------------------------
@@ -246,11 +285,24 @@ class Command(BaseCommand):
                 "email": "contact@heartNhearth.com",
                 "phone": "18001234456",
             },
+            {
+                "name": "In-House",
+                "email": "contact@quicksip.com",
+                "phone": "9195558974",
+            },
         ]
 
         suppliers = []
         for s in supplier_rows:
-            obj, _ = Supplier.objects.get_or_create(name=s["name"], defaults=s)
+            obj, created = Supplier.objects.get_or_create(name=s["name"], defaults=s)
+            if not created:
+                changed = False
+                for field in ("email", "phone"):
+                    if getattr(obj, field) != s[field]:
+                        setattr(obj, field, s[field])
+                        changed = True
+                if changed:
+                    obj.save()
             suppliers.append(obj)
 
         self.stdout.write(self.style.SUCCESS(f"Suppliers seeded: {len(suppliers)}"))
@@ -258,6 +310,16 @@ class Command(BaseCommand):
         # ------------------------------------------------------------
         # 4) Inventory
         # ------------------------------------------------------------
+
+        # Purge retired inventory items so stale DB records don't linger
+        retired_inventory = [
+            "Flour", "Blueberries", "Chocolate Chips", "Chocolate Croissant",
+        ]
+        retired_qs = InventoryItem.objects.filter(name__in=retired_inventory)
+        VariantInventoryUsage.objects.filter(inventory_item__in=retired_qs).delete()
+        ModifierInventoryUsage.objects.filter(inventory_item__in=retired_qs).delete()
+        retired_qs.delete()
+
         inventory_rows = [
             {
                 "name": "Coffee Beans",
@@ -326,24 +388,6 @@ class Command(BaseCommand):
                 "reorder_level": Decimal("4.00"),
             },
             {
-                "name": "Flour",
-                "stock_quantity": Decimal("40.00"),
-                "unit_of_measure": UnitOfMeasure.LB,
-                "reorder_level": Decimal("15.00"),
-            },
-            {
-                "name": "Blueberries",
-                "stock_quantity": Decimal("14.00"),
-                "unit_of_measure": UnitOfMeasure.LB,
-                "reorder_level": Decimal("5.00"),
-            },
-            {
-                "name": "Chocolate Chips",
-                "stock_quantity": Decimal("10.00"),
-                "unit_of_measure": UnitOfMeasure.LB,
-                "reorder_level": Decimal("4.00"),
-            },
-            {
                 "name": "Whipped Cream",
                 "stock_quantity": Decimal("20.00"),
                 "unit_of_measure": UnitOfMeasure.UNITS,
@@ -373,6 +417,42 @@ class Command(BaseCommand):
                 "unit_of_measure": UnitOfMeasure.UNITS,
                 "reorder_level": Decimal("100.00"),
             },
+            {
+                "name": "Cups (24oz)",
+                "stock_quantity": Decimal("200.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("80.00"),
+            },
+            {
+                "name": "Lids (24oz)",
+                "stock_quantity": Decimal("200.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("80.00"),
+            },
+            {
+                "name": "Straws (8in)",
+                "stock_quantity": Decimal("500.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("150.00"),
+            },
+            {
+                "name": "Straws (10in)",
+                "stock_quantity": Decimal("500.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("150.00"),
+            },
+            {
+                "name": "Napkins (6in)",
+                "stock_quantity": Decimal("1000.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("300.00"),
+            },
+            {
+                "name": "Stirs",
+                "stock_quantity": Decimal("500.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("150.00"),
+            },
             # Premade bakery items sourced from supplier
             {
                 "name": "Croissant",
@@ -393,28 +473,46 @@ class Command(BaseCommand):
                 "reorder_level": Decimal("15.00"),
             },
             {
-                "name": "Chocolate Croissant",
-                "stock_quantity": Decimal("20.00"),
-                "unit_of_measure": UnitOfMeasure.UNITS,
-                "reorder_level": Decimal("8.00"),
-            },
-            {
                 "name": "Cake Pop - Chocolate",
-                "stock_quantity": Decimal("24.00"),
+                "stock_quantity": Decimal("72.00"),
                 "unit_of_measure": UnitOfMeasure.UNITS,
-                "reorder_level": Decimal("10.00"),
+                "reorder_level": Decimal("24.00"),
             },
             {
                 "name": "Cake Pop - Birthday Cake",
-                "stock_quantity": Decimal("24.00"),
+                "stock_quantity": Decimal("72.00"),
                 "unit_of_measure": UnitOfMeasure.UNITS,
-                "reorder_level": Decimal("10.00"),
+                "reorder_level": Decimal("24.00"),
             },
             {
                 "name": "Cake Pop - Vanilla",
-                "stock_quantity": Decimal("24.00"),
+                "stock_quantity": Decimal("72.00"),
                 "unit_of_measure": UnitOfMeasure.UNITS,
-                "reorder_level": Decimal("10.00"),
+                "reorder_level": Decimal("24.00"),
+            },
+            {
+                "name": "Blueberry Muffins",
+                "stock_quantity": Decimal("72.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("24.00"),
+            },
+            {
+                "name": "Chocolate Croissants",
+                "stock_quantity": Decimal("72.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("24.00"),
+            },
+            {
+                "name": "Pumpkin Spice (8oz)",
+                "stock_quantity": Decimal("0.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("4.00"),
+            },
+            {
+                "name": "Chai Spice (8oz)",
+                "stock_quantity": Decimal("10.00"),
+                "unit_of_measure": UnitOfMeasure.UNITS,
+                "reorder_level": Decimal("4.00"),
             },
             # Breakfast sandwich proteins and egg
             {
@@ -480,17 +578,17 @@ class Command(BaseCommand):
         # 6) Products
         # ------------------------------------------------------------
         products_spec = [
-            ("House Coffee",        "Coffee",    suppliers[0], True, False, "Our signature daily brew — smooth, comforting, and roasted to bring out a rich, balanced flavor in every cup."),
-            ("Latte",               "Coffee",    suppliers[4], True, True,  "Our latte blends rich espresso with silky steamed milk for a creamy, balanced cup that's perfect for slow mornings or steady afternoons."),
-            ("Cappuccino",          "Coffee",    suppliers[4], True, True,  "A cozy classic made with rich espresso and a cloud of silky steamed milk, finished with a light, velvety foam."),
-            ("Mocha",               "Coffee",    suppliers[4], True, True,  "A cozy fusion of bold espresso and velvety chocolate, finished with steamed milk for a cup that's equal parts rich, warm, and indulgent. It's your coffee break with a little extra joy."),
-            ("Cold Brew",           "Coffee",    suppliers[0], True, True,  "Slow-steeped to bring out deep, smooth coffee flavor with none of the bitterness."),
-            ("Green Tea",           "Tea",       suppliers[1], True, False, "Light, calming, and naturally uplifting. Our green tea is smooth and gently grassy, brewed to bring out its delicate flavor and soothing warmth."),
-            ("Chai Tea Latte",      "Tea",       suppliers[1], True, True,  "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla."),
+            ("House Coffee",        "Coffee",    suppliers[6], True, False, "Our signature daily brew — smooth, comforting, and roasted to bring out a rich, balanced flavor in every cup."),
+            ("Latte",               "Coffee",    suppliers[6], True, True,  "Our latte blends rich espresso with silky steamed milk for a creamy, balanced cup that's perfect for slow mornings or steady afternoons."),
+            ("Cappuccino",          "Coffee",    suppliers[6], True, True,  "A cozy classic made with rich espresso and a cloud of silky steamed milk, finished with a light, velvety foam."),
+            ("Mocha",               "Coffee",    suppliers[6], True, True,  "A cozy fusion of bold espresso and velvety chocolate, finished with steamed milk for a cup that's equal parts rich, warm, and indulgent. It's your coffee break with a little extra joy."),
+            ("Cold Brew",           "Coffee",    suppliers[6], True, True,  "Slow-steeped to bring out deep, smooth coffee flavor with none of the bitterness."),
+            ("Green Tea",           "Tea",       suppliers[6], True, False, "Light, calming, and naturally uplifting. Our green tea is smooth and gently grassy, brewed to bring out its delicate flavor and soothing warmth."),
+            ("Chai Tea Latte",      "Tea",       suppliers[6], True, True,  "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla."),
             ("Blueberry Muffin",    "Bakery",    suppliers[3], True, False, "Warm, soft, and bursting with juicy blueberries, this muffin is everything you want from a morning treat."),
             ("Chocolate Croissant", "Bakery",    suppliers[3], True, False, "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within."),
             ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. Each sandwich comes with a freshly cooked egg, and you can make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
-            ("Pumpkin Spice Latte", "Seasonal",  suppliers[4], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
+            ("Pumpkin Spice Latte", "Seasonal",  suppliers[6], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
             ("Cake Pop",           "Bakery",    suppliers[5], True, False, "A decadent 'pop' of confectionery goodness, our sweet cake pops will quickly brighten up your day!"),
         ]
 
@@ -931,33 +1029,80 @@ class Command(BaseCommand):
             ("Pumpkin Spice Latte", ["Small"]),
         ]
 
-        medium_large_drinks = [
-            ("House Coffee",        ["Medium", "Large"]),
-            ("Latte",               ["Medium", "Large"]),
-            ("Cappuccino",          ["Medium", "Large"]),
-            ("Mocha",               ["Medium", "Large"]),
-            ("Cold Brew",           ["Large"]),
-            ("Green Tea",           ["Medium", "Large"]),
-            ("Chai Tea Latte",      ["Medium", "Large"]),
-            ("Pumpkin Spice Latte", ["Medium", "Large"]),
+        medium_drinks = [
+            ("House Coffee",        ["Medium"]),
+            ("Latte",               ["Medium"]),
+            ("Cappuccino",          ["Medium"]),
+            ("Mocha",               ["Medium"]),
+            ("Green Tea",           ["Medium"]),
+            ("Chai Tea Latte",      ["Medium"]),
+            ("Pumpkin Spice Latte", ["Medium"]),
         ]
+
+        large_drinks = [
+            ("House Coffee",        ["Large"]),
+            ("Latte",               ["Large"]),
+            ("Cappuccino",          ["Large"]),
+            ("Mocha",               ["Large"]),
+            ("Cold Brew",           ["Large"]),
+            ("Green Tea",           ["Large"]),
+            ("Chai Tea Latte",      ["Large"]),
+            ("Pumpkin Spice Latte", ["Large"]),
+        ]
+
+        hot_drinks = [
+            ("House Coffee",        ["Small", "Medium", "Large"]),
+            ("Latte",               ["Small", "Medium", "Large"]),
+            ("Cappuccino",          ["Small", "Medium", "Large"]),
+            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Green Tea",           ["Small", "Medium", "Large"]),
+            ("Chai Tea Latte",      ["Small", "Medium", "Large"]),
+            ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
+        ]
+
+        all_drinks_small = small_drinks
+        all_drinks_medium_large = medium_drinks + large_drinks
+
+        for product_name, sizes in hot_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Stirs", "1")
+
+        for product_name, sizes in all_drinks_small:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Straws (8in)", "1")
+
+        for product_name, sizes in all_drinks_medium_large:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Straws (10in)", "1")
 
         for product_name, sizes in small_drinks:
             for size in sizes:
                 link(variants_by_product[product_name][size], "Cups (12oz)", "1")
                 link(variants_by_product[product_name][size], "Lids (12oz)", "1")
 
-        for product_name, sizes in medium_large_drinks:
+        for product_name, sizes in medium_drinks:
             for size in sizes:
                 link(variants_by_product[product_name][size], "Cups (16oz)", "1")
                 link(variants_by_product[product_name][size], "Lids (16oz)", "1")
 
-        # Blueberry Muffin — made in house
-        link(variants_by_product["Blueberry Muffin"]["Standard"], "Flour", "0.25")
-        link(variants_by_product["Blueberry Muffin"]["Standard"], "Blueberries", "0.1")
+        for product_name, sizes in large_drinks:
+            for size in sizes:
+                link(variants_by_product[product_name][size], "Cups (24oz)", "1")
+                link(variants_by_product[product_name][size], "Lids (24oz)", "1")
+
+        # Blueberry Muffin — premade, sourced from supplier
+        link(variants_by_product["Blueberry Muffin"]["Standard"], "Blueberry Muffins", "1")
 
         # Chocolate Croissant — premade, tracked as a stock unit
-        link(variants_by_product["Chocolate Croissant"]["Standard"], "Chocolate Croissant", "1")
+        link(variants_by_product["Chocolate Croissant"]["Standard"], "Chocolate Croissants", "1")
+
+        # Pumpkin Spice Latte — requires pumpkin spice
+        for size in ["Small", "Medium", "Large"]:
+            link(variants_by_product["Pumpkin Spice Latte"][size], "Pumpkin Spice (8oz)", "0.5")
+
+        # Chai Tea Latte — requires chai spice
+        for size in ["Small", "Medium", "Large"]:
+            link(variants_by_product["Chai Tea Latte"][size], "Chai Spice (8oz)", "0.5")
 
         # Breakfast Sandwich — egg is a base ingredient regardless of build
         link(variants_by_product["Breakfast Sandwich"]["Standard"], "Eggs", "1")
@@ -986,4 +1131,4 @@ class Command(BaseCommand):
         # 10) Final summary
         # ------------------------------------------------------------
         self.stdout.write(self.style.SUCCESS("Seed data loaded successfully."))
-        self.stdout.write(self.style.SUCCESS("✅ Seed complete for Sprint 3 testing."))
+        self.stdout.write(self.style.SUCCESS("Seed complete for Sprint 3 testing."))

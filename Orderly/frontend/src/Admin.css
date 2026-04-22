@@ -2,6 +2,7 @@
 
 .admin-wrap {
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -11,6 +12,7 @@
 
 .admin-dash-wrap {
     background: linear-gradient(333deg, #33638b 0%, #a7c6e2 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     flex-direction: row;
@@ -417,6 +419,7 @@
     font-weight: 800;
     color: #33638B;
     letter-spacing: .05rem;
+    text-transform: uppercase;
 }
 
 .dash-file-accessed {
@@ -433,6 +436,90 @@
     font-size: .65rem;
     color: #8aabb8;
     letter-spacing: .03rem;
+}
+
+.dash-low-stock-section {
+    padding: 10px 16px;
+    border-radius: 6px;
+    background-color: white;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.dash-low-stock-label {
+    margin: 0 0 2px 0;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: .05rem;
+    font-weight: 800;
+    color: #33638B;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.dash-low-stock-label:hover {
+    text-decoration: underline;
+    color: #1f4f72;
+}
+
+.dash-low-stock-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dash-low-stock-tile {
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dash-low-stock-tile--low-stock {
+    background-color: #fffde7;
+}
+
+.dash-low-stock-tile--out {
+    background-color: #ffebd8;
+    opacity: 0.72;
+}
+
+.dash-low-stock-tile__name {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .82rem;
+    font-weight: 800;
+    color: #33638B;
+    letter-spacing: .04rem;
+    text-transform: uppercase;
+}
+
+.dash-low-stock-tile__kind {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .68rem;
+    color: #5a85a0;
+    letter-spacing: .03rem;
+    text-transform: uppercase;
+}
+
+.dash-low-stock-tile__stock {
+    margin: 4px 0 0 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    color: #33638B;
+    letter-spacing: .08rem;
+}
+
+.dash-low-stock-tile__reorder {
+    margin: 0;
+    font-family: 'Renner', sans-serif;
+    font-size: .74rem;
+    color: #5a85a0;
 }
 
 
@@ -999,14 +1086,31 @@ button.submenu-action[title="Pending further development"] {
 
 /* Section headers */
 .inv-section-header {
-    font-size: .9rem;
+    font-size: 1.1rem;
     font-weight: 800;
     letter-spacing: .12rem;
     text-transform: uppercase;
     color: #33638B;
-    margin: 20px 0 8px 0;
-    border-bottom: 2px solid #c4d9e8;
-    padding-bottom: 4px;
+    margin: 20px 0 4px 0;
+}
+
+.inv-dep-panel {
+    margin-bottom: 16px;
+}
+
+.inv-dep-panel__title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .08rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0 0 4px 0;
+    font-family: 'Renner', sans-serif;
+}
+
+.inv-dep-table td {
+    font-size: .84rem;
+    color: #444;
 }
 
 /* Compact padding for count-based inventory table */
@@ -1022,34 +1126,51 @@ button.submenu-action[title="Pending further development"] {
 
 .inv-td-left {
     text-align: left !important;
+    font-size: 1rem;
 }
 
 /* Dimmed row for out-of-stock / unavailable items */
 .inv-row--dim td:not(:last-child) {
     opacity: 0.72;
+    background-color: #ffebd8;
 }
 
 /* Status badges */
 .inv-badge {
     display: inline-block;
-    font-size: .68rem;
+    font-size: .62rem;
     color: white;
     border-radius: 3px;
-    padding: 1px 5px;
+    padding: 2px 4px 1px 4px;
     margin-left: 7px;
     font-family: 'Renner', sans-serif;
     text-transform: uppercase;
     letter-spacing: .04rem;
     vertical-align: middle;
     font-weight: 700;
+    white-space: nowrap;
+    transform: scale(0.82);
+    transform-origin: left center;
 }
 
 .inv-badge--unavailable {
-    background-color: #c0392b;
+    background-color: #922b21;
 }
 
 .inv-badge--out {
-    background-color: #c0392b;
+    background-color: #922b21;
+}
+
+.inv-badge--low-stock {
+    background-color: #b07d2e;
+}
+
+.inv-badge--critical {
+    background-color: #c8611a;
+}
+
+.inv-row--low-stock td:not(:last-child) {
+    background-color: #fffde7;
 }
 
 /* Affected drinks label */
@@ -1419,8 +1540,6 @@ label.inv-toggle {
 
 .rpt-rank-legend__item {
     padding: 2px 10px;
-    border-left-width: 3px;
-    border-left-style: solid;
     font-weight: 700;
 }
 
@@ -1635,13 +1754,34 @@ label.inv-toggle {
 .order-detail-status-wrap {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: flex-end;
 }
 
+.order-detail-status-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    white-space: nowrap;
+    letter-spacing: .04rem;
+}
+
+.order-detail-status-wrap .inv-badge {
+    transform: none;
+    margin-left: 0;
+}
+
 .order-detail-complete-btn {
-    margin-left: 4px;
+    margin-left: 0;
+    margin-top: 15px;
+    margin-bottom: 0;
+    align-self: center;
+    font-size: .70rem !important;
+    padding: 2px 7px !important;
+    letter-spacing: .06rem !important;
+    border: none;
 }
 
 .order-detail-modifiers {

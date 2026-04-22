@@ -55,8 +55,6 @@ export default function AdminProductsPage() {
     stock_quantity: "",
     reorder_level: "",
   });
-
-
   useEffect(() => {
     loadPageData();
   }, []);
@@ -137,10 +135,7 @@ export default function AdminProductsPage() {
 
   function handleVariantChange(e) {
     const { name, value } = e.target;
-    setVariantFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setVariantFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   function resetVariantForm() {
