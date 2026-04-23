@@ -4,6 +4,7 @@ import {
   mergeGuestCart,
   submitOrder,
   getOrderHistory,
+  cancelOrder,
 } from "../api/orders";
 
 jest.mock("../api/auth", () => ({
@@ -389,6 +390,283 @@ describe("orders API", () => {
           data: {},
         },
       });
+    });
+
+    test("returns empty object when success response has non-json content type", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: true,
+          status: 200,
+          contentType: "text/plain",
+        })
+      );
+
+      const result = await getOrderDetail(42);
+
+      expect(result).toEqual({});
+    });
+
+    test("prefers backend detail when response is not ok", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: false,
+          status: 400,
+          data: { detail: "Bad order id" },
+        })
+      );
+
+      await expect(getOrderDetail(42)).rejects.toMatchObject({
+        message: "Bad order id",
+        response: {
+          status: 400,
+          data: { detail: "Bad order id" },
+        },
+      });
+    });
+  });
+
+  describe("mergeGuestCart", () => {
+    test("still merges items when guest cart items have no modifiers field", async () => {
+      localStorage.setItem("guestCartEmail", "guest@test.com");
+      localStorage.setItem("accessToken", "fake-token");
+
+      fetch
+        .mockImplementationOnce(() => mockResponse({ data: { id: 123 } }))
+        .mockImplementationOnce(() =>
+          mockResponse({
+            data: {
+              items: [
+                {
+                  variantId: 10,
+                  quantity: 2,
+                },
+              ],
+            },
+          })
+        )
+        .mockImplementationOnce(() => mockResponse({ data: { id: 500 } }))
+        .mockImplementationOnce(() =>
+          mockResponse({ data: { orderItemId: 700 } })
+        );
+
+      await mergeGuestCart();
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://127.0.0.1:8000/api/v1/orders/items",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ variantId: 10, quantity: 2 }),
+        })
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(4);
+      expect(localStorage.getItem("guestCartEmail")).toBeNull();
+      expect(window.dispatchEvent).toHaveBeenCalled();
+    });
+
+    test("skips modifier creation when created item has no orderItemId", async () => {
+      localStorage.setItem("guestCartEmail", "guest@test.com");
+      localStorage.setItem("accessToken", "fake-token");
+
+      fetch
+        .mockImplementationOnce(() => mockResponse({ data: { id: 123 } }))
+        .mockImplementationOnce(() =>
+          mockResponse({
+            data: {
+              items: [
+                {
+                  variantId: 10,
+                  quantity: 2,
+                  modifiers: [{ optionId: 901 }],
+                },
+              ],
+            },
+          })
+        )
+        .mockImplementationOnce(() => mockResponse({ data: { id: 500 } }))
+        .mockImplementationOnce(() => mockResponse({ data: {} }));
+
+      await mergeGuestCart();
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://127.0.0.1:8000/api/v1/orders/items",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ variantId: 10, quantity: 2 }),
+        })
+      );
+
+      expect(fetch).not.toHaveBeenCalledWith(
+        expect.stringContaining("/modifiers"),
+        expect.anything()
+      );
+
+      expect(localStorage.getItem("guestCartEmail")).toBeNull();
+      expect(window.dispatchEvent).toHaveBeenCalled();
+    });
+
+    test("continues cleanup when fetching guest cart detail fails", async () => {
+      localStorage.setItem("guestCartEmail", "guest@test.com");
+      localStorage.setItem("accessToken", "fake-token");
+
+      fetch
+        .mockImplementationOnce(() => mockResponse({ data: { id: 123 } }))
+        .mockRejectedValueOnce(new Error("guest cart detail failed"));
+
+      await mergeGuestCart();
+
+      expect(console.error).toHaveBeenCalled();
+      expect(localStorage.getItem("guestCartEmail")).toBeNull();
+      expect(window.dispatchEvent).toHaveBeenCalled();
+    });
+  });
+
+  describe("submitOrder", () => {
+    test("throws default error when submit fails without json body", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: false,
+          status: 500,
+          contentType: "text/plain",
+        })
+      );
+
+      await expect(
+        submitOrder(50, { paymentType: "CASH" })
+      ).rejects.toMatchObject({
+        message: "Failed to submit order",
+        response: {
+          status: 500,
+          data: {},
+        },
+      });
+    });
+
+    test("returns empty object when submit succeeds but json parsing fails", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: { get: jest.fn(() => "application/json") },
+        json: jest.fn().mockRejectedValue(new Error("bad json")),
+      });
+
+      const result = await submitOrder(50, { paymentType: "CASH" });
+
+      expect(result).toEqual({});
+    });
+  });
+
+  describe("cancelOrder", () => {
+    test("cancels order successfully", async () => {
+      const responseData = { id: 99, status: "CANCELLED" };
+      fetch.mockImplementation(() => mockResponse({ data: responseData }));
+
+      const result = await cancelOrder(99);
+
+      expect(fetch).toHaveBeenCalledWith(
+        "http://127.0.0.1:8000/api/v1/orders/99/cancel",
+        expect.objectContaining({
+          method: "PATCH",
+          credentials: "include",
+        })
+      );
+      expect(result).toEqual(responseData);
+    });
+
+    test("throws backend message when cancel fails", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: false,
+          status: 400,
+          data: { detail: "Order cannot be cancelled" },
+        })
+      );
+
+      await expect(cancelOrder(99)).rejects.toMatchObject({
+        message: "Order cannot be cancelled",
+        response: {
+          status: 400,
+          data: { detail: "Order cannot be cancelled" },
+        },
+      });
+    });
+
+    test("throws default error when cancel fails without json body", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: false,
+          status: 500,
+          contentType: "text/plain",
+        })
+      );
+
+      await expect(cancelOrder(99)).rejects.toMatchObject({
+        message: "Failed to cancel order",
+        response: {
+          status: 500,
+          data: {},
+        },
+      });
+    });
+
+    test("returns empty object when cancel succeeds but json parsing fails", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: { get: jest.fn(() => "application/json") },
+        json: jest.fn().mockRejectedValue(new Error("bad json")),
+      });
+
+      const result = await cancelOrder(99);
+
+      expect(result).toEqual({});
+    });
+  });
+
+  describe("getOrderHistory", () => {
+    test("throws backend message when order history fetch fails with json body", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: false,
+          status: 403,
+          data: { detail: "Not allowed" },
+        })
+      );
+
+      await expect(getOrderHistory()).rejects.toMatchObject({
+        message: "Not allowed",
+        response: {
+          status: 403,
+          data: { detail: "Not allowed" },
+        },
+      });
+    });
+
+    test("returns empty object when order history success json parsing fails", async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: { get: jest.fn(() => "application/json") },
+        json: jest.fn().mockRejectedValue(new Error("bad json")),
+      });
+
+      const result = await getOrderHistory();
+
+      expect(result).toEqual({});
+    });
+
+    test("returns empty object when order history success response is non-json", async () => {
+      fetch.mockImplementation(() =>
+        mockResponse({
+          ok: true,
+          status: 200,
+          contentType: "text/plain",
+        })
+      );
+
+      const result = await getOrderHistory();
+
+      expect(result).toEqual({});
     });
   });
 });

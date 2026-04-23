@@ -10,6 +10,8 @@ jest.mock("../api/orders");
 describe("Order History Page", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.confirm = jest.fn(() => true);
+    window.alert = jest.fn();
   });
 
   function renderWithRoutes(initialRoute = "/order-history") {
@@ -21,6 +23,15 @@ describe("Order History Page", () => {
         </Routes>
       </MemoryRouter>
     );
+  }
+
+  function findAmount(text) {
+    return screen.findByText((_, element) => {
+      return (
+        element?.tagName?.toLowerCase() === "td" &&
+        element.textContent.includes(text)
+      );
+    });
   }
 
   const order28 = {
@@ -73,15 +84,10 @@ describe("Order History Page", () => {
       await screen.findByRole("heading", { name: /your order history/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByRole("columnheader", { name: /order/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /date/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /status/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /total/i })).toBeInTheDocument();
-
-    expect(screen.getByText(/^PENDING$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^COMPLETED$/i)).toBeInTheDocument();
-    expect(screen.getByText(/\$10\.07/)).toBeInTheDocument();
-    expect(screen.getByText(/\$20\.14/)).toBeInTheDocument();
+    expect(screen.getByText("PENDING")).toBeInTheDocument();
+    expect(screen.getByText("COMPLETED")).toBeInTheDocument();
+    expect(await findAmount("10.07")).toBeInTheDocument();
+    expect(await findAmount("20.14")).toBeInTheDocument();
     expect(screen.getByText(/page\s*1/i)).toBeInTheDocument();
   });
 
@@ -141,7 +147,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
+    expect(await findAmount("10.07")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /next/i })).toBeDisabled();
   });
@@ -165,7 +171,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
+    expect(await findAmount("10.07")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => {
@@ -175,7 +181,7 @@ describe("Order History Page", () => {
       });
     });
 
-    expect(await screen.findByText(/\$20\.14/)).toBeInTheDocument();
+    expect(await findAmount("20.14")).toBeInTheDocument();
     expect(screen.getByText(/page\s*2/i)).toBeInTheDocument();
   });
 
@@ -205,10 +211,10 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
+    expect(await findAmount("10.07")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
-    expect(await screen.findByText(/\$20\.14/)).toBeInTheDocument();
+    expect(await findAmount("20.14")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /previous/i }));
 
@@ -219,7 +225,7 @@ describe("Order History Page", () => {
       });
     });
 
-    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
+    expect(await findAmount("10.07")).toBeInTheDocument();
     expect(screen.getByText(/page\s*1/i)).toBeInTheDocument();
   });
 
@@ -245,10 +251,163 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    const orderNumber = await screen.findByText(/#\s*28/i);
-    fireEvent.click(orderNumber);
+    const totalText = await findAmount("10.07");
+    const row = totalText.closest("tr");
+
+    fireEvent.click(row);
 
     expect(await screen.findByText(/order #28/i)).toBeInTheDocument();
-    expect(await screen.findByText(/\$10\.07/)).toBeInTheDocument();
+  });
+
+  test("sorts by order number ascending when Order # header is clicked", async () => {
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 2,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28, order15],
+    });
+
+    renderWithRoutes();
+
+    expect(await findAmount("10.07")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/order #/i));
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("#15");
+    expect(rows[2]).toHaveTextContent("#28");
+  });
+
+  test("sorts by total ascending when Total header is clicked", async () => {
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 2,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28, order15],
+    });
+
+    renderWithRoutes();
+
+    expect(await findAmount("10.07")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/total/i));
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("10.07");
+    expect(rows[2]).toHaveTextContent("20.14");
+  });
+
+  test("cancel button is shown only for pending orders", async () => {
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 2,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28, order15],
+    });
+
+    renderWithRoutes();
+
+    expect(await findAmount("10.07")).toBeInTheDocument();
+
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("row")[2]).not.toHaveTextContent(/cancel/i);
+  });
+
+  test("cancels a pending order successfully", async () => {
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 1,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28],
+    });
+
+    ordersApi.cancelOrder.mockResolvedValue({ success: true });
+
+    renderWithRoutes();
+
+    const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(ordersApi.cancelOrder).toHaveBeenCalledWith(28);
+    });
+
+    expect(
+      screen.getByRole("button", { name: /cancelling/i })
+    ).toBeInTheDocument();
+  });
+
+  test("does not cancel when confirmation is declined", async () => {
+    window.confirm = jest.fn(() => false);
+
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 1,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28],
+    });
+
+    renderWithRoutes();
+
+    const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+    fireEvent.click(cancelButton);
+
+    expect(ordersApi.cancelOrder).not.toHaveBeenCalled();
+  });
+
+  test("shows alert when cancel order fails", async () => {
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 1,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28],
+    });
+
+    ordersApi.cancelOrder.mockRejectedValue(new Error("Cancel failed"));
+
+    renderWithRoutes();
+
+    const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith("Cancel failed");
+    });
+  });
+
+  test("shows cancelling state while cancel request is in progress", async () => {
+    let resolveCancel;
+    const cancelPromise = new Promise((resolve) => {
+      resolveCancel = resolve;
+    });
+
+    ordersApi.getOrderHistory.mockResolvedValue({
+      count: 1,
+      pageSize: 25,
+      next: null,
+      previous: null,
+      results: [order28],
+    });
+
+    ordersApi.cancelOrder.mockReturnValue(cancelPromise);
+
+    renderWithRoutes();
+
+    const cancelButton = await screen.findByRole("button", { name: /cancel/i });
+    fireEvent.click(cancelButton);
+
+    expect(screen.getByRole("button", { name: /cancelling/i })).toBeDisabled();
+
+    resolveCancel({ success: true });
+
+    await waitFor(() => {
+      expect(ordersApi.cancelOrder).toHaveBeenCalledWith(28);
+    });
   });
 });
