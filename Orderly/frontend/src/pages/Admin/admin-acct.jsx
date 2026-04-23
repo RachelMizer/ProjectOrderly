@@ -41,7 +41,8 @@ export default function AccountSettings() {
 
       <h2>Account Information</h2>
       <p><strong>Name:</strong> {fullName}</p>
-      <p><strong>Username / Email:</strong> {user.email || "Not set"}</p>
+      <p><strong>Username:</strong> {user.username || "Not set"}</p>
+      <p><strong>Email:</strong> {user.email || "Not set"}</p>
       <p><strong>Password:</strong> ••••••••</p>
 <br />
       <h2>Account Role and Permissions</h2>

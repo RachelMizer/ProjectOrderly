@@ -93,7 +93,8 @@ export default function Checkout() {
   }
 
   const subtotal   = items.reduce((sum, item) => sum + Number(item.itemTotal), 0);
-  const tax        = Number(order?.taxAmount ?? 0);
+  const TAX_RATE = 0.0725;
+  const tax        = parseFloat((subtotal * TAX_RATE).toFixed(2));
   const grandTotal = subtotal + tax;
 
   if (loading) return <div className="checkout-pg">Loading…</div>;

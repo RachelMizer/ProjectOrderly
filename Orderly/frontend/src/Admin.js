@@ -43,7 +43,7 @@ function AdminLayout() {
           setAuthorized(false);
         } else {
           setAuthorized(true);
-          setUserName(user.firstName || user.email || "Admin");
+          setUserName(user.username || user.firstName || user.email || "Admin");
         }
       })
       .catch(() => setAuthorized(false));
@@ -101,20 +101,6 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Product Catalog</p>
 
-        <div className="sidebar-recent-orders">
-          <p className="sidebar-sub sidebar-sub--boxed">Recent Catalogs</p>
-          <p className="sidebar-empty">No recent files.</p>
-        </div>
-
-        <div className="sidebar-actions">
-          <span className="sidebar-link-disabled" title="Pending further development">
-            Open Catalog
-          </span>
-          <span className="sidebar-link-disabled" title="Pending further development">
-            Product Lookup
-          </span>
-        </div>
-
         <p className="sidebar-desc">
           Browse and manage the full product catalog. Add new items, edit existing
           products, update pricing, and control which items are active and visible
@@ -144,10 +130,7 @@ function AdminLayout() {
             )}
           </div>
           <div className="sidebar-actions">
-            <span className="sidebar-link-disabled" title="Pending further development">» Open Order</span>
-            <span className="sidebar-link-disabled" title="Pending further development">» Search History</span>
             <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
-            <span className="sidebar-link-disabled" title="Pending further development">» Shipping</span>
           </div>
           <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
           </div>

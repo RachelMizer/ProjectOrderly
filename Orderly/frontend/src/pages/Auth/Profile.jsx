@@ -169,10 +169,6 @@ export default function Profile() {
       <p style={{ marginTop: "4px", marginBottom: "20px" }}>To update your profile, enter the new<br />information and click save.</p>
       <hr className="store-divider" />
 
-      {message && (
-        <div className="prof-success">{message}</div>
-      )}
-
       {error && (
         <div className="prof-error">{error}</div>
       )}
@@ -233,9 +229,12 @@ export default function Profile() {
       </tbody>
     </table>
 
-    <button type="submit" style={{ marginTop: "16px" }}>
-      {submitting ? "Saving..." : "Save"}
-    </button>
+    <div className="prof-save-row">
+      <button type="submit">
+        {submitting ? "Saving..." : "Save"}
+      </button>
+      {message && <span className="prof-success">{message}</span>}
+    </div>
 
   </fieldset>
 </form>

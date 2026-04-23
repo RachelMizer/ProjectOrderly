@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/ProjectOrderly/Orderly/frontend/src/pages/**)",
-      "Read(//c/ProjectOrderly/Orderly/frontend/src/**)"
-    ]
-  }
-}

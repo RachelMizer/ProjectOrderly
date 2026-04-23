@@ -71,15 +71,16 @@ export default function Reports() {
       {!loading && (
         <div className="rpt-chart-wrap">
           <p className="rpt-chart-title">Revenue by Month — {currentYear}</p>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }} barCategoryGap="35%">
               <CartesianGrid strokeDasharray="3 3" stroke="#c4d9e8" vertical={false} />
               <XAxis
                 dataKey="label"
-                tickFormatter={(v) => v.toUpperCase()}
+                tickFormatter={(v) => v.slice(0, 3).toUpperCase()}
                 tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#2a4f6b", fontWeight: 700 }}
                 axisLine={false}
                 tickLine={false}
+                interval={0}
               />
               <YAxis
                 tickFormatter={(v) => `$${v.toLocaleString()}`}
@@ -93,7 +94,6 @@ export default function Reports() {
                 dataKey="revenue"
                 fill="#33638B"
                 radius={[3, 3, 0, 0]}
-                maxBarSize={40}
                 onClick={handleBarClick}
                 style={{ cursor: "pointer" }}
               >
@@ -125,16 +125,9 @@ export default function Reports() {
             </p>
           </Link>
           <div className="rpt-hub-card rpt-hub-card--pending">
-            <p className="rpt-hub-card__title">Profit Margin / COGS</p>
+            <p className="rpt-hub-card__title">Create Purchase Order</p>
             <p className="rpt-hub-card__desc">
-              Gross margin and cost of goods sold by product and period.
-            </p>
-            <span className="rpt-hub-card__badge">Pending further development</span>
-          </div>
-          <div className="rpt-hub-card rpt-hub-card--pending">
-            <p className="rpt-hub-card__title">Labor Cost vs. Revenue</p>
-            <p className="rpt-hub-card__desc">
-              Labor spend as a percentage of revenue by period.
+              Create a purchase order based on low-stock inventory.
             </p>
             <span className="rpt-hub-card__badge">Pending further development</span>
           </div>

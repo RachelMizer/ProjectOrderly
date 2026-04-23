@@ -61,7 +61,7 @@ export default function Orders() {
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
   const [searchQuery, setSearchQuery]   = useState("");
-  const [statusFilter, setStatusFilter] = useState("PENDING");
+  const [statusFilter, setStatusFilter] = useState("");
   const [yearFilter, setYearFilter]     = useState("");
   const [monthFilter, setMonthFilter]   = useState("");
   const [dayFilter, setDayFilter]       = useState("");
