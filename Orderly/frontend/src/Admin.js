@@ -15,6 +15,9 @@ import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
 import Orders from "./pages/Admin/orders";
 import AdminOrderDetail from "./pages/Admin/AdminOrderDetail";
 import AccountSettings from "./pages/Admin/admin-acct";
+import AdminSettingsHub from "./pages/Admin/AdminSettingsHub";
+import AdminBusinessSettings from "./pages/Admin/AdminBusinessSettings";
+import AdminStorefrontSettings from "./pages/Admin/AdminStorefrontSettings";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -132,6 +135,32 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/settings/business")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Business Settings</p>
+        <p className="sidebar-desc">Manage tax rate, business contact information, and address details.</p>
+        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">« Return to Settings</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/settings/storefront")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Storefront Settings</p>
+        <p className="sidebar-desc">Manage customer-facing details and configuration for the online storefront.</p>
+        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">« Return to Settings</Link>
+        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/settings")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">Settings</p>
+        <p className="sidebar-desc">Configure business and storefront settings for your Orderly instance.</p>
+        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/orders")) {
       const recentOrders = JSON.parse(localStorage.getItem("orderly_recent_orders") || "[]");
       return (
@@ -175,6 +204,7 @@ function AdminLayout() {
         <div className="admin-topbar">
           <p className="admin-welcome">Welcome, {userName}!</p>
           <div className="admin-topbar-actions">
+            <Link to="/admin/settings">Settings</Link>
             <Link to="/admin/account">⚙ Account Settings</Link>
             <a onClick={handleLogout} style={{cursor: "pointer"}}>Logout</a>
           </div>
@@ -201,6 +231,9 @@ function AdminLayout() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/orders/:orderId" element={<AdminOrderDetail />} />
             <Route path="/account" element={<AccountSettings />} />
+            <Route path="/settings" element={<AdminSettingsHub />} />
+            <Route path="/settings/business" element={<AdminBusinessSettings />} />
+            <Route path="/settings/storefront" element={<AdminStorefrontSettings />} />
           </Routes>
         </div>
 

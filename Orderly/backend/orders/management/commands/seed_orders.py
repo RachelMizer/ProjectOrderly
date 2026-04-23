@@ -232,8 +232,11 @@ class Command(BaseCommand):
 
             count = random.randint(500, 700)
 
-            for _ in range(count):
-                profile = random.choice(profiles)
+            # Build a pool that covers every customer at least once before repeating
+            pool = (profiles * (count // len(profiles) + 1))[:count]
+            random.shuffle(pool)
+
+            for profile in pool:
                 template = random.choice(available_templates)
 
                 day = random.randint(1, last_day)

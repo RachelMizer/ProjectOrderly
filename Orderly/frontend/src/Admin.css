@@ -1889,3 +1889,61 @@ label.inv-toggle {
     margin: 14px 0 6px;
     padding: 0 4px;
 }
+
+/* ── Settings Pages ──────────────────────────────────────────── */
+
+.sett-form {
+    max-width: 680px;
+    padding: 16px 4px;
+}
+
+.sett-section {
+    margin-bottom: 28px;
+}
+
+.sett-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0 16px;
+}
+
+.sett-save-btn {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06rem;
+    text-transform: uppercase;
+    background-color: #33638B;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.sett-save-btn:hover:not(:disabled) {
+    background-color: #264e6e;
+}
+
+.sett-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sett-unsaved {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.8rem;
+    color: #c8611a;
+    font-weight: 600;
+}
+
+.sett-image-preview {
+    display: block;
+    max-width: 180px;
+    max-height: 120px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    object-fit: cover;
+}
