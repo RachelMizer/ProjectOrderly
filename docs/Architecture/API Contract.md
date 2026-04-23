@@ -3034,4 +3034,150 @@ or
     "message": "user does not have this permission"
 }
 ```
+
+# Settings API  
+## Get Store Settings  
+**Endpoint:** `<GET> /api/v1/settings/`  
+**Description:** Returns the current store settings. If no settings exist, a default settings object is created and returned.  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:** None  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+```
+**Body:** None  
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ Always returns a single settings object  
++ If no settings exist, a new default object is created automatically  
++ All fields may be null or empty depending on configuration  
+**Success Response (200 OK):**
+```
+body
+{
+    "taxRate": 7.50,
+    "contactEmail": "store@example.com",
+    "contactPhone": "123-456-7890",
+    "storeName": "My Store",
+    "storeTagline": "Best products in town",
+    "hours": "Mon-Fri 9am-5pm",
+    "storeAddress": "123 Main St",
+    "hqAddress": "456 Corporate Blvd",
+    "storeImage": "https://storename.com/media/store/logo.png"
+}
+```
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Forbidden (403):**  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+**Internal Server Error (500):**  
+```
+{
+    "error": "SERVER_ERROR",
+    "message": "an unexpected error occurred while retrieving store settings"
+}
+```
+
+## Update Store Settings  
+**Endpoint:** `<PATCH> /api/v1/settings/`  
+**Description:** Updates one or more fields of the store settings  
+**Authentication:** `Bearer <accessToken>`  
+**Role:** Business  
+**URL Parameters:** None  
+**Request Parameters:**  
++ taxRate (optional)  
++ contactEmail (optional)  
++ contactPhone (optional)  
++ storeName (optional)  
++ storeTagline (optional)  
++ hours (optional)  
++ storeAddress (optional)  
++ hqAddress (optional)  
++ storeImage (optional, file upload or null)  
+### Request  
+**Header:**  
+```
+Authorization: Bearer <accessToken>  
+Content-Type: multipart/form-data OR application/json
+```
+**Body:**  
+```
+{
+    "taxRate": 8.25,
+    "storeName": "Updated Store Name",
+    "storeTagline": "Now even better",
+    "contactEmail": "newemail@example.com"
+}
+```
+(or multipart form-data for image upload)
+```
+storeImage: <file>
+storeName: Updated Store Name
+```
+**Rules:**  
++ Endpoint only available to users with the BUSINESS role  
++ All fields are optional, but at least one field should be provided  
++ taxRate must be >= 0  
++ contactEmail must be a valid email format if provided  
++ storeImage may be null to remove existing image  
++ Partial updates only — unspecified fields remain unchanged 
+ 
+**Success Response (200 OK):**  
+```
+{
+    "taxRate": 8.25,
+    "contactEmail": "newemail@example.com",
+    "contactPhone": "123-456-7890",
+    "storeName": "Updated Store Name",
+    "storeTagline": "Now even better",
+    "hours": "Mon-Fri 9am-5pm",
+    "storeAddress": "123 Main St",
+    "hqAddress": "456 Corporate Blvd",
+    "storeImage": "https://storename.com/media/store/logo.png"
+}
+```
+**Bad Request (400):**  
+```
+{
+    "error": "VALIDATION_ERROR",
+    "message": "invalid input data",
+    "fields": {
+        "taxRate": "must be greater than or equal to 0"
+    }
+}
+```
+**Unauthorized (401):**  
+```
+{
+    "error": "INVALID_TOKEN",
+    "message": "invalid or expired token"
+}
+```
+**Forbidden (403):**  
+```
+{
+    "error": "FORBIDDEN",
+    "message": "insufficient role"
+}
+```
+**Internal Server Error (500):**  
+```
+{
+    "error": "SERVER_ERROR",
+    "message": "an unexpected error occurred while updating store settings"
+}
+```
 ---

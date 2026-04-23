@@ -17,6 +17,8 @@ This log documents cleanup actions performed to improve repository organization,
 - Removed docs\S2-Agile\Sprint_Review\placeholder.txt
 - Removed docs\test 1.txt
 - Removed Happy Desk Dataset
+- Removed Peer Reviews/S2_APIContract_Review_SR.md and Peer Reviews folder
+- Removed docs/S4-Agile/Sprint 4 material in done 2026-03-24 105502.png
 
 ---
 
