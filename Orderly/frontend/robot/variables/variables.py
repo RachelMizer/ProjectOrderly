@@ -1,7 +1,7 @@
 BASE_URL = "http://localhost:3000"
 BROWSER = "chrome"
 
-CUSTOMER_EMAIL = "customer1@example.com"
+CUSTOMER_EMAIL = "jamie.ortega@gmail.com"
 CUSTOMER_PASSWORD = "Password123!"
 
 BUSINESS_EMAIL = "business1@example.com"
