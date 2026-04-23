@@ -19,8 +19,8 @@ const StoreFront = () => {
   useEffect(() => {
     const loadInitial = async () => {
       try {
-        const catRes = await fetch("http://localhost:8000/api/v1/categories");
-        const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const catRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/categories`);
+        const prodRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/products`);
 
         const catData = await catRes.json();
         const prodData = await prodRes.json();
@@ -44,7 +44,7 @@ const StoreFront = () => {
     return Promise.all(
       productList.map(async (product) => {
         const variantRes = await fetch(
-          `http://localhost:8000/api/v1/products/${product.id}/variants`
+          `${process.env.REACT_APP_API_URL}/api/v1/products/${product.id}/variants`
         );
         const variantData = await variantRes.json();
 

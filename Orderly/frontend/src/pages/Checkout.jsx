@@ -42,7 +42,7 @@ export default function Checkout() {
 
   async function loadCart() {
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export default function Checkout() {
       });
       const draft = await draftRes.json();
 
-      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
+      const detailRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/${draft.id}`, {
         headers: {
           ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },

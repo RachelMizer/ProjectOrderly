@@ -67,7 +67,7 @@ function AppContent() {
       if (!token) return;
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -105,7 +105,7 @@ async function fetchCartCount() {
     if (!token && !guestEmail) { setCartCount(0); return; }
 
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,8 +118,8 @@ async function fetchCartCount() {
       if (!draft.id) { setCartCount(0); return; }
 
       const detailUrl = guestEmail
-        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
-        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+        ? `${process.env.REACT_APP_API_URL}/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `${process.env.REACT_APP_API_URL}/api/v1/orders/${draft.id}`;
 
       const detailRes = await fetch(detailUrl, {
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }

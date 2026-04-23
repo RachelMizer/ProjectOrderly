@@ -30,7 +30,7 @@ const ProductPage = () => {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const prodRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/products`);
         const prodData = await prodRes.json();
 
         const found = prodData.results.find(p => p.id === Number(id));
@@ -42,7 +42,7 @@ const ProductPage = () => {
         setProduct(found);
 
         const variantRes = await fetch(
-          `http://localhost:8000/api/v1/products/${id}/variants`
+          `${process.env.REACT_APP_API_URL}/api/v1/products/${id}/variants`
         );
         const variantData = await variantRes.json();
 
@@ -77,7 +77,7 @@ const ProductPage = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:8000/api/v1/products/${id}/variants/${selectedVariant.id}/modifiers`
+          `${process.env.REACT_APP_API_URL}/api/v1/products/${id}/variants/${selectedVariant.id}/modifiers`
         );
         const data = await res.json();
 
@@ -158,7 +158,7 @@ const ProductPage = () => {
   const guestEmail = accessToken ? null : getGuestCartEmail();
 
   async function getDraftOrder() {
-    const res = await fetch("http://localhost:8000/api/v1/orders/draft", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +170,7 @@ const ProductPage = () => {
   }
 
   async function addItemToOrder(variantId, quantity) {
-    const res = await fetch("http://localhost:8000/api/v1/orders/items", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -190,7 +190,7 @@ const ProductPage = () => {
 
     for (const modifierId of allSelected) {
       await fetch(
-        `http://localhost:8000/api/v1/orders/items/${orderItemId}/modifiers`,
+        `${process.env.REACT_APP_API_URL}/api/v1/orders/items/${orderItemId}/modifiers`,
         {
           method: "POST",
           headers: {
@@ -210,7 +210,7 @@ const ProductPage = () => {
   async function handleAddToCart() {
     try {
       if (isEditMode) {
-        await fetch(`http://localhost:8000/api/v1/orders/items/${editItemId}`, {
+        await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items/${editItemId}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

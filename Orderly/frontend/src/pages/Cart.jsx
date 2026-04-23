@@ -19,7 +19,7 @@ function CartPage() {
 
   async function loadCart() {
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,8 +31,8 @@ function CartPage() {
       const draft = await draftRes.json();
 
       const detailUrl = guestEmail
-        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
-        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+        ? `${process.env.REACT_APP_API_URL}/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `${process.env.REACT_APP_API_URL}/api/v1/orders/${draft.id}`;
 
       const detailRes = await fetch(detailUrl, {
         headers: {
@@ -59,7 +59,7 @@ function CartPage() {
     try {
       await Promise.all(
         items.map((item) =>
-          fetch(`http://localhost:8000/api/v1/orders/items/${item.itemId}`, {
+          fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items/${item.itemId}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -81,7 +81,7 @@ function CartPage() {
 
   async function updateQuantity(itemId, newQuantity) {
     try {
-      await fetch(`http://localhost:8000/api/v1/orders/items/${itemId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items/${itemId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

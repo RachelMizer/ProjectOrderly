@@ -22,7 +22,7 @@ export default function AccountSettings() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    fetch("http://localhost:8000/api/v1/users/me", {
+    fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

@@ -12,7 +12,7 @@ function formatDate(date) {
   return `${months[date.getMonth()]} ${day}${suffix}, ${date.getFullYear()}`;
 }
 
-const API = "http://localhost:8000/api/v1";
+const API = `${process.env.REACT_APP_API_URL}/api/v1`;
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);

@@ -1,6 +1,6 @@
 import { getAuthHeaders } from "./auth";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin/inventory";
+const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1/admin/inventory`;
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",

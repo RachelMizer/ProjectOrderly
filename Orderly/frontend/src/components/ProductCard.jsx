@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
     const guestEmail = accessToken ? null : getGuestCartEmail();
 
     try {
-      await fetch("http://localhost:8000/api/v1/orders/draft", {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +28,7 @@ const ProductCard = ({ product }) => {
         body: JSON.stringify(guestEmail ? { guestEmail } : {})
       });
 
-      await fetch("http://localhost:8000/api/v1/orders/items", {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

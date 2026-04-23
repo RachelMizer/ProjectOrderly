@@ -1,6 +1,6 @@
 import { getAuthHeaders } from "./auth";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin";
+const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1/admin`;
 
 async function parseJson(response) {
   const contentType = response.headers.get("content-type") || "";
@@ -58,7 +58,7 @@ export async function fetchSalesSummary({ year = null, month = null } = {}) {
     params.set("groupBy", "month");
   }
 
-  const url = `http://127.0.0.1:8000/api/v1/reports/sales/summary?${params.toString()}`;
+  const url = `${process.env.REACT_APP_API_URL}/api/v1/reports/sales/summary?${params.toString()}`;
 
   const response = await fetch(url, {
     method: "GET",

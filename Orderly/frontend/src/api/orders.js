@@ -14,7 +14,7 @@ export function getGuestCartEmail() {
   return email;
 }
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/orders/";
+const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1/orders/`;
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",

@@ -4,7 +4,7 @@ import { handleApiError } from "../../api/handleApiError";
 import { getAuthHeaders } from "../../api/auth";
 import { pushRecentOrder } from "../../utils/recentOrders";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1`;
 const PAGE_SIZE = 25;
 
 const MONTH_NAMES = [
