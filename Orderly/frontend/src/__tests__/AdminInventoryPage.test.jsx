@@ -105,9 +105,9 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     expect(
-      await screen.findByText(/ingredient-controlled beverage availability/i)
+      await screen.findByRole("heading", { name: /supply inventory/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/count-based inventory/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /supply inventory/i })).toBeInTheDocument();
 
     expect(screen.getByText("Milk")).toBeInTheDocument();
     expect(screen.getByText("Oat Milk")).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe("AdminInventoryPage", () => {
       });
     });
 
-    expect(await screen.findByText("Unavailable")).toBeInTheDocument();
+    expect(await screen.findByText(/out of stock/i)).toBeInTheDocument();
   });
 
   test("toggling an unavailable ingredient on prompts for quantity entry instead of saving immediately", async () => {
@@ -237,7 +237,7 @@ describe("AdminInventoryPage", () => {
 
     expect(screen.getByText(/enter qty & save/i)).toBeInTheDocument();
 
-    const row = screen.getByText("Milk").closest("tr");
+    const row = screen.getByLabelText(/toggle milk availability/i).closest("tr");
     const stockInput = within(row).getAllByRole("spinbutton")[0];
 
     expect(stockInput).toHaveClass("inv-qty-input--activate");

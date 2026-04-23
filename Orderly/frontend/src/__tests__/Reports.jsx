@@ -138,7 +138,7 @@ describe("Reports page extra coverage", () => {
 
     await screen.findByText(/Revenue by Month/);
 
-    expect(screen.getByTestId("x-axis")).toHaveTextContent("MARCH");
+    expect(screen.getByTestId("x-axis")).toHaveTextContent("MAR");
     expect(screen.getByTestId("y-axis")).toHaveTextContent("$2,500");
 
     expect(screen.getByTestId("label-zero")).toHaveTextContent("");
