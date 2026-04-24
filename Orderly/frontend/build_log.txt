@@ -1,0 +1,104 @@
+BUILD LOG — feat-make-purch-order
+==================================
+Branch: feat-make-purch-order
+Started: 2026-04-24
+Last updated: 2026-04-24
+
+-------------------------------
+COMPLETED
+-------------------------------
+
+[Purchase Order Page]
+- reports.jsx: Enabled Purchase Order card (replaced pending placeholder with Link to /admin/purchase-order)
+- AdminPurchaseOrderPage.jsx created:
+  - Fetches low-stock inventory from /api/v1/admin/inventory/low-stock
+  - PO number (date-based) and date displayed in control bar
+  - Item count ("X of Y selected") in control bar
+  - Editable order qty per row (defaults to reorderLevel − stockQuantity)
+  - Checkbox per row to include/exclude; select-all toggle in header
+  - Deselected rows hidden from print via no-print class
+  - Supplier column between Reorder Level and Order Qty
+  - Notes textarea; rendered in print output when non-empty
+  - Footer with divider line and item count
+  - Export CSV (includes all columns including Supplier)
+  - Print button (window.print)
+  - Print-only header: "Purchase Order" title, PO number, date
+- Admin.js: route /purchase-order wired; sidebar entry added with links to Reports and Dashboard
+- Admin.css: po-control-bar, po-table-wrap, po-qty-input, po-row--deselected, po-notes,
+  po-print-header, po-footer, po-no-supplier styles added
+
+[Individual Supply View]
+- AdminInventoryDetailPage.jsx created:
+  - Fetches inventory item + all suppliers in parallel on mount
+  - Status badges (Out of Stock, Critical Stock, Low Stock, In Stock) derived from live data
+  - Stock Details card: editable stock_quantity, unit_of_measure (select), reorder_level
+    with independent Save button and success/error feedback
+  - Supplier card: dropdown of all suppliers, contact info (email, phone) displayed on selection,
+    "+ New Supplier" button navigates to /admin/suppliers/new
+    with independent Save button and success/error feedback
+  - "Used In Products" card (conditional; shows products that use this ingredient)
+  - Save only enabled when values have changed (dirty-check per card)
+- AdminInventoryPage.jsx: item names rendered as clickable links to /admin/inventory/:itemId
+- fetchInventoryItem(itemId) added to adminInventory.js
+- Backend: GET handler added to AdminInventoryDetailView
+- Backend: supplier FK added to InventoryItem model (nullable, SET_NULL on supplier delete)
+- Backend: migration 0006 created and applied (inventory_inventoryitem.supplier_id)
+- Backend: SupplierSummarySerializer added (id, name, email, phone)
+- Backend: AdminInventoryItemSerializer updated — nested supplier (read) + supplier_id write-only field
+- Admin.js: route /inventory/:itemId wired; inventory sidebar updated with conditional
+  "Return to Inventory" back link
+- Admin.css: inv-item-link, supply-det-header, supply-det-grid, supply-det-card,
+  supply-det-rows, supply-det-row, supply-det-save-row, supply-det-product-list,
+  supply-det-new-supplier, supply-det-input, supply-det-select styles added
+
+[Supplier Management]
+- AdminSuppliersPage.jsx created:
+  - Lists all suppliers in table with inline editing (name, email, phone)
+  - Phone numbers displayed with dashes via formatPhone() utility
+  - Delete with confirmation dialog
+  - All columns centered
+  - "+ ADD SUPPLIER" button in submenu navigates to /admin/suppliers/new
+- formatPhone.js utility created (shared site-wide phone formatting: 10-digit and 1+10-digit)
+  Applied to: AdminSuppliersPage, AdminInventoryDetailPage
+- AdminSupplierFormPage.jsx: both navigate() calls corrected from /admin/catalog to /admin/suppliers
+- Admin.js:
+  - Route /suppliers wired
+  - Catalog sidebar: "🏭 SUPPLIER MANAGEMENT" button added (sidebar-btn style),
+    description updated to mention supplier management
+  - Inventory sidebar: "🏭 SUPPLIER MANAGEMENT" button added (sidebar-btn style),
+    "Return to Inventory" conditional back link below button with spacing adjustments,
+    "Return to Dashboard" shifted down
+  - Suppliers sidebar: title "🏭 Supplier Management", links back to catalog and dashboard
+- Admin.css:
+  - .sidebar-btn added: frosted semi-transparent button style for sidebar navigation buttons
+  - Admin sidebar padding updated to 50px 16px 50px 24px (added left breathing room)
+
+[Backend — Low-Stock Logic Fix]
+- AdminLowStockView: filter updated to include out-of-stock items (stock_quantity = 0)
+  using Q(stock_quantity=0) | Q(...reorder-level conditions...) — previously these items
+  were excluded because the reorder level check required both fields to be non-null
+- AdminLowStockView: select_related("supplier") added to inventory queryset
+- LowStockInventorySerializer: supplierName field added via SerializerMethodField
+  (returns supplier name string or null if none assigned)
+
+[Seed Data — seed_core_data.py]
+- Suppliers section: replaced 4 outdated placeholder entries with all 10 real suppliers,
+  including correct names, emails, and phone numbers
+  Suppliers: Brew Source NC, Carolina Wholesale, EcoPlastics, Fresh Farms Co,
+  Good Grain Supply, Hearth & Heart Bakery, In-House, NUTrition Inc.,
+  SupaGreen Produce, Triangle Produce
+- Inventory section: replaced 19 outdated items with all 36 actual inventory items,
+  each with correct unit of measure, stock quantity, reorder level, and supplier assignment
+- Supplier assignment logic: uses get_or_create with supplier in defaults (new items),
+  and explicitly updates supplier via save(update_fields=["supplier"]) for existing items
+  so running seed on an existing DB syncs assignments without touching stock quantities
+- Lids (24oz): supplier assignment corrected to EcoPlastics (was None)
+
+-------------------------------
+KNOWN / OPEN
+-------------------------------
+- Cups (16oz): supplier shows correctly on the Supply Detail page site-side but MySQL
+  still returns None on direct query — root cause under investigation (possible PATCH
+  persistence issue vs. React state display from save response)
+- SQLite database (settings_local.py): migration 0006 not applied — supplier_id column
+  missing. Server runs on MySQL (settings.py default); SQLite is unused at this time.

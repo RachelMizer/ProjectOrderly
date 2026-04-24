@@ -19,6 +19,9 @@ import AdminSettingsHub from "./pages/Admin/AdminSettingsHub";
 import AdminBusinessSettings from "./pages/Admin/AdminBusinessSettings";
 import AdminStorefrontSettings from "./pages/Admin/AdminStorefrontSettings";
 import AdminExportPage from "./pages/Admin/AdminExportPage";
+import AdminPurchaseOrderPage from "./pages/Admin/AdminPurchaseOrderPage";
+import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
+import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -93,6 +96,15 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/purchase-order")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🛒</span> Purchase Order</p>
+        <p className="sidebar-desc">Review low-stock inventory items and generate a purchase order to send to your supplier.</p>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">⬅️ Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/reports/sales")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>💰</span>Sales Summary</p>
@@ -126,6 +138,19 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>📋</span>Inventory</p>
         <p className="sidebar-desc">Track and update stock levels for all inventory items. Toggle ingredient availability to control which beverages are offered, and manage count-based items by quantity and reorder level.</p>
+        <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
+        {path !== "/admin/inventory" && (
+          <Link to="/admin/inventory" className="sidebar-back sidebar-back--sub" style={{marginTop:"14px", marginBottom:"-12px"}}>⬅️ Return to Inventory</Link>
+        )}
+        <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/suppliers")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏭</span>Supplier Management</p>
+        <p className="sidebar-desc">View, add, and edit supplier contact information. Suppliers can be assigned to individual inventory items.</p>
+        <Link to="/admin/catalog" className="sidebar-back sidebar-back--sub">⬅️ Return to Catalog</Link>
         <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -137,10 +162,11 @@ function AdminLayout() {
         <p className="sidebar-desc">
           Browse and manage the full product catalog. Add new items, edit existing
           products, update pricing, and control which items are active and visible
-          to customers.
+          to customers. Use the Manage Suppliers link to view and edit supplier contacts.
         </p>
 
-        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+        <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
+        <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
       </div>
     );
 
@@ -242,6 +268,9 @@ function AdminLayout() {
             <Route path="/settings/business" element={<AdminBusinessSettings />} />
             <Route path="/settings/storefront" element={<AdminStorefrontSettings />} />
             <Route path="/export" element={<AdminExportPage />} />
+            <Route path="/purchase-order" element={<AdminPurchaseOrderPage />} />
+            <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
+            <Route path="/suppliers" element={<AdminSuppliersPage />} />
           </Routes>
         </div>
 

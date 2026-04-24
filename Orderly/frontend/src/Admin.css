@@ -39,7 +39,7 @@ body.admin-body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 50px 15px;
+    padding: 50px 16px 50px 24px;
 }
 
 .admin-sidebar .orderly-head {
@@ -255,6 +255,29 @@ body.admin-body {
     line-height: 1.1;
     margin-top: auto;
     margin-bottom: 0.5rem;
+}
+
+.sidebar-btn {
+    display: block;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.07rem;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    color: white;
+    background-color: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 4px;
+    padding: 7px 10px 5px;
+    margin-top: 12px;
+    transition: background-color 0.15s;
+}
+
+.sidebar-btn:hover {
+    background-color: rgba(255,255,255,0.28);
+    color: white;
 }
 
 
@@ -3000,6 +3023,306 @@ label.inv-toggle {
 .admin-export-error {
     font-size: 0.82rem;
     color: #c0392b;
+    margin: 0;
+}
+
+/* ── Inventory Item Link ────────────────────────────────────────── */
+
+.inv-item-link {
+    color: #33638B;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.15s;
+}
+
+.inv-item-link:hover {
+    text-decoration-color: #33638B;
+}
+
+/* ── Supply Detail Page ─────────────────────────────────────────── */
+
+.supply-det-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px 10px;
+}
+
+.supply-det-name {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #1a3a52;
+    margin: 0;
+}
+
+.supply-det-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.supply-det-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 10px 20px 24px;
+    max-width: 560px;
+}
+
+.supply-det-card {
+    background: white;
+    border: 1px solid #d0e4f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 240px;
+    flex: 1;
+}
+
+.supply-det-card__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.supply-det-card__title-row .supply-det-card__title {
+    margin-bottom: 0;
+}
+
+.supply-det-card__title {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+    color: #5a85a0;
+    margin: 0 0 12px;
+}
+
+.supply-det-new-supplier {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #33638B !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.04rem;
+}
+
+.supply-det-new-supplier:hover {
+    text-decoration: underline;
+}
+
+.supply-det-input {
+    width: 120px;
+}
+
+.supply-det-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.supply-det-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.supply-det-row--col {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.supply-det-row__label {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.78rem;
+    color: #5a85a0;
+    white-space: nowrap;
+}
+
+.supply-det-row__value {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a3a52;
+    text-align: right;
+}
+
+.supply-det-select {
+    width: 100%;
+    margin-top: 2px;
+}
+
+.supply-det-save-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e8f0f5;
+}
+
+.supply-det-save-btn {
+    padding: 7px 14px 4px !important;
+    font-size: 0.72rem !important;
+    margin-bottom: 0 !important;
+}
+
+.supply-det-product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supply-det-product-list__item {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #1a3a52;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f6fa;
+}
+
+.supply-det-product-list__item:last-child {
+    border-bottom: none;
+}
+
+/* ── Purchase Order Page ────────────────────────────────────────── */
+
+.po-control-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 14px 20px;
+    background: #f0f6fa;
+    border-bottom: 1px solid #d0e4f0;
+    margin-bottom: 4px;
+}
+
+.po-control-bar__field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.po-control-bar__label {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07rem;
+    color: #5a85a0;
+}
+
+.po-control-bar__value {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a3a52;
+}
+
+.po-row--deselected {
+    opacity: 0.4;
+}
+
+.po-table-wrap .admin-table td,
+.po-table-wrap .admin-table th {
+    font-size: 0.95rem;
+}
+
+.po-no-supplier {
+    color: #a0a8b0;
+    font-style: italic;
+}
+
+.po-qty-input {
+    width: 72px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.85rem;
+    padding: 3px 6px;
+    border: 1px solid #b0cfe0;
+    border-radius: 3px;
+    color: #1a3a52;
+    background: white;
+}
+
+.po-qty-input:disabled {
+    background: #f0f0f0;
+    color: #aaa;
+    border-color: #ddd;
+}
+
+.po-footer {
+    padding: 8px 20px 0;
+}
+
+.po-footer__rule {
+    border: none;
+    border-top: 1px solid #c4d9e8;
+    margin: 0 0 8px;
+}
+
+.po-footer__count {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    margin: 0;
+}
+
+.po-notes {
+    padding: 16px 20px 0;
+}
+
+.po-notes__input {
+    width: 100%;
+    max-width: 520px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #1a1a1a;
+    border: 1px solid #b0cfe0;
+    border-radius: 4px;
+    padding: 8px 10px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+/* Print-only PO header */
+.po-print-header__title {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #1a3a52;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06rem;
+}
+
+.po-print-header__meta {
+    display: flex;
+    gap: 24px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #444;
+    margin-bottom: 2px;
+}
+
+.po-print-header__contact {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.82rem;
+    color: #555;
     margin: 0;
 }
 

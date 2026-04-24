@@ -422,6 +422,13 @@ export default function AdminInventoryPage() {
           >
             {showCreate ? "CANCEL" : "+ ADD ITEM"}
           </button>
+          <button
+            type="button"
+            className="submenu-action"
+            onClick={() => navigate("/admin/suppliers/new")}
+          >
+            + ADD SUPPLIER
+          </button>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" onClick={() => window.print()}>
             <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
@@ -613,7 +620,12 @@ export default function AdminInventoryPage() {
                       className={isOutOfStock ? "inv-row--dim" : isLowStock ? "inv-row--low-stock" : ""}
                     >
                       <td className="td-name inv-td-left">
-                        {item.name}
+                        <span
+                          className="inv-item-link"
+                          onClick={() => navigate(`/admin/inventory/${item.id}`)}
+                        >
+                          {item.name}
+                        </span>
                         {isOutOfStock && (
                           <span className="inv-badge inv-badge--out">Out of Stock</span>
                         )}
