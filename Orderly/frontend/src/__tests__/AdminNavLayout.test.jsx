@@ -166,10 +166,12 @@ describe("Admin navigation and layout (US4.2)", () => {
     render(<App />);
 
     expect(
-      await screen.findByText(/toggle ingredient availability to control which beverages are offered/i)
+      await screen.findByText(/ingredient-controlled beverage availability/i)
     ).toBeInTheDocument();
 
-    expect(await screen.findByText(/inventory management/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /count-based inventory/i })
+    ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("navigation")).toBeInTheDocument();
     expect(

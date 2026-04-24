@@ -15,14 +15,11 @@ import AdminSupplierFormPage from "./pages/Admin/AdminSupplierFormPage";
 import Orders from "./pages/Admin/orders";
 import AdminOrderDetail from "./pages/Admin/AdminOrderDetail";
 import AccountSettings from "./pages/Admin/admin-acct";
-import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
   const [authorized, setAuthorized] = useState(null);
   const [userName, setUserName] = useState("");
-  const [recentOrdersKey, setRecentOrdersKey] = useState(0);
   const location = useLocation();
-  const path = location.pathname;
 
   useEffect(() => {
     document.title = "Orderly";
@@ -57,28 +54,10 @@ function AdminLayout() {
     window.location.href = "/admin/login";
   }
 
-  useEffect(() => {
-    if (!path.startsWith("/admin/orders")) return;
-    const stored = JSON.parse(localStorage.getItem("orderly_recent_orders") || "[]");
-    if (stored.length === 0) return;
-    const token = localStorage.getItem("accessToken");
-    Promise.all(
-      stored.map((o) =>
-        fetch(`http://127.0.0.1:8000/api/v1/orders/${o.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then((r) => (r.status === 404 ? o.id : null))
-      )
-    ).then((staleIds) => {
-      const toRemove = staleIds.filter(Boolean);
-      if (toRemove.length > 0) {
-        toRemove.forEach((id) => removeRecentOrder(id));
-        setRecentOrdersKey((k) => k + 1);
-      }
-    });
-  }, [path]);
-
   if (authorized === null) return null;
   if (authorized === false) return <Navigate to="/admin/login" replace />;
+
+  const path = location.pathname;
 
   function SidebarMenu() {
     if (path.startsWith("/admin/reports/sales")) return (
@@ -135,7 +114,7 @@ function AdminLayout() {
     if (path.startsWith("/admin/orders")) {
       const recentOrders = JSON.parse(localStorage.getItem("orderly_recent_orders") || "[]");
       return (
-        <div className="sidebar-menu" key={recentOrdersKey}>
+        <div className="sidebar-menu">
           <p className="sidebar-title">Orders</p>
           <div className="sidebar-recent-orders">
             <p className="sidebar-sub sidebar-sub--boxed">Recent Orders</p>
@@ -214,14 +193,6 @@ function AdminLayout() {
 }
 
 export default function Admin() {
-  useEffect(() => {
-    // Add admin-specific body class
-    document.body.classList.add("admin-body");
-    return () => {
-      document.body.classList.remove("admin-body");
-    };
-  }, []);
-
   return (
     <Routes>
       <Route path="/login" element={<AdminLogin />} />

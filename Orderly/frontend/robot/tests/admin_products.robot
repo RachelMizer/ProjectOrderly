@@ -48,12 +48,19 @@ Admin Can Navigate To Edit Product Page
     Wait Until Location Contains    /admin/catalog/edit    10s
     Wait Until Page Contains    Update Product    10s
 
-Admin Delete Button Is Available For Product Rows
+Admin Can Delete Product
     Login As Business User
-    Go To    http://localhost:3000/admin/catalog
-    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//tr[td]    10s
-    Page Should Contain Element    xpath=(//table[contains(@class,'admin-table')]//tr[td])[1]//button[normalize-space()='Delete']
+    Go To    ${ADMIN_CATALOG_URL}
 
+    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//tr[td]    10s
+
+    ${product}=    Get Text    xpath=(//table[contains(@class,'admin-table')]//tr[td])[1]/td[2]
+    Click Element    xpath=((//table[contains(@class,'admin-table')]//tr[td])[1]//button[normalize-space()='Delete'])[1]
+    Handle Alert    ACCEPT
+
+    Reload Page
+    Wait Until Page Contains Element    xpath=//input[@placeholder='Search products...']    10s
+    Wait Until Page Does Not Contain    ${product}    10s
 
 Admin Can Expand Options Panel
     Login As Business User
@@ -112,9 +119,3 @@ Admin Can Delete Variant Inline
     Handle Alert    ACCEPT
 
     Wait Until Page Does Not Contain    ${variant_sku}    10s
-
-*** Keywords ***
-Row Count Should Decrease
-    [Arguments]    ${rows_before}
-    ${rows_after}=    Get Element Count    xpath=//table[contains(@class,'admin-table')]//tr[td]
-    Should Be True    ${rows_after} < ${rows_before}

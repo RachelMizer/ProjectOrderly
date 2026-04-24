@@ -102,7 +102,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    expect(await screen.findByText(/you haven't placed any orders yet\./i)).toBeInTheDocument();
+    expect(await screen.findByText(/no past orders found/i)).toBeInTheDocument();
   });
 
   test("shows error message when order history request fails", async () => {
@@ -113,7 +113,7 @@ describe("Order History Page", () => {
     renderWithRoutes();
 
     expect(
-      await screen.findByText(/you haven't placed any orders yet\./i)
+      await screen.findByText(/failed to fetch order history/i)
     ).toBeInTheDocument();
   });
 
@@ -128,7 +128,7 @@ describe("Order History Page", () => {
 
     renderWithRoutes();
 
-    await screen.findByText(/you haven't placed any orders yet\./i);
+    await screen.findByText(/no past orders found/i);
 
     expect(ordersApi.getOrderHistory).toHaveBeenCalledWith({
       page: 1,

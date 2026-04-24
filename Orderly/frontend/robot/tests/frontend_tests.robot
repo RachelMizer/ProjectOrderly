@@ -4,7 +4,7 @@ Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${TEST_EMAIL}          jamie.ortega@gmail.com
+${TEST_EMAIL}          customer1@example.com
 ${TEST_PASSWORD}       Password123!
 ${UPDATED_FIRST_NAME}  Ken
 ${UPDATED_CITY}        Charlotte
@@ -35,10 +35,13 @@ Login Page Renders Form
 
 Successful Login Submits Valid Credentials
     Go To    ${BASE_URL}/login
-    Input Text        xpath=//input[@type='email' or contains(@name,'email') or contains(@id,'email')]    ${CUSTOMER_EMAIL}
-    Input Password    xpath=//input[@type='password' or contains(@name,'password') or contains(@id,'password')]    ${CUSTOMER_PASSWORD}
-    Click Button      xpath=//button[contains(normalize-space(.), 'Login') or contains(normalize-space(.), 'Sign In')]
-    Wait Until Page Contains Element    xpath=//a[contains(@href,'/profile') and contains(., 'Your Account')]    10s
+    Wait Until Page Contains Element    name=email    10s
+    Input Text    name=email    ${TEST_EMAIL}
+    Input Password    name=password    ${TEST_PASSWORD}
+    Click Button    Login
+    Sync Auth Token Key For Frontend
+    Wait Until Page Contains Element    xpath=//a[@href='/profile']    10s
+    Page Should Contain Element    xpath=//a[@href='/profile']
 
 Register Page Renders Form
     Go To    ${BASE_URL}/register

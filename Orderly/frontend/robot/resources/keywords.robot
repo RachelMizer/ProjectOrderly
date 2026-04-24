@@ -39,13 +39,13 @@ Open Profile Page
     Wait Until Page Contains    My Profile
 
 Fill Profile Form
-    Clear And Type    id=firstName        ${UPDATED_FIRST_NAME}
-    Clear And Type    id=lastName         ${UPDATED_LAST_NAME}
-    Clear And Type    id=streetAddress    ${UPDATED_STREET}
-    Clear And Type    id=city             ${UPDATED_CITY}
-    Clear And Type    id=state            ${UPDATED_STATE}
-    Clear And Type    id=zipcode          ${UPDATED_ZIP}
-    Clear And Type    id=phone            ${UPDATED_PHONE}
+    Input Text    id=firstName    ${UPDATED_FIRST_NAME}
+    Input Text    id=lastName    ${UPDATED_LAST_NAME}
+    Input Text    id=streetAddress    ${UPDATED_STREET}
+    Input Text    id=city    ${UPDATED_CITY}
+    Input Text    id=state    ${UPDATED_STATE}
+    Input Text    id=zipcode    ${UPDATED_ZIP}
+    Input Text    id=phone    ${UPDATED_PHONE}
 
 Clear And Type
     [Arguments]    ${locator}    ${value}

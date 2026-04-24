@@ -121,15 +121,8 @@ def test_seed_command_creates_expected_core_records():
     assert User.objects.filter(username="admin").exists()
     assert User.objects.filter(username="business1").exists()
     assert User.objects.filter(username="business2").exists()
-    assert User.objects.filter(username="business3").exists()
-
-    assert User.objects.filter(username="jortega").exists()
-    assert User.objects.filter(username="mpatel").exists()
-    assert User.objects.filter(username="anguyen").exists()
-    assert User.objects.filter(username="tbrooks").exists()
-    assert User.objects.filter(username="jkim").exists()
-    assert User.objects.filter(username="crivera").exists()
-    assert User.objects.filter(username="Rachel").exists()
+    assert User.objects.filter(username="customer1").exists()
+    assert User.objects.filter(username="customer5").exists()
 
     assert Supplier.objects.count() >= 4
     assert InventoryItem.objects.count() >= 6
@@ -142,27 +135,15 @@ def test_seed_command_creates_expected_core_records():
 def test_seed_command_creates_customer_roles_and_profiles():
     call_command("seed_data", seed=42)
 
-    expected_customers = {
-        "jortega": {"city": "Raleigh", "zipcode": "27609", "email_verified": True},
-        "mpatel": {"city": "Cary", "zipcode": "27511", "email_verified": False},
-        "anguyen": {"city": "Apex", "zipcode": "27502", "email_verified": True},
-        "tbrooks": {"city": "Durham", "zipcode": "27701", "email_verified": True},
-        "jkim": {"city": "Morrisville", "zipcode": "27560", "email_verified": False},
-        "crivera": {"city": "Raleigh", "zipcode": "27605", "email_verified": True},
-        "Rachel": {"city": "Raleigh", "zipcode": "27601", "email_verified": True},
-    }
-
-    for username, expected in expected_customers.items():
-        user = User.objects.get(username=username)
+    for i in range(1, 6):
+        user = User.objects.get(username=f"customer{i}")
         role = UserRole.objects.get(user=user)
         profile = CustomerProfile.objects.get(user=user)
 
         assert role.role == UserRoleChoices.CUSTOMER
         assert profile.state == "NC"
-        assert profile.city == expected["city"]
-        assert profile.zipcode == expected["zipcode"]
-        assert profile.email_verified == expected["email_verified"]
-        assert profile.phone
+        assert profile.city in ["Apex", "Raleigh", "Cary", "Durham", "Morrisville"]
+        assert profile.phone.startswith("91955501")
 
 
 @pytest.mark.django_db

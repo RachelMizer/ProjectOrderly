@@ -591,32 +591,18 @@ class BusinessOrderListView(APIView):
                 return Response(
                     {
                         "error": "INVALID_STATUS",
-                        "message": "status must be one of: DRAFT, PENDING, COMPLETED, CANCELLED",
+                        "message": "status must be one of: DRAFT, PENDING, PAID, COMPLETED, CANCELLED",
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             queryset = queryset.filter(status=normalized_status)
 
-        total_count = queryset.count()
-
-        try:
-            page = max(1, int(request.query_params.get("page", 1)))
-            page_size = min(500, max(1, int(request.query_params.get("pageSize", 100))))
-        except (ValueError, TypeError):
-            page = 1
-            page_size = 100
-
-        offset = (page - 1) * page_size
-        paginated = queryset[offset: offset + page_size]
-
-        serializer = BusinessOrderListSerializer(paginated, many=True)
+        serializer = BusinessOrderListSerializer(queryset, many=True)
 
         return Response(
             {
-                "count": total_count,
-                "next": (offset + page_size) < total_count,
-                "previous": page > 1,
+                "count": queryset.count(),
                 "results": serializer.data,
             },
             status=status.HTTP_200_OK,

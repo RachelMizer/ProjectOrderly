@@ -75,17 +75,15 @@ Admin Can Mark Pending Order Complete And Sees Banner
     Should Contain    ${banner_text}    complete
 
 Admin Can Open Order Detail And See Detail Layout
-    Login As Business User
+    Login As Seeded Business User
     Go To    ${ADMIN_ORDERS_URL}
-
-    Wait Until Page Contains    Order Management    15s
-    Wait Until Page Contains Element    xpath=//table[contains(@class,'admin-table')]//tr[td]    15s
-
-    Click Element    xpath=(//table[contains(@class,'admin-table')]//tr[td])[1]
-
-    # Do not assume an "Items" header exists anymore.
-    # Assert the detail view by checking for stable order-detail content.
-    Wait Until Page Contains    Customer    20s
+    Wait Until Element Is Visible    ${ADMIN_ORDERS_TITLE}    20s
+    Wait Until Element Is Visible    ${ADMIN_ORDERS_TABLE}    20s
+    Click Element    ${ADMIN_ORDER_LINK}
+    Wait Until Element Is Visible    xpath=//span[contains(@class,'submenu-label') and contains(normalize-space(),'Order #')]    20s
+    Wait Until Element Is Visible    ${ADMIN_DETAIL_HEADER}    20s
+    Wait Until Element Is Visible    ${ADMIN_DETAIL_ITEMS_HEADER}    20s
+    Page Should Contain    Items
 
 Admin Order Detail Shows Customer Field
     [Documentation]    Switch off Pending-only view when verifying orders that may now be completed.
@@ -100,34 +98,30 @@ Admin Order Detail Shows Customer Field
     Should Not Be Empty    ${customer_text}
 
 Customer Pending Order Can Be Cancelled From Order History
-    Login As Customer User
-    Go To    ${BASE_URL}/order-history
-
-    Wait Until Page Contains    Your Order History    15s
-    Wait Until Page Contains Element    xpath=//table    15s
-
-    ${pending_cancel_count}=    Get Element Count    xpath=//button[normalize-space()='Cancel']
-    Should Be True    ${pending_cancel_count} > 0
-
-    Click Element    xpath=(//button[normalize-space()='Cancel'])[1]
+    [Documentation]    Run after admin pending-order tests because it mutates order state.
+    Login As Seeded Customer
+    Go To    ${ORDER_HISTORY_URL}
+    Wait Until Element Is Visible    ${ORDER_HISTORY_TABLE}    15s
+    ${cancel_btns}=    Get Element Count    xpath=//tr[contains(@class,'order-hist-row')]//button[contains(@class,'cancel-order-btn')]
+    Should Be True    ${cancel_btns} > 0
+    Click Button    xpath=(//tr[contains(@class,'order-hist-row')]//button[contains(@class,'cancel-order-btn')])[1]
     Handle Alert    ACCEPT
-
-    Wait Until Keyword Succeeds    15s    1s    Page Should Contain    CANCELLED
+    Wait Until Page Contains    CANCELLED    15s
 
 Customer Pending Order Can Be Cancelled From Order Detail
-    Login As Customer User
-    Go To    ${BASE_URL}/order-history
-
-    Wait Until Page Contains    Your Order History    15s
-    Wait Until Page Contains Element    xpath=//tr[contains(@class,'order-hist-row')]    15s
-
-    Click Element    xpath=(//tr[contains(@class,'order-hist-row')][.//button[normalize-space()='Cancel']])[1]
-
-    Wait Until Page Contains Element    xpath=//button[normalize-space()='Cancel Order']    15s
-    Click Element    xpath=//button[normalize-space()='Cancel Order']
+    [Documentation]    Requires another pending order to still exist. Re-seed if this fails after prior runs.
+    Login As Seeded Customer
+    Go To    ${ORDER_HISTORY_URL}
+    Wait Until Element Is Visible    ${ORDER_HISTORY_TABLE}    15s
+    ${pending_rows}=    Get Element Count    xpath=//tr[contains(@class,'order-hist-row')][.//button[contains(@class,'cancel-order-btn')]]
+    Should Be True    ${pending_rows} > 0
+    Click Element    xpath=(//tr[contains(@class,'order-hist-row')][.//button[contains(@class,'cancel-order-btn')]])[1]
+    Wait Until Element Is Visible    ${ORDER_DETAIL_PAGE}    15s
+    Element Should Be Visible    xpath=//button[contains(@class,'cancel-order-btn') and normalize-space()='Cancel Order']
+    Click Button    xpath=//button[contains(@class,'cancel-order-btn') and normalize-space()='Cancel Order']
     Handle Alert    ACCEPT
-
-    Wait Until Keyword Succeeds    15s    1s    Page Should Contain    CANCELLED
+    Wait Until Page Contains    CANCELLED    15s
+    Page Should Not Contain Element    xpath=//button[contains(@class,'cancel-order-btn') and normalize-space()='Cancel Order']
 
 Customer Non Pending Detail Does Not Show Cancel Button
     Login As Seeded Customer
@@ -192,17 +186,3 @@ Click Non Pending Or Non Cancellable Order Row
 Should Not Be Empty
     [Arguments]    ${value}
     Should Not Be Equal As Strings    ${value}    ${EMPTY}
-
-Ensure Customer Has Pending Order
-    Login As Customer User
-    Go To    ${BASE_URL}/
-    Wait Until Page Contains Element    xpath=//button[contains(., 'Add to Cart')]    10s
-    Click Element    xpath=(//button[contains(., 'Add to Cart')])[1]
-
-    Go To    ${BASE_URL}/cart
-    Wait Until Page Contains Element    xpath=//button[contains(., 'Checkout')]    10s
-    Click Element    xpath=//button[contains(., 'Checkout')]
-    Wait Until Page Contains    Checkout    10s
-
-    Go To    ${BASE_URL}/order-history
-    Wait Until Page Contains    Order History    15s

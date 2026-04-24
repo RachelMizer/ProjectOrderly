@@ -16,11 +16,23 @@ Cart Page Shows Items Or Empty State
     ${empty_count}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
     Should Be True    ${item_count} > 0 or ${empty_count} > 0
 
+Cart Items Are Visible
+    Ensure Cart Has Item
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
+
+    Page Should Contain Element    css=.cart-item h3
+    Page Should Contain Element    css=.cart-item-controls
+    Page Should Contain Element    xpath=(//button[normalize-space()='Delete'])[1]
+
 Quantity Can Be Increased
     Ensure Cart Has Item
-    ${before}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[2]
-    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]/button[normalize-space()='+'])[1]
-    Wait Until Keyword Succeeds    10s    1s    Quantity Should Change    ${before}
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
+
+    ${before_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
+    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='+'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Quantity Should Change    ${before_qty}
 
 Quantity Can Be Decreased
     Ensure Cart Has Item
@@ -36,9 +48,12 @@ Quantity Can Be Decreased
 
 Delete Removes Cart Item
     Ensure Cart Has Item
-    ${before}=    Get Element Count    xpath=//div[contains(@class,'cart-item')]
-    Click Element    xpath=(//button[contains(@class,'cart-remove-btn') or normalize-space()='Remove'])[1]
-    Wait Until Keyword Succeeds    10s    1s    Cart Item Count Should Decrease    ${before}
+    Go To    ${CART_URL}
+    Wait Until Page Contains Element    css=.cart-item    10s
+
+    ${before}=    Get Element Count    css=.cart-item
+    Click Button    xpath=(//button[normalize-space()='Delete'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Cart Item Count Should Drop Or Empty State Should Show    ${before}
 
 Totals Section Is Visible
     Go To    ${CART_URL}
@@ -131,21 +146,14 @@ Sync Auth Token Key For Frontend
     END
 
 Ensure Cart Has Item
-    Go To    ${BASE_URL}/
-    Wait Until Page Contains Element    xpath=//body    10s
+    Go To    ${CART_URL}
+    Wait Until Page Contains    Your Cart    10s
 
-    ${already_has_item}=    Run Keyword And Return Status
-    ...    Page Should Contain Element    xpath=//div[contains(@class,'cart-item')]
-
-    IF    not ${already_has_item}
-        # Add a product from storefront
-        Wait Until Page Contains Element    xpath=(//button[contains(.,'Add to Cart')])[1]    10s
-        Click Element    xpath=(//button[contains(.,'Add to Cart')])[1]
-        Go To    ${BASE_URL}/cart
-        Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
-    ELSE
-        Go To    ${BASE_URL}/cart
-        Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
+    ${item_count}=    Get Element Count    css=.cart-item
+    IF    ${item_count} == 0
+        Add First Available Item To Cart
+        Go To    ${CART_URL}
+        Wait Until Page Contains Element    css=.cart-item    10s
     END
 
 Add First Available Item To Cart
@@ -160,9 +168,9 @@ Add First Available Item To Cart
     Sleep    1s
 
 Quantity Should Change
-    [Arguments]    ${before}
-    ${after}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[2]
-    Should Not Be Equal    ${before}    ${after}
+    [Arguments]    ${before_qty}
+    ${after_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
+    Should Not Be Equal    ${after_qty}    ${before_qty}
 
 Grand Total Should Change
     [Arguments]    ${before_total}
@@ -174,8 +182,3 @@ Cart Item Count Should Drop Or Empty State Should Show
     ${after}=    Get Element Count    css=.cart-item
     ${empty}=    Get Element Count    xpath=//*[contains(normalize-space(.), 'Your cart is empty.')]
     Should Be True    ${after} < ${before} or ${empty} > 0
-
-Cart Item Count Should Decrease
-    [Arguments]    ${before}
-    ${after}=    Get Element Count    xpath=//div[contains(@class,'cart-item')]
-    Should Be True    ${after} < ${before}

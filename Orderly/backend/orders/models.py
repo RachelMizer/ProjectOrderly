@@ -9,6 +9,7 @@ from django.db.models import Q, F
 class OrderStatus(models.TextChoices):
     DRAFT = "DRAFT", "Draft"
     PENDING = "PENDING", "Pending"
+    PAID = "PAID", "Paid"
     COMPLETED = "COMPLETED", "Completed"
     CANCELLED = "CANCELLED", "Cancelled"
 

@@ -1,4 +1,3 @@
-import calendar
 from decimal import Decimal
 
 from django.db.models import Max, Sum, Count, Avg, F
@@ -86,31 +85,6 @@ class SalesSummaryView(APIView):
             for i, p in enumerate(product_qs)
         ]
 
-        # --- Metadata for Filters ---
-        all_completed = Order.objects.filter(status="COMPLETED")
-        available_years = (
-            all_completed.annotate(year=F("order_date__year"))
-            .values_list("year", flat=True)
-            .distinct()
-            .order_by("-year")
-        )
-
-        available_months = []
-        # If the range represents a single year, provide month options for that year
-        if start_date.year == end_date.year and start_date.month == 1 and end_date.month == 12:
-            months_qs = (
-                all_completed.filter(order_date__year=start_date.year)
-                .annotate(month=F("order_date__month"))
-                .values_list("month", flat=True)
-                .distinct()
-                .order_by("month")
-            )
-            for m in months_qs:
-                available_months.append({
-                    "value": f"{m:02d}-{start_date.year}",
-                    "label": calendar.month_name[m]
-                })
-
         return Response({
             "startDate": str(start_date),
             "endDate": str(end_date),
@@ -120,8 +94,6 @@ class SalesSummaryView(APIView):
             "averageOrderValue": str(average_order_value),
             "breakdown": breakdown,
             "products": products,
-            "availableYears": list(available_years),
-            "availableMonths": available_months,
         })
 
 

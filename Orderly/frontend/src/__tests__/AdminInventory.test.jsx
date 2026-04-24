@@ -97,12 +97,12 @@ describe("AdminInventoryPage", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: /supply inventory/i,
+        name: /ingredient-controlled beverage availability/i,
       })
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("heading", { name: /supply inventory/i })
+      screen.getByRole("heading", { name: /count-based inventory/i })
     ).toBeInTheDocument();
 
     expect(screen.getByText(/^milk$/i)).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     expect(
-      await screen.findByRole("heading", { name: /supply inventory/i })
+      await screen.findByText(/no dependency-controlled ingredients found/i)
     ).toBeInTheDocument();
   });
 
@@ -169,7 +169,7 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     expect(
-      await screen.findByRole("heading", { name: /supply inventory/i })
+      await screen.findByText(/no count-based inventory items found/i)
     ).toBeInTheDocument();
   });
 
@@ -215,7 +215,7 @@ describe("AdminInventoryPage", () => {
       });
     });
 
-    expect(await screen.findByText(/out of stock/i)).toBeInTheDocument();
+    expect(await screen.findByText(/unavailable/i)).toBeInTheDocument();
   });
 
   test("shows out of stock badge for count-based item", async () => {

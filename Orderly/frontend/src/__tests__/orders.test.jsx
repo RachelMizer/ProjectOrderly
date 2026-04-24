@@ -13,7 +13,6 @@ jest.mock("../api/handleApiError", () => ({
 
 jest.mock("../utils/recentOrders", () => ({
   pushRecentOrder: jest.fn(),
-  removeRecentOrder: jest.fn(),
 }));
 
 jest.mock("../api/auth", () => ({
@@ -103,10 +102,10 @@ describe("UX5.9 Admin Orders Page", () => {
     renderRoutes();
 
     expect(screen.getByText(/loading orders/i)).toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: /^all orders$/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/api/v1/orders?page=1&pageSize=100"),
+      expect.stringContaining("/api/v1/orders?page=1&pageSize=25&status=PENDING"),
       expect.any(Object)
     );
 
@@ -136,7 +135,7 @@ describe("UX5.9 Admin Orders Page", () => {
     renderRoutes();
 
     expect(await screen.findByText(/no orders found/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /^all orders$/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
   });
 
   test("renders error state when the orders request fails", async () => {
@@ -478,7 +477,7 @@ describe("UX5.9 Admin Order Detail", () => {
 
     expect(await screen.findAllByText(/order #2042/i)).toHaveLength(2);
     expect(screen.getByText(/ava taylor/i)).toBeInTheDocument();
-    expect(screen.getByText(/order details/i)).toBeInTheDocument();
+    expect(screen.getByText(/^items$/i)).toBeInTheDocument();
     expect(screen.getByText("Latte")).toBeInTheDocument();
     expect(screen.getByText(/oat milk/i)).toBeInTheDocument();
     expect(screen.getByText(/subtotal/i)).toBeInTheDocument();
@@ -720,7 +719,7 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
 
     expect(await screen.findByText("#1201")).toBeInTheDocument();
     expect(screen.getByText("1 order")).toBeInTheDocument();
-    expect(screen.getByText("Pg 1 of 1")).toBeInTheDocument();
+    expect(screen.getByText("Pg 1 of 2")).toBeInTheDocument();
 
     let nextButton = screen.getByRole("button", { name: /next/i });
     let prevButton = screen.getByRole("button", { name: /prev/i });
@@ -735,7 +734,7 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
     });
 
     expect(await screen.findByText("#1202")).toBeInTheDocument();
-    expect(screen.getByText("Pg 2 of 1")).toBeInTheDocument();
+    expect(screen.getByText("Pg 2 of 2")).toBeInTheDocument();
 
     nextButton = screen.getByRole("button", { name: /next/i });
     prevButton = screen.getByRole("button", { name: /prev/i });
@@ -748,12 +747,12 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledTimes(3);
       expect(global.fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining("page=1&pageSize=100"),
+        expect.stringContaining("page=1&pageSize=25&status=PENDING"),
         expect.any(Object)
       );
     });
 
     expect(await screen.findByText("#1201")).toBeInTheDocument();
-    expect(screen.getByText("Pg 1 of 1")).toBeInTheDocument();
+    expect(screen.getByText("Pg 1 of 2")).toBeInTheDocument();
   });
 });

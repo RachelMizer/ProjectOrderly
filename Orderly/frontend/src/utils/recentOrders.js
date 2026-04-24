@@ -9,12 +9,3 @@ export function pushRecentOrder(order) {
   const updated = [{ id: order.id, customerName }, ...filtered].slice(0, 5);
   localStorage.setItem(KEY, JSON.stringify(updated));
 }
-
-export function removeRecentOrder(id) {
-  const existing = JSON.parse(localStorage.getItem(KEY) || "[]");
-  localStorage.setItem(KEY, JSON.stringify(existing.filter((o) => o.id !== id)));
-}
-
-export function clearRecentOrders() {
-  localStorage.removeItem(KEY);
-}
