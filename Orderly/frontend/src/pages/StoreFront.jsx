@@ -97,7 +97,7 @@ const StoreFront = () => {
 
       {/* FILTER */}
       <div className="filter-container">
-      <h3 className="filterhead">Filter Offerings</h3>
+      <h3 className="filterhead">Filters</h3>
       <div className="filter">
 
         {categories.map((cat) => (

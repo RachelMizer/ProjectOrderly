@@ -112,7 +112,7 @@ CI Regression - Customer Can Edit Profile Information
 
 CI Regression - View And Customize Opens Product Page
     Go To Storefront
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    xpath=(//a[contains(normalize-space(.), 'View & Customize')])[1]    10s
     Click Element    xpath=(//a[contains(normalize-space(.), 'View & Customize')])[1]
     Wait Until Location Contains    /product/    10s

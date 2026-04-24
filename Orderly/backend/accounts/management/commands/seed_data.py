@@ -661,7 +661,7 @@ class Command(BaseCommand):
             categories[name] = c
 
         self.stdout.write(
-            self.style.SUCCESS(f"Categories seeded: {len(category_names)}")
+            self.style.SUCCESS(f"Categories seeded: {len(category_data)}")
         )
 
         # ------------------------------------------------------------

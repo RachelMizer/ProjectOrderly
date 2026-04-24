@@ -43,7 +43,7 @@ Capture Page Screenshot On Failure
 
 Go To Storefront
     Go To    ${STORE_URL}
-    Wait Until Page Contains    Filter the Menu    15s
+    Wait Until Page Contains    Filters    15s
     Wait Until Page Contains Element    css=.product-card    15s
 
 Go To Login Page
@@ -69,7 +69,7 @@ Login As Business User
 Open Product By Exact Name
     [Arguments]    ${product_name}
     Go To    ${BASE_URL}/
-    Wait Until Page Contains    Filter the Menu    15s
+    Wait Until Page Contains    Filters    15s
     Wait Until Page Contains Element    css=.product-card    15s
     Wait Until Page Contains Element    xpath=//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]    15s
     Click Element    xpath=(//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]//a[contains(@class,'view-link') or contains(normalize-space(.),'View')])[1]
@@ -311,7 +311,7 @@ Profile Should Contain Updated Data
 
 Customer Admin Redirect Should Be Visible
     ${login_visible}=    Run Keyword And Return Status    Page Should Contain    Sign In
-    ${store_visible}=    Run Keyword And Return Status    Page Should Contain    Filter the Menu
+    ${store_visible}=    Run Keyword And Return Status    Page Should Contain    Filters
     Should Be True    ${login_visible} or ${store_visible}
     Page Should Not Contain    Dashboard Home
 

@@ -9,7 +9,7 @@ ${STOREFRONT_URL}    ${BASE_URL}/
 *** Test Cases ***
 Product Cards Render On StoreFront
     Go To    ${STOREFRONT_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.product-grid    10s
     Wait Until Page Contains Element    css=.product-card    10s
 
@@ -54,7 +54,7 @@ View And Customize Link Is Present
 
 Category Filter Can Be Changed
     Go To    ${STOREFRONT_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.filter input[type="checkbox"]    10s
 
     ${before}=    Get Element Count    css=.product-card

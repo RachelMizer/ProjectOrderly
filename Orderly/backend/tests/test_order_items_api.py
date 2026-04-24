@@ -74,7 +74,7 @@ def variant(db, product):
 
 
 @pytest.mark.django_db
-def test_post_items_creates_draft_and_adds_item(api_client, customer_user, variant):
+def test_post_items_creates_draft_and_adds_item(api_client, customer_user, variant, store_settings):
     api_client.force_authenticate(user=customer_user)
 
     response = api_client.post(
@@ -138,6 +138,7 @@ def test_post_items_same_variant_creates_new_line_item_not_merged(
     api_client,
     customer_user,
     variant,
+    store_settings,
 ):
     draft_order = Order.objects.create(
         customer=customer_user.customer_profile,

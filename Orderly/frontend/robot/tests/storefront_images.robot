@@ -6,7 +6,7 @@ Test Teardown    Close Browser Session
 *** Test Cases ***
 Seeded Storefront Products Show Images
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.product-card    10s
     Wait Until Page Contains Element    css=.product-card img    10s
 
@@ -16,7 +16,7 @@ Seeded Storefront Products Show Images
 
 Seeded Storefront Products Use Media Image Paths
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.product-card img    10s
 
     Product Image Src Should Contain Media Path    Blueberry Muffin
