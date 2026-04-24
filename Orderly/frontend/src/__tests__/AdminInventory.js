@@ -3,6 +3,8 @@ import {
   createInventoryItem,
   updateInventoryItem,
   deleteInventoryItem,
+  fetchInventoryItem,
+  fetchLowStock,
 } from "../api/adminInventory";
 
 global.fetch = jest.fn();
@@ -99,4 +101,169 @@ describe("adminInventory API", () => {
 
     await expect(deleteInventoryItem(1)).rejects.toThrow("delete failed");
   });
+
+  test("fetchInventory handles non-json response", async () => {
+fetch.mockResolvedValue({
+ok:true,
+status:200,
+headers:{
+get:()=> "text/html"
+}
+});
+
+const result = await fetchInventory();
+
+expect(result).toEqual([]);
+});
+
+
+test("fetchInventory handles bad json parse", async () => {
+fetch.mockResolvedValue({
+ok:true,
+status:200,
+headers:{
+get:()=> "application/json"
+},
+json: jest.fn().mockRejectedValue(
+new Error("bad json")
+)
+});
+
+const result = await fetchInventory();
+
+expect(result).toEqual([]);
+});
+
+
+test("fetchInventory uses detail fallback in errors", async () => {
+fetch.mockResolvedValue(
+createMockResponse(
+{detail:"detail failure"},
+false,
+500
+)
+);
+
+await expect(
+fetchInventory()
+).rejects.toThrow("detail failure");
+});
+
+
+test("createInventoryItem uses default error message fallback", async () => {
+fetch.mockResolvedValue(
+createMockResponse(
+{},
+false,
+500
+)
+);
+
+await expect(
+createInventoryItem({})
+).rejects.toThrow(
+"Failed to create inventory item."
+);
+});
+
+
+test("updateInventoryItem failure branch", async () => {
+fetch.mockResolvedValue(
+createMockResponse(
+{message:"update failed"},
+false,
+400
+)
+);
+
+await expect(
+updateInventoryItem(1,{})
+).rejects.toThrow(
+"update failed"
+);
+});
+
+
+test("fetchLowStock success", async () => {
+fetch.mockResolvedValue(
+createMockResponse([
+{id:1,stock:2}
+])
+);
+
+const result = await fetchLowStock();
+
+expect(result).toEqual([
+{id:1,stock:2}
+]);
+});
+
+
+test("fetchLowStock error branch", async () => {
+fetch.mockResolvedValue(
+createMockResponse(
+{message:"low stock failed"},
+false,
+500
+)
+);
+
+await expect(
+fetchLowStock()
+).rejects.toThrow(
+"low stock failed"
+);
+});
+
+
+test("fetchInventoryItem success", async () => {
+fetch.mockResolvedValue(
+createMockResponse({
+id:44,
+name:"Milk"
+})
+);
+
+const result = await fetchInventoryItem(44);
+
+expect(result).toEqual({
+id:44,
+name:"Milk"
+});
+});
+
+
+test("fetchInventoryItem failure", async () => {
+fetch.mockResolvedValue(
+createMockResponse(
+{message:"not found"},
+false,
+404
+)
+);
+
+await expect(
+fetchInventoryItem(44)
+).rejects.toThrow(
+"not found"
+);
+});
+
+
+test("deleteInventoryItem default error fallback", async () => {
+fetch.mockResolvedValue({
+ok:false,
+status:500,
+headers:{
+get:()=> "application/json"
+},
+json:jest.fn().mockResolvedValue({})
+});
+
+await expect(
+deleteInventoryItem(1)
+).rejects.toThrow(
+"Failed to delete inventory item."
+);
+});
 });

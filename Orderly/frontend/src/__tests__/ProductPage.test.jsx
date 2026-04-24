@@ -694,5 +694,355 @@ describe("ProductPage", () => {
     await waitFor(() => {
       expect(console.error).toHaveBeenCalled();
     });
+
+    
   });
+
+  test("renders image when product has imageUrl", async () => {
+  fetch.mockImplementation((url) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ groups: [] }),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            results: [{ id: 101, name: "Small", unitPrice: 4.0, stockQuantity: 10 }],
+          }),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            results: [
+              {
+                id: 1,
+                name: "Latte",
+                description: "Coffee",
+                imageUrl: "/latte.png",
+              },
+            ],
+          }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  expect(await screen.findByAltText("Latte")).toHaveAttribute("src", "/latte.png");
+});
+
+test("renders no add-ons message for single variant with no modifiers", async () => {
+  fetch.mockImplementation((url) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ groups: [] }),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            results: [{ id: 101, name: "Small", unitPrice: 4.0, stockQuantity: 10 }],
+          }),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  expect(
+    await screen.findByText(/doesn't have any add-ons or modifications/i)
+  ).toBeInTheDocument();
+
+  expect(screen.getByText("$4.00")).toBeInTheDocument();
+});
+
+test("handles modifier loading error without crashing", async () => {
+  fetch.mockImplementation((url) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.reject(new Error("modifier load failed"));
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockVariants),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+  await waitFor(() => {
+    expect(console.error).toHaveBeenCalledWith(
+      "Error loading modifiers:",
+      expect.any(Error)
+    );
+  });
+});
+
+test("draft order failure shows backend message", async () => {
+  fetch.mockImplementation((url) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ groups: [] }),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockVariants),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    if (url.includes("/orders/draft")) {
+      return Promise.resolve({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: "Draft failed" }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  await screen.findByText("Latte");
+
+  fireEvent.click(screen.getByRole("button", { name: /add to cart/i }));
+
+  expect(await screen.findByText(/draft failed/i)).toBeInTheDocument();
+});
+
+
+test("add item failure flattens object validation message", async () => {
+  fetch.mockImplementation((url, options) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ groups: [] }),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockVariants),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    if (url.includes("/orders/draft")) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({ id: 999 }),
+      });
+    }
+
+    if (url.includes("/orders/items") && options?.method === "POST") {
+      return Promise.resolve({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          message: {
+            variantId: ["Invalid variant"],
+          },
+        }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  await screen.findByText("Latte");
+
+  fireEvent.click(screen.getByRole("button", { name: /add to cart/i }));
+
+  expect(await screen.findByText(/variantId: Invalid variant/i)).toBeInTheDocument();
+});
+
+test("modifier add failure shows modifier error message", async () => {
+  fetch.mockImplementation((url, options) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockCheckboxModifiers),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockVariants),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    if (url.includes("/orders/draft")) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({ id: 999 }),
+      });
+    }
+
+    if (url.includes("/orders/items/555/modifiers")) {
+      return Promise.resolve({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          error: {
+            modifierId: ["Invalid modifier"],
+          },
+        }),
+      });
+    }
+
+    if (url.includes("/orders/items") && options?.method === "POST") {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({ orderItemId: 555 }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage();
+
+  await screen.findByText("Latte");
+
+  fireEvent.click(await screen.findByLabelText(/shot/i));
+  fireEvent.click(screen.getByRole("button", { name: /add to cart/i }));
+
+  expect(await screen.findByText(/modifierId: Invalid modifier/i)).toBeInTheDocument();
+});
+
+test("edit mode patch failure shows remove old item error", async () => {
+  fetch.mockImplementation((url, options) => {
+    if (url.includes("/products/1/variants/101/modifiers")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ groups: [] }),
+      });
+    }
+
+    if (url.includes("/products/1/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockVariants),
+      });
+    }
+
+    if (url.includes("/products") && !url.includes("/variants")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockProduct),
+      });
+    }
+
+    if (url.includes("/orders/items/55") && options?.method === "PATCH") {
+      return Promise.resolve({
+        ok: false,
+        status: 500,
+        json: async () => ({
+          message: "Could not update old item",
+        }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({}),
+    });
+  });
+
+  renderPage("/product/1?editItem=55&variantId=101");
+
+  await screen.findByText("Latte");
+
+  fireEvent.click(screen.getByRole("button", { name: /update item/i }));
+
+  expect(
+    await screen.findByText(/could not update old item/i)
+  ).toBeInTheDocument();
+});
 });

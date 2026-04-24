@@ -186,4 +186,150 @@ describe("App", () => {
 
     consoleSpy.mockRestore();
   });
+
+  test("renders login route", () => {
+    isAuthenticated.mockReturnValue(false);
+
+    window.history.pushState({}, "", "/login");
+
+    render(<App />);
+
+    expect(screen.getByText("Login Page")).toBeInTheDocument();
+  });
+
+  test("renders register route", () => {
+    isAuthenticated.mockReturnValue(false);
+
+    window.history.pushState({}, "", "/register");
+
+    render(<App />);
+
+    expect(screen.getByText("Register Page")).toBeInTheDocument();
+  });
+
+  test("renders product detail route", () => {
+    isAuthenticated.mockReturnValue(false);
+
+    window.history.pushState({}, "", "/product/1");
+
+    render(<App />);
+
+    expect(screen.getByText("Product Page")).toBeInTheDocument();
+  });
+
+  test("renders cart route", () => {
+    isAuthenticated.mockReturnValue(false);
+
+    window.history.pushState({}, "", "/cart");
+
+    render(<App />);
+
+    expect(screen.getByText("Cart Page")).toBeInTheDocument();
+  });
+
+  test("renders checkout route", () => {
+    isAuthenticated.mockReturnValue(false);
+
+    window.history.pushState({}, "", "/checkout");
+
+    render(<App />);
+
+    expect(screen.getByText("Checkout Page")).toBeInTheDocument();
+  });
+
+  test("renders order history route", () => {
+    isAuthenticated.mockReturnValue(true);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        firstName:"Kenny",
+        role:"CUSTOMER"
+      })
+    );
+
+    window.history.pushState({}, "", "/orders");
+
+    render(<App />);
+
+    expect(
+      screen.getByText(/your account/i)
+    ).toBeInTheDocument();
+  });
+
+  test("renders order detail route", () => {
+    isAuthenticated.mockReturnValue(true);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ firstName: "Kenny", role: "CUSTOMER" })
+    );
+
+    window.history.pushState({}, "", "/orders/123");
+
+    render(<App />);
+
+    expect(screen.getByText("Order Detail Page")).toBeInTheDocument();
+  });
+
+  test("reset password request route renders app shell", () => {
+    window.history.pushState({}, "", "/reset-password-request");
+
+    render(<App />);
+
+    expect(
+      screen.getByText(/welcome!/i)
+    ).toBeInTheDocument();
+  });
+
+  test("reset password route renders app shell", () => {
+    window.history.pushState({}, "", "/reset-password/token123");
+
+    render(<App />);
+
+    expect(
+      screen.getByText(/welcome!/i)
+    ).toBeInTheDocument();
+  });
+  test("business user sees account navigation", () => {
+    isAuthenticated.mockReturnValue(true);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        firstName:"Kenny",
+        role:"BUSINESS"
+      })
+    );
+
+    render(<App />);
+
+    expect(
+      screen.getByText(/your account/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/logout/i)
+    ).toBeInTheDocument();
+  });
+
+  test("renders admin route", () => {
+    isAuthenticated.mockReturnValue(true);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        firstName:"Kenny",
+        role:"BUSINESS"
+      })
+    );
+
+    window.history.pushState({}, "", "/admin");
+
+    render(<App />);
+
+    expect(
+      screen.getByText("Admin App")
+    ).toBeInTheDocument();
+  });
 });
