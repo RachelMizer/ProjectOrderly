@@ -326,9 +326,9 @@ Ensure Cart Has Item
     ...    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    3s
 
     IF    not ${has_item}
-        Go To    ${BASE_URL}/
-        Wait Until Page Contains Element    xpath=(//button[contains(., 'Add to Cart')])[1]    15s
-        Click Element    xpath=(//button[contains(., 'Add to Cart')])[1]
+        Go To    ${BASE_URL}/product/1
+        Wait Until Page Contains Element    xpath=//button[contains(., 'Add to Cart')]    15s
+        Click Element    xpath=//button[contains(., 'Add to Cart')]
         Go To    ${BASE_URL}/cart
         Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    15s
     END

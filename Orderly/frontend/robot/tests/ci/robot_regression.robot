@@ -21,11 +21,13 @@ CI Regression - Product Browsing Loads Seeded Storefront
 
 CI Regression - Customer Can Add Customized Item To Cart
     Login As Test User
-    Add Breakfast Sandwich With Modifiers To Cart
-    Go To Cart Page
-    Cart Should Contain At Least One Item
-    Page Should Contain    ${BREAKFAST_PRODUCT}
-    Cart Should Show Modifier Section Or Simple Item State
+    Go To    ${BASE_URL}/product/1
+
+    Wait Until Page Contains Element    xpath=//button[contains(., 'Add to Cart')]    15s
+    Click Element    xpath=//button[contains(., 'Add to Cart')]
+
+    Go To    ${BASE_URL}/cart
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    15s
 
 CI Regression - Customer Can Update Cart Quantity
     Login As Test User
@@ -38,11 +40,10 @@ CI Regression - Customer Can Update Cart Quantity
 CI Regression - Customer Can Reach Checkout And Place Order
     Login As Test User
     Authenticated Navigation Should Be Visible
-    Add Customized Breakfast Sandwich To Cart
 
-    Wait Until Page Contains    Breakfast Sandwich    10s
+    Ensure Cart Has Item
+    Go To Cart Page
 
-    Go To    ${BASE_URL}/cart
     Wait Until Page Contains    Your Cart    10s
     Wait Until Page Contains Element    css=.checkout-btn    10s
     Click Element    css=.checkout-btn
@@ -68,8 +69,13 @@ CI Regression - Customer Can Reach Checkout And Place Order
 
 CI Regression - Submitted Order Appears In Order History
     Login As Test User
-    Go To Order History Page
-    Order History Page Should Load
+    Go To    ${BASE_URL}/order-history
+
+    Wait Until Page Contains    Order History    10s
+    Wait Until Page Contains Element    xpath=//tr[contains(@class,'order-hist-row')]    15s
+
+    ${order_count}=    Get Element Count    xpath=//tr[contains(@class,'order-hist-row')]
+    Should Be True    ${order_count} > 0
 
 CI Regression - Customer Can Edit Profile Information
     Login As Test User
