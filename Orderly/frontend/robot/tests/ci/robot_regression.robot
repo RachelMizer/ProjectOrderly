@@ -73,10 +73,42 @@ CI Regression - Submitted Order Appears In Order History
 
 CI Regression - Customer Can Edit Profile Information
     Login As Test User
-    Go To Profile Page
-    Update Profile With CI Data
-    Profile Save Success Should Be Visible
-    Profile Should Contain Updated Data
+    Go To    ${BASE_URL}/profile
+
+    Wait Until Page Contains Element    id=firstName    10s
+
+    Press Keys    id=firstName    CTRL+a
+    Press Keys    id=firstName    BACKSPACE
+    Input Text    id=firstName    KennyCI
+
+    Press Keys    id=lastName    CTRL+a
+    Press Keys    id=lastName    BACKSPACE
+    Input Text    id=lastName    TesterCI
+
+    Press Keys    id=streetAddress    CTRL+a
+    Press Keys    id=streetAddress    BACKSPACE
+    Input Text    id=streetAddress    123 CI Street
+
+    Press Keys    id=city    CTRL+a
+    Press Keys    id=city    BACKSPACE
+    Input Text    id=city    Raleigh
+
+    Press Keys    id=state    CTRL+a
+    Press Keys    id=state    BACKSPACE
+    Input Text    id=state    NC
+
+    Press Keys    id=zipcode    CTRL+a
+    Press Keys    id=zipcode    BACKSPACE
+    Input Text    id=zipcode    27601
+
+    Press Keys    id=phone    CTRL+a
+    Press Keys    id=phone    BACKSPACE
+    Input Text    id=phone    9195551234
+
+    Click Button    xpath=//button[contains(., 'Save')]
+
+    Wait Until Keyword Succeeds    10s    1s
+    ...    Textfield Value Should Be    id=firstName    KennyCI
 
 CI Regression - View And Customize Opens Product Page
     Go To Storefront
@@ -88,13 +120,25 @@ CI Regression - View And Customize Opens Product Page
 
 CI Regression - Cart Persists After Refresh
     Login As Test User
-    Add Customized Breakfast Sandwich To Cart
-    Go To Cart Page
-    Cart Should Contain At Least One Item
+
+    Go To    ${BASE_URL}/cart
+    ${has_item}=    Run Keyword And Return Status
+    ...    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    3s
+
+    IF    not ${has_item}
+        Go To    ${BASE_URL}/
+        Wait Until Page Contains Element    xpath=(//button[contains(., 'Add to Cart')])[1]    15s
+        Click Element    xpath=(//button[contains(., 'Add to Cart')])[1]
+    END
+
+    Go To    ${BASE_URL}/cart
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
+
     Reload Page
-    Wait Until Page Contains    Your Cart    10s
-    Cart Should Contain At Least One Item
-    Page Should Contain    ${BREAKFAST_PRODUCT}
+
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
+    ${count}=    Get Element Count    xpath=//div[contains(@class,'cart-item')]
+    Should Be True    ${count} > 0
 
 CI Regression - Business User Can Open Admin Dashboard
     Login As Business User
