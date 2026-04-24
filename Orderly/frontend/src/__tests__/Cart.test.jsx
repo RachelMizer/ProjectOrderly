@@ -148,7 +148,7 @@ describe("CartPage", () => {
       </MemoryRouter>
     );
 
-    const deleteBtn = await screen.findByText(/delete/i);
+    const deleteBtn = await screen.findByText(/remove/i);
     fireEvent.click(deleteBtn);
 
     expect(global.fetch).toHaveBeenCalled();

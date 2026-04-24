@@ -138,8 +138,8 @@ describe("Checkout", () => {
 
     // Updated assertions
     expect(screen.getAllByText("$10.00")).toHaveLength(2);
-    expect(screen.getByText("$0.50")).toBeInTheDocument();
-    expect(screen.getByText("$10.50")).toBeInTheDocument();
+    expect(screen.getByText(/\(\+\$1\.00\)/i)).toBeInTheDocument();
+    expect(screen.getByText("$10.72")).toBeInTheDocument();
     });
 
   test("prefills payment fields from stored user", async () => {

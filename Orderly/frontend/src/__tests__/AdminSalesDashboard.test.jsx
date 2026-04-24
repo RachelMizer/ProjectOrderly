@@ -173,7 +173,8 @@ describe("US5.4 Sales Summary Dashboard", () => {
       expect.objectContaining({
         section: "reports-sales",
         label: "Sales Summary",
-        sublabel: "04-2026",
+        sublabel: "April 2026",
+        state: { month: "04-2026" },
       })
     );
   });

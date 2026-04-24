@@ -203,21 +203,80 @@ class Command(BaseCommand):
             )
 
         # Customer users
-        customer_names = [
-            ("Jamie", "Ortega"),
-            ("Morgan", "Patel"),
-            ("Alex", "Nguyen"),
-            ("Taylor", "Brooks"),
-            ("Jordan", "Kim"),
-            ("Casey", "Rivera"),
+        customers = [
+            {
+                "username": "jortega",
+                "email": "jamie.ortega@gmail.com",
+                "first_name": "Jamie",
+                "last_name": "Ortega",
+                "street_address": "312 Millbrook Rd",
+                "city": "Raleigh",
+                "zipcode": "27609",
+                "phone": "9193847621",
+                "email_verified": True,
+            },
+            {
+                "username": "mpatel",
+                "email": "morgan.patel@outlook.com",
+                "first_name": "Morgan",
+                "last_name": "Patel",
+                "street_address": "47 Chatham St",
+                "city": "Cary",
+                "zipcode": "27511",
+                "phone": "9197652340",
+                "email_verified": False,
+            },
+            {
+                "username": "anguyen",
+                "email": "alex.nguyen@yahoo.com",
+                "first_name": "Alex",
+                "last_name": "Nguyen",
+                "street_address": "890 Green Level Church Rd",
+                "city": "Apex",
+                "zipcode": "27502",
+                "phone": "9843021876",
+                "email_verified": True,
+            },
+            {
+                "username": "tbrooks",
+                "email": "taylor.brooks@gmail.com",
+                "first_name": "Taylor",
+                "last_name": "Brooks",
+                "street_address": "156 W Main St",
+                "city": "Durham",
+                "zipcode": "27701",
+                "phone": "9194483059",
+                "email_verified": True,
+            },
+            {
+                "username": "jkim",
+                "email": "jordan.kim@icloud.com",
+                "first_name": "Jordan",
+                "last_name": "Kim",
+                "street_address": "23 Town Center Blvd",
+                "city": "Morrisville",
+                "zipcode": "27560",
+                "phone": "9842917403",
+                "email_verified": False,
+            },
+            {
+                "username": "crivera",
+                "email": "casey.rivera@gmail.com",
+                "first_name": "Casey",
+                "last_name": "Rivera",
+                "street_address": "601 Oberlin Rd",
+                "city": "Raleigh",
+                "zipcode": "27605",
+                "phone": "9193650812",
+                "email_verified": True,
+            },
         ]
-        customer_cities = ["Apex", "Raleigh", "Cary", "Durham", "Morrisville"]
-        for i in range(1, 7):
-            first, last = customer_names[i - 1]
-            u = make_user(f"customer{i}", f"customer{i}@example.com")
+
+        for c in customers:
+            u = make_user(c["username"], c["email"])
             if not u.first_name:
-                u.first_name = first
-                u.last_name = last
+                u.first_name = c["first_name"]
+                u.last_name = c["last_name"]
                 u.save(update_fields=["first_name", "last_name"])
             UserRole.objects.get_or_create(
                 user=u,
@@ -226,12 +285,12 @@ class Command(BaseCommand):
             CustomerProfile.objects.update_or_create(
                 user=u,
                 defaults={
-                    "email_verified": bool(i % 2),
-                    "street_address": f"{100 + i} Main St",
-                    "city": customer_cities[(i - 1) % len(customer_cities)],
+                    "email_verified": c["email_verified"],
+                    "street_address": c["street_address"],
+                    "city": c["city"],
                     "state": "NC",
-                    "zipcode": f"2750{i}",
-                    "phone": f"91955501{str(i).zfill(2)}",
+                    "zipcode": c["zipcode"],
+                    "phone": c["phone"],
                 },
             )
 
@@ -243,6 +302,10 @@ class Command(BaseCommand):
         if rachel_created:
             rachel_user.set_password("rmuserpass")
             rachel_user.save(update_fields=["password"])
+        if not rachel_user.first_name:
+            rachel_user.first_name = "Rachel"
+            rachel_user.last_name = "Mizer"
+            rachel_user.save(update_fields=["first_name", "last_name"])
         UserRole.objects.get_or_create(
             user=rachel_user,
             defaults={"role": UserRoleChoices.CUSTOMER},

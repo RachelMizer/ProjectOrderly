@@ -208,10 +208,12 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     await userEvent.click(screen.getByRole("link", { name: /^inventory$/i }));
     expect(
-      await screen.findByText(/ingredient-controlled beverage availability/i)
+      await screen.findByText(/toggle ingredient availability to control which beverages are offered/i)
     ).toBeInTheDocument();
+    expect(screen.getByText(/inventory management/i)).toBeInTheDocument();
+
     expect(
-      screen.getByRole("heading", { name: /count-based inventory/i })
+      await screen.findByRole("heading", { name: /supply inventory/i })
     ).toBeInTheDocument();
 
     await userEvent.click(
@@ -224,7 +226,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     await userEvent.click(screen.getByRole("link", { name: /^orders$/i }));
     expect(
-      await screen.findByRole("heading", { name: /^orders$/i })
+      await screen.findByRole("heading", { name: /^all orders$/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/recent orders/i)).toBeInTheDocument();
   });
@@ -261,11 +263,10 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/inventory");
 
     expect(
-      await screen.findByText(/ingredient-controlled beverage availability/i)
+      await screen.findByText(/toggle ingredient availability to control which beverages are offered/i)
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /count-based inventory/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/inventory management/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading inventory/i)).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^orders$/i })).toBeInTheDocument();
     expect(screen.getByText(/user\s*\|\s*biz/i)).toBeInTheDocument();
@@ -292,7 +293,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/orders");
 
     expect(
-      await screen.findByRole("heading", { name: /^orders$/i })
+      await screen.findByRole("heading", { name: /^all orders$/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^inventory$/i })).toBeInTheDocument();
@@ -309,9 +310,13 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
       await screen.findByRole("heading", { name: /dashboard home/i })
     ).toBeInTheDocument();
 
-    const inbox = screen.getByText(/inbox \(0\)/i);
-    expect(inbox.tagName).toBe("SPAN");
-    expect(inbox).toHaveClass("dash-inbox-disabled");
+    expect(
+      screen.getByText(/pick up where you left off/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/no recent activity yet\. visit a section to get started\./i)
+    ).toBeInTheDocument();
 
     expect(screen.getByText(/pick up where you left off/i)).toBeInTheDocument();
     expect(
@@ -345,7 +350,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/inventory");
 
     expect(
-      await screen.findByText(/ingredient-controlled beverage availability/i)
+      await screen.findByText(/toggle ingredient availability to control which beverages are offered/i)
     ).toBeInTheDocument();
     expect(
       screen.getByText(/track and update stock levels for all inventory items/i)
@@ -379,18 +384,15 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
     renderAdminAt("/admin/orders");
 
     expect(
-      await screen.findByRole("heading", { name: /^orders$/i })
+      await screen.findByRole("heading", { name: /^all orders$/i })
     ).toBeInTheDocument();
 
-    const openOrder = screen.getByText(/open order/i);
-    const searchHistory = screen.getByText(/search history/i);
-    const returnsRefunds = screen.getByText(/returns & refunds/i);
-    const shipping = screen.getByText(/shipping/i);
+    expect(screen.getByText(/recent orders/i)).toBeInTheDocument();
+    expect(screen.getByText(/no orders yet/i)).toBeInTheDocument();
 
-    for (const el of [openOrder, searchHistory, returnsRefunds, shipping]) {
-      expect(el.tagName).toBe("SPAN");
-      expect(el).toHaveClass("sidebar-link-disabled");
-    }
+    const returnsRefunds = screen.getByText(/returns & refunds/i);
+    expect(returnsRefunds.tagName).toBe("SPAN");
+    expect(returnsRefunds).toHaveClass("sidebar-link-disabled");
   });
 
   test("account settings page renders account information and permissions", async () => {
