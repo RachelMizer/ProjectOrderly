@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
@@ -29,6 +29,7 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function AdminSalesDashboard() {
+  const navigate = useNavigate();
   const location = useLocation();
   const initMonth = location.state?.month || "";
   const initYear  = initMonth
@@ -220,10 +221,10 @@ export default function AdminSalesDashboard() {
             )}
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
             <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
             <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>

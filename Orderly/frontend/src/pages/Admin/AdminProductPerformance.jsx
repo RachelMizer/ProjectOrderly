@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
@@ -52,6 +53,7 @@ function formatCurrency(value) {
 }
 
 export default function AdminProductPerformance() {
+  const navigate = useNavigate();
   const [products, setProducts]           = useState([]);
   const [selectedKey, setSelectedKey]     = useState("");
   const [perfData, setPerfData]           = useState(null);
@@ -314,10 +316,10 @@ export default function AdminProductPerformance() {
             </button>
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
             <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
             <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>

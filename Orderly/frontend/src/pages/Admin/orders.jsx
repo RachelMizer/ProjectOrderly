@@ -73,6 +73,17 @@ export default function Orders() {
   const [sortDir, setSortDir]           = useState("desc");
   const [completing, setCompleting]     = useState(null);
   const [feedback, setFeedback]         = useState({ id: null, type: null, message: "" });
+  const [availableYears, setAvailableYears] = useState([]);
+
+  useEffect(() => {
+    async function fetchYears() {
+      try {
+        const res = await fetch(`${API_BASE}/orders/years`, { headers: { ...getAuthHeaders() } });
+        if (res.ok) setAvailableYears(await res.json());
+      } catch (_) {}
+    }
+    fetchYears();
+  }, []);
 
   useEffect(() => {
     loadOrders();
@@ -87,11 +98,9 @@ export default function Orders() {
       params.set("page", page);
       params.set("pageSize", PAGE_SIZE);
       if (statusFilter) params.set("status", statusFilter);
-      if (yearFilter && monthFilter && dayFilter) {
-        const mm = String(monthFilter).padStart(2, "0");
-        const dd = String(dayFilter).padStart(2, "0");
-        params.set("dateCreated", `${yearFilter}-${mm}-${dd}`);
-      }
+      if (yearFilter)  params.set("year", yearFilter);
+      if (monthFilter) params.set("month", monthFilter);
+      if (dayFilter)   params.set("day", dayFilter);
 
       const response = await fetch(`${API_BASE}/orders?${params.toString()}`, {
         headers: { ...getAuthHeaders() },
@@ -234,11 +243,6 @@ export default function Orders() {
     return "All Orders";
   }
 
-  // Available years derived from loaded data for the dropdowns
-  const availableYears = [...new Set(
-    orders.map((o) => getOrderDate(o).getFullYear())
-  )].sort((a, b) => b - a);
-
   const showEmpty = !loading && !error && sortedOrders.length === 0;
 
   return (
@@ -307,10 +311,10 @@ export default function Orders() {
             )}
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
             <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
             <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
@@ -356,7 +360,7 @@ export default function Orders() {
                     <th className="admin-th" onClick={() => handleSort("total")}>
                       Total <SortIndicator sortKey={sortKey} col="total" sortDir={sortDir} />
                     </th>
-                    <th className="admin-th admin-th--no-sort">Actions</th>
+                    <th className="admin-th admin-th--no-sort no-print">Actions</th>
                   </tr>
                 </thead>
                 <tbody>

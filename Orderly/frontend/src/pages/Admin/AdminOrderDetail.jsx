@@ -135,10 +135,10 @@ export default function AdminOrderDetail() {
             className="submenu-action"
             onClick={() => navigate("/admin/orders")}
           >
-            &lt; BACK TO ORDERS
+            <span style={{marginRight:"-4px"}}>⬅️</span> BACK TO ORDERS
           </button>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
             <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>

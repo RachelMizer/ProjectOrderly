@@ -422,6 +422,10 @@ export default function AdminInventoryPage() {
           >
             {showCreate ? "CANCEL" : "+ ADD ITEM"}
           </button>
+          <span className="submenu-divider" />
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
+          </button>
         </div>
       </div>
 
@@ -581,7 +585,7 @@ export default function AdminInventoryPage() {
                     Current Stock{" "}
                     <SortIndicator tableKey={sortKey} col="stock_quantity" tableDir={sortDir} />
                   </th>
-                  <th className="admin-th admin-th--no-sort">Available</th>
+                  <th className="admin-th admin-th--no-sort no-print">Available</th>
                   <th className="admin-th admin-th--no-sort">Update Stock</th>
                   <th
                     className="admin-th"
@@ -590,7 +594,7 @@ export default function AdminInventoryPage() {
                     Reorder Level{" "}
                     <SortIndicator tableKey={sortKey} col="reorder_level" tableDir={sortDir} />
                   </th>
-                  <th className="admin-th admin-th--no-sort">Save</th>
+                  <th className="admin-th admin-th--no-sort no-print">Save</th>
                 </tr>
               </thead>
               <tbody>
@@ -633,7 +637,7 @@ export default function AdminInventoryPage() {
                         {UNIT_LABELS[item.unit_of_measure] || item.unit_of_measure}
                       </td>
 
-                      <td>
+                      <td className="no-print">
                         <div className="inv-toggle-cell">
                           <label
                             className="inv-toggle"
@@ -677,7 +681,7 @@ export default function AdminInventoryPage() {
                         />
                       </td>
 
-                      <td>
+                      <td className="no-print">
                         {successItemId === item.id ? (
                           <span className="inv-save-success">Saved!</span>
                         ) : (

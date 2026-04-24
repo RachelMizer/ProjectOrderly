@@ -125,6 +125,12 @@ export default function Reports() {
               Monthly revenue trend, units sold, and best month per product.
             </p>
           </Link>
+          <Link to="/admin/export" className="rpt-hub-card">
+            <p className="rpt-hub-card__title"><span style={{marginRight:"-1px"}}>📥</span>Export Data</p>
+            <p className="rpt-hub-card__desc">
+              Download orders, products, or inventory as CSV files.
+            </p>
+          </Link>
           <div className="rpt-hub-card rpt-hub-card--pending">
             <p className="rpt-hub-card__title">Create Purchase Order</p>
             <p className="rpt-hub-card__desc">

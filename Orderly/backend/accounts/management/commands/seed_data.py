@@ -189,6 +189,10 @@ class Command(BaseCommand):
         if dev_created:
             dev_user.set_password("rmdevpass")
             dev_user.save(update_fields=["password"])
+        if not dev_user.first_name:
+            dev_user.first_name = "Rachel"
+            dev_user.last_name = "Mizer"
+            dev_user.save(update_fields=["first_name", "last_name"])
         UserRole.objects.get_or_create(
             user=dev_user,
             defaults={"role": UserRoleChoices.BUSINESS},

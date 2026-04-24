@@ -33,8 +33,8 @@ body.admin-body {
 /*      SIDEBAR     */
 
 .admin-sidebar {
-    width: 180px;
-    min-width: 180px;
+    width: 210px;
+    min-width: 210px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -239,7 +239,8 @@ body.admin-body {
     text-decoration: none;
     line-height: 1.3;
     margin-top: auto;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
 }
 
 .sidebar-back:hover {
@@ -347,7 +348,7 @@ body.admin-body {
 }
 
 .nav-card--sm {
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     letter-spacing: 0.06rem;
     line-height: 1.15;
     white-space: normal;
@@ -613,19 +614,160 @@ body.admin-body {
 
 /*      ACCOUNT SETTINGS    */
 
-.admin-acct p, .admin-acct li {
+.admin-acct {
+    max-width: 560px;
+    padding: 4px 4px 24px;
+}
+
+.acct-loading {
     color: #466681;
+    font-family: 'Renner', sans-serif;
 }
 
-.admin-acct-permissions {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 6px;
+.acct-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
 }
 
-.admin-acct-permissions li {
-    margin-bottom: 4px;
+.acct-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #2a6496;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: .05rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.acct-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.acct-name {
+    margin: 0;
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: .08rem;
+}
+
+.acct-role-badge {
+    align-self: auto;
+    background-color: #2a6496;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    padding: 4px 8px 1px;
+    border-radius: 20px;
+    margin: -3px 0 0 0;
+}
+
+.acct-section {
+    margin-bottom: 18px;
+}
+
+.acct-section-title {
+    color: #1a3a52;
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .15rem;
+    text-transform: uppercase;
+    margin: 0 0 6px 2px;
+}
+
+.acct-info-card {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.acct-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e8f0f5;
+}
+
+.acct-info-row:last-child {
+    border-bottom: none;
+}
+
+.acct-info-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08rem;
+    text-transform: uppercase;
+    color: #2a6496;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.acct-info-value {
     font-size: .9rem;
+    color: #1a1a1a;
+}
+
+.acct-permissions-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.acct-permissions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acct-permissions-list li {
+    font-size: .88rem;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.acct-perm-check {
+    color: #2a7a2a;
+    font-weight: 700;
+    font-size: .9rem;
+    flex-shrink: 0;
+}
+
+.acct-support-note {
+    font-size: .8rem;
+    color: #2a4f6b;
+    margin: 0;
+    padding: 8px 16px 10px;
+    font-style: italic;
+    border-top: 1px solid #e8f0f5;
 }
 
 
@@ -1454,7 +1596,7 @@ label.inv-toggle {
 .rpt-hub-card__title {
     margin: 0 0 6px 0;
     font-family: 'Renner', sans-serif;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #33638B;
     letter-spacing: .1rem;
@@ -1847,6 +1989,7 @@ label.inv-toggle {
     font-size: .88rem;
     font-weight: 700;
     color: #2a4f6b;
+    text-transform: uppercase;
     white-space: nowrap;
     letter-spacing: .04rem;
 }
@@ -1862,7 +2005,7 @@ label.inv-toggle {
     margin-bottom: 0;
     align-self: center;
     font-size: .70rem !important;
-    padding: 2px 7px !important;
+    padding: 7px 7px 4px !important;
     letter-spacing: .06rem !important;
     border: none;
 }
@@ -2731,4 +2874,274 @@ label.inv-toggle {
     padding: 14px 0 4px;
     margin-top: 14px;
     border-top: 1px solid #c4d9e8;
+}
+
+.print-only { display: none; }
+
+/* ── Export Page ──────────────────────────────────────────────── */
+
+.admin-export-pg {
+    max-width: 740px;
+    padding: 4px 4px 24px;
+}
+
+.admin-export-pg h2 {
+    margin-bottom: 4px;
+}
+
+.admin-export-intro {
+    color: #444;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.admin-export-date-row {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.admin-export-date-row label > span {
+    display: block;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #1a1a1a;
+}
+
+.admin-export-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-export-date-inputs input[type="date"] {
+    padding: 4px 6px;
+    border: 1px solid #b0cfe0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+}
+
+.admin-export-date-inputs span {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.admin-export-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-export-card {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.admin-export-card-body h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.admin-export-card-body p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #555;
+}
+
+.admin-export-date-note {
+    margin-top: 4px !important;
+    font-size: 0.82rem !important;
+    color: #888 !important;
+}
+
+.admin-export-card-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.admin-export-btn {
+    background-color: #2a6496;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.admin-export-btn:hover {
+    filter: brightness(0.9);
+}
+
+.admin-export-btn:disabled {
+    background-color: #cccccc;
+    color: #888888;
+    cursor: default;
+}
+
+.admin-export-error {
+    font-size: 0.82rem;
+    color: #c0392b;
+    margin: 0;
+}
+
+/* ── Admin Print Styles ─────────────────────────────────────────── */
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.75in;
+  }
+
+  .admin-sidebar,
+  .admin-topbar,
+  .admin-nav-cards,
+  .admin-footer,
+  .submenu-bar,
+  .order-detail-complete-btn,
+  .inv-save-success,
+  .no-print { display: none !important; }
+
+  body {
+    background: white !important;
+    font-size: 11pt !important;
+    min-width: unset !important;
+  }
+
+  .admin-dash-wrap {
+    display: block !important;
+    background: white !important;
+    min-height: unset !important;
+  }
+
+  .admin-main {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: unset !important;
+  }
+
+  .admin-content {
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  /* Strip all backgrounds and colors for print */
+  * {
+    color: black !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: #cccccc !important;
+    -webkit-print-color-adjust: economy;
+    print-color-adjust: economy;
+  }
+
+  body.admin-body,
+  .admin-dash-wrap,
+  .admin-wrap,
+  .admin-content,
+  .admin-main {
+    background: white !important;
+    background-image: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .admin-content {
+    padding: 0 !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: black !important;
+  }
+
+  /* Print-only elements become visible */
+  .print-only { display: block !important; }
+
+  .print-page-header {
+    margin-bottom: 12pt;
+    border-bottom: 1.5pt solid #333333;
+    padding-bottom: 6pt;
+  }
+
+  .print-page-title {
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    margin: 0 0 2pt !important;
+    color: black !important;
+  }
+
+  .print-page-date {
+    font-size: 9pt !important;
+    color: #444444 !important;
+    margin: 0 !important;
+    font-style: italic;
+  }
+
+  /* Sort indicators, pagination, filter controls, and action columns */
+  .sort-indicator,
+  .sort-indicator--inactive,
+  .orders-pagination,
+  .submenu-filter-group,
+  .td-actions { display: none !important; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #cccccc !important;
+    padding: 3pt 6pt !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    font-weight: bold !important;
+    background: #f0f0f0 !important;
+  }
+
+  /* Reduce general padding/margin */
+  .inv-section-header,
+  .rpt-loading,
+  .rpt-empty {
+    margin: 4pt 0 !important;
+    padding: 0 !important;
+    font-size: 9pt !important;
+  }
+
+  .order-detail-header {
+    padding: 0 0 6pt !important;
+    margin: 0 !important;
+  }
+
+  .order-detail-totals {
+    padding: 4pt 0 !important;
+    margin: 4pt 0 0 !important;
+  }
+
+  /* Page break helpers */
+  tr { page-break-inside: avoid; }
+  h1, h2, h3 { page-break-after: avoid; }
 }

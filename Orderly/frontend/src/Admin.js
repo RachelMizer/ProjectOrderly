@@ -18,6 +18,7 @@ import AccountSettings from "./pages/Admin/admin-acct";
 import AdminSettingsHub from "./pages/Admin/AdminSettingsHub";
 import AdminBusinessSettings from "./pages/Admin/AdminBusinessSettings";
 import AdminStorefrontSettings from "./pages/Admin/AdminStorefrontSettings";
+import AdminExportPage from "./pages/Admin/AdminExportPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -84,9 +85,17 @@ function AdminLayout() {
   if (authorized === false) return <Navigate to="/admin/login" replace />;
 
   function SidebarMenu() {
+    if (path.startsWith("/admin/export")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>📥</span>Export Data</p>
+        <p className="sidebar-desc">Download orders, products, or inventory as CSV files for use in spreadsheets or other tools.</p>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/reports/sales")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Sales Summary</p>
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>💰</span>Sales Summary</p>
         <p className="sidebar-desc">View total revenue, units sold, top products, and revenue trends. Filter by year or month to drill into specific periods.</p>
         <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">⬅️ Return to Reports Dashboard</Link>
         <Link to="/admin" className="sidebar-back">⬅️ Go Back</Link>
@@ -232,6 +241,7 @@ function AdminLayout() {
             <Route path="/settings" element={<AdminSettingsHub />} />
             <Route path="/settings/business" element={<AdminBusinessSettings />} />
             <Route path="/settings/storefront" element={<AdminStorefrontSettings />} />
+            <Route path="/export" element={<AdminExportPage />} />
           </Routes>
         </div>
 
