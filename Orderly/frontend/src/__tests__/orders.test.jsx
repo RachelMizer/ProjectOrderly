@@ -84,7 +84,15 @@ describe("UX5.9 Admin Orders Page", () => {
     jest.clearAllMocks();
     jest.useRealTimers();
     localStorage.clear();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn((url) => {
+      if (String(url).includes("orders/years")) {
+        return makeResponse({ body: [] });
+      }
+      return makeResponse({ body: makeOrdersResponse() });
+    });
+    // Pre-seed the once queue for the years fetch so individual tests'
+    // mockResolvedValueOnce calls target the orders fetch instead.
+    global.fetch.mockResolvedValueOnce(makeResponse({ body: [] }));
   });
 
   test("loads pending orders on mount and renders the default orders table", async () => {
@@ -111,8 +119,8 @@ describe("UX5.9 Admin Orders Page", () => {
     );
 
     expect(screen.getByPlaceholderText(/search orders/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /> export/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /> print/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /export/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /print/i })).toBeInTheDocument();
 
     expect(screen.getByText(/order #/i)).toBeInTheDocument();
     expect(screen.getByText(/^date/i)).toBeInTheDocument();
@@ -184,9 +192,12 @@ describe("UX5.9 Admin Orders Page", () => {
   });
 
   test("supports cascading date filters and sends dateCreated when all are selected", async () => {
-    global.fetch
-      .mockResolvedValueOnce(
-        makeResponse({
+    let ordersCallCount = 0;
+    global.fetch = jest.fn((url) => {
+      if (String(url).includes("orders/years")) return makeResponse({ body: [2026, 2025] });
+      ordersCallCount++;
+      if (ordersCallCount === 1) {
+        return makeResponse({
           body: makeOrdersResponse({
             results: [
               makeOrder({ id: 1042, date: "2026-04-14T14:30:00Z" }),
@@ -194,16 +205,15 @@ describe("UX5.9 Admin Orders Page", () => {
             ],
             count: 2,
           }),
-        })
-      )
-      .mockResolvedValue(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042, date: "2026-04-14T14:30:00Z" })],
-            count: 1,
-          }),
-        })
-      );
+        });
+      }
+      return makeResponse({
+        body: makeOrdersResponse({
+          results: [makeOrder({ id: 1042, date: "2026-04-14T14:30:00Z" })],
+          count: 1,
+        }),
+      });
+    });
 
     renderRoutes();
 
@@ -229,7 +239,7 @@ describe("UX5.9 Admin Orders Page", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining("dateCreated=2026-04-14"),
+        expect.stringContaining("year=2026&month=4&day=14"),
         expect.any(Object)
       );
     });
@@ -278,23 +288,14 @@ describe("UX5.9 Admin Orders Page", () => {
   });
 
   test("clear filters resets search and date/status filters back to default pending fetch", async () => {
-    global.fetch
-      .mockResolvedValueOnce(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042, status: "PENDING" })],
-            count: 1,
-          }),
-        })
-      )
-      .mockResolvedValue(
-        makeResponse({
-          body: makeOrdersResponse({
-            results: [makeOrder({ id: 1042, status: "PENDING" })],
-            count: 1,
-          }),
-        })
-      );
+    const singlePendingOrder = makeOrdersResponse({
+      results: [makeOrder({ id: 1042, status: "PENDING" })],
+      count: 1,
+    });
+    global.fetch = jest.fn((url) => {
+      if (String(url).includes("orders/years")) return makeResponse({ body: [2026, 2025] });
+      return makeResponse({ body: singlePendingOrder });
+    });
 
     renderRoutes();
 
@@ -447,7 +448,12 @@ describe("UX5.9 Admin Order Detail", () => {
     jest.clearAllMocks();
     jest.useRealTimers();
     localStorage.clear();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn((url) => {
+      if (String(url).includes("orders/years")) {
+        return makeResponse({ body: [] });
+      }
+      return makeResponse({ body: makeOrdersResponse() });
+    });
   });
 
   test("loads order detail, renders items and totals, and stores recent order", async () => {
@@ -575,7 +581,15 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
     jest.clearAllMocks();
     jest.useRealTimers();
     localStorage.clear();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn((url) => {
+      if (String(url).includes("orders/years")) {
+        return makeResponse({ body: [] });
+      }
+      return makeResponse({ body: makeOrdersResponse() });
+    });
+    // Pre-seed the once queue for the years fetch so individual tests'
+    // mockResolvedValueOnce calls target the orders fetch instead.
+    global.fetch.mockResolvedValueOnce(makeResponse({ body: [] }));
   });
 
   test("passes 401 mark-complete errors to handleApiError", async () => {
@@ -731,7 +745,7 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
     await userEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenCalledTimes(3);
     });
 
     expect(await screen.findByText("#1202")).toBeInTheDocument();
@@ -746,7 +760,7 @@ describe("UX5.9 Admin Orders Page additional coverage", () => {
     await userEvent.click(prevButton);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(3);
+      expect(global.fetch).toHaveBeenCalledTimes(4);
       expect(global.fetch).toHaveBeenLastCalledWith(
         expect.stringContaining("page=1&pageSize=100"),
         expect.any(Object)

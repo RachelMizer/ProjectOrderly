@@ -33,7 +33,7 @@ describe("App", () => {
     jest.clearAllMocks();
     localStorage.clear();
     window.alert = jest.fn();
-    global.fetch = jest.fn();
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, json: async () => ({}) });
   });
 
   test("removes invalid stored user JSON and falls back safely", () => {
@@ -84,7 +84,10 @@ describe("App", () => {
       expect(document.querySelector(".cart-badge")).not.toBeInTheDocument();
     });
 
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalledWith(
+      expect.stringContaining("orders/draft"),
+      expect.any(Object)
+    );
   });
 
   test("sets cart count to zero when fetchCartCount request fails", async () => {

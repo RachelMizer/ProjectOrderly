@@ -210,6 +210,10 @@ function mockFetch({
       return createJsonResponse({ id: 333, name: "New Supplier" }, true, 201);
     }
 
+    if (requestUrl.includes("orders/years")) {
+      return createJsonResponse([]);
+    }
+
     return createJsonResponse({});
   });
 }
@@ -468,7 +472,7 @@ describe("UX5.2 Admin product management UI", () => {
     expect(await screen.findByText("Latte")).toBeInTheDocument();
   });
 
-  test("supplier form submits and returns to catalog", async () => {
+  test("supplier form submits and returns to suppliers list", async () => {
     renderAdminAt("/admin/suppliers/new");
 
     expect(
@@ -490,7 +494,7 @@ describe("UX5.2 Admin product management UI", () => {
       );
     });
 
-    expect(await screen.findByText("Latte")).toBeInTheDocument();
+    expect(await screen.findByText(/brew source nc/i)).toBeInTheDocument();
   });
 
   test("delete product removes row after confirmation", async () => {
@@ -695,7 +699,7 @@ describe("UX5.2 Admin product management UI", () => {
     expect(await screen.findByText("Latte")).toBeInTheDocument();
   });
 
-  test("cancel from supplier form returns to catalog", async () => {
+  test("cancel from supplier form returns to suppliers list", async () => {
     renderAdminAt("/admin/suppliers/new");
 
     expect(
@@ -704,6 +708,6 @@ describe("UX5.2 Admin product management UI", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
 
-    expect(await screen.findByText("Latte")).toBeInTheDocument();
+    expect(await screen.findByText(/brew source nc/i)).toBeInTheDocument();
   });
 });

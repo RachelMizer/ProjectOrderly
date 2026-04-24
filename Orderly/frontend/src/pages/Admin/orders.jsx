@@ -79,7 +79,10 @@ export default function Orders() {
     async function fetchYears() {
       try {
         const res = await fetch(`${API_BASE}/orders/years`, { headers: { ...getAuthHeaders() } });
-        if (res.ok) setAvailableYears(await res.json());
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableYears(Array.isArray(data) ? data : []);
+        }
       } catch (_) {}
     }
     fetchYears();
