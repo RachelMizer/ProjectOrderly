@@ -37,6 +37,8 @@ body.admin-body {
     min-width: 180px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     padding: 50px 15px;
 }
 
@@ -57,7 +59,7 @@ body.admin-body {
 .admin-brand h1 {
     font-size: 1.8rem;
     font-weight: normal;
-    margin: 0 0 4px 0;
+    margin: 0;
     color: white;
     letter-spacing: .1rem;
     text-transform: none;
@@ -72,6 +74,18 @@ body.admin-body {
     font-weight: normal;
 }
 
+.orderly-tagline {
+    margin-top: 2px !important;
+    padding-top: 3px !important;
+    border-top: 1px solid white;
+    color: white !important;
+    text-transform: uppercase !important;
+    letter-spacing: .03rem !important;
+    font-size: .5rem !important;
+    line-height: 1.05rem !important;
+    font-weight: 550 !important;
+}
+
 
 /*      SIDEBAR MENU        */
 
@@ -79,17 +93,25 @@ body.admin-body {
     margin-top: 120px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 2px;
 }
 
 .sidebar-title {
     color: white;
     font-family: 'Renner', sans-serif;
-    font-size: 1rem;
+    font-size: .88rem;
     font-weight: 800;
     letter-spacing: .15rem;
     text-transform: uppercase;
+    line-height: 1.05rem;
     margin: 0 0 4px 0;
+    white-space: nowrap;
+}
+
+.sidebar-title--sm {
+    font-size: .78rem;
+    letter-spacing: .1rem;
 }
 
 .sidebar-sub {
@@ -131,6 +153,7 @@ body.admin-body {
 .sidebar-actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
     margin-bottom: 20px;
 }
@@ -154,6 +177,7 @@ body.admin-body {
 .sidebar-recent-orders {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0;
     background-color: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
@@ -165,6 +189,7 @@ body.admin-body {
 .sidebar-recent-order {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 6px;
     color: white;
     text-decoration: none;
@@ -214,6 +239,7 @@ body.admin-body {
     text-decoration: none;
     line-height: 1.3;
     margin-top: auto;
+    white-space: nowrap;
 }
 
 .sidebar-back:hover {
@@ -320,6 +346,20 @@ body.admin-body {
     font-weight: 800;
 }
 
+.nav-card--sm {
+    font-size: 0.78rem;
+    letter-spacing: 0.06rem;
+    line-height: 1.15;
+    white-space: normal;
+}
+
+.nav-card--wrap {
+    font-size: 1.1rem;
+    letter-spacing: 0.15rem;
+    line-height: 1.15;
+    white-space: normal;
+}
+
 
 /*      DASHBOARD       */
 
@@ -370,6 +410,7 @@ body.admin-body {
     letter-spacing: .05rem;
     color: #33638B;
     font-weight: 800;
+    text-transform: uppercase;
 }
 
 .dash-recent-value {
@@ -466,6 +507,7 @@ body.admin-body {
     color: #33638B;
     cursor: pointer;
     display: inline-block;
+    text-transform: uppercase;
 }
 
 .dash-low-stock-label:hover {
@@ -612,13 +654,32 @@ body.admin-body {
     background-color: #33638B;
     text-transform: uppercase;
     letter-spacing: .13rem;
-    padding: 3px 10px;
+    padding: 6px 6px 4px;
     margin-bottom: 15px;
+    border: none;
+    line-height: 1;
 }
 
 .admin-dash-wrap a, .admin-wrap a {
     font-family: 'Renner', sans-serif;
     color: white;
+}
+
+.admin-dash-wrap input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.admin-dash-wrap select,
+.admin-dash-wrap textarea,
+.admin-wrap input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.admin-wrap select,
+.admin-wrap textarea {
+    border: 1px solid #a0b8c8;
+    color: #1a1a1a;
+}
+
+.admin-dash-wrap input[type="checkbox"],
+.admin-dash-wrap input[type="radio"],
+.admin-wrap input[type="checkbox"],
+.admin-wrap input[type="radio"] {
+    accent-color: #33638b;
 }
 
 
@@ -640,6 +701,7 @@ body.admin-body {
 .submenu-label {
     font-family: 'Renner', sans-serif;
     font-weight: 800;
+    font-size: 1.15rem;
     color: #33638B;
     letter-spacing: .1rem;
     text-transform: uppercase;
@@ -808,7 +870,6 @@ button.submenu-action[title="Pending further development"] {
 }
 
 .table-action-btn {
-    padding: 1px 5px !important;
     font-size: .70rem;
 }
 
@@ -843,7 +904,7 @@ button.submenu-action[title="Pending further development"] {
 }
 
 .variants-row-cell .admin-table td {
-    padding: 0;
+    padding: 6px 10px;
     text-align: center;
 }
 
@@ -913,7 +974,7 @@ button.submenu-action[title="Pending further development"] {
 
 .variant-action-btn {
     font-size: .75rem;
-    padding: 2px 6px !important;
+    padding: 5px 6px 2px !important;
     margin-bottom: 0;
     letter-spacing: .08rem;
 }
@@ -955,8 +1016,8 @@ button.submenu-action[title="Pending further development"] {
     border-collapse: collapse;
 }
 
-.product-form-table tr {
-    border-bottom: 1px solid #c4d9e8;
+.sf-sett-panel--branding .product-form-table tr {
+    border-bottom: none;
 }
 
 .form-label-cell {
@@ -1046,6 +1107,7 @@ button.submenu-action[title="Pending further development"] {
 .inv-field {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 3px;
 }
 
@@ -1092,6 +1154,8 @@ button.submenu-action[title="Pending further development"] {
 
 .inv-create-actions button {
     margin-bottom: 0;
+    font-size: 0.72rem;
+    padding: 4px 8px 1px;
 }
 
 /* Section headers */
@@ -1201,6 +1265,10 @@ button.submenu-action[title="Pending further development"] {
     padding: 2px 5px;
     text-align: right;
     color: #2a4f6b;
+}
+
+.inv-qty-input--wide {
+    width: 110px;
 }
 
 .inv-qty-input:focus {
@@ -1340,7 +1408,7 @@ label.inv-toggle {
 
 .rpt-hub-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
     margin-top: 4px;
 }
@@ -1393,6 +1461,11 @@ label.inv-toggle {
     text-transform: uppercase;
 }
 
+.rpt-hub-card__title--tight {
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
 .rpt-hub-card__desc {
     margin: 0;
     font-family: 'Renner', sans-serif;
@@ -1424,10 +1497,10 @@ label.inv-toggle {
 .rpt-stat-card {
     background-color: white;
     border-radius: 6px;
-    padding: 16px 22px;
-    min-width: 180px;
+    padding: 10px 28px;
+    min-width: 220px;
     flex: 1;
-    max-width: 280px;
+    max-width: 340px;
 }
 
 .rpt-stat-label {
@@ -1870,8 +1943,7 @@ label.inv-toggle {
     color: #33638B;
     font-weight: 700;
     cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration: none;
 }
 
 .order-id-link:hover {
@@ -1904,6 +1976,7 @@ label.inv-toggle {
 .sett-form-actions {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 14px;
     padding: 8px 0 16px;
 }
@@ -1941,9 +2014,721 @@ label.inv-toggle {
 
 .sett-image-preview {
     display: block;
-    max-width: 180px;
-    max-height: 120px;
+    max-width: 280px;
+    max-height: 200px;
     border-radius: 4px;
+    margin: 0 auto;
     margin-bottom: 8px;
     object-fit: cover;
+}
+
+.sett-favicon-preview {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    margin: 0 auto;
+    margin-bottom: 8px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+
+/* ══════════════════════════════════════════
+   STOREFRONT SETTINGS PAGE
+   ══════════════════════════════════════════ */
+
+
+/* ── Two-panel row ── */
+
+.sf-sett-panels {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-start;
+    flex: 1;
+}
+
+/* ── BRANDING panel ── */
+
+.sf-sett-panel--branding {
+    flex: 45 1 0;
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-panel-header {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0 0 10px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #c4d9e8;
+}
+
+.sf-panel-header--spaced {
+    margin-top: 18px;
+}
+
+.sf-branding-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sf-branding-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.sf-branding-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04rem;
+    color: #33638b;
+    text-transform: uppercase;
+}
+
+.sf-branding-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border-radius: 5px;
+    padding: 5px;
+    line-height: 1.5;
+}
+
+.sf-branding-field input[type="file"] {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    color: #33638b;
+}
+
+.sf-branding-field input[type="file"]::file-selector-button {
+    font-family: 'Renner', sans-serif;
+    color: white;
+    background-color: #33638b;
+    text-transform: uppercase;
+    letter-spacing: .13rem;
+    padding: 6px 8px 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    line-height: 1;
+}
+
+.sf-field-group {
+    margin-bottom: 12px;
+}
+
+.sf-field-group label {
+    display: block;
+    font-family: 'Renner', sans-serif;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin-bottom: 3px;
+}
+
+.sf-field-group input[type="text"],
+.sf-field-group input[type="tel"],
+.sf-field-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Renner', sans-serif;
+    font-size: .82rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 4px 7px;
+    color: #2a4f6b;
+    background: white;
+}
+
+.sf-field-group input[type="file"] {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #2a4f6b;
+    margin-top: 4px;
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sf-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #2a4f6b;
+    margin-top: 6px;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+.sf-toggle-label input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.sf-logo-hint {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #5a85a0;
+    margin: 0 0 8px 0;
+    line-height: 1.1rem;
+}
+
+.sf-logo-preview-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .68rem;
+    color: #5a85a0;
+    margin: 0 0 4px 0;
+    letter-spacing: .04rem;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* ── RIGHT COLUMN ── */
+
+.sf-sett-panels-right {
+    flex: 55 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── CUSTOMIZE panel ── */
+
+.sf-sett-panel--customize {
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-customize-header {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0;
+}
+
+.sf-customize-subhead {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #5a85a0;
+    margin: 0 0 10px 0;
+    letter-spacing: .03rem;
+}
+
+.sf-customize-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sf-customize-tile {
+    background-color: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.sf-customize-controls {
+    flex: 1;
+    min-width: 0;
+}
+
+.sf-color-preview-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.sf-color-section {
+    flex-shrink: 0;
+}
+
+.sf-customize-section-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 10px 0 0 0;
+}
+
+.sf-customize-section-label:first-child {
+    margin-top: 0;
+}
+
+.sf-customize-section-hint {
+    font-family: 'Renner', sans-serif;
+    font-size: .68rem;
+    color: #5a85a0;
+    margin: 0 0 6px 0;
+}
+
+/* ── Font radio grid ── */
+
+.sf-font-grid {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 3px 12px;
+    margin-bottom: 4px;
+}
+
+.sf-font-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Override the global .admin-dash-wrap label style for font options */
+.admin-dash-wrap .sf-font-option,
+.admin-wrap .sf-font-option {
+    font-family: inherit;
+    font-size: .9rem;
+    color: #2a4f6b;
+    letter-spacing: normal;
+    font-weight: normal;
+    text-transform: none;
+    margin-bottom: 0;
+}
+
+.sf-font-option input[type="radio"] {
+    margin: 0;
+    width: auto;
+    padding: 0;
+    border: none;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.sf-font-option__name {
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+/* ── Color picker grid ── */
+
+.sf-color-col {
+    display: grid;
+    grid-template-columns: max-content 22px 62px;
+    column-gap: 12px;
+    row-gap: 5px;
+    align-items: center;
+}
+
+.sf-color-row {
+    display: contents;
+}
+
+.sf-color-row__label {
+    font-family: 'Renner', sans-serif;
+    font-size: .67rem;
+    color: #2a4f6b;
+    letter-spacing: .02rem;
+    white-space: nowrap;
+}
+
+.sf-color-swatch {
+    width: 25px;
+    height: 29px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: none;
+}
+
+.sf-hex-input {
+    width: 70px;
+    flex-shrink: 0;
+    font-size: .68rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 1px;
+    color: #2a4f6b;
+    background: white;
+    letter-spacing: .03rem;
+    font-family: 'Renner', sans-serif;
+}
+
+.sf-hex-input:focus {
+    outline: none;
+    border-color: #33638B;
+}
+
+/* ── Live preview ── */
+
+.sf-preview {
+    flex: 1 1 280px;
+    min-width: 0;
+    max-width: 350px;
+    margin: 10px;
+}
+
+.sf-preview-header-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0;
+    margin-top: -15px;
+}
+
+.sf-preview-panel {
+    border: 1px solid #a0b8c8;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: .65rem;
+    font-family: 'Renner', sans-serif;
+    letter-spacing: normal;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sf-preview-row {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    gap: 4px;
+}
+
+.sf-preview-row--bar {
+    flex: 0 0 22px;
+    gap: 20px;
+}
+
+.sf-preview-bar-label {
+    font-size: .55rem;
+    font-style: italic;
+    opacity: 0.7;
+    margin-right: auto;
+}
+
+.sf-preview-row--main {
+    flex: 5;
+    align-items: flex-start;
+    padding-top: 8px;
+}
+
+.sf-preview-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sf-preview-btn {
+    display: inline-block;
+    font-size: .6rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: default;
+    align-self: flex-start;
+    white-space: nowrap;
+    margin-top: 18px;
+}
+
+.sf-preview-sections {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.sf-preview-section-swatch {
+    flex: 1;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: .6rem;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* ── ICONS panel ── */
+
+.sf-sett-panel--icons {
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-icons-table {
+    border-collapse: collapse;
+    margin-top: 8px;
+    width: auto;
+}
+
+.sf-icons-th {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    letter-spacing: .05rem;
+    text-transform: uppercase;
+    padding: 4px 18px 4px 8px;
+    background-color: #dce8f0;
+    border-bottom: 1px solid #a0b8c8;
+    white-space: nowrap;
+}
+
+.sf-icons-th--icon {
+    text-align: center;
+    border-right: 1px solid #a0b8c8;
+    padding-right: 18px;
+    background-color: #dce8f0;
+}
+
+.sf-icons-th--name {
+    text-align: left;
+    padding-left: 18px;
+    background-color: #dce8f0;
+}
+
+.sf-icons-th--btn {
+    width: 90px;
+}
+
+.sf-icons-td {
+    padding: 3px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.sf-icons-td--icon {
+    font-size: 1.25rem;
+    text-align: center;
+    border-right: 1px solid #a0b8c8;
+    line-height: 1;
+    padding: 0;
+}
+
+.sf-icons-td--name {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.sf-icons-td--btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sf-icons-empty {
+    font-family: 'Renner', sans-serif;
+    font-size: .75rem;
+    color: #5a85a0;
+    font-style: italic;
+    margin: 0;
+}
+
+.sf-icons-btn-col {
+    width: 90px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.sf-emoji-picker-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sf-emoji-trigger {
+    font-family: 'Renner', sans-serif;
+    font-size: .42rem;
+    letter-spacing: .04rem;
+    padding: 1px 5px 1px;
+    background-color: #33638b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0 !important;
+    line-height: 1;
+}
+
+.sf-emoji-remove-btn {
+    font-family: 'Renner', sans-serif;
+    font-size: .90rem !important;
+    letter-spacing: .03rem !important;
+    padding: 5px 7px 3px !important;
+    background-color: #8b3333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0 !important;
+    line-height: 1;
+}
+
+.sf-emoji-flyout {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 100;
+    background: white;
+    border: 1px solid #a0b8c8;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.sf-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.sf-emoji-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #d0e0ea;
+}
+
+.sf-emoji-tabs-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    color: #5a85a0;
+    letter-spacing: .05rem;
+    text-transform: uppercase;
+    margin-right: 2px;
+}
+
+.sf-emoji-tab {
+    font-family: 'Renner', sans-serif;
+    font-size: .58rem;
+    letter-spacing: .02rem !important;
+    padding: 2px 5px 1px;
+    color: white !important;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+    margin: 0 !important;
+    text-transform: none !important;
+    white-space: nowrap;
+    opacity: 0.75;
+}
+
+.sf-emoji-tab:hover {
+    opacity: 1;
+}
+
+.sf-emoji-tab--active {
+    opacity: 1;
+    border: 2px solid rgba(0,0,0,0.35);
+    outline: 1px solid white;
+}
+
+.sf-emoji-tab-clear {
+    font-family: 'Renner', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    color: #8b3333 !important;
+    background: none !important;
+    border: none;
+    cursor: pointer;
+    margin: 0 0 0 4px !important;
+    padding: 0;
+    line-height: 1;
+    text-transform: none !important;
+}
+
+.sf-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+}
+
+.sf-emoji-option {
+    font-size: 1.3rem;
+    background: white !important;
+    color: inherit !important;
+    text-transform: none !important;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 0;
+    text-align: center;
+    margin: -1px !important;
+    line-height: 1;
+    transition: background .1s;
+}
+
+.sf-emoji-option:hover {
+    background: #dce8f0;
+}
+
+
+/* ── Save actions ── */
+
+.sf-sett-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 14px 0 4px;
+    margin-top: 14px;
+    border-top: 1px solid #c4d9e8;
 }

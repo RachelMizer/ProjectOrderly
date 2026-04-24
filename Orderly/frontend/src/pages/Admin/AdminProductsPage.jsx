@@ -499,7 +499,7 @@ export default function AdminProductsPage() {
   return (
     <div>
       <div className="submenu-bar">
-        <span className="submenu-label">Product Catalog</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>🛍️</span>Product Catalog</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -521,10 +521,10 @@ export default function AdminProductsPage() {
             + ADD SUPPLIER
           </button>
           <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
           <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>

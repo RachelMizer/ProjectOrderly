@@ -14,7 +14,7 @@ class CategorieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ["id", "name", "imageUrl"]
+        fields = ["id", "name", "icon", "imageUrl"]
 
     # Will use later to support images. For now, returns None for imageUrl field to match API Contract
     def get_imageUrl(self, obj):

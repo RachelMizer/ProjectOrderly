@@ -36,12 +36,18 @@ html {
   font-style: italic;
 }
 
-/* AddAff */
+/* Playfair Display */
 @font-face {
-  font-family: 'AddAff';
-  src: url('./assets/fonts/AddAff.otf') format('opentype');
-  font-weight: normal;
+  font-family: 'PlayfairDisplay';
+  src: url('./assets/fonts/PlayfairDisplay.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
+}
+@font-face {
+  font-family: 'PlayfairDisplay';
+  src: url('./assets/fonts/PlayfairDisplay-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
 }
 
 /* Renner */
@@ -52,13 +58,69 @@ html {
   font-style: normal;
 }
 
+/* Arimo */
+@font-face {
+  font-family: 'Arimo';
+  src: url('./assets/fonts/Arimo.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Arimo';
+  src: url('./assets/fonts/Arimo-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Lora */
+@font-face {
+  font-family: 'Lora';
+  src: url('./assets/fonts/Lora.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Lora';
+  src: url('./assets/fonts/Lora-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Roboto Condensed */
+@font-face {
+  font-family: 'RobotoCondensed';
+  src: url('./assets/fonts/RobotoCondensed.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RobotoCondensed';
+  src: url('./assets/fonts/RobotoCondensed-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Raleway */
+@font-face {
+  font-family: 'Raleway';
+  src: url('./assets/fonts/Raleway.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Raleway';
+  src: url('./assets/fonts/Raleway-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
 
 body {
-  font-family: 'Munson', sans-serif;
+  font-family: var(--sf-font, 'Munson', serif);
   width: 100%;
   margin: 0px;
   padding: 0px;
-  background-color: #f1efeb;
+  background-color: var(--sf-page-bg, #f1efeb);
 }
 
 #root {

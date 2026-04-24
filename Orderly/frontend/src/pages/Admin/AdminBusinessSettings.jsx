@@ -2,22 +2,34 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const API = "http://localhost:8000/api/v1/settings/";
+const CACHE_KEY = "settings_business";
 
 function authHeaders(extra = {}) {
   const token = localStorage.getItem("accessToken");
   return { Authorization: `Bearer ${token}`, ...extra };
 }
 
+function parseBusinessData(data) {
+  return {
+    storeName: data.storeName || "",
+    taxRate: data.taxRate ?? "",
+    contactPhone: data.contactPhone || "",
+    contactEmail: data.contactEmail || "",
+    hqAddress: data.hqAddress || "",
+  };
+}
+
 export default function AdminBusinessSettings() {
-  const [form, setForm] = useState({
-    storeName: "",
-    taxRate: "",
-    contactPhone: "",
-    contactEmail: "",
-    hqAddress: "",
+  const [form, setForm] = useState(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      return cached ? JSON.parse(cached) : { storeName: "", taxRate: "", contactPhone: "", contactEmail: "", hqAddress: "" };
+    } catch {
+      return { storeName: "", taxRate: "", contactPhone: "", contactEmail: "", hqAddress: "" };
+    }
   });
   const baseline = useRef(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !localStorage.getItem(CACHE_KEY));
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // "success" | "error" | null
   const [errorMsg, setErrorMsg] = useState("");
@@ -26,17 +38,17 @@ export default function AdminBusinessSettings() {
     fetch(API, { headers: authHeaders() })
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
       .then((data) => {
-        const loaded = {
-          storeName: data.storeName || "",
-          taxRate: data.taxRate ?? "",
-          contactPhone: data.contactPhone || "",
-          contactEmail: data.contactEmail || "",
-          hqAddress: data.hqAddress || "",
-        };
+        const loaded = parseBusinessData(data);
         setForm(loaded);
         baseline.current = loaded;
+        localStorage.setItem(CACHE_KEY, JSON.stringify(loaded));
       })
-      .catch(() => setErrorMsg("Failed to load settings."))
+      .catch(() => {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try { baseline.current = JSON.parse(cached); } catch {}
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,15 +74,10 @@ export default function AdminBusinessSettings() {
     })
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
       .then((data) => {
-        const saved = {
-          storeName: data.storeName || "",
-          taxRate: data.taxRate ?? "",
-          contactPhone: data.contactPhone || "",
-          contactEmail: data.contactEmail || "",
-          hqAddress: data.hqAddress || "",
-        };
+        const saved = parseBusinessData(data);
         setForm(saved);
         baseline.current = saved;
+        localStorage.setItem(CACHE_KEY, JSON.stringify(saved));
         setSaveStatus("success");
       })
       .catch(() => {
@@ -94,7 +101,6 @@ export default function AdminBusinessSettings() {
       <form className="sett-form" onSubmit={handleSubmit}>
 
         <div className="sett-section">
-          <p className="inv-section-header">Business</p>
           <table className="product-form-table">
             <tbody>
               <tr>
@@ -110,14 +116,6 @@ export default function AdminBusinessSettings() {
                   />
                 </td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="sett-section">
-          <p className="inv-section-header">Tax</p>
-          <table className="product-form-table">
-            <tbody>
               <tr>
                 <td className="form-label-cell"><label htmlFor="taxRate">Tax Rate (%)</label></td>
                 <td>
@@ -139,9 +137,22 @@ export default function AdminBusinessSettings() {
         </div>
 
         <div className="sett-section">
-          <p className="inv-section-header">Contact</p>
+          <p className="inv-section-header">Headquarters / Home Office Information</p>
           <table className="product-form-table">
             <tbody>
+              <tr>
+                <td className="form-label-cell"><label htmlFor="hqAddress">Address</label></td>
+                <td>
+                  <textarea
+                    id="hqAddress"
+                    name="hqAddress"
+                    rows={3}
+                    value={form.hqAddress}
+                    onChange={handleChange}
+                    placeholder={"e.g. 123 Main St\nRaleigh, NC 27601"}
+                  />
+                </td>
+              </tr>
               <tr>
                 <td className="form-label-cell"><label htmlFor="contactPhone">Phone Number</label></td>
                 <td>
@@ -165,27 +176,6 @@ export default function AdminBusinessSettings() {
                     value={form.contactEmail}
                     onChange={handleChange}
                     placeholder="e.g. hello@quicksips.com"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="sett-section">
-          <p className="inv-section-header">HQ Address</p>
-          <table className="product-form-table">
-            <tbody>
-              <tr>
-                <td className="form-label-cell"><label htmlFor="hqAddress">Address</label></td>
-                <td>
-                  <textarea
-                    id="hqAddress"
-                    name="hqAddress"
-                    rows={3}
-                    value={form.hqAddress}
-                    onChange={handleChange}
-                    placeholder={"e.g. 123 Main St\nRaleigh, NC 27601"}
                   />
                 </td>
               </tr>

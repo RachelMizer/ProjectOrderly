@@ -88,8 +88,8 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Sales Summary</p>
         <p className="sidebar-desc">View total revenue, units sold, top products, and revenue trends. Filter by year or month to drill into specific periods.</p>
-        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">⬅️ Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Go Back</Link>
       </div>
     );
 
@@ -97,33 +97,33 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Product Performance</p>
         <p className="sidebar-desc">Browse product rankings or select a product to view its revenue trend, best period, and detailed breakdown by day or month.</p>
-        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">« Return to Reports Dashboard</Link>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin/reports" className="sidebar-back sidebar-back--sub">⬅️ Return to Reports Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Go Back</Link>
       </div>
     );
 
     if (path.startsWith("/admin/reports")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Reports</p>
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>📊</span>Reports</p>
         <p className="sidebar-desc">View sales performance, product trends, and business metrics. Use filters to drill down by date, product, or category.</p>
         {path !== "/admin/reports" && (
-          <Link to="/admin/reports" className="sidebar-back">« Back to Reports Dashboard</Link>
+          <Link to="/admin/reports" className="sidebar-back">⬅️ Back to Reports Dashboard</Link>
         )}
-        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/inventory")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Inventory</p>
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>📋</span>Inventory</p>
         <p className="sidebar-desc">Track and update stock levels for all inventory items. Toggle ingredient availability to control which beverages are offered, and manage count-based items by quantity and reorder level.</p>
-        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/catalog")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Product Catalog</p>
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🛍️</span>Product Catalog</p>
 
         <p className="sidebar-desc">
           Browse and manage the full product catalog. Add new items, edit existing
@@ -131,7 +131,7 @@ function AdminLayout() {
           to customers.
         </p>
 
-        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
 
@@ -139,25 +139,25 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">Business Settings</p>
         <p className="sidebar-desc">Manage tax rate, business contact information, and address details.</p>
-        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">« Return to Settings</Link>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">⬅️ Return to Settings</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
 
     if (path.startsWith("/admin/settings/storefront")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Storefront Settings</p>
+        <p className="sidebar-title" style={{whiteSpace:"normal"}}><span style={{marginRight:"-1px"}}>⚙️</span>Branding and Storefront Management</p>
         <p className="sidebar-desc">Manage customer-facing details and configuration for the online storefront.</p>
-        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">« Return to Settings</Link>
-        <Link to="/admin" className="sidebar-back">« Go Back</Link>
+        <Link to="/admin/settings" className="sidebar-back sidebar-back--sub">⬅️ Return to Settings</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Go Back</Link>
       </div>
     );
 
     if (path.startsWith("/admin/settings")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title">Settings</p>
+        <p className="sidebar-title sidebar-title--sm" style={{whiteSpace:"normal"}}><span style={{marginRight:"-1px"}}>⚙️</span>Settings Management</p>
         <p className="sidebar-desc">Configure business and storefront settings for your Orderly instance.</p>
-        <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
 
@@ -165,7 +165,7 @@ function AdminLayout() {
       const recentOrders = JSON.parse(localStorage.getItem("orderly_recent_orders") || "[]");
       return (
         <div className="sidebar-menu" key={recentOrdersKey}>
-          <p className="sidebar-title">Orders</p>
+          <p className="sidebar-title sidebar-title--sm"><span style={{marginRight:"-1px"}}>🧾</span>Order Management</p>
           <div className="sidebar-recent-orders">
             <p className="sidebar-sub sidebar-sub--boxed">Recent Orders</p>
             {recentOrders.length === 0 ? (
@@ -179,10 +179,7 @@ function AdminLayout() {
               ))
             )}
           </div>
-          <div className="sidebar-actions">
-            <span className="sidebar-link-disabled" title="Pending further development">» Returns & Refunds</span>
-          </div>
-          <Link to="/admin" className="sidebar-back">« Return to Dashboard</Link>
+          <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
           </div>
     );
 }
@@ -196,6 +193,7 @@ function AdminLayout() {
       <aside className="admin-sidebar">
         <Link to="/admin" className="admin-brand">
           <h1 className="orderly-head">Orderly</h1>
+          <p className="orderly-tagline">Management&nbsp;Suite<br />for Business</p>
         </Link>
         <SidebarMenu />
       </aside>
@@ -204,7 +202,6 @@ function AdminLayout() {
         <div className="admin-topbar">
           <p className="admin-welcome">Welcome, {userName}!</p>
           <div className="admin-topbar-actions">
-            <Link to="/admin/settings">Settings</Link>
             <Link to="/admin/account">⚙ Account Settings</Link>
             <a onClick={handleLogout} style={{cursor: "pointer"}}>Logout</a>
           </div>
@@ -213,8 +210,9 @@ function AdminLayout() {
         <nav className="admin-nav-cards">
           <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
           <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
-          <Link to="/admin/catalog" className="nav-card" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
+          <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product<br />Catalog</span></Link>
           <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
+          <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business<br />&amp; Store Settings</span></Link>
         </nav>
 
         <div className="admin-content">

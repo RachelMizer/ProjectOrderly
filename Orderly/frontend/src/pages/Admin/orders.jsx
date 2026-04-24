@@ -244,7 +244,7 @@ export default function Orders() {
   return (
     <div>
       <div className="submenu-bar">
-        <span className="submenu-label">Order Management</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>🧾</span>Order Management</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -308,10 +308,10 @@ export default function Orders() {
           </div>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
           <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>

@@ -2,18 +2,11 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 
-const CATEGORY_ICONS = {
-  "Coffee":    "☕",
-  "Tea":       "🍵",
-  "Bakery":    "🥐",
-  "Breakfast": "🍳",
-  "Seasonal":  "🍂",
-};
-
 const StoreFront = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [storeName, setStoreName] = useState("");
 
   // Load categories + initial products
   useEffect(() => {
@@ -21,10 +14,16 @@ const StoreFront = () => {
       try {
         const catRes = await fetch("http://localhost:8000/api/v1/categories");
         const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const token = localStorage.getItem("accessToken");
+        const settRes = await fetch("http://localhost:8000/api/v1/settings/", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
 
         const catData = await catRes.json();
         const prodData = await prodRes.json();
+        const settData = await settRes.json();
 
+        if (settData.storeName) setStoreName(settData.storeName);
         setCategories(catData.results);
 
         // Enrich initial product list
@@ -92,15 +91,13 @@ const StoreFront = () => {
   return (
     <div className="store">
 
-      {/* DIVIDER */}
-      <hr className="store-divider" />
-
       {/* HEADER */}
-      <h2 className="store-heading" style={{ fontFamily: "'AddAff', serif", fontSize: "7rem", marginBottom: "-15px", marginTop: "-15px", fontWeight: "normal" }}>Menu</h2>
+      <h2 className="store-heading">Welcome to the home of {storeName} on the web!</h2>
+
 
       {/* FILTER */}
       <div className="filter-container">
-      <h3 className="filterhead">Filter the Menu</h3>
+      <h3 className="filterhead">Filter Offerings</h3>
       <div className="filter">
 
         {categories.map((cat) => (
@@ -110,7 +107,7 @@ const StoreFront = () => {
               checked={selectedCategories.has(cat.id)}
               onChange={() => handleCheckbox(cat.id)}
             />
-            {CATEGORY_ICONS[cat.name] && <span style={{ marginRight: "3px" }}>{CATEGORY_ICONS[cat.name]}</span>}
+            {cat.icon && <span style={{ marginRight: "3px" }}>{cat.icon}</span>}
             {cat.name}
           </label>
         ))}

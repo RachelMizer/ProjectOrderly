@@ -6,13 +6,45 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.api.permissions import IsBusinessUser
-from catalog.models import Product, ProductVariant
+from catalog.models import Category, Product, ProductVariant
 
 from .admin_serializers import (
+    AdminCategorySerializer,
     AdminProductSerializer,
     AdminProductVariantSerializer,
     AdminVariantInventorySerializer,
 )
+
+
+class AdminCategoryListCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = AdminCategorySerializer(categories, many=True)
+        return Response({"results": serializer.data})
+
+    def post(self, request):
+        serializer = AdminCategorySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminCategoryDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def patch(self, request, categoryId):
+        category = get_object_or_404(Category, pk=categoryId)
+        serializer = AdminCategorySerializer(category, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, categoryId):
+        category = get_object_or_404(Category, pk=categoryId)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AdminProductListCreateView(APIView):

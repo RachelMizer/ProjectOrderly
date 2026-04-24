@@ -139,7 +139,7 @@ export default function AdminOrderDetail() {
           </button>
           <span className="submenu-divider" />
           <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>

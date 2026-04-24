@@ -2,8 +2,15 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from catalog.models import Product, ProductVariant
+from catalog.models import Category, Product, ProductVariant
 from suppliers.models import Supplier
+
+
+class AdminCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name", "icon"]
+        read_only_fields = ["id"]
 
 
 class AdminProductSerializer(serializers.ModelSerializer):
