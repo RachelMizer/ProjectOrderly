@@ -15,7 +15,13 @@ The database emphasizes data integrity, scalability, and flexibility through nor
 
 ---
 
-## 2. Database Design Principles
+## 2. Entity Relationship Diagram
+
+![Orderly ERD](Order_ERD.png)
+
+---
+
+## 3. Database Design Principles
 
 - **Normalization:** Data is structured to minimize redundancy and maintain consistency.
 - **Relational Integrity:** Foreign keys enforce relationships across entities.
@@ -25,7 +31,7 @@ The database emphasizes data integrity, scalability, and flexibility through nor
 
 ---
 
-## 3. Core Entities
+## 4. Core Entities
 
 ### Accounts Domain
 
@@ -82,7 +88,7 @@ Stores business-level configuration.
 
 ---
 
-## 4. Relationships
+## 5. Relationships
 
 ### One-to-One Relationships
 
@@ -111,7 +117,7 @@ Stores business-level configuration.
 
 ---
 
-## 5. Key Constraints and Validation
+## 6. Key Constraints and Validation
 
 ### Unique Constraints
 
@@ -149,7 +155,7 @@ Stores business-level configuration.
 
 ---
 
-## 6. Data Flow Overview
+## 7. Data Flow Overview
 
 1. A customer browses categories, products, variants, and modifiers.
 2. The customer creates or updates a draft order.
@@ -161,7 +167,7 @@ Stores business-level configuration.
 
 ---
 
-## 7. Schema Highlights
+## 8. Schema Highlights
 
 ### Hybrid Inventory System
 
@@ -181,7 +187,7 @@ The schema uses model validation, database constraints, foreign keys, and unique
 
 ---
 
-## 8. Key Table Structures (Summary)
+## 9. Key Table Structures (Summary)
 
 ### Order
 - id (Primary Key)
@@ -220,6 +226,6 @@ The schema uses model validation, database constraints, foreign keys, and unique
 
 ---
 
-## 9. Conclusion
+## 10. Conclusion
 
 The Orderly database schema provides a strong foundation for a full-stack ordering and inventory management system. Its modular structure supports customer ordering, business administration, inventory tracking, supplier management, and sales reporting while maintaining data integrity across the application.
