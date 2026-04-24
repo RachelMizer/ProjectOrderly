@@ -13,6 +13,7 @@ jest.mock("../api/handleApiError", () => ({
 
 jest.mock("../utils/recentOrders", () => ({
   pushRecentOrder: jest.fn(),
+  removeRecentOrder: jest.fn(),
 }));
 
 jest.mock("../api/auth", () => ({
@@ -102,10 +103,10 @@ describe("UX5.9 Admin Orders Page", () => {
     renderRoutes();
 
     expect(screen.getByText(/loading orders/i)).toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /^all orders$/i })).toBeInTheDocument();
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/api/v1/orders?page=1&pageSize=25&status=PENDING"),
+      expect.stringContaining("/api/v1/orders?page=1&pageSize=100"),
       expect.any(Object)
     );
 
@@ -135,7 +136,7 @@ describe("UX5.9 Admin Orders Page", () => {
     renderRoutes();
 
     expect(await screen.findByText(/no orders found/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /^orders$/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^all orders$/i })).toBeInTheDocument();
   });
 
   test("renders error state when the orders request fails", async () => {
@@ -172,7 +173,7 @@ describe("UX5.9 Admin Orders Page", () => {
     expect(await screen.findByText("#1042")).toBeInTheDocument();
     expect(screen.getByText("#1041")).toBeInTheDocument();
 
-    userEvent.type(screen.getByPlaceholderText(/search orders/i), "1042");
+    await userEvent.type(screen.getByPlaceholderText(/search orders/i), "1042");
 
     await waitFor(() => {
       expect(screen.getByText("#1042")).toBeInTheDocument();
@@ -218,17 +219,105 @@ describe("UX5.9 Admin Orders Page", () => {
     expect(monthSelect).toBeDisabled();
     expect(daySelect).toBeDisabled();
 
-    userEvent.selectOptions(yearSelect, "2026");
+    await userEvent.selectOptions(yearSelect, "2026");
     await waitFor(() => expect(monthSelect).not.toBeDisabled());
 
-    userEvent.selectOptions(monthSelect, "4");
+    await userEvent.selectOptions(monthSelect, "4");
     await waitFor(() => expect(daySelect).not.toBeDisabled());
 
-    userEvent.selectOptions(daySelect, "14");
+    await userEvent.selectOptions(daySelect, "14");
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenLastCalledWith(
         expect.stringContaining("dateCreated=2026-04-14"),
+        expect.any(Object)
+      );
+    });
+  });
+
+  test("applies completed status filter and hides mark complete action", async () => {
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [
+              makeOrder({ id: 1042, status: "PENDING" }),
+              makeOrder({ id: 1041, status: "COMPLETED" }),
+            ],
+            count: 2,
+          }),
+        })
+      )
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1041, status: "COMPLETED" })],
+            count: 1,
+          }),
+        })
+      );
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1042")).toBeInTheDocument();
+
+    const selects = screen.getAllByRole("combobox");
+    const statusSelect = selects[0];
+
+    await userEvent.selectOptions(statusSelect, "COMPLETED");
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenLastCalledWith(
+        expect.stringContaining("status=COMPLETED"),
+        expect.any(Object)
+      );
+    });
+
+    expect(await screen.findByText("#1041")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /mark complete/i })).not.toBeInTheDocument();
+  });
+
+  test("clear filters resets search and date/status filters back to default pending fetch", async () => {
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1042, status: "PENDING" })],
+            count: 1,
+          }),
+        })
+      )
+      .mockResolvedValue(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1042, status: "PENDING" })],
+            count: 1,
+          }),
+        })
+      );
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1042")).toBeInTheDocument();
+
+    const search = screen.getByPlaceholderText(/search orders/i);
+    const selects = screen.getAllByRole("combobox");
+    const statusSelect = selects[0];
+    const yearSelect = selects[1];
+
+    await userEvent.type(search, "1042");
+    await userEvent.selectOptions(statusSelect, "COMPLETED");
+    await userEvent.selectOptions(yearSelect, "2026");
+
+    await userEvent.click(screen.getByRole("button", { name: /clear filters/i }));
+
+    expect(search).toHaveValue("");
+    expect(statusSelect).toHaveValue("");
+    expect(yearSelect).toHaveValue("");
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenLastCalledWith(
+        expect.not.stringContaining("status="),
         expect.any(Object)
       );
     });
@@ -256,7 +345,7 @@ describe("UX5.9 Admin Orders Page", () => {
     expect(await screen.findByText("#1042")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /mark complete/i })).toBeInTheDocument();
 
-    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+    await userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenLastCalledWith(
@@ -298,7 +387,7 @@ describe("UX5.9 Admin Orders Page", () => {
     renderRoutes();
 
     expect(await screen.findByText("#1042")).toBeInTheDocument();
-    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+    await userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
 
     expect(await screen.findByText(/failed to complete order\./i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /mark complete/i })).toBeInTheDocument();
@@ -341,7 +430,7 @@ describe("UX5.9 Admin Orders Page", () => {
 
     renderRoutes();
 
-    userEvent.click(await screen.findByText("#1042"));
+    await userEvent.click(await screen.findByText("#1042"));
 
     await waitFor(() => {
       expect(pushRecentOrder).toHaveBeenCalledWith(
@@ -389,7 +478,7 @@ describe("UX5.9 Admin Order Detail", () => {
 
     expect(await screen.findAllByText(/order #2042/i)).toHaveLength(2);
     expect(screen.getByText(/ava taylor/i)).toBeInTheDocument();
-    expect(screen.getByText(/^items$/i)).toBeInTheDocument();
+    expect(screen.getByText(/order details/i)).toBeInTheDocument();
     expect(screen.getByText("Latte")).toBeInTheDocument();
     expect(screen.getByText(/oat milk/i)).toBeInTheDocument();
     expect(screen.getByText(/subtotal/i)).toBeInTheDocument();
@@ -426,7 +515,7 @@ describe("UX5.9 Admin Order Detail", () => {
 
     expect(await screen.findAllByText(/order #3001/i)).toHaveLength(2);
 
-    userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+    await userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenLastCalledWith(
@@ -456,5 +545,215 @@ describe("UX5.9 Admin Order Detail", () => {
         expect.any(Function)
       );
     });
+  });
+
+  test("renders no-items row when order detail has no items", async () => {
+    global.fetch.mockResolvedValueOnce(
+      makeResponse({
+        body: makeOrder({
+          id: 4001,
+          items: [],
+          taxAmount: "0.50",
+          totalDue: "9.50",
+        }),
+      })
+    );
+
+    renderRoutes("/admin/orders/4001");
+
+    expect(await screen.findAllByText(/order #4001/i)).toHaveLength(2);
+    expect(screen.getByText(/no items on this order\./i)).toBeInTheDocument();
+    expect(await screen.findAllByText(/order #4001/i)).toHaveLength(2);
+
+    expect(
+      screen.getByText(/no items on this order\./i)
+    ).toBeInTheDocument();
+  });
+});
+describe("UX5.9 Admin Orders Page additional coverage", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+    localStorage.clear();
+    global.fetch = jest.fn();
+  });
+
+  test("passes 401 mark-complete errors to handleApiError", async () => {
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1042, status: "PENDING" })],
+            count: 1,
+          }),
+        })
+      )
+      .mockResolvedValueOnce(makeResponse({ ok: false, status: 401, body: {} }));
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1042")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /mark complete/i }));
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 401 }),
+        expect.any(Function)
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /mark complete/i })).toBeEnabled();
+    });
+  });
+
+  test("sorts by total ascending then descending when the total header is clicked twice", async () => {
+    global.fetch.mockResolvedValueOnce(
+      makeResponse({
+        body: makeOrdersResponse({
+          results: [
+            makeOrder({ id: 1001, totalDue: "20.00", date: "2026-04-14T14:30:00Z" }),
+            makeOrder({ id: 1002, totalDue: "5.00", date: "2026-04-13T14:30:00Z" }),
+            makeOrder({ id: 1003, totalDue: "12.00", date: "2026-04-12T14:30:00Z" }),
+          ],
+          count: 3,
+        }),
+      })
+    );
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1001")).toBeInTheDocument();
+
+    const totalHeader = screen.getByText(/^total/i).closest("th");
+    expect(totalHeader).toBeInTheDocument();
+
+    await userEvent.click(totalHeader);
+
+    let orderLinks = screen.getAllByText(/#100\d/).map((node) => node.textContent);
+    expect(orderLinks).toEqual(["#1002", "#1003", "#1001"]);
+
+    await userEvent.click(totalHeader);
+
+    orderLinks = screen.getAllByText(/#100\d/).map((node) => node.textContent);
+    expect(orderLinks).toEqual(["#1001", "#1003", "#1002"]);
+  });
+
+  test("sorts by customer id, renders fallback values, and shows unknown statuses as-is", async () => {
+    global.fetch.mockResolvedValueOnce(
+      makeResponse({
+        body: makeOrdersResponse({
+          results: [
+            makeOrder({
+              id: 1101,
+              customerId: 30,
+              customerFirstName: "",
+              customerLastName: "",
+              date: null,
+              totalDue: null,
+              status: "REFUNDED",
+            }),
+            makeOrder({
+              id: 1102,
+              customerId: 11,
+              customerFirstName: "Amy",
+              customerLastName: "Adams",
+              status: "CANCELLED",
+              totalDue: "4.00",
+            }),
+          ],
+          count: 2,
+        }),
+      })
+    );
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1101")).toBeInTheDocument();
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(screen.getByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("REFUNDED")).toBeInTheDocument();
+
+    const customerHeader = screen.getByText(/^customer/i).closest("th");
+    expect(customerHeader).toBeInTheDocument();
+
+    await userEvent.click(customerHeader);
+
+    const orderLinks = screen.getAllByText(/#110\d/).map((node) => node.textContent);
+    expect(orderLinks).toEqual(["#1102", "#1101"]);
+  });
+
+  test("supports next and previous pagination and updates the page label", async () => {
+    global.fetch
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1201 })],
+            count: 30,
+            next: "http://127.0.0.1:8000/api/v1/orders?page=2&pageSize=25&status=PENDING",
+            previous: null,
+          }),
+        })
+      )
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1202 })],
+            count: 30,
+            next: null,
+            previous: "http://127.0.0.1:8000/api/v1/orders?page=1&pageSize=25&status=PENDING",
+          }),
+        })
+      )
+      .mockResolvedValueOnce(
+        makeResponse({
+          body: makeOrdersResponse({
+            results: [makeOrder({ id: 1201 })],
+            count: 30,
+            next: "http://127.0.0.1:8000/api/v1/orders?page=2&pageSize=25&status=PENDING",
+            previous: null,
+          }),
+        })
+      );
+
+    renderRoutes();
+
+    expect(await screen.findByText("#1201")).toBeInTheDocument();
+    expect(screen.getByText("1 order")).toBeInTheDocument();
+    expect(screen.getByText("Pg 1 of 1")).toBeInTheDocument();
+
+    let nextButton = screen.getByRole("button", { name: /next/i });
+    let prevButton = screen.getByRole("button", { name: /prev/i });
+
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).toBeEnabled();
+
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    expect(await screen.findByText("#1202")).toBeInTheDocument();
+    expect(screen.getByText("Pg 2 of 1")).toBeInTheDocument();
+
+    nextButton = screen.getByRole("button", { name: /next/i });
+    prevButton = screen.getByRole("button", { name: /prev/i });
+
+    expect(prevButton).toBeEnabled();
+    expect(nextButton).toBeDisabled();
+
+    await userEvent.click(prevButton);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(3);
+      expect(global.fetch).toHaveBeenLastCalledWith(
+        expect.stringContaining("page=1&pageSize=100"),
+        expect.any(Object)
+      );
+    });
+
+    expect(await screen.findByText("#1201")).toBeInTheDocument();
+    expect(screen.getByText("Pg 1 of 1")).toBeInTheDocument();
   });
 });

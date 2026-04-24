@@ -16,6 +16,7 @@ import {
   createInventoryItem,
 } from "../api/adminInventory";
 import { handleApiError } from "../api/handleApiError";
+import { saveRecentView } from "../utils/recentViews";
 
 const mockNavigate = jest.fn();
 
@@ -35,6 +36,10 @@ jest.mock("../api/adminInventory", () => ({
 
 jest.mock("../api/handleApiError", () => ({
   handleApiError: jest.fn(),
+}));
+
+jest.mock("../utils/recentViews", () => ({
+  saveRecentView: jest.fn(),
 }));
 
 const baseInventory = [
@@ -105,9 +110,8 @@ describe("AdminInventoryPage", () => {
     renderPage();
 
     expect(
-      await screen.findByText(/ingredient-controlled beverage availability/i)
+      await screen.findByRole("heading", { name: /supply inventory/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/count-based inventory/i)).toBeInTheDocument();
 
     expect(screen.getByText("Milk")).toBeInTheDocument();
     expect(screen.getByText("Oat Milk")).toBeInTheDocument();
@@ -118,7 +122,21 @@ describe("AdminInventoryPage", () => {
     expect(screen.getByText("Out of Stock")).toBeInTheDocument();
   });
 
-  test("filters both tables from the shared search bar", async () => {
+  test("saves a recent view after inventory loads", async () => {
+    renderPage();
+
+    await screen.findByText("Milk");
+
+    expect(saveRecentView).toHaveBeenCalledWith({
+      section: "inventory",
+      label: "Inventory",
+      sublabel: "4 items",
+      path: "/admin/inventory",
+      state: null,
+    });
+  });
+
+  test("filters inventory from the shared search bar", async () => {
     renderPage();
 
     await screen.findByText("Milk");
@@ -139,6 +157,29 @@ describe("AdminInventoryPage", () => {
     expect(screen.getByText("Cups (12oz)")).toBeInTheDocument();
     expect(screen.queryByText("Milk")).not.toBeInTheDocument();
     expect(screen.queryByText("Oat Milk")).not.toBeInTheDocument();
+  });
+
+  test("clear filters button resets the shared search input", async () => {
+    renderPage();
+
+    await screen.findByText("Milk");
+
+    const search = screen.getByPlaceholderText(/search inventory/i);
+
+    fireEvent.change(search, {
+      target: { value: "cups" },
+    });
+
+    expect(search).toHaveValue("cups");
+    expect(screen.queryByText("Milk")).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /clear filters/i })
+    );
+
+    expect(search).toHaveValue("");
+    expect(screen.getByText("Milk")).toBeInTheDocument();
+    expect(screen.getByText("Cups (12oz)")).toBeInTheDocument();
   });
 
   test("allows inline editing and saving for ingredient items", async () => {
@@ -183,6 +224,36 @@ describe("AdminInventoryPage", () => {
     });
   });
 
+  test("sends nulls for blank inline numeric values on save", async () => {
+    updateInventoryItem.mockResolvedValue({
+      id: 1,
+      name: "Milk",
+      stock_quantity: null,
+      unit_of_measure: "l",
+      reorder_level: null,
+      affected_products: ["Latte", "Cappuccino", "Mocha"],
+    });
+
+    renderPage();
+
+    await screen.findByText("Milk");
+
+    const milkRow = screen.getByText("Milk").closest("tr");
+    const inputs = within(milkRow).getAllByRole("spinbutton");
+
+    fireEvent.change(inputs[0], { target: { value: "" } });
+    fireEvent.change(inputs[1], { target: { value: "" } });
+
+    fireEvent.click(within(milkRow).getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(updateInventoryItem).toHaveBeenCalledWith(1, {
+        stock_quantity: null,
+        reorder_level: null,
+      });
+    });
+  });
+
   test("toggling an available ingredient off immediately patches stock to 0 and reorder level to null", async () => {
     updateInventoryItem.mockResolvedValue({
       id: 1,
@@ -210,7 +281,7 @@ describe("AdminInventoryPage", () => {
       });
     });
 
-    expect(await screen.findByText("Unavailable")).toBeInTheDocument();
+    expect(await screen.findByText(/out of stock/i)).toBeInTheDocument();
   });
 
   test("toggling an unavailable ingredient on prompts for quantity entry instead of saving immediately", async () => {
@@ -237,7 +308,7 @@ describe("AdminInventoryPage", () => {
 
     expect(screen.getByText(/enter qty & save/i)).toBeInTheDocument();
 
-    const row = screen.getByText("Milk").closest("tr");
+    const row = screen.getByLabelText(/toggle milk availability/i).closest("tr");
     const stockInput = within(row).getAllByRole("spinbutton")[0];
 
     expect(stockInput).toHaveClass("inv-qty-input--activate");
@@ -338,6 +409,38 @@ describe("AdminInventoryPage", () => {
     expect(createInputs[1]).toHaveClass("inv-input-error");
   });
 
+  test("create sends nulls for blank numeric values", async () => {
+    createInventoryItem.mockResolvedValue({
+      id: 100,
+      name: "Napkins",
+      stock_quantity: null,
+      unit_of_measure: "units",
+      reorder_level: null,
+      affected_products: [],
+    });
+
+    renderPage();
+    await screen.findByText("Milk");
+    await openCreatePanel();
+
+    const createPanel = getCreatePanel();
+
+    fireEvent.change(within(createPanel).getByPlaceholderText(/item name/i), {
+      target: { value: "Napkins" },
+    });
+
+    fireEvent.click(within(createPanel).getByRole("button", { name: /^create$/i }));
+
+    await waitFor(() => {
+      expect(createInventoryItem).toHaveBeenCalledWith({
+        name: "Napkins",
+        stock_quantity: null,
+        unit_of_measure: "units",
+        reorder_level: null,
+      });
+    });
+  });
+
   test("shows backend validation messages on save failure", async () => {
     updateInventoryItem.mockRejectedValue({
       response: {
@@ -378,38 +481,6 @@ describe("AdminInventoryPage", () => {
     fireEvent.click(within(createPanel).getByRole("button", { name: /^create$/i }));
 
     expect(await screen.findByText(/name is required/i)).toBeInTheDocument();
-  });
-
-  test("create sends nulls for blank numeric values", async () => {
-    createInventoryItem.mockResolvedValue({
-      id: 100,
-      name: "Napkins",
-      stock_quantity: null,
-      unit_of_measure: "units",
-      reorder_level: null,
-      affected_products: [],
-    });
-
-    renderPage();
-    await screen.findByText("Milk");
-    await openCreatePanel();
-
-    const createPanel = getCreatePanel();
-
-    fireEvent.change(within(createPanel).getByPlaceholderText(/item name/i), {
-      target: { value: "Napkins" },
-    });
-
-    fireEvent.click(within(createPanel).getByRole("button", { name: /^create$/i }));
-
-    await waitFor(() => {
-      expect(createInventoryItem).toHaveBeenCalledWith({
-        name: "Napkins",
-        stock_quantity: null,
-        unit_of_measure: "units",
-        reorder_level: null,
-      });
-    });
   });
 
   test("shows load error when inventory fetch fails with non-403 error", async () => {
@@ -461,7 +532,28 @@ describe("AdminInventoryPage", () => {
     });
   });
 
-  test("sorts ingredient table by stock quantity when header is clicked", async () => {
+  test("delegates 403 save errors to handleApiError", async () => {
+    const error403 = {
+      response: {
+        status: 403,
+        data: { message: "Forbidden" },
+      },
+    };
+
+    updateInventoryItem.mockRejectedValue(error403);
+
+    renderPage();
+    await screen.findByText("Milk");
+
+    const milkRow = screen.getByText("Milk").closest("tr");
+    fireEvent.click(within(milkRow).getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(handleApiError).toHaveBeenCalledWith(error403, mockNavigate);
+    });
+  });
+
+  test("sorts inventory by stock quantity when header is clicked", async () => {
     fetchInventory.mockResolvedValue([
       {
         id: 1,
@@ -477,14 +569,14 @@ describe("AdminInventoryPage", () => {
         stock_quantity: 10,
         unit_of_measure: "l",
         reorder_level: 4,
-        affected_products: ["Latte"],
+        affected_products: [],
       },
       {
         id: 3,
-        name: "Cups (12oz)",
-        stock_quantity: 300,
+        name: "Cake Pop",
+        stock_quantity: 5,
         unit_of_measure: "units",
-        reorder_level: 120,
+        reorder_level: 2,
         affected_products: [],
       },
     ]);
@@ -493,18 +585,172 @@ describe("AdminInventoryPage", () => {
 
     await screen.findByText("Milk");
 
-    const tables = screen.getAllByRole("table");
-    const ingredientTable = tables[0];
-
-    const stockHeader = within(ingredientTable).getByRole("columnheader", {
+    const stockHeader = screen.getByRole("columnheader", {
       name: /current stock/i,
     });
 
     fireEvent.click(stockHeader);
 
-    const rows = within(ingredientTable).getAllByRole("row");
+    let rows = screen.getAllByRole("row");
+    let bodyRows = rows.slice(1);
+    expect(within(bodyRows[0]).getByText("Cake Pop")).toBeInTheDocument();
+    expect(within(bodyRows[1]).getByText("Vanilla Syrup")).toBeInTheDocument();
+    expect(within(bodyRows[2]).getByText("Milk")).toBeInTheDocument();
 
-    expect(within(rows[1]).getByText("Vanilla Syrup")).toBeInTheDocument();
-    expect(within(rows[2]).getByText("Milk")).toBeInTheDocument();
+    fireEvent.click(stockHeader);
+
+    rows = screen.getAllByRole("row");
+    bodyRows = rows.slice(1);
+    expect(within(bodyRows[0]).getByText("Milk")).toBeInTheDocument();
+  });
+
+  test("shows low stock badge and low stock row styling when stock is above zero and at reorder level", async () => {
+    fetchInventory.mockResolvedValue([
+      {
+        id: 10,
+        name: "Bagel",
+        stock_quantity: 15,
+        unit_of_measure: "units",
+        reorder_level: 15,
+        affected_products: [],
+      },
+    ]);
+
+    renderPage();
+
+    const bagel = await screen.findByText("Bagel");
+    const row = bagel.closest("tr");
+
+    expect(within(row).getByText("Low Stock")).toBeInTheDocument();
+    expect(within(row).queryByText("Out of Stock")).not.toBeInTheDocument();
+    expect(row).toHaveClass("inv-row--low-stock");
+    expect(within(row).getByText("15 Units")).toBeInTheDocument();
+  });
+
+  test("shows critical low stock badge styling when stock is at or below half the reorder level", async () => {
+    fetchInventory.mockResolvedValue([
+      {
+        id: 11,
+        name: "Vanilla Syrup",
+        stock_quantity: 2,
+        unit_of_measure: "l",
+        reorder_level: 6,
+        affected_products: [],
+      },
+    ]);
+
+    renderPage();
+
+    const syrup = await screen.findByText("Vanilla Syrup");
+    const row = syrup.closest("tr");
+    const badge = within(row).getByText("Low Stock");
+
+    expect(row).toHaveClass("inv-row--low-stock");
+    expect(badge).toHaveClass("inv-badge--critical");
+    expect(badge).not.toHaveClass("inv-badge--low-stock");
+  });
+
+  test("does not mark out of stock items as low stock even when reorder level exists", async () => {
+    fetchInventory.mockResolvedValue([
+      {
+        id: 12,
+        name: "Pumpkin Spice (8oz)",
+        stock_quantity: 0,
+        unit_of_measure: "units",
+        reorder_level: 4,
+        affected_products: [],
+      },
+    ]);
+
+    renderPage();
+
+    const item = await screen.findByText("Pumpkin Spice (8oz)");
+    const row = item.closest("tr");
+
+    expect(within(row).getByText("Out of Stock")).toBeInTheDocument();
+    expect(within(row).queryByText("Low Stock")).not.toBeInTheDocument();
+    expect(row).toHaveClass("inv-row--dim");
+    expect(row).not.toHaveClass("inv-row--low-stock");
+  });
+
+  test("does not mark items with null reorder level as low stock", async () => {
+    fetchInventory.mockResolvedValue([
+      {
+        id: 13,
+        name: "Seasonal Powder",
+        stock_quantity: 3,
+        unit_of_measure: "units",
+        reorder_level: null,
+        affected_products: [],
+      },
+    ]);
+
+    renderPage();
+
+    const item = await screen.findByText("Seasonal Powder");
+    const row = item.closest("tr");
+
+    expect(within(row).queryByText("Low Stock")).not.toBeInTheDocument();
+    expect(within(row).queryByText("Out of Stock")).not.toBeInTheDocument();
+    expect(row).not.toHaveClass("inv-row--low-stock");
+    expect(row).not.toHaveClass("inv-row--dim");
+  });
+
+  test("renders product dependency table only for products affected by low or out-of-stock ingredients", async () => {
+    fetchInventory.mockResolvedValue([
+      {
+        id: 1,
+        name: "Milk",
+        stock_quantity: 6,
+        unit_of_measure: "l",
+        reorder_level: 12,
+        affected_products: ["Latte", "Cappuccino"],
+      },
+      {
+        id: 2,
+        name: "Espresso Beans",
+        stock_quantity: 0,
+        unit_of_measure: "lb",
+        reorder_level: 8,
+        affected_products: ["Latte", "Mocha"],
+      },
+      {
+        id: 3,
+        name: "Sugar",
+        stock_quantity: 40,
+        unit_of_measure: "lb",
+        reorder_level: 8,
+        affected_products: ["Tea"],
+      },
+    ]);
+
+    renderPage();
+
+    expect(await screen.findByText(/product dependencies/i)).toBeInTheDocument();
+
+    const dependencyHeading = screen.getByText(/product dependencies/i);
+    const dependencyPanel = dependencyHeading.closest(".inv-dep-panel");
+
+    expect(within(dependencyPanel).getByText("Latte")).toBeInTheDocument();
+    expect(within(dependencyPanel).getByText("Cappuccino")).toBeInTheDocument();
+    expect(within(dependencyPanel).getByText("Mocha")).toBeInTheDocument();
+
+    expect(within(dependencyPanel).queryByText("Tea")).not.toBeInTheDocument();
+
+    const latteRow = within(dependencyPanel).getByText("Latte").closest("tr");
+    expect(within(latteRow).getByText(/espresso beans/i)).toBeInTheDocument();
+    expect(within(latteRow).getByText(/milk/i)).toBeInTheDocument();
+  });
+
+  test("shows empty state when no inventory items match the search", async () => {
+    renderPage();
+
+    await screen.findByText("Milk");
+
+    fireEvent.change(screen.getByPlaceholderText(/search inventory/i), {
+      target: { value: "zzzz-no-match" },
+    });
+
+    expect(screen.getByText(/no inventory items found/i)).toBeInTheDocument();
   });
 });

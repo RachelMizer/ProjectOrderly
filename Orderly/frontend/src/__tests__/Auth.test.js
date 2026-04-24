@@ -60,14 +60,13 @@ describe("auth.js", () => {
     });
   });
 
-  test("register succeeds and stores access and refresh tokens", async () => {
+  test("register succeeds and stores accessToken", async () => {
     global.fetch.mockResolvedValueOnce(
       await makeJsonResponse({
         ok: true,
         status: 201,
         body: {
-          access: "new-access",
-          refresh: "new-refresh",
+          accessToken: "new-access",
           user: { email: "test@example.com" },
         },
       })
@@ -80,7 +79,7 @@ describe("auth.js", () => {
 
     expect(result.user.email).toBe("test@example.com");
     expect(localStorage.getItem("accessToken")).toBe("new-access");
-    expect(localStorage.getItem("refreshToken")).toBe("new-refresh");
+    expect(localStorage.getItem("refreshToken")).toBeNull();
   });
 
   test("register throws backend message on failure", async () => {

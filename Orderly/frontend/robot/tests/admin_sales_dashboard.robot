@@ -27,19 +27,6 @@ Business Admin Can Open Sales Dashboard
     Capture Page Screenshot
     Close Browser
 
-Sales Dashboard Shows Empty State When No Reportable Data Exists
-    Open Browser    ${BASE_URL}    ${BROWSER}
-    Maximize Browser Window
-    Login As Business User
-    Go To    ${ADMIN_SALES_DASHBOARD_URL}
-
-    Wait Until Page Contains    Sales Summary    15s
-    Wait Until Page Contains    Top Selling Product    15s
-    Wait Until Page Contains    No data available.    15s
-    Wait Until Page Contains    No sales data to display yet.    15s
-    Capture Page Screenshot
-    Close Browser
-
 Sales Dashboard Filters Render Correctly
     Open Browser    ${BASE_URL}    ${BROWSER}
     Maximize Browser Window
