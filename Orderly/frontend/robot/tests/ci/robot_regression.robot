@@ -120,25 +120,16 @@ CI Regression - View And Customize Opens Product Page
 
 CI Regression - Cart Persists After Refresh
     Login As Test User
+    Go To    ${BASE_URL}/product/1
+    Wait Until Page Contains Element    xpath=//button[contains(., 'Add to Cart')]    15s
+    Click Element    xpath=//button[contains(., 'Add to Cart')]
 
     Go To    ${BASE_URL}/cart
-    ${has_item}=    Run Keyword And Return Status
-    ...    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    3s
-
-    IF    not ${has_item}
-        Go To    ${BASE_URL}/
-        Wait Until Page Contains Element    xpath=(//button[contains(., 'Add to Cart')])[1]    15s
-        Click Element    xpath=(//button[contains(., 'Add to Cart')])[1]
-    END
-
-    Go To    ${BASE_URL}/cart
-    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    15s
 
     Reload Page
 
-    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    10s
-    ${count}=    Get Element Count    xpath=//div[contains(@class,'cart-item')]
-    Should Be True    ${count} > 0
+    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    15s
 
 CI Regression - Business User Can Open Admin Dashboard
     Login As Business User
