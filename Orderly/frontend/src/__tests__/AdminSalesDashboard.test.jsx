@@ -120,10 +120,10 @@ describe("US5.4 Sales Summary Dashboard", () => {
       screen.getByPlaceholderText(/search product or variant/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /> export/i })
+      screen.getByRole("button", { name: /export/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /> print/i })
+      screen.getByRole("button", { name: /print/i })
     ).toBeInTheDocument();
 
     expect(screen.getByText(/^321$/)).toBeInTheDocument();

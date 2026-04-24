@@ -15,12 +15,15 @@ jest.mock("react-router-dom", () => ({
 
 function mockFetchSequence(responses) {
   let call = 0;
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
+  global.fetch = jest.fn((url) => {
+    if (String(url).includes("settings")) {
+      return Promise.resolve({ ok: true, json: async () => ({}) });
+    }
+    return Promise.resolve({
       ok: true,
       json: async () => responses[call++],
-    })
-  );
+    });
+  });
 }
 
 describe("CartPage", () => {
