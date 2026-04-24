@@ -160,7 +160,7 @@ export default function OrderDetails() {
                 </table>
             </div>
 
-            <Link to="/order-history" style={{ display: "block", marginTop: "16px", letterSpacing: "normal" }}>← Back to Order History</Link>
+            <Link to="/order-history" style={{ display: "block", marginTop: "16px", letterSpacing: "normal", color: "var(--sf-main-link)" }}>← Back to Order History</Link>
         </div>
     );
 }

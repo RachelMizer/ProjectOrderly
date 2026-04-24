@@ -8,6 +8,7 @@ function CartPage() {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
+  const [taxRate, setTaxRate] = useState(0);
   const navigate = useNavigate();
 
   const accessToken = localStorage.getItem("accessToken");
@@ -52,6 +53,10 @@ function CartPage() {
 
   useEffect(() => {
     loadCart();
+    fetch("http://localhost:8000/api/v1/settings/")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
+      .catch(() => {});
   }, []);
 
   async function emptyCart() {
@@ -100,8 +105,7 @@ function CartPage() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.itemTotal), 0);
-  const TAX_RATE = 0.0725;
-  const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
+  const tax = parseFloat((subtotal * (taxRate / 100)).toFixed(2));
   const grandTotal = subtotal + tax;
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 

@@ -640,11 +640,20 @@ class Command(BaseCommand):
         # ------------------------------------------------------------
         # 5) Catalog categories
         # ------------------------------------------------------------
-        category_names = ["Coffee", "Tea", "Bakery", "Breakfast", "Seasonal"]
+        category_data = [
+            ("Coffee",   "☕"),
+            ("Tea",      "🍵"),
+            ("Bakery",   "🥐"),
+            ("Breakfast","🍳"),
+            ("Seasonal", "✨"),
+        ]
 
         categories = {}
-        for name in category_names:
+        for name, icon in category_data:
             c, _ = Category.objects.get_or_create(name=name)
+            if c.icon != icon:
+                c.icon = icon
+                c.save(update_fields=["icon"])
             categories[name] = c
 
         self.stdout.write(
