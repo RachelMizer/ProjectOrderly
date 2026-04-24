@@ -30,9 +30,10 @@ CI Regression - Customer Can Add Customized Item To Cart
 CI Regression - Customer Can Update Cart Quantity
     Login As Test User
     Ensure Cart Has Item
-    Go To Cart Page
-    Increase First Cart Item Quantity
-    Cart Total Should Be Visible
+
+    ${before}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[2]
+    Click Element    xpath=(//div[contains(@class,'cart-item-controls')]/button[normalize-space()='+'])[1]
+    Wait Until Keyword Succeeds    10x    1s    Quantity Should Change    ${before}
 
 CI Regression - Customer Can Reach Checkout And Place Order
     Login As Test User

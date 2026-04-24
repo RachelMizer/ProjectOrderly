@@ -107,17 +107,27 @@ Customer Pending Order Can Be Cancelled From Order History
     Wait Until Page Contains Element    xpath=//table    15s
 
     ${pending_cancel_count}=    Get Element Count    xpath=//button[normalize-space()='Cancel']
-    Should Be Equal As Integers    ${pending_cancel_count}    0
+    Should Be True    ${pending_cancel_count} > 0
+
+    Click Element    xpath=(//button[normalize-space()='Cancel'])[1]
+    Handle Alert    ACCEPT
+
+    Wait Until Keyword Succeeds    15s    1s    Page Should Contain    CANCELLED
 
 Customer Pending Order Can Be Cancelled From Order Detail
     Login As Customer User
     Go To    ${BASE_URL}/order-history
 
     Wait Until Page Contains    Your Order History    15s
-    Wait Until Page Contains Element    xpath=//table    15s
+    Wait Until Page Contains Element    xpath=//tr[contains(@class,'order-hist-row')]    15s
 
-    ${pending_rows}=    Get Element Count    xpath=//tr[contains(@class,'order-hist-row')][td[normalize-space()='PENDING']]
-    Should Be Equal As Integers    ${pending_rows}    0
+    Click Element    xpath=(//tr[contains(@class,'order-hist-row')][.//button[normalize-space()='Cancel']])[1]
+
+    Wait Until Page Contains Element    xpath=//button[normalize-space()='Cancel Order']    15s
+    Click Element    xpath=//button[normalize-space()='Cancel Order']
+    Handle Alert    ACCEPT
+
+    Wait Until Keyword Succeeds    15s    1s    Page Should Contain    CANCELLED
 
 Customer Non Pending Detail Does Not Show Cancel Button
     Login As Seeded Customer
