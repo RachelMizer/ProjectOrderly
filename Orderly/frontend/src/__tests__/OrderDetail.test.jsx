@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen,waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import OrderDetail from "../pages/Orders/OrderDetail";
 import * as ordersApi from "../api/orders";
@@ -151,4 +151,179 @@ describe("Order Detail Page", () => {
 
     expect(ordersApi.getOrderDetail).toHaveBeenCalledWith("99");
   });
+
+  test("shows no order found when API returns null", async () => {
+  ordersApi.getOrderDetail.mockResolvedValue(null);
+
+  renderOrderDetail("/orders/404");
+
+  expect(await screen.findByText(/no order found/i)).toBeInTheDocument();
+});
+
+test("does not show Standard variant label in item name", async () => {
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 45,
+    date: "2026-04-18T14:30:00Z",
+    status: "COMPLETED",
+    taxAmount: "0.25",
+    totalDue: "5.25",
+    items: [
+      {
+        itemId: 1,
+        productName: "Tea",
+        variantName: "Standard",
+        quantity: 1,
+        unitPriceCharged: "5.00",
+        itemTotal: "5.00",
+        modifiers: [],
+      },
+    ],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  renderOrderDetail("/orders/45");
+
+  expect(await screen.findByText(/^Tea$/i)).toBeInTheDocument();
+  expect(screen.queryByText(/Tea \(Standard\)/i)).not.toBeInTheDocument();
+});
+
+test("shows dash when item has no modifiers", async () => {
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 46,
+    date: "2026-04-18T14:30:00Z",
+    status: "COMPLETED",
+    taxAmount: "0.50",
+    totalDue: "9.50",
+    items: [
+      {
+        itemId: 1,
+        productName: "Mocha",
+        variantName: "Medium",
+        quantity: 1,
+        unitPriceCharged: "9.00",
+        itemTotal: "9.00",
+        modifiers: [],
+      },
+    ],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  renderOrderDetail("/orders/46");
+
+  expect(await screen.findByText(/order #46/i)).toBeInTheDocument();
+  expect(screen.getByText("—")).toBeInTheDocument();
+});
+
+test("shows cancel button for pending order and cancels successfully", async () => {
+  window.confirm = jest.fn(() => true);
+
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 50,
+    date: "2026-04-18T14:30:00Z",
+    status: "PENDING",
+    taxAmount: "0.50",
+    totalDue: "9.50",
+    items: [],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  ordersApi.cancelOrder.mockResolvedValue({ success: true });
+
+  renderOrderDetail("/orders/50");
+
+  const cancelButton = await screen.findByRole("button", { name: /cancel order/i });
+  fireEvent.click(cancelButton);
+
+  await waitFor(() => {
+    expect(ordersApi.cancelOrder).toHaveBeenCalledWith(50);
+  });
+
+  expect(
+    screen.getByRole("button", { name: /cancelling/i })
+  ).toBeInTheDocument();
+});
+
+test("does not cancel order when confirmation is declined", async () => {
+  window.confirm = jest.fn(() => false);
+
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 51,
+    date: "2026-04-18T14:30:00Z",
+    status: "PENDING",
+    taxAmount: "0.50",
+    totalDue: "9.50",
+    items: [],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  renderOrderDetail("/orders/51");
+
+  const cancelButton = await screen.findByRole("button", { name: /cancel order/i });
+  fireEvent.click(cancelButton);
+
+  expect(ordersApi.cancelOrder).not.toHaveBeenCalled();
+});
+
+test("shows cancelling state while cancel request is in progress", async () => {
+  window.confirm = jest.fn(() => true);
+
+  let resolveCancel;
+  const cancelPromise = new Promise((resolve) => {
+    resolveCancel = resolve;
+  });
+
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 52,
+    date: "2026-04-18T14:30:00Z",
+    status: "PENDING",
+    taxAmount: "0.50",
+    totalDue: "9.50",
+    items: [],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  ordersApi.cancelOrder.mockReturnValue(cancelPromise);
+
+  renderOrderDetail("/orders/52");
+
+  const cancelButton = await screen.findByRole("button", { name: /cancel order/i });
+  fireEvent.click(cancelButton);
+
+  expect(screen.getByRole("button", { name: /cancelling/i })).toBeDisabled();
+
+  resolveCancel({ success: true });
+
+  await waitFor(() => {
+    expect(screen.getByText(/cancelled/i)).toBeInTheDocument();
+  });
+});
+
+test("shows cancel error when cancel request fails", async () => {
+  window.confirm = jest.fn(() => true);
+
+  ordersApi.getOrderDetail.mockResolvedValue({
+    id: 53,
+    date: "2026-04-18T14:30:00Z",
+    status: "PENDING",
+    taxAmount: "0.50",
+    totalDue: "9.50",
+    items: [],
+    createdAt: "2026-04-18T14:26:23Z",
+    updatedAt: "2026-04-18T14:30:00Z",
+  });
+
+  ordersApi.cancelOrder.mockRejectedValue(new Error("Unable to cancel"));
+
+  renderOrderDetail("/orders/53");
+
+  const cancelButton = await screen.findByRole("button", { name: /cancel order/i });
+  fireEvent.click(cancelButton);
+
+  expect(await screen.findByText(/unable to cancel/i)).toBeInTheDocument();
+});
 });
