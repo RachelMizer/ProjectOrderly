@@ -152,6 +152,7 @@ const DEFAULT_COLORS = {
   mainTextColor:          "#333333",
   footerBgColor:          "#222222",
   footerLinkColor:        "#ffffff",
+  footerTextColor:        "#dddddd",
   btnBgColor:             "#eeeeee",
   btnTextColor:           "#333333",
   sectionBg1Color:        "#f5f0e8",
@@ -182,6 +183,7 @@ const RIGHT_COLORS = [
   { key: "mainTextColor",   label: "Main Content Text Color" },
   { key: "footerBgColor",   label: "Footer Bar Background Color" },
   { key: "footerLinkColor", label: "Footer Bar Link Color" },
+  { key: "footerTextColor", label: "Footer Bar Text Color" },
   { key: "btnBgColor",      label: "Button Background Color" },
   { key: "btnTextColor",    label: "Button Text Color" },
   { key: "sectionBg1Color", label: "Section Accent Background Color 1" },
@@ -216,6 +218,7 @@ function parseStorefrontData(data) {
     mainTextColor:          data.mainTextColor          || DEFAULT_COLORS.mainTextColor,
     footerBgColor:          data.footerBgColor          || DEFAULT_COLORS.footerBgColor,
     footerLinkColor:        data.footerLinkColor        || DEFAULT_COLORS.footerLinkColor,
+    footerTextColor:        data.footerTextColor        || DEFAULT_COLORS.footerTextColor,
     btnBgColor:             data.btnBgColor             || DEFAULT_COLORS.btnBgColor,
     btnTextColor:           data.btnTextColor           || DEFAULT_COLORS.btnTextColor,
     sectionBg1Color:        data.sectionBg1Color        || DEFAULT_COLORS.sectionBg1Color,
@@ -366,6 +369,7 @@ export default function AdminStorefrontSettings() {
     body.append("mainTextColor",          form.mainTextColor);
     body.append("footerBgColor",          form.footerBgColor);
     body.append("footerLinkColor",        form.footerLinkColor);
+    body.append("footerTextColor",        form.footerTextColor);
     body.append("btnBgColor",             form.btnBgColor);
     body.append("btnTextColor",           form.btnTextColor);
     body.append("sectionBg1Color",        form.sectionBg1Color);
@@ -637,9 +641,9 @@ export default function AdminStorefrontSettings() {
                       </div>
                     </div>
                     <div className="sf-preview-row sf-preview-row--bar" style={{ backgroundColor: c.footerBgColor }}>
-                      <span className="sf-preview-bar-label" style={{ color: c.footerLinkColor }}>Footer</span>
+                      <span className="sf-preview-bar-label" style={{ color: c.footerTextColor }}>Footer</span>
                       <span style={{ color: c.footerLinkColor, fontWeight: "bold" }}>Link</span>
-                      <span style={{ color: c.footerLinkColor }}>Text</span>
+                      <span style={{ color: c.footerTextColor }}>Text</span>
                     </div>
                   </div>
                 </div>

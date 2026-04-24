@@ -33,7 +33,9 @@
       "Bash(python manage.py shell -c ' *)",
       "Bash(python -c \"import django; print\\(django.__version__\\)\")",
       "Bash(python manage.py makemigrations orders --name=\"remove_order_total_check_constraint\")",
-      "Bash(python manage.py seed_data)"
+      "Bash(python manage.py seed_data)",
+      "PowerShell(\\(dir \"C:\\\\Orderly Dev\\\\ProjectOrderly\\\\Orderly\\\\backend\\\\settings\\\\migrations\"\\).Name)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8000/api/v1/settings/\" -Method GET | ConvertTo-Json -Depth 5)"
     ]
   }
 }

@@ -56,6 +56,7 @@ class StoreSettings(models.Model):
     main_text_color          = models.CharField(max_length=7, blank=True, default="#333333")
     footer_bg_color          = models.CharField(max_length=7, blank=True, default="#222222")
     footer_link_color        = models.CharField(max_length=7, blank=True, default="#ffffff")
+    footer_text_color        = models.CharField(max_length=7, blank=True, default="#dddddd")
     btn_bg_color             = models.CharField(max_length=7, blank=True, default="#eeeeee")
     btn_text_color           = models.CharField(max_length=7, blank=True, default="#333333")
     section_bg_1_color       = models.CharField(max_length=7, blank=True, default="#f5f0e8")

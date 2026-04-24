@@ -68,6 +68,7 @@ class StoreSettingsSerializer(serializers.ModelSerializer):
     mainTextColor           = serializers.CharField(source="main_text_color",           required=False, allow_blank=True)
     footerBgColor           = serializers.CharField(source="footer_bg_color",           required=False, allow_blank=True)
     footerLinkColor         = serializers.CharField(source="footer_link_color",         required=False, allow_blank=True)
+    footerTextColor         = serializers.CharField(source="footer_text_color",         required=False, allow_blank=True)
     btnBgColor              = serializers.CharField(source="btn_bg_color",              required=False, allow_blank=True)
     btnTextColor            = serializers.CharField(source="btn_text_color",            required=False, allow_blank=True)
     sectionBg1Color         = serializers.CharField(source="section_bg_1_color",        required=False, allow_blank=True)
@@ -110,6 +111,7 @@ class StoreSettingsSerializer(serializers.ModelSerializer):
             "mainTextColor",
             "footerBgColor",
             "footerLinkColor",
+            "footerTextColor",
             "btnBgColor",
             "btnTextColor",
             "sectionBg1Color",
