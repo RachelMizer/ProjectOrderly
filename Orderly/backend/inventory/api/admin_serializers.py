@@ -2,10 +2,25 @@ from rest_framework import serializers
 
 from inventory.models import InventoryItem
 from catalog.models import ProductVariant
+from suppliers.models import Supplier
+
+
+class SupplierSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supplier
+        fields = ["id", "name", "email", "phone"]
 
 
 class AdminInventoryItemSerializer(serializers.ModelSerializer):
     affected_products = serializers.SerializerMethodField()
+    supplier = SupplierSummarySerializer(read_only=True)
+    supplier_id = serializers.PrimaryKeyRelatedField(
+        queryset=Supplier.objects.all(),
+        source="supplier",
+        write_only=True,
+        allow_null=True,
+        required=False,
+    )
 
     class Meta:
         model = InventoryItem
@@ -15,6 +30,8 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
             "stock_quantity",
             "unit_of_measure",
             "reorder_level",
+            "supplier",
+            "supplier_id",
             "affected_products",
         ]
         read_only_fields = ["id"]
@@ -77,6 +94,8 @@ class LowStockInventorySerializer(serializers.ModelSerializer):
         decimal_places=2,
         read_only=True,
     )
+    unitOfMeasure = serializers.CharField(source="unit_of_measure", read_only=True)
+    supplierName = serializers.SerializerMethodField()
 
     class Meta:
         model = InventoryItem
@@ -85,4 +104,9 @@ class LowStockInventorySerializer(serializers.ModelSerializer):
             "name",
             "stockQuantity",
             "reorderLevel",
+            "unitOfMeasure",
+            "supplierName",
         ]
+
+    def get_supplierName(self, obj):
+        return obj.supplier.name if obj.supplier else None
