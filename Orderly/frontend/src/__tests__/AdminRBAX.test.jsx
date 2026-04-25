@@ -6,6 +6,7 @@ import * as auth from "../api/auth";
 jest.mock("../api/auth", () => ({
   isAuthenticated: jest.fn(),
   logout: jest.fn(),
+  getAuthHeaders: jest.fn(() => ({ Authorization: "Bearer fake-token" })),
 }));
 
 function setUser(role, firstName = "Biz") {
@@ -165,7 +166,7 @@ describe("Admin RBAC", () => {
     window.history.pushState({}, "", "/");
     render(<App />);
 
-    expect(screen.getByText(/filter the menu/i)).toBeInTheDocument();
+    expect(screen.getByText(/filters/i)).toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: /product catalog/i })
     ).not.toBeInTheDocument();

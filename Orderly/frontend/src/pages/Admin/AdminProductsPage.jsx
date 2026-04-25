@@ -55,8 +55,6 @@ export default function AdminProductsPage() {
     stock_quantity: "",
     reorder_level: "",
   });
-
-
   useEffect(() => {
     loadPageData();
   }, []);
@@ -137,10 +135,7 @@ export default function AdminProductsPage() {
 
   function handleVariantChange(e) {
     const { name, value } = e.target;
-    setVariantFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setVariantFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   function resetVariantForm() {
@@ -501,10 +496,19 @@ export default function AdminProductsPage() {
     return <span className="sort-indicator">{sortDir === "asc" ? "▲" : "▼"}</span>;
   }
 
+  const printTimestamp = new Date().toLocaleString("en-US", {
+    year: "numeric", month: "long", day: "numeric",
+    hour: "numeric", minute: "2-digit",
+  });
+
   return (
     <div>
+      <div className="print-only print-page-header">
+        <h2 className="print-page-title">Product Catalog</h2>
+        <p className="print-page-date">As of {printTimestamp}</p>
+      </div>
       <div className="submenu-bar">
-        <span className="submenu-label">Product Catalog</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>🛍️</span>Product Catalog</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -525,11 +529,11 @@ export default function AdminProductsPage() {
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/suppliers/new")}>
             + ADD SUPPLIER
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -565,7 +569,7 @@ export default function AdminProductsPage() {
               <th className="admin-th" onClick={() => handleSort("description")}>
                 Description <SortIndicator col="description" />
               </th>
-              <th className="admin-th admin-th--no-sort">Actions</th>
+              <th className="admin-th admin-th--no-sort no-print">Actions</th>
             </tr>
           </thead>
 
@@ -674,7 +678,7 @@ export default function AdminProductsPage() {
                               <th className="admin-th admin-th--no-sort">Unit Price</th>
                               <th className="admin-th admin-th--no-sort">Stock</th>
                               <th className="admin-th admin-th--no-sort">Reorder</th>
-                              <th className="admin-th admin-th--no-sort">Actions</th>
+                              <th className="admin-th admin-th--no-sort no-print">Actions</th>
                             </tr>
                           </thead>
                           <tbody>

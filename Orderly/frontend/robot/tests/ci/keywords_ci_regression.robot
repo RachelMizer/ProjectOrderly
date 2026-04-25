@@ -43,7 +43,7 @@ Capture Page Screenshot On Failure
 
 Go To Storefront
     Go To    ${STORE_URL}
-    Wait Until Page Contains    Filter the Menu    15s
+    Wait Until Page Contains    Filters    15s
     Wait Until Page Contains Element    css=.product-card    15s
 
 Go To Login Page
@@ -69,7 +69,7 @@ Login As Business User
 Open Product By Exact Name
     [Arguments]    ${product_name}
     Go To    ${BASE_URL}/
-    Wait Until Page Contains    Filter the Menu    15s
+    Wait Until Page Contains    Filters    15s
     Wait Until Page Contains Element    css=.product-card    15s
     Wait Until Page Contains Element    xpath=//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]    15s
     Click Element    xpath=(//div[contains(@class,'product-card')][.//h3[normalize-space()='${product_name}']]//a[contains(@class,'view-link') or contains(normalize-space(.),'View')])[1]
@@ -189,14 +189,6 @@ Go To Cart Page
     Go To    ${CART_URL}
     Wait Until Page Contains    Your Cart    10s
 
-Ensure Cart Has Item
-    Go To Cart Page
-    ${item_count}=    Get Element Count    css=.cart-item
-    IF    ${item_count} == 0
-        Add Simple Product To Cart
-        Go To Cart Page
-        Wait Until Page Contains Element    css=.cart-item    10s
-    END
 
 Cart Should Contain At Least One Item
     ${item_count}=    Get Element Count    css=.cart-item
@@ -213,10 +205,6 @@ Increase First Cart Item Quantity
     Click Element    xpath=(//div[contains(@class,'cart-item-controls')]//button[normalize-space()='+'])[1]
     Wait Until Keyword Succeeds    10x    1s    Quantity Should Change    ${before_qty}
 
-Quantity Should Change
-    [Arguments]    ${before_qty}
-    ${after_qty}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[1]
-    Should Not Be Equal    ${after_qty}    ${before_qty}
 
 Cart Total Should Be Visible
     Page Should Contain    Total
@@ -323,6 +311,24 @@ Profile Should Contain Updated Data
 
 Customer Admin Redirect Should Be Visible
     ${login_visible}=    Run Keyword And Return Status    Page Should Contain    Sign In
-    ${store_visible}=    Run Keyword And Return Status    Page Should Contain    Filter the Menu
+    ${store_visible}=    Run Keyword And Return Status    Page Should Contain    Filters
     Should Be True    ${login_visible} or ${store_visible}
     Page Should Not Contain    Dashboard Home
+
+Quantity Should Change
+    [Arguments]    ${before}
+    ${after}=    Get Text    xpath=(//div[contains(@class,'cart-item-controls')]/span)[2]
+    Should Not Be Equal    ${before}    ${after}
+
+Ensure Cart Has Item
+    Go To    ${BASE_URL}/cart
+    ${has_item}=    Run Keyword And Return Status
+    ...    Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    3s
+
+    IF    not ${has_item}
+        Go To    ${BASE_URL}/product/1
+        Wait Until Page Contains Element    xpath=//button[contains(., 'Add to Cart')]    15s
+        Click Element    xpath=//button[contains(., 'Add to Cart')]
+        Go To    ${BASE_URL}/cart
+        Wait Until Page Contains Element    xpath=//div[contains(@class,'cart-item')]    15s
+    END

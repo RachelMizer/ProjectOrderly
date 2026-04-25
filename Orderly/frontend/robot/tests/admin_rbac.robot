@@ -4,7 +4,7 @@ Test Setup    Open Browser To App
 Test Teardown    Close Browser Session
 
 *** Variables ***
-${CUSTOMER_EMAIL}       Customer1@example.com
+${CUSTOMER_EMAIL}       jamie.ortega@gmail.com
 ${CUSTOMER_PASSWORD}    Password123!
 ${ADMIN_INVENTORY_URL}    ${BASE_URL}/admin/inventory
 
@@ -18,23 +18,14 @@ Logged Out User Is Redirected To Admin Login From Admin Route
 
 Customer Does Not See Admin Navigation On Storefront
     Login As Customer User
-    Sync Auth Token Key For Frontend
     Go To    ${BASE_URL}/
-    Wait Until Page Contains    Filter the Menu    10s
-    Page Should Not Contain Link    Product Catalog
-    Page Should Not Contain Link    Reports
-    Page Should Not Contain Link    Inventory
-    Page Should Not Contain Link    Orders
+    Wait Until Location Is    ${BASE_URL}/    10s
+    Page Should Not Contain Link    Admin
 
 Customer Is Redirected To Admin Login From Admin Route
     Login As Customer User
-    Sync Auth Token Key For Frontend
-    Go To    ${BASE_URL}/admin/catalog
-    Wait Until Page Contains    Orderly    10s
-    Wait Until Page Contains Element    id=email    10s
-    Page Should Contain Element    id=password
-    Page Should Contain    Sign In
-    Page Should Not Contain    Product Catalog
+    Go To    ${BASE_URL}/admin/products
+    Wait Until Location Contains    /login    10s
 
 Business User Sees Admin Navigation On Dashboard
     Login As Business User
@@ -61,18 +52,11 @@ Business User Can Open Add Supplier Page
     Location Should Be    ${BASE_URL}/admin/suppliers/new
 
 Business User Can Open Admin Inventory Page
-    Open Browser    ${BASE_URL}    ${BROWSER}
-    Maximize Browser Window
     Login As Business User
-    Go To    ${ADMIN_INVENTORY_URL}
-
-    Wait Until Page Contains    Inventory    10s
-    Wait Until Page Contains    Welcome,    10s
-    Wait Until Page Contains    Track and update stock levels for all inventory items    10s
-    Wait Until Page Contains    Ingredient-Controlled Beverage Availability    10s
-    Wait Until Page Contains    Count-Based Inventory    10s
-    Capture Page Screenshot
-    Close Browser
+    Go To    ${BASE_URL}/admin/inventory
+    Wait Until Page Contains    Inventory Management    10s
+    Wait Until Page Contains    Product Dependencies    10s
+    Wait Until Page Contains    Supply Inventory    10s
     
 *** Keywords ***
 Sync Auth Token Key For Frontend

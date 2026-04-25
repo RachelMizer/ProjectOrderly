@@ -2,6 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { getGuestCartEmail } from "../api/orders";
 
+function flatMsg(val) {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (Array.isArray(val)) return val.map(flatMsg).join("; ");
+  if (typeof val === "object") {
+    return Object.entries(val)
+      .map(([k, v]) => `${k}: ${flatMsg(v)}`)
+      .join("; ");
+  }
+  return String(val);
+}
+
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +35,7 @@ const ProductPage = () => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [loading, setLoading] = useState(true);
   const [loadingModifiers, setLoadingModifiers] = useState(false);
+  const [cartError, setCartError] = useState(null);
 
   // ----------------------------------------------------
   // Load product + variants
@@ -158,15 +171,26 @@ const ProductPage = () => {
   const guestEmail = accessToken ? null : getGuestCartEmail();
 
   async function getDraftOrder() {
+    const token = localStorage.getItem("accessToken");
     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/draft`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` })
+        ...(token && { Authorization: `Bearer ${token}` })
       },
       body: JSON.stringify(guestEmail ? { guestEmail } : {})
     });
-    return res.json();
+    if (res.status === 401) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      navigate("/login");
+      throw new Error("Session expired. Please log in again.");
+    }
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) {
+      throw new Error(data?.message || `Could not reach cart (${res.status})`);
+    }
+    return data;
   }
 
   async function addItemToOrder(variantId, quantity) {
@@ -182,14 +206,24 @@ const ProductPage = () => {
         ...(guestEmail && { guestEmail })
       })
     });
-    return res.json();
+    if (res.status === 401) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      navigate("/login");
+      throw new Error("Session expired. Please log in again.");
+    }
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) {
+      throw new Error(flatMsg(data?.message) || `Failed to add item to cart (${res.status})`);
+    }
+    return data;
   }
 
   async function addModifiers(orderItemId) {
     const allSelected = Object.values(selectedOptions).flat();
 
     for (const modifierId of allSelected) {
-      await fetch(
+      const res = await fetch(
         `${process.env.REACT_APP_API_URL}/api/v1/orders/items/${orderItemId}/modifiers`,
         {
           method: "POST",
@@ -204,13 +238,19 @@ const ProductPage = () => {
           })
         }
       );
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const msg = flatMsg(errData?.message) || flatMsg(errData?.error) || `Failed to add modifier (${res.status})`;
+        throw new Error(msg);
+      }
     }
   }
 
   async function handleAddToCart() {
+    setCartError(null);
     try {
       if (isEditMode) {
-        await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items/${editItemId}`, {
+        const patchRes = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/items/${editItemId}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -221,6 +261,10 @@ const ProductPage = () => {
             ...(guestEmail && { guestEmail })
           })
         });
+        if (!patchRes.ok) {
+          const d = await patchRes.json().catch(() => ({}));
+          throw new Error(flatMsg(d?.message) || `Could not remove old item (${patchRes.status})`);
+        }
       }
 
       await getDraftOrder();
@@ -234,6 +278,7 @@ const ProductPage = () => {
       navigate("/cart");
     } catch (err) {
       console.error("Error adding to cart:", err);
+      setCartError(err.message || "Something went wrong. Please try again.");
     }
   }
 
@@ -346,6 +391,14 @@ const ProductPage = () => {
       {/* ================================
           PRICE + ADD TO CART
          ================================ */}
+      {!loadingModifiers && variants.length <= 1 && modifierGroups.length === 0 && (
+        <p className="prod-no-addons">This product doesn't have any add-ons or modifications.</p>
+      )}
+
+      {cartError && (
+        <p style={{ color: "#c0392b", margin: "0.5rem 0" }}>{cartError}</p>
+      )}
+
       <p className="price-label">Total: <span className="price">${totalPrice.toFixed(2)}</span></p>
 
       {selectedVariant && selectedVariant.stockQuantity !== null && Number(selectedVariant.stockQuantity) === 0 ? (

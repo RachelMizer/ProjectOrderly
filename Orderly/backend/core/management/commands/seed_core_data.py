@@ -130,57 +130,87 @@ class Command(BaseCommand):
 
         # --- 3) Suppliers ---
         suppliers = []
+        sup_map = {}
         if Supplier:
-            supplier_names = [
-                "Triangle Produce Co.",
-                "Carolina Meat Supply",
-                "Coastal Dairy Distributors",
-                "Piedmont Bakery Wholesale",
+            supplier_data = [
+                ("Brew Source NC",       "support@brewsource.example",         "9195551600"),
+                ("Carolina Wholesale",   "orders@carolinawholesale.example",   "9195551400"),
+                ("EcoPlastics",          "contact@ecoplastics.com",            "1-800-eco-4you"),
+                ("Fresh Farms Co",       "contact@freshfarms.example",         "9195551200"),
+                ("Good Grain Supply",    "hello@goodgrain.example",            "9195551500"),
+                ("Hearth & Heart Bakery","contact@heartNhearth.com",           "18001234456"),
+                ("In-House",             "contact@quicksip.com",               "9195558974"),
+                ("NUTrition Inc.",       "contact@NUTrition.com",              "1-800-wer-nuts"),
+                ("SupaGreen Produce",    "purchasing@supagreen.com",           "1-800-yas-green"),
+                ("Triangle Produce",     "sales@triangleproduce.example",      "9195551300"),
             ]
-            for name in supplier_names:
+            for name, email, phone in supplier_data:
                 s, _ = Supplier.objects.get_or_create(
                     name=name,
-                    defaults={"email": f"contact@{name.lower().replace(' ', '').replace('.', '')}.com", "phone": "919-555-0000"},
+                    defaults={"email": email, "phone": phone},
                 )
                 suppliers.append(s)
+                sup_map[name] = s
             self.stdout.write(self.style.SUCCESS(f"Suppliers seeded: {len(suppliers)}"))
         else:
             self.stdout.write(self.style.WARNING("Supplier model not found (skipping suppliers)."))
 
         # --- 4) Inventory Items ---
+        # Columns: (name, unit_of_measure, stock_quantity, reorder_level, supplier_name)
         inventory_items = []
         if InventoryItem:
-            # Try to match your UnitOfMeasure choices (units, oz, lb, g, ml, l)
             items = [
-                ("Coffee Beans",    "lb",    25,  10),
-                ("Espresso Beans",  "lb",    20,   8),
-                ("Green Tea Leaves","lb",    12,   5),
-                ("Black Tea Leaves","lb",    12,   5),
-                ("Milk",            "l",     30,  12),
-                ("Oat Milk",        "l",     16,   6),
-                ("Almond Milk",     "l",     16,   6),
-                ("Sugar",           "lb",    18,   8),
-                ("Vanilla Syrup",   "l",     10,   4),
-                ("Caramel Syrup",   "l",     10,   4),
-                ("Mocha Syrup",     "l",     10,   4),
-                ("Flour",           "lb",    40,  15),
-                ("Blueberries",     "lb",    14,   5),
-                ("Chocolate Chips", "lb",    10,   4),
-                ("Whipped Cream",   "units", 20,   8),
-                ("Cups (12oz)",     "units", 300, 120),
-                ("Cups (16oz)",     "units", 260, 100),
-                ("Lids (12oz)",     "units", 280, 120),
-                ("Lids (16oz)",     "units", 240, 100),
+                ("Almond Milk",              "l",      16,    6,   "NUTrition Inc."),
+                ("Avocado",                  "units",  20,    8,   "SupaGreen Produce"),
+                ("Bacon",                    "lb",     10,    4,   "Fresh Farms Co"),
+                ("Bagel",                    "units",  40,   15,   "Carolina Wholesale"),
+                ("Black Tea Leaves",         "lb",     12,    4,   "Brew Source NC"),
+                ("Blueberry Muffins",        "units",  72,   24,   "Hearth & Heart Bakery"),
+                ("Cake Pop - Birthday Cake", "units",  72,   24,   "Hearth & Heart Bakery"),
+                ("Cake Pop - Chocolate",     "units",  72,   24,   "Hearth & Heart Bakery"),
+                ("Cake Pop - Vanilla",       "units",  25,    4,   "Hearth & Heart Bakery"),
+                ("Caramel Syrup",            "l",      10,    4,   "Carolina Wholesale"),
+                ("Chai Spice (8oz)",         "units",  10,    4,   "Carolina Wholesale"),
+                ("Chocolate Croissants",     "units",  72,   24,   "Hearth & Heart Bakery"),
+                ("Coffee Beans",             "lb",      6,    2,   "Brew Source NC"),
+                ("Croissant",                "units",  40,   15,   "Carolina Wholesale"),
+                ("Cups (12oz)",              "units", 300,  120,   "EcoPlastics"),
+                ("Cups (16oz)",              "units", 260,  100,   None),
+                ("Cups (24oz)",              "units", 200,   80,   "EcoPlastics"),
+                ("Eggs",                     "units",  60,   24,   "Triangle Produce"),
+                ("English Muffin",           "units",  40,   15,   "Carolina Wholesale"),
+                ("Espresso Beans",           "lb",     20,    8,   "Brew Source NC"),
+                ("Green Tea Leaves",         "lb",     12,    5,   "Brew Source NC"),
+                ("Lids (12oz)",              "units", 280,  120,   "EcoPlastics"),
+                ("Lids (16oz)",              "units", 240,  100,   "EcoPlastics"),
+                ("Lids (24oz)",              "units", 200,   80,   "EcoPlastics"),
+                ("Milk",                     "l",      30,   12,   "Fresh Farms Co"),
+                ("Mocha Syrup",              "l",      10,    4,   "Carolina Wholesale"),
+                ("Napkins (6in)",            "units", 1000, 300,   "Carolina Wholesale"),
+                ("Oat Milk",                 "l",      16,    6,   "NUTrition Inc."),
+                ("Pumpkin Spice (8oz)",      "units",   0,    4,   "Carolina Wholesale"),
+                ("Sausage",                  "units",  30,   12,   "Carolina Wholesale"),
+                ("Stirs",                    "units", 500,  150,   "EcoPlastics"),
+                ("Straws (10in)",            "units", 500,  150,   "EcoPlastics"),
+                ("Straws (8in)",             "units", 500,  150,   "EcoPlastics"),
+                ("Sugar",                    "lb",     18,    8,   "Carolina Wholesale"),
+                ("Vanilla Syrup",            "l",      10,    4,   "Carolina Wholesale"),
+                ("Whipped Cream",            "units",  20,    8,   "Fresh Farms Co"),
             ]
-            for name, uom, stock_qty, reorder in items:
-                obj, _ = InventoryItem.objects.get_or_create(
+            for name, uom, stock_qty, reorder, sup_name in items:
+                supplier_obj = sup_map.get(sup_name) if sup_name else None
+                obj, created = InventoryItem.objects.get_or_create(
                     name=name,
                     defaults={
                         "unit_of_measure": uom,
                         "stock_quantity": money(stock_qty),
                         "reorder_level": money(reorder),
+                        "supplier": supplier_obj,
                     },
                 )
+                if not created and obj.supplier != supplier_obj:
+                    obj.supplier = supplier_obj
+                    obj.save(update_fields=["supplier"])
                 inventory_items.append(obj)
             self.stdout.write(self.style.SUCCESS(f"Inventory seeded: {len(inventory_items)}"))
         else:

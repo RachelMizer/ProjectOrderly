@@ -64,7 +64,7 @@ class TestOrderHistoryView:
 
         own_order_1 = self.create_order(customer1, status=OrderStatus.PENDING, subtotal="12.50")
         own_order_2 = self.create_order(customer1, status=OrderStatus.COMPLETED, subtotal="8.00")
-        self.create_order(customer2, status=OrderStatus.PAID, subtotal="99.99")
+        self.create_order(customer2, status=OrderStatus.PENDING, subtotal="99.99")
 
         self.client.force_authenticate(user=user1)
         response = self.client.get(self.url)
@@ -118,7 +118,7 @@ class TestOrderHistoryView:
         )
         newest = self.create_order(
             customer,
-            status=OrderStatus.PAID,
+            status=OrderStatus.PENDING,
             subtotal="9.00",
             created_at=now - timedelta(days=1),
         )
@@ -201,7 +201,7 @@ class TestOrderHistoryView:
         )
         oldest = self.create_order(
             customer,
-            status=OrderStatus.PAID,
+            status=OrderStatus.PENDING,
             created_at=now - timedelta(minutes=2),
         )
 

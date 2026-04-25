@@ -104,6 +104,11 @@ export default function OrderDetails() {
 
     return (
         <div className="order-detail-pg">
+            <div className="order-detail-pg-actions no-print">
+                <button className="order-detail-print-btn" onClick={() => window.print()}>
+                    🖨️ Print Receipt
+                </button>
+            </div>
             <h2>Order #{order.id}</h2>
 
             <p style={{ marginBottom: 0 }}>
@@ -160,7 +165,7 @@ export default function OrderDetails() {
                 </table>
             </div>
 
-            <Link to="/order-history" style={{ display: "block", marginTop: "16px", letterSpacing: "normal" }}>← Back to Order History</Link>
+            <Link to="/order-history" style={{ display: "block", marginTop: "16px", letterSpacing: "normal", color: "var(--sf-main-link)" }}>← Back to Order History</Link>
         </div>
     );
 }

@@ -19,6 +19,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
+
+def _validation_error_message(exc):
+    if hasattr(exc, "message_dict"):
+        parts = []
+        for field, msgs in exc.message_dict.items():
+            joined = ", ".join(msgs) if isinstance(msgs, list) else str(msgs)
+            parts.append(f"{field}: {joined}")
+        return "; ".join(parts)
+    messages = exc.messages if hasattr(exc, "messages") else [str(exc)]
+    return "; ".join(str(m) for m in messages)
+
 from accounts.models import CustomerProfile
 from accounts.api.permissions import IsBusinessUser
 from orders.models import Order, OrderItem, OrderStatus
@@ -158,7 +169,14 @@ class DraftOrderItemCreateView(APIView):
             draft_order, _ = get_or_create_guest_draft_order(guest_email)
 
         order_item = add_item_to_order(draft_order, variant, quantity)
-        recalculate_order_totals(draft_order)
+
+        try:
+            recalculate_order_totals(draft_order)
+        except DjangoValidationError as exc:
+            return Response(
+                {"error": "INVALID_INPUT", "message": _validation_error_message(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {
@@ -237,7 +255,13 @@ class DraftOrderItemUpdateView(APIView):
         quantity = serializer.validated_data["quantity"]
         draft_order = order_item.order
         updated_item = update_order_item_quantity(order_item, quantity)
-        recalculate_order_totals(draft_order)
+        try:
+            recalculate_order_totals(draft_order)
+        except DjangoValidationError as exc:
+            return Response(
+                {"error": "INVALID_INPUT", "message": _validation_error_message(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if updated_item is None:
             return Response(
@@ -274,7 +298,13 @@ class DraftOrderItemModifierCreateView(APIView):
 
         # Recalculate after modifier is created
         order_item = OrderItem.objects.get(pk=orderItemId)
-        recalculate_order_totals(order_item.order)
+        try:
+            recalculate_order_totals(order_item.order)
+        except DjangoValidationError as exc:
+            return Response(
+                {"error": "INVALID_INPUT", "message": _validation_error_message(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(result, status=status.HTTP_201_CREATED)
 
@@ -454,7 +484,7 @@ class OrderDetailView(APIView):
             customer_profile = get_customer_profile_for_user(request.user)
             order = get_order_for_customer(orderId, customer_profile)
 
-            serializer = OrderDetailSerializer(order)
+            serializer = OrderDetailSerializer(order, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         guest_email = request.query_params.get("guestEmail")
@@ -468,7 +498,7 @@ class OrderDetailView(APIView):
             )
 
         order = get_order_for_guest(orderId, guest_email)
-        serializer = OrderDetailSerializer(order)
+        serializer = OrderDetailSerializer(order, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class OrderHistoryView(APIView):
@@ -561,23 +591,75 @@ class BusinessOrderListView(APIView):
                 return Response(
                     {
                         "error": "INVALID_STATUS",
-                        "message": "status must be one of: DRAFT, PENDING, PAID, COMPLETED, CANCELLED",
+                        "message": "status must be one of: DRAFT, PENDING, COMPLETED, CANCELLED",
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             queryset = queryset.filter(status=normalized_status)
 
-        serializer = BusinessOrderListSerializer(queryset, many=True)
+        year_param = request.query_params.get("year")
+        month_param = request.query_params.get("month")
+        day_param = request.query_params.get("day")
+
+        try:
+            if year_param:
+                queryset = queryset.filter(created_at__year=int(year_param))
+            if month_param:
+                queryset = queryset.filter(created_at__month=int(month_param))
+            if day_param:
+                queryset = queryset.filter(created_at__day=int(day_param))
+        except ValueError:
+            return Response(
+                {"error": "INVALID_INPUT", "message": "year, month, and day must be integers."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        total_count = queryset.count()
+
+        try:
+            page = max(1, int(request.query_params.get("page", 1)))
+            page_size = min(500, max(1, int(request.query_params.get("pageSize", 100))))
+        except (ValueError, TypeError):
+            page = 1
+            page_size = 100
+
+        offset = (page - 1) * page_size
+        paginated = queryset[offset: offset + page_size]
+
+        serializer = BusinessOrderListSerializer(paginated, many=True)
 
         return Response(
             {
-                "count": queryset.count(),
+                "count": total_count,
+                "next": (offset + page_size) < total_count,
+                "previous": page > 1,
                 "results": serializer.data,
             },
             status=status.HTTP_200_OK,
         )
     
+class OrderYearsView(APIView):
+    """
+    Return the distinct years in which non-draft orders exist.
+
+    GET /api/v1/orders/years
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get(self, request):
+        from django.db.models.functions import ExtractYear
+        years = (
+            Order.objects.exclude(status=OrderStatus.DRAFT)
+            .annotate(year=ExtractYear("created_at"))
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+        return Response(list(years), status=status.HTTP_200_OK)
+
+
 class CompleteOrderView(APIView):
     """
     Business-only order completion endpoint.

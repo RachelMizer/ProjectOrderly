@@ -36,11 +36,22 @@ async function parseJson(response){
 }
 
 function buildError(defaultMessage, response, data = {} ) {
-  const err = new Error(data?.message || data?.detail || defaultMessage);
-  err.response = {
-    status: response.status,
-    data,
-  };
+  let message = data?.message || data?.detail;
+  if (!message) {
+    const fieldErrors = Object.entries(data)
+      .filter(([k]) => k !== "error")
+      .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+      .join("; ");
+    message = fieldErrors || defaultMessage;
+  }
+  if (Array.isArray(message)) message = message.join(" ");
+  else if (message && typeof message === "object") {
+    message = Object.entries(message)
+      .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+      .join("; ");
+  }
+  const err = new Error(message);
+  err.response = { status: response.status, data };
   return err;
 }
 

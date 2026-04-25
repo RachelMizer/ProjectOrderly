@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
-import { pushRecentOrder } from "../../utils/recentOrders";
+import { pushRecentOrder, removeRecentOrder } from "../../utils/recentOrders";
 
 const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1`;
 
@@ -67,6 +67,7 @@ export default function AdminOrderDetail() {
       }
 
       if (response.status === 404) {
+        removeRecentOrder(parseInt(orderId));
         throw new Error("Order not found.");
       }
 
@@ -134,11 +135,11 @@ export default function AdminOrderDetail() {
             className="submenu-action"
             onClick={() => navigate("/admin/orders")}
           >
-            &lt; BACK TO ORDERS
+            <span style={{marginRight:"-4px"}}>⬅️</span> BACK TO ORDERS
           </button>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -157,14 +158,17 @@ export default function AdminOrderDetail() {
           <div className="order-detail-header">
             <div className="order-detail-meta">
               <p className="order-detail-id">Order #{order.id}</p>
-              <p className="order-detail-date">{formatDateTime(order.date)}</p>
+              <p className="order-detail-date"><strong>{formatDateTime(order.date)}</strong></p>
               <p className="order-detail-customer">
-                {order.customerFirstName || order.customerLastName
-                  ? `${order.customerFirstName || ""} ${order.customerLastName || ""}`.trim()
-                  : order.customerId ? `Customer #${order.customerId}` : "—"}
+                <strong>
+                  {order.customerFirstName || order.customerLastName
+                    ? `${order.customerFirstName || ""} ${order.customerLastName || ""}`.trim()
+                    : order.customerId ? `Customer #${order.customerId}` : "—"}
+                </strong>
               </p>
             </div>
             <div className="order-detail-status-wrap">
+              <span className="order-detail-status-label">Status:</span>
               <StatusBadge status={order.status} />
               {order.status === "PENDING" && (
                 <button
@@ -186,7 +190,7 @@ export default function AdminOrderDetail() {
           </div>
 
           {/* Items table */}
-          <p className="inv-section-header">Items</p>
+          <p className="inv-section-header">Order Details</p>
 
           {(!order.items || order.items.length === 0) ? (
             <p className="rpt-empty">No items on this order.</p>
@@ -197,7 +201,7 @@ export default function AdminOrderDetail() {
                   <tr>
                     <th className="admin-th admin-th--no-sort inv-td-left">Product</th>
                     <th className="admin-th admin-th--no-sort">Variant</th>
-                    <th className="admin-th admin-th--no-sort">Modifiers</th>
+                    <th className="admin-th admin-th--no-sort" style={{textAlign:"center"}}>Modifiers</th>
                     <th className="admin-th admin-th--no-sort">Qty</th>
                     <th className="admin-th admin-th--no-sort">Unit Price</th>
                     <th className="admin-th admin-th--no-sort">Item Total</th>
@@ -208,7 +212,7 @@ export default function AdminOrderDetail() {
                     <tr key={item.itemId}>
                       <td className="inv-td-left td-name">{item.productName}</td>
                       <td>{item.variantName}</td>
-                      <td className="order-detail-modifiers">
+                      <td className="order-detail-modifiers" style={{textAlign:"center"}}>
                         {item.modifiers && item.modifiers.length > 0
                           ? item.modifiers.map((m) => (
                               <span key={m.id} className="order-detail-modifier-tag">

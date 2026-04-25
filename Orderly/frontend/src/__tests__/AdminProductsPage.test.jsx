@@ -1290,4 +1290,299 @@ describe("AdminProductsPage", () => {
 
     expect(await screen.findByText(/failed to delete variant/i)).toBeInTheDocument();
   });
+
+  test("clear filters resets product search", async () => {
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Latte",
+          category: 1,
+          supplier: 1,
+          description: "Espresso drink",
+        },
+        {
+          id: 2,
+          name: "Green Tea",
+          category: 2,
+          supplier: 1,
+          description: "Tea drink",
+        },
+      ],
+      categories: [
+        { id: 1, name: "Coffee" },
+        { id: 2, name: "Tea" },
+      ],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
+
+    renderPage();
+
+    expect(await screen.findByText("Latte")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByPlaceholderText(/search products/i), {
+      target: { value: "latte" },
+    });
+
+    expect(screen.queryByText("Green Tea")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /clear filters/i }));
+
+    expect(screen.getByText("Latte")).toBeInTheDocument();
+    expect(screen.getByText("Green Tea")).toBeInTheDocument();
+  });
+
+  test("export and print buttons trigger actions", async () => {
+    window.print = jest.fn();
+
+    setupFetch({
+      products: [],
+      categories: [],
+      suppliers: [],
+    });
+
+    renderPage();
+
+    await screen.findByText(/no products found/i);
+
+    fireEvent.click(screen.getByRole("button", { name: /export/i }));
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/export");
+
+    fireEvent.click(screen.getByRole("button", { name: /print/i }));
+    expect(window.print).toHaveBeenCalled();
+  });
+
+  test("renders fallback category supplier and description values", async () => {
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Mystery Product",
+          category: 99,
+          supplier: 88,
+          description: "",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
+
+    renderPage();
+
+    const table = await screen.findByRole("table");
+
+    expect(within(table).getByText(/mystery product/i)).toBeInTheDocument();
+    expect(within(table).getAllByText("—")).toHaveLength(3);
+  });
+
+  test("shows category load error", async () => {
+    setupFetch({
+      products: [],
+      suppliers: [],
+      overrides: [
+        {
+          method: "GET",
+          path: "/api/v1/categories",
+          response: {
+            ok: false,
+            status: 500,
+            body: {},
+          },
+        },
+      ],
+    });
+
+    renderPage();
+
+    expect(
+      await screen.findByText(/failed to load categories/i)
+    ).toBeInTheDocument();
+  });
+
+  test("shows supplier load error", async () => {
+    setupFetch({
+      products: [],
+      categories: [],
+      overrides: [
+        {
+          method: "GET",
+          path: "/api/v1/admin/suppliers",
+          response: {
+            ok: false,
+            status: 500,
+            body: {},
+          },
+        },
+      ],
+    });
+
+    renderPage();
+
+    expect(
+      await screen.findByText(/failed to load suppliers/i)
+    ).toBeInTheDocument();
+  });
+
+  test("does not delete product when confirmation is cancelled", async () => {
+    window.confirm = jest.fn(() => false);
+
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Keep Product",
+          category: { id: 1, name: "Coffee" },
+          supplier: { id: 1, name: "Main Supplier" },
+          description: "Do not delete",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+    });
+
+    renderPage();
+
+    await screen.findByText(/do not delete/i);
+
+    fireEvent.click(screen.getByRole("button", { name: /^delete$/i }));
+
+    expect(window.confirm).toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(screen.getByText(/keep product/i)).toBeInTheDocument();
+  });
+
+  test("does not delete variant when confirmation is cancelled", async () => {
+    window.confirm = jest.fn(() => false);
+
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Latte",
+          category: { id: 1, name: "Coffee" },
+          supplier: { id: 1, name: "Main Supplier" },
+          description: "Hot drink",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      variantsByProduct: {
+        1: [
+          {
+            id: 101,
+            name: "Large",
+            sku: "LATTE-L",
+            unit_price: "5.50",
+            stock_quantity: 10,
+            reorder_level: 3,
+          },
+        ],
+      },
+    });
+
+    renderPage();
+
+    await screen.findByText(/hot drink/i);
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+    await screen.findByText(/^large$/i);
+
+    const variantTable = screen.getAllByRole("table")[1];
+
+    fireEvent.click(
+      within(variantTable).getByRole("button", { name: /^delete$/i })
+    );
+
+    expect(window.confirm).toHaveBeenCalled();
+    expect(screen.getByText(/latte-l/i)).toBeInTheDocument();
+  });
+
+  test("shows variant delete error when backend delete fails", async () => {
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Latte",
+          category: { id: 1, name: "Coffee" },
+          supplier: { id: 1, name: "Main Supplier" },
+          description: "Hot drink",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      variantsByProduct: {
+        1: [
+          {
+            id: 101,
+            name: "Large",
+            sku: "LATTE-L",
+            unit_price: "5.50",
+            stock_quantity: 10,
+            reorder_level: 3,
+          },
+        ],
+      },
+      overrides: [
+        {
+          method: "DELETE",
+          path: "/api/v1/admin/products/1/variants/101",
+          response: {
+            ok: false,
+            status: 500,
+            body: {},
+          },
+        },
+      ],
+    });
+
+    renderPage();
+
+    await screen.findByText(/hot drink/i);
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+    await screen.findByText(/^large$/i);
+
+    const variantTable = screen.getAllByRole("table")[1];
+
+    fireEvent.click(
+      within(variantTable).getByRole("button", { name: /^delete$/i })
+    );
+
+    expect(
+      await screen.findByText(/failed to delete variant/i)
+    ).toBeInTheDocument();
+  });
+
+  test("cancel button resets variant form", async () => {
+    setupFetch({
+      products: [
+        {
+          id: 1,
+          name: "Latte",
+          category: { id: 1, name: "Coffee" },
+          supplier: { id: 1, name: "Main Supplier" },
+          description: "Hot drink",
+        },
+      ],
+      categories: [{ id: 1, name: "Coffee" }],
+      suppliers: [{ id: 1, name: "Main Supplier" }],
+      variantsByProduct: { 1: [] },
+    });
+
+    renderPage();
+
+    await screen.findByText(/hot drink/i);
+    fireEvent.click(screen.getByRole("button", { name: /edit options/i }));
+    await screen.findByText(/options for latte/i);
+
+    const nameInput = screen.getByPlaceholderText(/variant name/i);
+
+    fireEvent.change(nameInput, {
+      target: { value: "Small" },
+    });
+
+    expect(nameInput).toHaveValue("Small");
+
+    fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    expect(nameInput).toHaveValue("");
+  });
 });

@@ -51,14 +51,79 @@ function getStoredUser() {
   }
 }
 
+function formatPhone(raw) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 10) return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6)}`;
+  if (digits.length === 11 && digits[0] === "1") return `1-${digits.slice(1,4)}-${digits.slice(4,7)}-${digits.slice(7)}`;
+  return raw;
+}
+
 function AppContent() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
   const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState(getStoredUser);
+  const [storeLogo, setStoreLogo] = useState(null);
+  const [storeAddress, setStoreAddress] = useState("");
+  const [storePhone, setStorePhone] = useState("");
+  const [storeHours, setStoreHours] = useState("");
+  const [storeTagline, setStoreTagline] = useState("");
+  const [showTagline, setShowTagline] = useState(false);
 
   const role = user?.role?.toUpperCase();
   const firstName = user?.firstName || "";
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/settings/")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (!data) return;
+        if (data.storeName)    document.title = data.storeName;
+        if (data.favicon) {
+          const link = document.querySelector("link[rel='icon']");
+          if (link) link.href = data.favicon;
+        }
+        if (data.storeImage)   setStoreLogo(data.storeImage);
+        if (data.storeAddress) setStoreAddress(data.storeAddress);
+        if (data.storePhone)   setStorePhone(data.storePhone);
+        if (data.hours)        setStoreHours(data.hours);
+        if (data.storeTagline) setStoreTagline(data.storeTagline);
+        setShowTagline(data.showTagline ?? false);
+
+        // Apply storefront theme
+        const root = document.documentElement;
+        if (data.pageBackgroundColor)    root.style.setProperty("--sf-page-bg",          data.pageBackgroundColor);
+        if (data.headerSpecialTextColor) root.style.setProperty("--sf-header-special",   data.headerSpecialTextColor);
+        if (data.headerTextColor)        root.style.setProperty("--sf-header-text",       data.headerTextColor);
+        if (data.navBgColor)             root.style.setProperty("--sf-nav-bg",            data.navBgColor);
+        if (data.navLinkColor)           root.style.setProperty("--sf-nav-link",          data.navLinkColor);
+        if (data.navTextColor)           root.style.setProperty("--sf-nav-text",          data.navTextColor);
+        if (data.mainLinkColor)          root.style.setProperty("--sf-main-link",         data.mainLinkColor);
+        if (data.mainTextColor)          root.style.setProperty("--sf-main-text",         data.mainTextColor);
+        if (data.footerBgColor)          root.style.setProperty("--sf-footer-bg",         data.footerBgColor);
+        if (data.footerLinkColor)        root.style.setProperty("--sf-footer-link",       data.footerLinkColor);
+        if (data.btnBgColor)             root.style.setProperty("--sf-btn-bg",            data.btnBgColor);
+        if (data.btnTextColor)           root.style.setProperty("--sf-btn-text",          data.btnTextColor);
+        if (data.sectionBg1Color)        root.style.setProperty("--sf-section-bg-1",      data.sectionBg1Color);
+        if (data.sectionBg2Color)        root.style.setProperty("--sf-section-bg-2",      data.sectionBg2Color);
+
+        if (data.fontChoice) {
+          const fontMap = {
+            arimo:    "'Arimo', sans-serif",
+            lora:     "'Lora', serif",
+            roboto:   "'RobotoCondensed', sans-serif",
+            playfair: "'PlayfairDisplay', serif",
+            raleway:  "'Raleway', sans-serif",
+            munson:   "'Munson', serif",
+          };
+          const family = fontMap[data.fontChoice] || fontMap.munson;
+          root.style.setProperty("--sf-font", family);
+        }
+
+        try { localStorage.setItem("sf_theme", JSON.stringify(data)); } catch {}
+      })
+      .catch(() => {});
+  }, []);
 
   // Load profile on login
   useEffect(() => {
@@ -162,21 +227,29 @@ async function fetchCartCount() {
   return (
     <div className="wrapper">
       <header>
-        <img src="/img/QSlogo.png" alt="Quick Sip Cafe" />
-        <div className="header-side-info">
-          <div className="header-info">
-            <p><strong style={{ fontSize: "1rem", color: "#482e1d" }}>Visit Us</strong></p>
-            <p>412 Fayetteville St</p>
-            <p>Raleigh, NC 27601</p>
-            <p style={{ color: "#873818" }}>📞 (919) 555-0184</p>
+        <img src={storeLogo || "/img/logo.png"} alt="Store Logo" />
+        {(storeAddress || storePhone || storeHours) && (
+          <div className="header-side-info">
+            {(storeAddress || storePhone) && (
+              <div className="header-info">
+                <p><strong style={{ color: "var(--sf-header-special)" }}>Visit Us</strong></p>
+                {storeAddress && <p style={{ whiteSpace: "pre", color: "var(--sf-header-text)" }}>{storeAddress}</p>}
+                {storePhone && <p style={{ color: "var(--sf-header-text)" }}>📞 {formatPhone(storePhone)}</p>}
+              </div>
+            )}
+            {storeHours && (
+              <div className="header-hours">
+                <p><strong style={{ color: "var(--sf-header-special)" }}>Hours</strong></p>
+                <p style={{ whiteSpace: "pre", color: "var(--sf-header-text)" }}>{storeHours}</p>
+              </div>
+            )}
           </div>
-          <div className="header-hours">
-            <p><strong style={{ fontSize: "1rem", color: "#482e1d" }}>Hours</strong></p>
-            <p>Mon – Sat &nbsp; 6:00 AM – 8:00 PM</p>
-            <p>Sunday &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7:00 AM – 5:00 PM</p>
-          </div>
-        </div>
+        )}
       </header>
+
+      {showTagline && storeTagline && (
+        <h2 className="store-tagline">{storeTagline}</h2>
+      )}
 
       <nav>
         <h3>{loggedIn ? `Welcome, ${firstName}!` : "Welcome!"}</h3>
@@ -201,7 +274,11 @@ async function fetchCartCount() {
         )}
 
         <div className="cart-nav-item">
-          <img src="/img/ico_cart.png" alt="cart" />
+          <svg className="cart-nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
           <Link to="/cart">Cart</Link>
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </div>

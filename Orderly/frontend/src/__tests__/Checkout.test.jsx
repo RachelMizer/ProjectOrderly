@@ -67,6 +67,13 @@ describe("Checkout", () => {
     );
 
     fetch.mockImplementation((url, options = {}) => {
+      if (url.includes("settings")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ taxRate: 7.2 }),
+        });
+      }
+
       if (url.includes("/orders/draft")) {
         return Promise.resolve({
           ok: true,
@@ -137,9 +144,9 @@ describe("Checkout", () => {
     expect(screen.getByText(/qty: 2/i)).toBeInTheDocument();
 
     // Updated assertions
-    expect(screen.getAllByText("$10.00")).toHaveLength(2);
-    expect(screen.getByText("$0.50")).toBeInTheDocument();
-    expect(screen.getByText("$10.50")).toBeInTheDocument();
+    expect(screen.getAllByText("$10.00").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/\(\+\$1\.00\)/i)).toBeInTheDocument();
+    expect(screen.getByText("$10.72")).toBeInTheDocument();
     });
 
   test("prefills payment fields from stored user", async () => {

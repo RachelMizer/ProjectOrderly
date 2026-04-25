@@ -5,7 +5,7 @@ import { getAuthHeaders } from "../../api/auth";
 import { pushRecentOrder } from "../../utils/recentOrders";
 
 const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1`;
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 100;
 
 const MONTH_NAMES = [
   "January","February","March","April","May","June",
@@ -61,7 +61,7 @@ export default function Orders() {
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState("");
   const [searchQuery, setSearchQuery]   = useState("");
-  const [statusFilter, setStatusFilter] = useState("PENDING");
+  const [statusFilter, setStatusFilter] = useState("");
   const [yearFilter, setYearFilter]     = useState("");
   const [monthFilter, setMonthFilter]   = useState("");
   const [dayFilter, setDayFilter]       = useState("");
@@ -73,6 +73,20 @@ export default function Orders() {
   const [sortDir, setSortDir]           = useState("desc");
   const [completing, setCompleting]     = useState(null);
   const [feedback, setFeedback]         = useState({ id: null, type: null, message: "" });
+  const [availableYears, setAvailableYears] = useState([]);
+
+  useEffect(() => {
+    async function fetchYears() {
+      try {
+        const res = await fetch(`${API_BASE}/orders/years`, { headers: { ...getAuthHeaders() } });
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableYears(Array.isArray(data) ? data : []);
+        }
+      } catch (_) {}
+    }
+    fetchYears();
+  }, []);
 
   useEffect(() => {
     loadOrders();
@@ -87,11 +101,9 @@ export default function Orders() {
       params.set("page", page);
       params.set("pageSize", PAGE_SIZE);
       if (statusFilter) params.set("status", statusFilter);
-      if (yearFilter && monthFilter && dayFilter) {
-        const mm = String(monthFilter).padStart(2, "0");
-        const dd = String(dayFilter).padStart(2, "0");
-        params.set("dateCreated", `${yearFilter}-${mm}-${dd}`);
-      }
+      if (yearFilter)  params.set("year", yearFilter);
+      if (monthFilter) params.set("month", monthFilter);
+      if (dayFilter)   params.set("day", dayFilter);
 
       const response = await fetch(`${API_BASE}/orders?${params.toString()}`, {
         headers: { ...getAuthHeaders() },
@@ -195,10 +207,14 @@ export default function Orders() {
   const searchedOrders = searchQuery.trim()
     ? orders.filter((o) => {
         const q = searchQuery.toLowerCase();
-        const customer = String(o.customerId || "");
+        const firstName = String(o.customerFirstName || "").toLowerCase();
+        const lastName = String(o.customerLastName || "").toLowerCase();
+        const fullName = `${firstName} ${lastName}`.trim();
         return (
           String(o.id).includes(q) ||
-          customer.toLowerCase().includes(q)
+          firstName.includes(q) ||
+          lastName.includes(q) ||
+          fullName.includes(q)
         );
       })
     : orders;
@@ -230,17 +246,12 @@ export default function Orders() {
     return "All Orders";
   }
 
-  // Available years derived from loaded data for the dropdowns
-  const availableYears = [...new Set(
-    orders.map((o) => getOrderDate(o).getFullYear())
-  )].sort((a, b) => b - a);
-
   const showEmpty = !loading && !error && sortedOrders.length === 0;
 
   return (
     <div>
       <div className="submenu-bar">
-        <span className="submenu-label">Order Management</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>🧾</span>Order Management</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -303,11 +314,11 @@ export default function Orders() {
             )}
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -322,7 +333,7 @@ export default function Orders() {
 
       {!loading && !error && (
         <>
-          <h1 className="orders-view-title">Orders</h1>
+          <h1 className="orders-view-title">{buildTitle()}</h1>
 
           {feedback.message && (
             <div key={feedback.id + feedback.message} className={`orders-feedback orders-feedback--${feedback.type}`}>
@@ -352,7 +363,7 @@ export default function Orders() {
                     <th className="admin-th" onClick={() => handleSort("total")}>
                       Total <SortIndicator sortKey={sortKey} col="total" sortDir={sortDir} />
                     </th>
-                    <th className="admin-th admin-th--no-sort">Actions</th>
+                    <th className="admin-th admin-th--no-sort no-print">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -401,6 +412,14 @@ export default function Orders() {
                   <button
                     type="button"
                     className="submenu-action"
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                  >
+                    &lt;&lt; FIRST
+                  </button>
+                  <button
+                    type="button"
+                    className="submenu-action"
                     onClick={() => setPage((p) => p - 1)}
                     disabled={!hasPrev}
                   >
@@ -416,6 +435,14 @@ export default function Orders() {
                     disabled={!hasNext}
                   >
                     NEXT &gt;
+                  </button>
+                  <button
+                    type="button"
+                    className="submenu-action"
+                    onClick={() => setPage(Math.ceil(totalCount / PAGE_SIZE))}
+                    disabled={page === Math.ceil(totalCount / PAGE_SIZE)}
+                  >
+                    LAST &gt;&gt;
                   </button>
                 </div>
               </div>

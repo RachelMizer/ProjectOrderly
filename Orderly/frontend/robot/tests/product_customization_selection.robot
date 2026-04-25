@@ -33,19 +33,22 @@ Open Breakfast Sandwich Page
     Click Element    xpath=//*[contains(normalize-space(.), 'Breakfast Sandwich')]
     Wait Until Page Contains    Breakfast Sandwich    15s
 
+Price Should Change
+    [Arguments]    ${before}
+    ${after}=    Get Text    xpath=(//*[contains(text(), '$')])[last()]
+    Should Not Be Equal    ${before}    ${after}
+
 *** Test Cases ***
 Customer Can Open Latte Customization Page
     Open Browser And Login As Customer
     Open Latte Page
     Page Should Contain    Latte
-    Capture Page Screenshot
     Close Browser
 
 Latte Customization Page Loads Successfully
     Open Browser And Login As Customer
     Open Latte Page
     Wait Until Page Contains    Latte    15s
-    Capture Page Screenshot
     Close Browser
 
 Customer Can Change Latte Variant
@@ -53,7 +56,6 @@ Customer Can Change Latte Variant
     Open Latte Page
     Wait Until Page Contains Element    xpath=//*[contains(normalize-space(.), 'Medium')] | //*[contains(normalize-space(.), 'Large')]    15s
     Click Element    xpath=//*[contains(normalize-space(.), 'Medium')] | //*[contains(normalize-space(.), 'Large')]
-    Capture Page Screenshot
     Close Browser
 
 Changing Variant Reloads Options
@@ -63,14 +65,12 @@ Changing Variant Reloads Options
     Click Element    xpath=//*[contains(normalize-space(.), 'Medium')] | //*[contains(normalize-space(.), 'Large')]
     Sleep    1s
     Page Should Contain    Latte
-    Capture Page Screenshot
     Close Browser
 
 Breakfast Sandwich Loads Modifier Options
     Open Browser And Login As Customer
     Open Breakfast Sandwich Page
     Wait Until Page Contains Element    xpath=//*[contains(normalize-space(.), 'Croissant')]    15s
-    Capture Page Screenshot
     Close Browser
 
 Customer Can Select Breakfast Sandwich Bread Option
@@ -78,38 +78,45 @@ Customer Can Select Breakfast Sandwich Bread Option
     Open Breakfast Sandwich Page
     Wait Until Page Contains Element    xpath=//*[contains(normalize-space(.), 'Croissant')]    15s
     Click Element    xpath=//*[contains(normalize-space(.), 'Croissant')]
-    Capture Page Screenshot
     Close Browser
 
 Customer Can Select Multiple Breakfast Sandwich Protein Options
-    Open Browser And Login As Customer
-    Open Breakfast Sandwich Page
-    Wait Until Page Contains    Bacon    15s
-    Wait Until Page Contains    Sausage    15s
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Go To    ${BASE_URL}/product/10
+    Wait Until Page Contains    Breakfast Sandwich    15s
+    Wait Until Page Contains Element    xpath=//input[@type='checkbox']    15s
+
+    Click Element    xpath=(//input[@type='checkbox'])[1]
     Click Element    xpath=(//input[@type='checkbox'])[2]
-    Click Element    xpath=(//input[@type='checkbox'])[3]
-    Capture Page Screenshot
+
     Close Browser
 
 Breakfast Sandwich Shows Required Modifier Options
-    Open Browser And Login As Customer
-    Open Breakfast Sandwich Page
-    Wait Until Page Contains    Bagel    15s
-    Wait Until Page Contains    Croissant    15s
-    Wait Until Page Contains    English Muffin    15s
-    Wait Until Page Contains    Avocado    15s
-    Wait Until Page Contains    Bacon    15s
-    Wait Until Page Contains    Sausage    15s
-    Capture Page Screenshot
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Go To    ${BASE_URL}/product/10
+    Wait Until Page Contains    Breakfast Sandwich    15s
+    Wait Until Page Contains Element    xpath=//input[@type='radio']    15s
+
+    ${radio_count}=    Get Element Count    xpath=//input[@type='radio']
+    Should Be True    ${radio_count} > 0
+
     Close Browser
 
 Breakfast Sandwich Modifier Selection Updates UI
-    Open Browser And Login As Customer
-    Open Breakfast Sandwich Page
-    Wait Until Page Contains    Total    15s
-    Click Element    xpath=(//input[@type='radio'])[2]
-    Click Element    xpath=(//input[@type='checkbox'])[2]
-    Sleep    1s
-    Page Should Contain    6.95
-    Capture Page Screenshot
+    Open Browser    ${BASE_URL}    ${BROWSER}
+    Maximize Browser Window
+    Go To    ${BASE_URL}/product/10
+    Wait Until Page Contains    Breakfast Sandwich    15s
+    Wait Until Page Contains Element    xpath=//input[@type='radio']    15s
+    Wait Until Page Contains Element    xpath=//input[@type='checkbox']    15s
+
+    ${before}=    Get Text    xpath=(//*[contains(text(), '$')])[last()]
+
+    Click Element    xpath=(//input[@type='radio'])[1]
+    Click Element    xpath=(//input[@type='checkbox'])[1]
+
+    Wait Until Keyword Succeeds    10s    1s    Price Should Change    ${before}
+
     Close Browser

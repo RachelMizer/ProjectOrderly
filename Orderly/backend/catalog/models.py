@@ -3,6 +3,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    icon = models.CharField(max_length=10, blank=True, default="")
 
     class Meta:
         ordering = ["name"]

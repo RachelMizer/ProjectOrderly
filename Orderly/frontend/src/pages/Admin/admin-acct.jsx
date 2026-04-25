@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+const ROLE_LABELS = {
+  BUSINESS: "Business User",
+  CUSTOMER: "Customer User",
+};
+
 const ROLE_PERMISSIONS = {
   BUSINESS: [
     "Access admin dashboard",
@@ -17,6 +22,15 @@ const ROLE_PERMISSIONS = {
   ],
 };
 
+function InfoRow({ label, value }) {
+  return (
+    <div className="acct-info-row">
+      <span className="acct-info-label">{label}</span>
+      <span className="acct-info-value">{value}</span>
+    </div>
+  );
+}
+
 export default function AccountSettings() {
   const [user, setUser] = useState(null);
 
@@ -30,33 +44,54 @@ export default function AccountSettings() {
       .catch((err) => console.error("Failed to load account:", err));
   }, []);
 
-  if (!user) return <p>Loading...</p>;
+  if (!user) return <p className="acct-loading">Loading account...</p>;
 
   const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ") || "Not set";
   const permissions = ROLE_PERMISSIONS[user.role] || [];
+  const initials = (user.username?.[0] || "?").toUpperCase();
 
   return (
     <div className="admin-acct">
-      <h1>Account Settings</h1>
+      <div className="acct-header">
+        <div className="acct-avatar">{initials}</div>
+        <div className="acct-header-text">
+          <h1 className="acct-name">{fullName}</h1>
+          <span className="acct-role-badge">{ROLE_LABELS[user.role] || user.role || "Unknown Role"}</span>
+        </div>
+      </div>
 
-      <h2>Account Information</h2>
-      <p><strong>Name:</strong> {fullName}</p>
-      <p><strong>Username / Email:</strong> {user.email || "Not set"}</p>
-      <p><strong>Password:</strong> ••••••••</p>
-<br />
-      <h2>Account Role and Permissions</h2>
-      <p><strong>Role:</strong> {user.role || "Not set"}</p>
-  
-      <p><strong>Currently, you can:</strong></p>
-      {permissions.length > 0 && (
-        <ul className="admin-acct-permissions">
-          {permissions.map((perm, i) => (
-            <li key={i}>{perm}</li>
-          ))}
-        </ul>
-      )}
+      <div className="acct-section">
+        <p className="acct-section-title">Account Information</p>
+        <div className="acct-info-card">
+          <InfoRow label="Full Name"  value={fullName} />
+          <InfoRow label="Username"   value={user.username || "Not set"} />
+          <InfoRow label="Email"      value={user.email || "Not set"} />
+          <InfoRow label="Password"   value="••••••••" />
+        </div>
+      </div>
 
-      <p>If you require further permissions, please contact support.</p>
+      <div className="acct-section">
+        <p className="acct-section-title">Role &amp; Permissions</p>
+        <div className="acct-info-card">
+          <InfoRow label="Role" value={ROLE_LABELS[user.role] || user.role || "Not set"} />
+          {permissions.length > 0 && (
+            <div className="acct-permissions-block">
+              <span className="acct-info-label">Access</span>
+              <ul className="acct-permissions-list">
+                {permissions.map((perm, i) => (
+                  <li key={i}>
+                    <span className="acct-perm-check">✓</span>
+                    {perm}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <p className="acct-support-note">
+            Need additional permissions? Contact your Orderly administrator.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

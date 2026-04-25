@@ -73,8 +73,7 @@ export async function register(form) {
   const data = await parseJson(response);
   if (!response.ok) throw buildError("Registration failed", response, data);
 
-  if (data.access) setStoredAccessToken(data.access);
-  if (data.refresh) setStoredRefreshToken(data.refresh);
+  if (data.accessToken) setStoredAccessToken(data.accessToken);
 
   return data;
 }

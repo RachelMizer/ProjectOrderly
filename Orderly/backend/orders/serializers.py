@@ -61,6 +61,7 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
     productId = serializers.IntegerField(source="variant.product.id", read_only=True)
     productName = serializers.CharField(source="variant.product.name", read_only=True)
     variantName = serializers.CharField(source="variant.name", read_only=True)
+    imageUrl = serializers.SerializerMethodField()
     quantity = serializers.IntegerField(read_only=True)
 
     unitPriceCharged = serializers.DecimalField(
@@ -78,6 +79,15 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
         modifier_total = sum(m.price_adjustment_charged for m in obj.modifiers.all())
         return obj.item_total + modifier_total
 
+    def get_imageUrl(self, obj):
+        image = obj.variant.product.image
+        if not image:
+            return None
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(image.url)
+        return image.url
+
     class Meta:
         model = OrderItem
         fields = [
@@ -86,6 +96,7 @@ class DraftOrderItemSerializer(serializers.ModelSerializer):
             "productId",
             "productName",
             "variantName",
+            "imageUrl",
             "quantity",
             "unitPriceCharged",
             "itemTotal",
@@ -306,20 +317,6 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
 
         user = request.user if request else None
 
-        if not user or not user.is_authenticated:
-            if not guest_email:
-                raise serializers.ValidationError({
-                    "error": "INVALID_INPUT",
-                    "message": "guestEmail required if not authenticated"
-                })
-            
-            if order.guest_email.lower() != guest_email.lower():
-                raise serializers.ValidationError({
-                    "error": "NOT_AUTHORIZED",
-                    "message": "Guest email does not match order."
-                })
-        
-            
         if quantity is None or quantity < 0:
             raise serializers.ValidationError({
                 "error": "INVALID_INPUT",
@@ -336,10 +333,21 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
                 "error": "BAD_MODIFIER",
                 "message": "order modifier does not exist"
             })
-        
+
         order = order_modifier.order_item.order
 
-        if user.is_authenticated:
+        if not user or not user.is_authenticated:
+            if not guest_email:
+                raise serializers.ValidationError({
+                    "error": "INVALID_INPUT",
+                    "message": "guestEmail required if not authenticated"
+                })
+            if order.guest_email.lower() != guest_email.lower():
+                raise serializers.ValidationError({
+                    "error": "NOT_AUTHORIZED",
+                    "message": "Guest email does not match order."
+                })
+        else:
             if not order.customer or order.customer.user != user:
                 raise serializers.ValidationError({
                     "error": "NOT_AUTHORIZED",
@@ -351,7 +359,7 @@ class UpdateDraftOrderItemModifierSerializer(serializers.Serializer):
                 "error": "INVALID_INPUT",
                 "message": "no draft order"
             })
-        
+
         data["order_modifier"] = order_modifier
 
         return data

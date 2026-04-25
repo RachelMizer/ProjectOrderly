@@ -25,6 +25,13 @@ class InventoryItem(models.Model):
         null=True,
         blank=True,
     )
+    supplier = models.ForeignKey(
+        "suppliers.Supplier",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inventory_items",
+    )
 
     class Meta:
         ordering = ["name"]

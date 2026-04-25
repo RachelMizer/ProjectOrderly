@@ -8,6 +8,7 @@ function CartPage() {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
+  const [taxRate, setTaxRate] = useState(0);
   const navigate = useNavigate();
 
   const accessToken = localStorage.getItem("accessToken");
@@ -52,6 +53,10 @@ function CartPage() {
 
   useEffect(() => {
     loadCart();
+    fetch("http://localhost:8000/api/v1/settings/")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
+      .catch(() => {});
   }, []);
 
   async function emptyCart() {
@@ -100,7 +105,7 @@ function CartPage() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + Number(item.itemTotal), 0);
-  const tax = Number(order?.taxAmount ?? 0);
+  const tax = parseFloat((subtotal * (taxRate / 100)).toFixed(2));
   const grandTotal = subtotal + tax;
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -120,41 +125,54 @@ function CartPage() {
       <div className="cart-head-cont"><h1> Your Cart </h1></div>
 
       {items.map((item) => (
-        <div className="cart-item"
-          key={item.itemId}
-        >
-          <div className="cart-item-header">
-            <h3><Link to={`/product/${item.productId}`}>{item.productName}</Link></h3>
+        <div className="cart-item" key={item.itemId}>
+
+          {item.imageUrl
+            ? <img src={item.imageUrl} alt={item.productName} className="cart-item-img" />
+            : <div className="cart-item-img cart-item-img--placeholder" />
+          }
+
+          <div className="cart-item-main">
+            <h3 className="cart-item-name">
+              <Link to={`/product/${item.productId}`}>{item.productName}</Link>
+            </h3>
+            {item.variantName !== 'Standard' && (
+              <p className="cart-item-type">Option: {item.variantName}</p>
+            )}
+            <h4 className="cart-item-addons-label">Item Add-Ons / Mods:</h4>
+            {item.modifiers?.length > 0 ? (
+              <ul>
+                {item.modifiers.map((m) => (
+                  <li key={m.optionId}>
+                    {m.name}
+                    {parseFloat(m.priceAdjustmentCharged) > 0 &&
+                      ` (+$${Number(m.priceAdjustmentCharged).toFixed(2)})`}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="noAO">No add-ons added</p>
+            )}
+          </div>
+
+          <div className="cart-item-right">
             <button className="edit-button" onClick={() => {
-                const modifierIds = item.modifiers?.map(m => m.optionId).join(',') || '';
-                navigate(`/product/${item.productId}?editItem=${item.itemId}&variantId=${item.variantId}&modifiers=${modifierIds}`);
-              }}>Edit Item</button>
-          </div>
-          {item.variantName !== 'Standard' && <p className="cart-item-type">Option: {item.variantName}</p>}
-          <h4>Item Add-Ons / Mods:</h4>
-          {item.modifiers?.length > 0 ? (
-            <ul>
-              {item.modifiers.map((m) => (
-                <li key={m.optionId}>
-                  {m.name}
-                  {parseFloat(m.priceAdjustmentCharged) > 0 &&
-                    ` (+$${Number(m.priceAdjustmentCharged).toFixed(2)})`}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="noAO">No add-ons added</p>
-          )}
+              const modifierIds = item.modifiers?.map(m => m.optionId).join(',') || '';
+              navigate(`/product/${item.productId}?editItem=${item.itemId}&variantId=${item.variantId}&modifiers=${modifierIds}`);
+            }}>Edit Item</button>
 
-          <p>${Number(item.itemTotal).toFixed(2)}</p>
+            <div className="cart-item-controls">
+              <span>Qty</span>
+              <button onClick={() => updateQuantity(item.itemId, item.quantity - 1)}>−</button>
+              <span>{item.quantity}</span>
+              <button onClick={() => updateQuantity(item.itemId, item.quantity + 1)}>+</button>
+            </div>
 
-          <div className="cart-item-controls">
-            <p>Qty </p>
-            <button onClick={() => updateQuantity(item.itemId, item.quantity - 1)}>−</button>
-            <span>{item.quantity}</span>
-            <button onClick={() => updateQuantity(item.itemId, item.quantity + 1)}>+</button>
-            <button onClick={() => updateQuantity(item.itemId, 0)}>Delete</button>
+            <button className="cart-remove-btn" onClick={() => updateQuantity(item.itemId, 0)}>Remove</button>
+
+            <p className="cart-item-price">${Number(item.itemTotal).toFixed(2)}</p>
           </div>
+
         </div>
       ))}
 

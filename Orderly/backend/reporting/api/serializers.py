@@ -49,6 +49,8 @@ class SalesSummarySerializer(serializers.Serializer):
     totalOrders = serializers.IntegerField()
     averageOrderValue = serializers.DecimalField(max_digits=10, decimal_places=2)
     breakdown = SalesSummaryBreakdownSerializer(many=True)
+    availableYears = serializers.ListField(child=serializers.IntegerField())
+    availableMonths = serializers.ListField(child=serializers.DictField())
 
 
 class ProductSalesSerializer(serializers.Serializer):

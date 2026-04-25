@@ -41,6 +41,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 
 from accounts.models import CustomerProfile
 from orders.models import Order, OrderItem, OrderItemModifier, OrderStatus
+from settings.models import StoreSettings
 from .exceptions import NotAuthorizedException
 
 
@@ -135,11 +136,11 @@ def recalculate_order_totals(order):
         .aggregate(total=Sum("price_adjustment_charged"))["total"]
         or Decimal("0.00")
     )
-    subtotal = item_subtotal + modifier_subtotal
+    subtotal = (item_subtotal + modifier_subtotal).quantize(Decimal("0.01"))
 
-    # Wake County, NC: 4.75% state + 2.5% county/transit = 7.25%
-    WAKE_COUNTY_TAX_RATE = Decimal("0.0725")
-    tax_amount = (subtotal * WAKE_COUNTY_TAX_RATE).quantize(Decimal("0.01"))
+    store_settings = StoreSettings.objects.first()
+    tax_rate = (store_settings.tax_rate / Decimal("100")) if store_settings else Decimal("0")
+    tax_amount = (subtotal * tax_rate).quantize(Decimal("0.01"))
 
     order.subtotal = subtotal
     order.tax_amount = tax_amount
