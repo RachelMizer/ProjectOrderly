@@ -40,7 +40,7 @@ in frontend directory create a file .env.production with the following contents:
 
 ```
 # once deployed, set url to <ec2_public_address>:8000
-REACT_APP_API_URL=""
+REACT_APP_API_URL=
 
 REACT_APP_ENV=production
 
