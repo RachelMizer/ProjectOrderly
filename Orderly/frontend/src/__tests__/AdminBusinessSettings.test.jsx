@@ -104,7 +104,7 @@ describe("AdminBusinessSettings", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8000/api/v1/settings/",
+        `${process.env.REACT_APP_API_URL}/api/v1/settings/`,
         expect.objectContaining({
           method: "PATCH",
         })

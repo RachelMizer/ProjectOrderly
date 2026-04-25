@@ -74,7 +74,7 @@ function AppContent() {
   const firstName = user?.firstName || "";
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/settings/")
+    fetch(`${process.env.REACT_APP_API_URL}/api/v1/settings/`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => {
         if (!data) return;

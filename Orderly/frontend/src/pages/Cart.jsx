@@ -53,7 +53,7 @@ function CartPage() {
 
   useEffect(() => {
     loadCart();
-    fetch("http://localhost:8000/api/v1/settings/")
+    fetch(`${process.env.REACT_APP_API_URL}/api/v1/settings/`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
       .catch(() => {});

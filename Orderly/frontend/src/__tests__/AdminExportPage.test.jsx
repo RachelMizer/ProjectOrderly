@@ -87,7 +87,7 @@ test("downloads products csv", async () => {
 
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v1/reports/export/products",
+      `${process.env.REACT_APP_API_URL}/api/v1/reports/export/products`,
       expect.any(Object)
     );
   });
@@ -105,7 +105,7 @@ test("downloads inventory csv", async () => {
 
   await waitFor(() => {
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v1/reports/export/inventory",
+      `${process.env.REACT_APP_API_URL}/api/v1/reports/export/inventory`,
       expect.any(Object)
     );
   });

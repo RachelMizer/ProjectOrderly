@@ -241,7 +241,7 @@ describe("AdminStorefrontSettings", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8000/api/v1/settings/",
+        `${process.env.REACT_APP_API_URL}/api/v1/settings/`,
         expect.objectContaining({
           method: "PATCH",
           body: expect.any(FormData),
@@ -299,7 +299,7 @@ describe("AdminStorefrontSettings", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8000/api/v1/admin/categories/1",
+        `${process.env.REACT_APP_API_URL}/api/v1/admin/categories/1`,
         expect.objectContaining({
           method: "PATCH",
         })
@@ -322,7 +322,7 @@ describe("AdminStorefrontSettings", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8000/api/v1/admin/categories/2",
+        `${process.env.REACT_APP_API_URL}/api/v1/admin/categories/2`,
         expect.objectContaining({
           method: "PATCH",
         })

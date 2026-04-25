@@ -91,7 +91,7 @@ describe("ProductCard", () => {
 
     expect(global.fetch).toHaveBeenNthCalledWith(
       1,
-      "http://localhost:8000/api/v1/orders/draft",
+      `${process.env.REACT_APP_API_URL}/api/v1/orders/draft`,
       expect.objectContaining({
         method: "POST",
       })
@@ -99,7 +99,7 @@ describe("ProductCard", () => {
 
     expect(global.fetch).toHaveBeenNthCalledWith(
       2,
-      "http://localhost:8000/api/v1/orders/items",
+      `${process.env.REACT_APP_API_URL}/api/v1/orders/items`,
       expect.objectContaining({
         method: "POST",
       })

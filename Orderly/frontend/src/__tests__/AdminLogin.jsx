@@ -55,7 +55,7 @@ describe("AdminLogin", () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        "http://localhost:8000/api/v1/auth/login",
+        `${process.env.REACT_APP_API_URL}/api/v1/auth/login`,
         expect.objectContaining({
           method: "POST",
           headers: { "Content-Type": "application/json" },
