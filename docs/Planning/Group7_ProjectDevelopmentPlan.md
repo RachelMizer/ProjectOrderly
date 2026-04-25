@@ -10,7 +10,7 @@
 
 > **Document Integrity Notice**
 >
-> All content under "As Originally Planned" subsections reflect the project inception and has not been altered retroactively. "**Actual Execution**" subsections document outcomes as they occured during the project llifecycle. 
+> All content under "As Originally Planned" subsections reflect the project inception and has not been altered retroactively. "**Actual Execution**" subsections document outcomes as they occurred during the project lifecycle. 
 > This version (v2.0) was produced at project closing for academic and portfolio purposes.
 >
 > | Version | Date         | Description                                             |
@@ -39,7 +39,7 @@
 
 ### As Originally Planned
 
-| NamE           | Email                     | Role |
+| Name           | Email                     | Role |
 | -------------- | ------------------------- | ---- |
 | Kenny Bacdayan | kbacdayan@my.waketech.edu | Testing Lead  |
 | Caleb Fowlkes  | cjfowlkes@my.waketech.edu | Technical Writer  |
@@ -87,7 +87,7 @@
 
 > **Outcome: All three project objectives were met.**
 >
-> - A fully functional applicaiton was delivered on **April 24th, 2026** — the exact data projected at project inception. The application includes a customer ordering interface, business management dashboard, product and variant management, order tracking, supplier management, and inventory visibility. 
+> - A fully functional application was delivered on **April 24th, 2026** — the exact date projected at project inception. The application includes a customer ordering interface, business management dashboard, product and variant management, order tracking, supplier management, and inventory visibility. 
 > - The self-service ordering interface was implemented and demonstrated a streamlined flow with minimal steps from menu browser to order submission.
 > -  Responsive design was validated across desktop, tablet, and mobile viewports. Sprint review feedback informed iterative UX improvements throughout the project. 
 
@@ -129,7 +129,7 @@
 > - **Modifier management** was evaluated and deferred as a documented, known gap. Modifier visibility (read-only) was also removed to keep Sprint 5 Wave 1 Clean.
 > - **Low stock indicators** (US5.5) were added and delivered as an active Sprint 5 item. 
 > - **Admin Settings** (US5.6) and **Supplier Management** (US5.7) were identified as stretch items requiring greenlight per sprint review outcomes. 
-> - **Deployment via AWS** was acheived using a Dockerized build of the backend and frontend, containerized by Tristin Gatt. The production build was deployed to AWS after successful local container testing, fulfilling the orignally planned cloud hosting target.
+> - **Deployment via AWS** was achieved using a Dockerized build of the backend and frontend, containerized by Tristin Gatt. The production build was deployed to AWS after successful local container testing, fulfilling the originally planned cloud hosting target.
 
 ## 4. Project Assumptions and Constraints
 
@@ -147,7 +147,7 @@
 
 **Constraints:**
 
-- **Time: **Fixed deadline of April 24th, 2026 for final project presentation and all deliverables; five sprint cycles with specific milestones and deliverables
+- **Time:** Fixed deadline of April 24th, 2026 for final project presentation and all deliverables; five sprint cycles with specific milestones and deliverables
 - **Resource:** Limited to team of seven members; academic project budget with no funding for paid services or APIs; prototype-level development only, not production ready.
 - **Technical**: Must use agreed-upon development stack; limited to 100 GB storage capacity; no access to real payment gateway APIs; dependency on external API availability for future enhancements.
 - **Scope:** Cannot implement payment processing integration; cannot integrate with external POS systems in the current timeline.
@@ -157,7 +157,7 @@
 > **Notes on Assumptions and Constraints**
 >
 > - The **April 24th, 2026 deadline was met.** A fully functional application was delivered on the projected date. 
-> - Team size effectively reduced to **six members** following a member's course withdrawl. All remaining members maintained access to required tools and resouces throughout.
+> - Team size effectively reduced to **six members** following a member's course withdrawal. All remaining members maintained access to required tools and resources throughout.
 > - Deployment targeted **AWS** via a Dockerized build, fulfilling the originally planned cloud hosting target. 
 > - No paid API access was required. The agreed-upon stack was used throughout, with **MySQL replacing SQLite** for better production parity and relational integrity. 
 > - Connectivity and device availability were non-issues throughout the project.
@@ -240,7 +240,7 @@
 > - Sprint Planning, Sprint Review, and Sprint Retrospective ceremonies were held each sprint cycle as planned.
 > - Trello cards were linked to GitHub branches and Pull Requests; the `Done 🎉` column served as the definitive completion tracker.
 > - **Wave-based sprint planning** was introduced during the beginning of Sprint 3 to manage dependency chains and provide clearer intermediate deadlines within each sprint. 
-> - A **greenlight system** was established for stretch scope items to prevent scope creep while presevering optionality.
+> - A **greenlight system** was established for stretch scope items to prevent scope creep while preserving optionality.
 > - **Dependency chain documentation** was formalized after a Sprint 3 cascade to ensure blockers were surfaced earlier in future sprints.
 
 ---
@@ -249,7 +249,7 @@
 
 ### As Originally Planned
 
-**Tools and Plaforms:**
+**Tools and Platforms:**
 
 - **Trello**: Technical documentation of user stories, acceptance criteria, and task details.
 - **GitHub:** Central repository for all project documents, code documentation, README files, and version control.
@@ -284,7 +284,7 @@
 
 **Methodology:**
 
-The Orderly development team has adopted Agile SCRUM as project management methodology based on its proven strengths in iterative devleopment, team communication, flexibility, and integration of customer and/or stakeholder feedback. The approach is well-suited to the academic timeline and need to demonstrate incremental progress throughout the semester.
+The Orderly development team has adopted Agile SCRUM as project management methodology based on its proven strengths in iterative development, team communication, flexibility, and integration of customer and/or stakeholder feedback. The approach is well-suited to the academic timeline and need to demonstrate incremental progress throughout the semester.
 
 The Agile SCRUM approach ensures iterative delivery, maintains transparency, and allows the team to adapt quickly while meeting the April 24th deadline.
 
@@ -306,7 +306,7 @@ Trello serves as the primary project management tool, providing capabilities for
 
 4. **Sprint 4 (03/21-04/03)**: Security, remaining user and business features, finalize UI
 	
-5. **Sprint 5 (04/04-04/17)**: Test and iterate UX for desktop and mobile, determine and solve critcal bugs
+5. **Sprint 5 (04/04-04/17)**: Test and iterate UX for desktop and mobile, determine and solve critical bugs
 	
 6. **Phase 4 (04/18-04/24)**: Finalize application, project documentation release, final retrospective, presentation (**April 30th, 2026 at 6:05pm**), and evaluation
 
@@ -319,7 +319,7 @@ Trello serves as the primary project management tool, providing capabilities for
 **Review Cycle:**
 
 - **Sprint Review:** Demonstrate completed features, gather stakeholder feedback
-- **Sprint Retrospective**: Evalulate process, identify improvements for next iteration
+- **Sprint Retrospective**: Evaluate process, identify improvements for next iteration
 - **Continuous Adaptation**: Adjust approach based on feedback and lessons learned
 
 ---
