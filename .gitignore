@@ -88,9 +88,7 @@ logs/
 **/.claude/
 
 #######################################
-# Work in progress — do not commit yet
-#######################################
-Orderly/backend/orders/management/commands/seed_orders.py
+
 
 #######################################
 # Keys / Secrets
