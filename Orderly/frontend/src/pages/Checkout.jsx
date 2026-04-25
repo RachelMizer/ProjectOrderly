@@ -15,6 +15,7 @@ export default function Checkout() {
   const [loading, setLoading]     = useState(true);
   const [order, setOrder]         = useState(null);
   const [items, setItems]         = useState([]);
+  const [taxRate, setTaxRate]     = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -38,6 +39,10 @@ export default function Checkout() {
       return;
     }
     loadCart();
+    fetch("http://localhost:8000/api/v1/settings/")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
+      .catch(() => {});
   }, []);
 
   async function loadCart() {
@@ -93,8 +98,7 @@ export default function Checkout() {
   }
 
   const subtotal   = items.reduce((sum, item) => sum + Number(item.itemTotal), 0);
-  const TAX_RATE = 0.0725;
-  const tax        = parseFloat((subtotal * TAX_RATE).toFixed(2));
+  const tax        = parseFloat((subtotal * (taxRate / 100)).toFixed(2));
   const grandTotal = subtotal + tax;
 
   if (loading) return <div className="checkout-pg">Loading…</div>;

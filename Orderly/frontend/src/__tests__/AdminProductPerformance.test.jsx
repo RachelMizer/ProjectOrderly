@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import AdminProductPerformance from "../pages/Admin/AdminProductPerformance";
 import {
   fetchProductPerformance,
@@ -129,12 +130,12 @@ describe("AdminProductPerformance", () => {
     fetchProductPerformance.mockReturnValue(new Promise(() => {}));
     fetchSalesSummary.mockReturnValue(new Promise(() => {}));
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   test("renders rankings table after initial load", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     expect(await screen.findByText(/product rankings/i)).toBeInTheDocument();
     expect(screen.getByText("Latte")).toBeInTheDocument();
@@ -149,7 +150,7 @@ describe("AdminProductPerformance", () => {
       available_months: [],
     });
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     expect(
       await screen.findByText(/no sales data available/i)
@@ -157,7 +158,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("filters rankings by category", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -174,7 +175,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("sorts rankings by revenue", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -186,7 +187,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("clicking a ranking row loads detail", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await getRankingRows();
     fireEvent.click(rows[0]);
@@ -196,7 +197,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("renders chart after selecting product", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await getRankingRows();
     fireEvent.click(rows[0]);
@@ -209,7 +210,7 @@ describe("AdminProductPerformance", () => {
       .mockResolvedValueOnce(productsResponse)
       .mockRejectedValueOnce(new Error("Failed to load product data."));
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await getRankingRows();
     fireEvent.click(rows[0]);
@@ -220,7 +221,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("clear filters resets search + category", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -242,7 +243,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("saves recent view (rankings)", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -252,7 +253,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("saves recent view (detail)", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await getRankingRows();
     fireEvent.click(rows[0]);
@@ -263,7 +264,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("toggles sort direction when same column is clicked twice", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -276,7 +277,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("changes sort key and resets sort direction when a different column is clicked", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -290,7 +291,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("shows year-to-date label when month is cleared", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -305,7 +306,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("shows all time label when both year and month are cleared", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     await screen.findByText("Latte");
 
@@ -320,7 +321,7 @@ describe("AdminProductPerformance", () => {
   });
 
   test("renders tooltip revenue and units in detail view", async () => {
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await screen.findAllByTitle(/click to view full performance/i);
     fireEvent.click(rows[0]);
@@ -354,7 +355,7 @@ describe("AdminProductPerformance", () => {
       return Promise.resolve(productsResponse);
     });
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await screen.findAllByTitle(/click to view full performance/i);
     fireEvent.click(rows[0]);
@@ -383,7 +384,7 @@ describe("AdminProductPerformance", () => {
       return Promise.resolve(productsResponse);
     });
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await screen.findAllByTitle(/click to view full performance/i);
     fireEvent.click(rows[0]);
@@ -395,7 +396,7 @@ describe("AdminProductPerformance", () => {
   test("uses fallback product load error when initial fetch rejects without message", async () => {
     fetchProductPerformance.mockRejectedValueOnce({});
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     expect(await screen.findByText(/failed to load products\./i)).toBeInTheDocument();
   });
@@ -405,7 +406,7 @@ describe("AdminProductPerformance", () => {
       .mockResolvedValueOnce(productsResponse)
       .mockRejectedValueOnce({});
 
-    render(<AdminProductPerformance />);
+    render(<MemoryRouter><AdminProductPerformance /></MemoryRouter>);
 
     const rows = await screen.findAllByTitle(/click to view full performance/i);
     fireEvent.click(rows[0]);

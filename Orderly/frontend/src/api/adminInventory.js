@@ -104,6 +104,18 @@ export async function fetchLowStock() {
   return data;
 }
 
+export async function fetchInventoryItem(itemId) {
+  const response = await fetch(`${API_BASE}/${itemId}`, {
+    method: "GET",
+    headers: { ...getAuthHeaders() },
+  });
+  const data = await parseJson(response);
+  if (!response.ok) {
+    throw buildError("Failed to load inventory item.", response, data);
+  }
+  return data;
+}
+
 export async function deleteInventoryItem(itemId) {
   const response = await fetch(`${API_BASE}/${itemId}`, {
     method: "DELETE",

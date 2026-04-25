@@ -151,7 +151,7 @@ Ensure Cart Has Item
 
 Add First Available Item To Cart
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.product-card    10s
 
     ${add_count}=    Get Element Count    css=.product-card .add-to-cart-btn

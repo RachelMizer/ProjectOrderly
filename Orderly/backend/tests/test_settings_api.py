@@ -142,25 +142,23 @@ def test_patch_persists_changes(auth_client):
 
 
 @pytest.mark.django_db
-def test_customer_user_gets_403(customer_client):
+def test_customer_user_can_read_settings(customer_client):
     url = reverse("store-settings")
 
     response = customer_client.get(url)
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.data == {
-        "error": "INVALID_ROLE",
-        "message": "User does not have this permission.",
-    }
+    # GET is intentionally public (AllowAny) so the storefront can read
+    # store name, colours, etc. without requiring authentication.
+    assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db
-def test_unauthenticated_user_gets_401(api_client):
+def test_unauthenticated_user_can_read_settings(api_client):
     url = reverse("store-settings")
 
     response = api_client.get(url)
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db

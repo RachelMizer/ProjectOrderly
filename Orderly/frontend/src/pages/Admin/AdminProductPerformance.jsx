@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
@@ -9,6 +10,17 @@ const now          = new Date();
 const CURRENT_YEAR = String(now.getFullYear());
 const CURRENT_MM   = String(now.getMonth() + 1).padStart(2, "0");
 const CURRENT_MONTH_KEY = `${CURRENT_MM}-${CURRENT_YEAR}`;
+
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+
+function formatMonthKey(key) {
+  const [mm, yyyy] = key.split("-");
+  const name = MONTH_NAMES[parseInt(mm, 10) - 1];
+  return name ? `${name} ${yyyy}` : key;
+}
 
 function formatMonthLabel(label) {
   const parts = label.split(" ");
@@ -41,6 +53,7 @@ function formatCurrency(value) {
 }
 
 export default function AdminProductPerformance() {
+  const navigate = useNavigate();
   const [products, setProducts]           = useState([]);
   const [selectedKey, setSelectedKey]     = useState("");
   const [perfData, setPerfData]           = useState(null);
@@ -106,11 +119,11 @@ export default function AdminProductPerformance() {
     })
       .then((data) => {
         setRankings((data.products || []).map((p, i) => ({ ...p, rank: i + 1 })));
-        setAvailableYears(data.available_years || []);
-        setAvailableMonths(data.available_months || []);
-        const monthObj = (data.available_months || []).find((m) => m.value === selectedMonth);
+        setAvailableYears(data.availableYears || []);
+        setAvailableMonths(data.availableMonths || []);
+        const monthObj = (data.availableMonths || []).find((m) => m.value === selectedMonth);
         const sublabel = selectedMonth
-          ? (monthObj?.label ?? selectedMonth)
+          ? (monthObj?.label ?? formatMonthKey(selectedMonth))
           : selectedYear
             ? `Year-to-Date ${selectedYear}`
             : "All Time";
@@ -215,11 +228,11 @@ export default function AdminProductPerformance() {
 
   const bestPeriodLabel = isDaily ? "Best Day" : "Best Month";
   const chartTitle = isDaily
-    ? `Daily Revenue — ${(availableMonths.find((m) => m.value === selectedMonth)?.label ?? selectedMonth)}`
+    ? `Daily Revenue — ${(availableMonths.find((m) => m.value === selectedMonth)?.label ?? formatMonthKey(selectedMonth))}`
     : "Monthly Revenue Trend";
 
   const periodLabel = selectedMonth
-    ? (availableMonths.find((m) => m.value === selectedMonth)?.label ?? selectedMonth)
+    ? (availableMonths.find((m) => m.value === selectedMonth)?.label ?? formatMonthKey(selectedMonth))
     : selectedYear
       ? `Year-to-Date ${selectedYear}`
       : "All Time";
@@ -303,11 +316,11 @@ export default function AdminProductPerformance() {
             </button>
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -426,14 +439,14 @@ export default function AdminProductPerformance() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#c4d9e8" vertical={false} />
                   <XAxis
                     dataKey="displayLabel"
-                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#2a4f6b", fontWeight: 700 }}
+                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     interval={0}
                   />
                   <YAxis
                     tickFormatter={(v) => `$${v.toLocaleString()}`}
-                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#5a85a0" }}
+                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     width={70}

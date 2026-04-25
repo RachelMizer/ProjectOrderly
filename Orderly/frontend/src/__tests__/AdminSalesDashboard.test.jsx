@@ -22,8 +22,24 @@ jest.mock("recharts", () => {
     ),
     BarChart: ({ children }) => <div data-testid="bar-chart">{children}</div>,
     Bar: ({ children }) => <div data-testid="bar">{children}</div>,
-    XAxis: () => <div data-testid="x-axis" />,
-    YAxis: () => <div data-testid="y-axis" />,
+    XAxis: ({ tickFormatter }) => (
+      <div data-testid="x-axis">
+        <span>{tickFormatter ? tickFormatter("March") : ""}</span>
+        <span>{tickFormatter ? tickFormatter(12) : ""}</span>
+      </div>
+    ),
+    YAxis: ({ tickFormatter }) => (
+      <div data-testid="y-axis">
+        {tickFormatter ? tickFormatter(2500) : ""}
+      </div>
+    ),
+    LabelList: ({ formatter }) => (
+      <div data-testid="label-list">
+        <span data-testid="label-zero">{formatter ? formatter(0) : ""}</span>
+        <span data-testid="label-small">{formatter ? formatter(750) : ""}</span>
+        <span data-testid="label-large">{formatter ? formatter(4500) : ""}</span>
+      </div>
+    ),
     CartesianGrid: () => <div data-testid="cartesian-grid" />,
     Tooltip: ({ content }) => (
       <div data-testid="tooltip">
@@ -120,10 +136,10 @@ describe("US5.4 Sales Summary Dashboard", () => {
       screen.getByPlaceholderText(/search product or variant/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /> export/i })
+      screen.getByRole("button", { name: /export/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /> print/i })
+      screen.getByRole("button", { name: /print/i })
     ).toBeInTheDocument();
 
     expect(screen.getByText(/^321$/)).toBeInTheDocument();
@@ -491,5 +507,176 @@ describe("US5.4 Sales Summary Dashboard", () => {
 
     expect(screen.getByRole("option", { name: /all years/i })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: /all months/i })).toBeInTheDocument();
+  });
+
+  test("covers chart axis formatter branches", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(screen.getByTestId("x-axis"))
+      .toHaveTextContent("MAR");
+
+    expect(screen.getByTestId("x-axis"))
+      .toHaveTextContent("12");
+
+    expect(screen.getByTestId("y-axis"))
+      .toHaveTextContent("$2,500");
+
+    expect(
+      screen.getByTestId("label-list")
+    ).toBeInTheDocument();
+  });
+
+  test("changing year resets selected month and fetches year only", async () => {
+    renderDashboard({
+      state: { month: "04-2026" },
+    });
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const selects = screen.getAllByRole("combobox");
+    const yearSelect = selects[0];
+
+    await userEvent.selectOptions(yearSelect, "2025");
+
+    await waitFor(() => {
+      expect(fetchSalesSummary).toHaveBeenLastCalledWith({
+        year: "2025",
+        month: null,
+      });
+    });
+
+    expect(selects[1]).toHaveValue("");
+  });
+
+  test("selecting all years fetches with null year and null month", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const yearSelect = screen.getAllByRole("combobox")[0];
+
+    await userEvent.selectOptions(yearSelect, "");
+
+    await waitFor(() => {
+      expect(fetchSalesSummary).toHaveBeenLastCalledWith({
+        year: null,
+        month: null,
+      });
+    });
+  });
+
+  test("renders no results message when search has no matches", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const searchInput = screen.getByPlaceholderText(/search product or variant/i);
+
+    await userEvent.type(searchInput, "xyz");
+
+    expect(
+      screen.getByText(/no results match your search/i)
+    ).toBeInTheDocument();
+  });
+
+  test("renders no sales data message when products list is empty", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          products: [],
+        })
+      )
+    );
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(
+      screen.getByText(/no sales data to display yet/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/no data available/i)
+    ).toBeInTheDocument();
+  });
+
+  test("uses snake_case API fields for totals", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.resolve(
+        makeSummaryResponse({
+          totalRevenue: undefined,
+          totalOrders: undefined,
+          total_revenue: "9876.54",
+          order_count: 88,
+        })
+      )
+    );
+
+    renderDashboard();
+
+    expect(await screen.findByText(/\$9,876\.54/i)).toBeInTheDocument();
+    expect(screen.getByText(/^88$/)).toBeInTheDocument();
+  });
+
+  test("uses default API error message when rejection has no message", async () => {
+    fetchSalesSummary.mockImplementation(() =>
+      Promise.reject({})
+    );
+
+    renderDashboard();
+
+    expect(
+      await screen.findByText(/failed to load sales data/i)
+    ).toBeInTheDocument();
+  });
+
+  test("export button navigates and print button prints", async () => {
+    window.print = jest.fn();
+
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /print/i }));
+
+    expect(window.print).toHaveBeenCalled();
+  });
+
+  test("sorts by rank name variant unit price and revenue", async () => {
+    renderDashboard();
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    const headers = [
+      /#/i,
+      /product/i,
+      /variant/i,
+      /unit price/i,
+      /total revenue/i,
+    ];
+
+    for (const name of headers) {
+      const header = screen.getByRole("columnheader", { name });
+      await userEvent.click(header);
+      await userEvent.click(header);
+    }
+
+    expect(screen.getByText(/^latte$/i)).toBeInTheDocument();
+    expect(screen.getByText(/^mocha$/i)).toBeInTheDocument();
+  });
+
+  test("falls back to raw invalid month label", async () => {
+    renderDashboard({
+      state: { month: "13-2026" },
+    });
+
+    await screen.findByText(/\$12,345\.67/i);
+
+    expect(
+      screen.getAllByText(/13-2026/i)
+      ).toHaveLength(3);
   });
 });

@@ -598,6 +598,23 @@ class BusinessOrderListView(APIView):
 
             queryset = queryset.filter(status=normalized_status)
 
+        year_param = request.query_params.get("year")
+        month_param = request.query_params.get("month")
+        day_param = request.query_params.get("day")
+
+        try:
+            if year_param:
+                queryset = queryset.filter(created_at__year=int(year_param))
+            if month_param:
+                queryset = queryset.filter(created_at__month=int(month_param))
+            if day_param:
+                queryset = queryset.filter(created_at__day=int(day_param))
+        except ValueError:
+            return Response(
+                {"error": "INVALID_INPUT", "message": "year, month, and day must be integers."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         total_count = queryset.count()
 
         try:
@@ -622,6 +639,27 @@ class BusinessOrderListView(APIView):
             status=status.HTTP_200_OK,
         )
     
+class OrderYearsView(APIView):
+    """
+    Return the distinct years in which non-draft orders exist.
+
+    GET /api/v1/orders/years
+    """
+
+    permission_classes = [IsAuthenticated, IsBusinessUser]
+
+    def get(self, request):
+        from django.db.models.functions import ExtractYear
+        years = (
+            Order.objects.exclude(status=OrderStatus.DRAFT)
+            .annotate(year=ExtractYear("created_at"))
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+        return Response(list(years), status=status.HTTP_200_OK)
+
+
 class CompleteOrderView(APIView):
     """
     Business-only order completion endpoint.

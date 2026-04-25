@@ -33,11 +33,13 @@ body.admin-body {
 /*      SIDEBAR     */
 
 .admin-sidebar {
-    width: 180px;
-    min-width: 180px;
+    width: 210px;
+    min-width: 210px;
     display: flex;
     flex-direction: column;
-    padding: 50px 15px;
+    align-items: center;
+    text-align: center;
+    padding: 50px 16px 50px 24px;
 }
 
 .admin-sidebar .orderly-head {
@@ -57,7 +59,7 @@ body.admin-body {
 .admin-brand h1 {
     font-size: 1.8rem;
     font-weight: normal;
-    margin: 0 0 4px 0;
+    margin: 0;
     color: white;
     letter-spacing: .1rem;
     text-transform: none;
@@ -72,6 +74,18 @@ body.admin-body {
     font-weight: normal;
 }
 
+.orderly-tagline {
+    margin-top: 2px !important;
+    padding-top: 3px !important;
+    border-top: 1px solid white;
+    color: white !important;
+    text-transform: uppercase !important;
+    letter-spacing: .03rem !important;
+    font-size: .5rem !important;
+    line-height: 1.05rem !important;
+    font-weight: 550 !important;
+}
+
 
 /*      SIDEBAR MENU        */
 
@@ -79,17 +93,25 @@ body.admin-body {
     margin-top: 120px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 2px;
 }
 
 .sidebar-title {
     color: white;
     font-family: 'Renner', sans-serif;
-    font-size: 1rem;
+    font-size: .88rem;
     font-weight: 800;
     letter-spacing: .15rem;
     text-transform: uppercase;
+    line-height: 1.05rem;
     margin: 0 0 4px 0;
+    white-space: nowrap;
+}
+
+.sidebar-title--sm {
+    font-size: .78rem;
+    letter-spacing: .1rem;
 }
 
 .sidebar-sub {
@@ -131,6 +153,7 @@ body.admin-body {
 .sidebar-actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
     margin-bottom: 20px;
 }
@@ -154,6 +177,7 @@ body.admin-body {
 .sidebar-recent-orders {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0;
     background-color: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
@@ -165,6 +189,7 @@ body.admin-body {
 .sidebar-recent-order {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     gap: 6px;
     color: white;
     text-decoration: none;
@@ -214,6 +239,8 @@ body.admin-body {
     text-decoration: none;
     line-height: 1.3;
     margin-top: auto;
+    white-space: normal;
+    text-align: center;
 }
 
 .sidebar-back:hover {
@@ -228,6 +255,29 @@ body.admin-body {
     line-height: 1.1;
     margin-top: auto;
     margin-bottom: 0.5rem;
+}
+
+.sidebar-btn {
+    display: block;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.07rem;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    color: white;
+    background-color: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 4px;
+    padding: 7px 10px 5px;
+    margin-top: 12px;
+    transition: background-color 0.15s;
+}
+
+.sidebar-btn:hover {
+    background-color: rgba(255,255,255,0.28);
+    color: white;
 }
 
 
@@ -320,6 +370,20 @@ body.admin-body {
     font-weight: 800;
 }
 
+.nav-card--sm {
+    font-size: 0.88rem;
+    letter-spacing: 0.06rem;
+    line-height: 1.15;
+    white-space: normal;
+}
+
+.nav-card--wrap {
+    font-size: 1.1rem;
+    letter-spacing: 0.15rem;
+    line-height: 1.15;
+    white-space: normal;
+}
+
 
 /*      DASHBOARD       */
 
@@ -370,6 +434,7 @@ body.admin-body {
     letter-spacing: .05rem;
     color: #33638B;
     font-weight: 800;
+    text-transform: uppercase;
 }
 
 .dash-recent-value {
@@ -466,6 +531,7 @@ body.admin-body {
     color: #33638B;
     cursor: pointer;
     display: inline-block;
+    text-transform: uppercase;
 }
 
 .dash-low-stock-label:hover {
@@ -571,19 +637,160 @@ body.admin-body {
 
 /*      ACCOUNT SETTINGS    */
 
-.admin-acct p, .admin-acct li {
+.admin-acct {
+    max-width: 560px;
+    padding: 4px 4px 24px;
+}
+
+.acct-loading {
     color: #466681;
+    font-family: 'Renner', sans-serif;
 }
 
-.admin-acct-permissions {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 6px;
+.acct-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
 }
 
-.admin-acct-permissions li {
-    margin-bottom: 4px;
+.acct-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #2a6496;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: .05rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.acct-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+}
+
+.acct-name {
+    margin: 0;
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: .08rem;
+}
+
+.acct-role-badge {
+    align-self: auto;
+    background-color: #2a6496;
+    color: white;
+    font-family: 'Renner', sans-serif;
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    padding: 4px 8px 1px;
+    border-radius: 20px;
+    margin: -3px 0 0 0;
+}
+
+.acct-section {
+    margin-bottom: 18px;
+}
+
+.acct-section-title {
+    color: #1a3a52;
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .15rem;
+    text-transform: uppercase;
+    margin: 0 0 6px 2px;
+}
+
+.acct-info-card {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.acct-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e8f0f5;
+}
+
+.acct-info-row:last-child {
+    border-bottom: none;
+}
+
+.acct-info-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08rem;
+    text-transform: uppercase;
+    color: #2a6496;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.acct-info-value {
     font-size: .9rem;
+    color: #1a1a1a;
+}
+
+.acct-permissions-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.acct-permissions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acct-permissions-list li {
+    font-size: .88rem;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.acct-perm-check {
+    color: #2a7a2a;
+    font-weight: 700;
+    font-size: .9rem;
+    flex-shrink: 0;
+}
+
+.acct-support-note {
+    font-size: .8rem;
+    color: #2a4f6b;
+    margin: 0;
+    padding: 8px 16px 10px;
+    font-style: italic;
+    border-top: 1px solid #e8f0f5;
 }
 
 
@@ -612,13 +819,32 @@ body.admin-body {
     background-color: #33638B;
     text-transform: uppercase;
     letter-spacing: .13rem;
-    padding: 3px 10px;
+    padding: 6px 6px 4px;
     margin-bottom: 15px;
+    border: none;
+    line-height: 1;
 }
 
 .admin-dash-wrap a, .admin-wrap a {
     font-family: 'Renner', sans-serif;
     color: white;
+}
+
+.admin-dash-wrap input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.admin-dash-wrap select,
+.admin-dash-wrap textarea,
+.admin-wrap input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.admin-wrap select,
+.admin-wrap textarea {
+    border: 1px solid #a0b8c8;
+    color: #1a1a1a;
+}
+
+.admin-dash-wrap input[type="checkbox"],
+.admin-dash-wrap input[type="radio"],
+.admin-wrap input[type="checkbox"],
+.admin-wrap input[type="radio"] {
+    accent-color: #33638b;
 }
 
 
@@ -640,6 +866,7 @@ body.admin-body {
 .submenu-label {
     font-family: 'Renner', sans-serif;
     font-weight: 800;
+    font-size: 1.15rem;
     color: #33638B;
     letter-spacing: .1rem;
     text-transform: uppercase;
@@ -808,7 +1035,6 @@ button.submenu-action[title="Pending further development"] {
 }
 
 .table-action-btn {
-    padding: 1px 5px !important;
     font-size: .70rem;
 }
 
@@ -843,7 +1069,7 @@ button.submenu-action[title="Pending further development"] {
 }
 
 .variants-row-cell .admin-table td {
-    padding: 0;
+    padding: 6px 10px;
     text-align: center;
 }
 
@@ -913,7 +1139,7 @@ button.submenu-action[title="Pending further development"] {
 
 .variant-action-btn {
     font-size: .75rem;
-    padding: 2px 6px !important;
+    padding: 5px 6px 2px !important;
     margin-bottom: 0;
     letter-spacing: .08rem;
 }
@@ -955,8 +1181,8 @@ button.submenu-action[title="Pending further development"] {
     border-collapse: collapse;
 }
 
-.product-form-table tr {
-    border-bottom: 1px solid #c4d9e8;
+.sf-sett-panel--branding .product-form-table tr {
+    border-bottom: none;
 }
 
 .form-label-cell {
@@ -1046,6 +1272,7 @@ button.submenu-action[title="Pending further development"] {
 .inv-field {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 3px;
 }
 
@@ -1092,6 +1319,8 @@ button.submenu-action[title="Pending further development"] {
 
 .inv-create-actions button {
     margin-bottom: 0;
+    font-size: 0.72rem;
+    padding: 4px 8px 1px;
 }
 
 /* Section headers */
@@ -1201,6 +1430,10 @@ button.submenu-action[title="Pending further development"] {
     padding: 2px 5px;
     text-align: right;
     color: #2a4f6b;
+}
+
+.inv-qty-input--wide {
+    width: 110px;
 }
 
 .inv-qty-input:focus {
@@ -1340,7 +1573,7 @@ label.inv-toggle {
 
 .rpt-hub-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
     margin-top: 4px;
 }
@@ -1386,11 +1619,16 @@ label.inv-toggle {
 .rpt-hub-card__title {
     margin: 0 0 6px 0;
     font-family: 'Renner', sans-serif;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #33638B;
     letter-spacing: .1rem;
     text-transform: uppercase;
+}
+
+.rpt-hub-card__title--tight {
+    line-height: 1.1;
+    white-space: nowrap;
 }
 
 .rpt-hub-card__desc {
@@ -1424,10 +1662,10 @@ label.inv-toggle {
 .rpt-stat-card {
     background-color: white;
     border-radius: 6px;
-    padding: 16px 22px;
-    min-width: 180px;
+    padding: 10px 28px;
+    min-width: 220px;
     flex: 1;
-    max-width: 280px;
+    max-width: 340px;
 }
 
 .rpt-stat-label {
@@ -1774,6 +2012,7 @@ label.inv-toggle {
     font-size: .88rem;
     font-weight: 700;
     color: #2a4f6b;
+    text-transform: uppercase;
     white-space: nowrap;
     letter-spacing: .04rem;
 }
@@ -1789,7 +2028,7 @@ label.inv-toggle {
     margin-bottom: 0;
     align-self: center;
     font-size: .70rem !important;
-    padding: 2px 7px !important;
+    padding: 7px 7px 4px !important;
     letter-spacing: .06rem !important;
     border: none;
 }
@@ -1870,8 +2109,7 @@ label.inv-toggle {
     color: #33638B;
     font-weight: 700;
     cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration: none;
 }
 
 .order-id-link:hover {
@@ -1888,4 +2126,1345 @@ label.inv-toggle {
     text-transform: uppercase;
     margin: 14px 0 6px;
     padding: 0 4px;
+}
+
+/* ── Settings Pages ──────────────────────────────────────────── */
+
+.sett-form {
+    max-width: 680px;
+    padding: 16px 4px;
+}
+
+.sett-section {
+    margin-bottom: 28px;
+}
+
+.sett-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 8px 0 16px;
+}
+
+.sett-save-btn {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06rem;
+    text-transform: uppercase;
+    background-color: #33638B;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.sett-save-btn:hover:not(:disabled) {
+    background-color: #264e6e;
+}
+
+.sett-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sett-unsaved {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.8rem;
+    color: #c8611a;
+    font-weight: 600;
+}
+
+.sett-image-preview {
+    display: block;
+    max-width: 280px;
+    max-height: 200px;
+    border-radius: 4px;
+    margin: 0 auto;
+    margin-bottom: 8px;
+    object-fit: cover;
+}
+
+.sett-favicon-preview {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    margin: 0 auto;
+    margin-bottom: 8px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+
+/* ══════════════════════════════════════════
+   STOREFRONT SETTINGS PAGE
+   ══════════════════════════════════════════ */
+
+
+/* ── Two-panel row ── */
+
+.sf-sett-panels {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: flex-start;
+    flex: 1;
+}
+
+/* ── BRANDING panel ── */
+
+.sf-sett-panel--branding {
+    flex: 45 1 0;
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-panel-header {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: .12rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0 0 10px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #c4d9e8;
+}
+
+.sf-panel-header--spaced {
+    margin-top: 18px;
+}
+
+.sf-branding-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sf-branding-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.sf-branding-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04rem;
+    color: #33638b;
+    text-transform: uppercase;
+}
+
+.sf-branding-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Renner', sans-serif;
+    font-size: .9rem;
+    border-radius: 5px;
+    padding: 5px;
+    line-height: 1.5;
+}
+
+.sf-branding-field input[type="file"] {
+    font-family: 'Renner', sans-serif;
+    font-size: .8rem;
+    color: #33638b;
+}
+
+.sf-branding-field input[type="file"]::file-selector-button {
+    font-family: 'Renner', sans-serif;
+    color: white;
+    background-color: #33638b;
+    text-transform: uppercase;
+    letter-spacing: .13rem;
+    padding: 6px 8px 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    line-height: 1;
+}
+
+.sf-field-group {
+    margin-bottom: 12px;
+}
+
+.sf-field-group label {
+    display: block;
+    font-family: 'Renner', sans-serif;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin-bottom: 3px;
+}
+
+.sf-field-group input[type="text"],
+.sf-field-group input[type="tel"],
+.sf-field-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Renner', sans-serif;
+    font-size: .82rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 4px 7px;
+    color: #2a4f6b;
+    background: white;
+}
+
+.sf-field-group input[type="file"] {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #2a4f6b;
+    margin-top: 4px;
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sf-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #2a4f6b;
+    margin-top: 6px;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+.sf-toggle-label input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.sf-logo-hint {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #5a85a0;
+    margin: 0 0 8px 0;
+    line-height: 1.1rem;
+}
+
+.sf-logo-preview-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .68rem;
+    color: #5a85a0;
+    margin: 0 0 4px 0;
+    letter-spacing: .04rem;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* ── RIGHT COLUMN ── */
+
+.sf-sett-panels-right {
+    flex: 55 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── CUSTOMIZE panel ── */
+
+.sf-sett-panel--customize {
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-customize-header {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0;
+}
+
+.sf-customize-subhead {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    color: #5a85a0;
+    margin: 0 0 10px 0;
+    letter-spacing: .03rem;
+}
+
+.sf-customize-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sf-customize-tile {
+    background-color: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.sf-customize-controls {
+    flex: 1;
+    min-width: 0;
+}
+
+.sf-color-preview-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.sf-color-section {
+    flex-shrink: 0;
+}
+
+.sf-customize-section-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 10px 0 0 0;
+}
+
+.sf-customize-section-label:first-child {
+    margin-top: 0;
+}
+
+.sf-customize-section-hint {
+    font-family: 'Renner', sans-serif;
+    font-size: .68rem;
+    color: #5a85a0;
+    margin: 0 0 6px 0;
+}
+
+/* ── Font radio grid ── */
+
+.sf-font-grid {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 3px 12px;
+    margin-bottom: 4px;
+}
+
+.sf-font-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Override the global .admin-dash-wrap label style for font options */
+.admin-dash-wrap .sf-font-option,
+.admin-wrap .sf-font-option {
+    font-family: inherit;
+    font-size: .9rem;
+    color: #2a4f6b;
+    letter-spacing: normal;
+    font-weight: normal;
+    text-transform: none;
+    margin-bottom: 0;
+}
+
+.sf-font-option input[type="radio"] {
+    margin: 0;
+    width: auto;
+    padding: 0;
+    border: none;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.sf-font-option__name {
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+/* ── Color picker grid ── */
+
+.sf-color-col {
+    display: grid;
+    grid-template-columns: max-content 22px 62px;
+    column-gap: 12px;
+    row-gap: 5px;
+    align-items: center;
+}
+
+.sf-color-row {
+    display: contents;
+}
+
+.sf-color-row__label {
+    font-family: 'Renner', sans-serif;
+    font-size: .67rem;
+    color: #2a4f6b;
+    letter-spacing: .02rem;
+    white-space: nowrap;
+}
+
+.sf-color-swatch {
+    width: 25px;
+    height: 29px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: none;
+}
+
+.sf-hex-input {
+    width: 70px;
+    flex-shrink: 0;
+    font-size: .68rem;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 1px;
+    color: #2a4f6b;
+    background: white;
+    letter-spacing: .03rem;
+    font-family: 'Renner', sans-serif;
+}
+
+.sf-hex-input:focus {
+    outline: none;
+    border-color: #33638B;
+}
+
+/* ── Live preview ── */
+
+.sf-preview {
+    flex: 1 1 280px;
+    min-width: 0;
+    max-width: 350px;
+    margin: 10px;
+}
+
+.sf-preview-header-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    color: #33638B;
+    margin: 0;
+    margin-top: -15px;
+}
+
+.sf-preview-panel {
+    border: 1px solid #a0b8c8;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: .65rem;
+    font-family: 'Renner', sans-serif;
+    letter-spacing: normal;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sf-preview-row {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    gap: 4px;
+}
+
+.sf-preview-row--bar {
+    flex: 0 0 22px;
+    gap: 20px;
+}
+
+.sf-preview-bar-label {
+    font-size: .55rem;
+    font-style: italic;
+    opacity: 0.7;
+    margin-right: auto;
+}
+
+.sf-preview-row--main {
+    flex: 5;
+    align-items: flex-start;
+    padding-top: 8px;
+}
+
+.sf-preview-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sf-preview-btn {
+    display: inline-block;
+    font-size: .6rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: default;
+    align-self: flex-start;
+    white-space: nowrap;
+    margin-top: 18px;
+}
+
+.sf-preview-sections {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.sf-preview-section-swatch {
+    flex: 1;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: .6rem;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* ── ICONS panel ── */
+
+.sf-sett-panel--icons {
+    min-width: 0;
+    background-color: #dce8f0;
+    border-radius: 6px;
+    padding: 14px 16px;
+}
+
+.sf-icons-table {
+    border-collapse: collapse;
+    margin-top: 8px;
+    width: auto;
+}
+
+.sf-icons-th {
+    font-family: 'Renner', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    letter-spacing: .05rem;
+    text-transform: uppercase;
+    padding: 4px 18px 4px 8px;
+    background-color: #dce8f0;
+    border-bottom: 1px solid #a0b8c8;
+    white-space: nowrap;
+}
+
+.sf-icons-th--icon {
+    text-align: center;
+    border-right: 1px solid #a0b8c8;
+    padding-right: 18px;
+    background-color: #dce8f0;
+}
+
+.sf-icons-th--name {
+    text-align: left;
+    padding-left: 18px;
+    background-color: #dce8f0;
+}
+
+.sf-icons-th--btn {
+    width: 90px;
+}
+
+.sf-icons-td {
+    padding: 3px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.sf-icons-td--icon {
+    font-size: 1.25rem;
+    text-align: center;
+    border-right: 1px solid #a0b8c8;
+    line-height: 1;
+    padding: 0;
+}
+
+.sf-icons-td--name {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.sf-icons-td--btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sf-icons-empty {
+    font-family: 'Renner', sans-serif;
+    font-size: .75rem;
+    color: #5a85a0;
+    font-style: italic;
+    margin: 0;
+}
+
+.sf-icons-btn-col {
+    width: 90px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.sf-emoji-picker-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sf-emoji-trigger {
+    font-family: 'Renner', sans-serif;
+    font-size: .42rem;
+    letter-spacing: .04rem;
+    padding: 1px 5px 1px;
+    background-color: #33638b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0 !important;
+    line-height: 1;
+}
+
+.sf-emoji-remove-btn {
+    font-family: 'Renner', sans-serif;
+    font-size: .90rem !important;
+    letter-spacing: .03rem !important;
+    padding: 5px 7px 3px !important;
+    background-color: #8b3333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0 !important;
+    line-height: 1;
+}
+
+.sf-emoji-flyout {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 100;
+    background: white;
+    border: 1px solid #a0b8c8;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.sf-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.sf-emoji-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #d0e0ea;
+}
+
+.sf-emoji-tabs-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    color: #5a85a0;
+    letter-spacing: .05rem;
+    text-transform: uppercase;
+    margin-right: 2px;
+}
+
+.sf-emoji-tab {
+    font-family: 'Renner', sans-serif;
+    font-size: .58rem;
+    letter-spacing: .02rem !important;
+    padding: 2px 5px 1px;
+    color: white !important;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+    margin: 0 !important;
+    text-transform: none !important;
+    white-space: nowrap;
+    opacity: 0.75;
+}
+
+.sf-emoji-tab:hover {
+    opacity: 1;
+}
+
+.sf-emoji-tab--active {
+    opacity: 1;
+    border: 2px solid rgba(0,0,0,0.35);
+    outline: 1px solid white;
+}
+
+.sf-emoji-tab-clear {
+    font-family: 'Renner', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    color: #8b3333 !important;
+    background: none !important;
+    border: none;
+    cursor: pointer;
+    margin: 0 0 0 4px !important;
+    padding: 0;
+    line-height: 1;
+    text-transform: none !important;
+}
+
+.sf-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+}
+
+.sf-emoji-option {
+    font-size: 1.3rem;
+    background: white !important;
+    color: inherit !important;
+    text-transform: none !important;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 0;
+    text-align: center;
+    margin: -1px !important;
+    line-height: 1;
+    transition: background .1s;
+}
+
+.sf-emoji-option:hover {
+    background: #dce8f0;
+}
+
+
+/* ── Save actions ── */
+
+.sf-sett-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 14px 0 4px;
+    margin-top: 14px;
+    border-top: 1px solid #c4d9e8;
+}
+
+.print-only { display: none; }
+
+/* ── Export Page ──────────────────────────────────────────────── */
+
+.admin-export-pg {
+    max-width: 740px;
+    padding: 4px 4px 24px;
+}
+
+.admin-export-pg h2 {
+    margin-bottom: 4px;
+}
+
+.admin-export-intro {
+    color: #444;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.admin-export-date-row {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.admin-export-date-row label > span {
+    display: block;
+    font-weight: bold;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #1a1a1a;
+}
+
+.admin-export-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-export-date-inputs input[type="date"] {
+    padding: 4px 6px;
+    border: 1px solid #b0cfe0;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+}
+
+.admin-export-date-inputs span {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.admin-export-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-export-card {
+    background: #ffffff;
+    border: 1px solid #c4d9e8;
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.admin-export-card-body h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+.admin-export-card-body p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #555;
+}
+
+.admin-export-date-note {
+    margin-top: 4px !important;
+    font-size: 0.82rem !important;
+    color: #888 !important;
+}
+
+.admin-export-card-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.admin-export-btn {
+    background-color: #2a6496;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.admin-export-btn:hover {
+    filter: brightness(0.9);
+}
+
+.admin-export-btn:disabled {
+    background-color: #cccccc;
+    color: #888888;
+    cursor: default;
+}
+
+.admin-export-error {
+    font-size: 0.82rem;
+    color: #c0392b;
+    margin: 0;
+}
+
+/* ── Inventory Item Link ────────────────────────────────────────── */
+
+.inv-item-link {
+    color: #33638B;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.15s;
+}
+
+.inv-item-link:hover {
+    text-decoration-color: #33638B;
+}
+
+/* ── Supply Detail Page ─────────────────────────────────────────── */
+
+.supply-det-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px 10px;
+}
+
+.supply-det-name {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #1a3a52;
+    margin: 0;
+}
+
+.supply-det-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.supply-det-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 10px 20px 24px;
+    max-width: 560px;
+}
+
+.supply-det-card {
+    background: white;
+    border: 1px solid #d0e4f0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    min-width: 240px;
+    flex: 1;
+}
+
+.supply-det-card__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.supply-det-card__title-row .supply-det-card__title {
+    margin-bottom: 0;
+}
+
+.supply-det-card__title {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+    color: #5a85a0;
+    margin: 0 0 12px;
+}
+
+.supply-det-new-supplier {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #33638B !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.04rem;
+}
+
+.supply-det-new-supplier:hover {
+    text-decoration: underline;
+}
+
+.supply-det-input {
+    width: 120px;
+}
+
+.supply-det-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.supply-det-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.supply-det-row--col {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.supply-det-row__label {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.78rem;
+    color: #5a85a0;
+    white-space: nowrap;
+}
+
+.supply-det-row__value {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a3a52;
+    text-align: right;
+}
+
+.supply-det-select {
+    width: 100%;
+    margin-top: 2px;
+}
+
+.supply-det-save-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e8f0f5;
+}
+
+.supply-det-save-btn {
+    padding: 7px 14px 4px !important;
+    font-size: 0.72rem !important;
+    margin-bottom: 0 !important;
+}
+
+.supply-det-product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supply-det-product-list__item {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #1a3a52;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f6fa;
+}
+
+.supply-det-product-list__item:last-child {
+    border-bottom: none;
+}
+
+/* ── Purchase Order Page ────────────────────────────────────────── */
+
+.po-control-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 14px 20px;
+    background: #f0f6fa;
+    border-bottom: 1px solid #d0e4f0;
+    margin-bottom: 4px;
+}
+
+.po-control-bar__field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.po-control-bar__label {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07rem;
+    color: #5a85a0;
+}
+
+.po-control-bar__value {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a3a52;
+}
+
+.po-row--deselected {
+    opacity: 0.4;
+}
+
+.po-table-wrap .admin-table td,
+.po-table-wrap .admin-table th {
+    font-size: 0.95rem;
+}
+
+.po-no-supplier {
+    color: #a0a8b0;
+    font-style: italic;
+}
+
+.po-qty-input {
+    width: 72px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.85rem;
+    padding: 3px 6px;
+    border: 1px solid #b0cfe0;
+    border-radius: 3px;
+    color: #1a3a52;
+    background: white;
+}
+
+.po-qty-input:disabled {
+    background: #f0f0f0;
+    color: #aaa;
+    border-color: #ddd;
+}
+
+.po-footer {
+    padding: 8px 20px 0;
+}
+
+.po-footer__rule {
+    border: none;
+    border-top: 1px solid #c4d9e8;
+    margin: 0 0 8px;
+}
+
+.po-footer__count {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #2a4f6b;
+    margin: 0;
+}
+
+.po-notes {
+    padding: 16px 20px 0;
+}
+
+.po-notes__input {
+    width: 100%;
+    max-width: 520px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #1a1a1a;
+    border: 1px solid #b0cfe0;
+    border-radius: 4px;
+    padding: 8px 10px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+/* Print-only PO header */
+.po-print-header__title {
+    font-family: 'Renner', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #1a3a52;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06rem;
+}
+
+.po-print-header__meta {
+    display: flex;
+    gap: 24px;
+    font-family: 'Renner', sans-serif;
+    font-size: 0.88rem;
+    color: #444;
+    margin-bottom: 2px;
+}
+
+.po-print-header__contact {
+    font-family: 'Renner', sans-serif;
+    font-size: 0.82rem;
+    color: #555;
+    margin: 0;
+}
+
+/* ── Admin Print Styles ─────────────────────────────────────────── */
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.75in;
+  }
+
+  .admin-sidebar,
+  .admin-topbar,
+  .admin-nav-cards,
+  .admin-footer,
+  .submenu-bar,
+  .order-detail-complete-btn,
+  .inv-save-success,
+  .no-print { display: none !important; }
+
+  body {
+    background: white !important;
+    font-size: 11pt !important;
+    min-width: unset !important;
+  }
+
+  .admin-dash-wrap {
+    display: block !important;
+    background: white !important;
+    min-height: unset !important;
+  }
+
+  .admin-main {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: unset !important;
+  }
+
+  .admin-content {
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  /* Strip all backgrounds and colors for print */
+  * {
+    color: black !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border-color: #cccccc !important;
+    -webkit-print-color-adjust: economy;
+    print-color-adjust: economy;
+  }
+
+  body.admin-body,
+  .admin-dash-wrap,
+  .admin-wrap,
+  .admin-content,
+  .admin-main {
+    background: white !important;
+    background-image: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .admin-content {
+    padding: 0 !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: black !important;
+  }
+
+  /* Print-only elements become visible */
+  .print-only { display: block !important; }
+
+  .print-page-header {
+    margin-bottom: 12pt;
+    border-bottom: 1.5pt solid #333333;
+    padding-bottom: 6pt;
+  }
+
+  .print-page-title {
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    margin: 0 0 2pt !important;
+    color: black !important;
+  }
+
+  .print-page-date {
+    font-size: 9pt !important;
+    color: #444444 !important;
+    margin: 0 !important;
+    font-style: italic;
+  }
+
+  /* Sort indicators, pagination, filter controls, and action columns */
+  .sort-indicator,
+  .sort-indicator--inactive,
+  .orders-pagination,
+  .submenu-filter-group,
+  .td-actions { display: none !important; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #cccccc !important;
+    padding: 3pt 6pt !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    font-weight: bold !important;
+    background: #f0f0f0 !important;
+  }
+
+  /* Reduce general padding/margin */
+  .inv-section-header,
+  .rpt-loading,
+  .rpt-empty {
+    margin: 4pt 0 !important;
+    padding: 0 !important;
+    font-size: 9pt !important;
+  }
+
+  .order-detail-header {
+    padding: 0 0 6pt !important;
+    margin: 0 !important;
+  }
+
+  .order-detail-totals {
+    padding: 4pt 0 !important;
+    margin: 4pt 0 0 !important;
+  }
+
+  /* Page break helpers */
+  tr { page-break-inside: avoid; }
+  h1, h2, h3 { page-break-after: avoid; }
 }

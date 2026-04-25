@@ -56,6 +56,10 @@ function mockFetch({
       return makeJsonResponse(inventoryResponse);
     }
 
+    if (requestUrl.includes("orders/years")) {
+      return makeJsonResponse([]);
+    }
+
     return makeJsonResponse({});
   });
 }
@@ -389,10 +393,6 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     expect(screen.getByText(/recent orders/i)).toBeInTheDocument();
     expect(screen.getByText(/no orders yet/i)).toBeInTheDocument();
-
-    const returnsRefunds = screen.getByText(/returns & refunds/i);
-    expect(returnsRefunds.tagName).toBe("SPAN");
-    expect(returnsRefunds).toHaveClass("sidebar-link-disabled");
   });
 
   test("account settings page renders account information and permissions", async () => {
@@ -410,10 +410,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
 
     renderAdminAt("/admin/account");
 
-    expect(
-      await screen.findByRole("heading", { name: /account settings/i })
-    ).toBeInTheDocument();
-    expect(screen.getByText(/biz admin/i)).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /biz admin/i })).toBeInTheDocument();
     expect(screen.getByText(/business1@example\.com/i)).toBeInTheDocument();
     expect(screen.getByText(/manage inventory/i)).toBeInTheDocument();
     expect(screen.getByText(/manage product catalog/i)).toBeInTheDocument();

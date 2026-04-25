@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import F
+from django.db.models import F, Q
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -37,6 +37,11 @@ class AdminInventoryListCreateView(APIView):
 class AdminInventoryDetailView(APIView):
     permission_classes = [IsAuthenticated, IsBusinessUser]
 
+    def get(self, request, itemId):
+        item = get_object_or_404(InventoryItem, pk=itemId)
+        serializer = AdminInventoryItemSerializer(item)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def patch(self, request, itemId):
         item = get_object_or_404(InventoryItem, pk=itemId)
         serializer = AdminInventoryItemSerializer(item, data=request.data, partial=True)
@@ -63,11 +68,14 @@ class AdminLowStockView(APIView):
             stock_quantity__lte=F("reorder_level"),
         ).order_by("product__name", "name")
 
-        low_stock_items = InventoryItem.objects.filter(
-            stock_quantity__isnull=False,
-            reorder_level__isnull=False,
-            stock_quantity__lte=F("reorder_level"),
-        ).order_by("name")
+        low_stock_items = InventoryItem.objects.select_related("supplier").filter(
+            Q(stock_quantity=0) |
+            Q(
+                stock_quantity__isnull=False,
+                reorder_level__isnull=False,
+                stock_quantity__lte=F("reorder_level"),
+            )
+        ).distinct().order_by("name")
 
         return Response(
             {

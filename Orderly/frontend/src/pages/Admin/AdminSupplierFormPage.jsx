@@ -50,7 +50,7 @@ export default function AdminSupplierFormPage() {
       }
       if (!response.ok) throw new Error("Failed to create supplier");
 
-      navigate("/admin/catalog");
+      navigate("/admin/suppliers");
     } catch (error) {
       if (error.status === 401 || error.status === 403) {
         handleApiError(error, navigate);
@@ -114,7 +114,7 @@ export default function AdminSupplierFormPage() {
           <button type="submit" disabled={saving}>
             {saving ? "Saving..." : "Add Supplier"}
           </button>
-          <button type="button" onClick={() => navigate("/admin/catalog")}>
+          <button type="button" onClick={() => navigate("/admin/suppliers")}>
             Cancel
           </button>
         </div>

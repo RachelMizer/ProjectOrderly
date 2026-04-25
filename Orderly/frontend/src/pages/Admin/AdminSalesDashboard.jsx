@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
@@ -29,6 +29,7 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function AdminSalesDashboard() {
+  const navigate = useNavigate();
   const location = useLocation();
   const initMonth = location.state?.month || "";
   const initYear  = initMonth
@@ -179,7 +180,7 @@ export default function AdminSalesDashboard() {
   return (
     <div>
       <div className="submenu-bar">
-        <span className="submenu-label">Sales Summary</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>💰</span>Sales Summary</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -220,11 +221,11 @@ export default function AdminSalesDashboard() {
             )}
           </div>
           <span className="submenu-divider" />
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; EXPORT
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
+            <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
-          <button type="button" className="submenu-action" title="Pending further development">
-            &gt; PRINT
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -278,21 +279,21 @@ export default function AdminSalesDashboard() {
           {/* Bar chart */}
           {chartData.length > 0 && (
             <div className="rpt-chart-wrap">
-              <p className="rpt-chart-title">Revenue by {chartXLabel}</p>
+              <p className="rpt-chart-title"><span style={{marginRight:"-1px"}}>📅</span>Revenue by {chartXLabel}</p>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} margin={{ top: 20, right: 16, left: 16, bottom: 4 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#c4d9e8" vertical={false} />
                   <XAxis
                     dataKey="label"
-                    tickFormatter={(v) => isNaN(v) ? v.toUpperCase() : v}
-                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#2a4f6b", fontWeight: 700 }}
+                    tickFormatter={(v) => isNaN(v) ? v.slice(0, 3).toUpperCase() : v}
+                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     interval={0}
                   />
                   <YAxis
                     tickFormatter={(v) => `$${v.toLocaleString()}`}
-                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#5a85a0" }}
+                    tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                     axisLine={false}
                     tickLine={false}
                     width={70}

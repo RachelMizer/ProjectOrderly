@@ -21,6 +21,7 @@ from orders.views import (
     BusinessOrderListView,
     CompleteOrderView,
     CancelOrderView,
+    OrderYearsView,
 )
 
 urlpatterns = [
@@ -94,6 +95,14 @@ urlpatterns = [
         "",
         BusinessOrderListView.as_view(),
         name="business-order-list",
+    ),
+
+    # Distinct years that have non-draft orders
+    # GET /api/v1/orders/years
+    path(
+        "years",
+        OrderYearsView.as_view(),
+        name="order-years",
     ),
 
     # Retrieve full order detail / receipt

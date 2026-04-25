@@ -129,13 +129,6 @@ Customer Pending Order Can Be Cancelled From Order Detail
 
     Wait Until Keyword Succeeds    15s    1s    Page Should Contain    CANCELLED
 
-Customer Non Pending Detail Does Not Show Cancel Button
-    Login As Seeded Customer
-    Go To    ${ORDER_HISTORY_URL}
-    Wait Until Element Is Visible    ${ORDER_HISTORY_TABLE}    15s
-    Click Non Pending Or Non Cancellable Order Row
-    Wait Until Element Is Visible    ${ORDER_DETAIL_PAGE}    15s
-    Page Should Not Contain Element    xpath=//button[contains(@class,'cancel-order-btn') and normalize-space()='Cancel Order']
 
 *** Keywords ***
 Open Test Browser

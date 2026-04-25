@@ -21,19 +21,24 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [recentViews, setRecentViews] = useState([]);
   const [inventoryAlerts, setInventoryAlerts] = useState([]);
+  const [storeName, setStoreName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
       try {
-        const [catRes, prodRes] = await Promise.all([
+        const token = localStorage.getItem("accessToken");
+        const [catRes, prodRes, settRes] = await Promise.all([
           fetch(`${API}/categories`),
           fetch(`${API}/products?pageSize=100`),
+          fetch(`${API}/settings/`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }),
         ]);
         const catData = await catRes.json();
         const prodData = await prodRes.json();
+        const settData = settRes.ok ? await settRes.json() : {};
         setCategories(catData.results || []);
         setProducts(prodData.results || []);
+        if (settData.storeName) setStoreName(settData.storeName);
       } catch (err) {
         console.error("Failed to load dashboard data:", err);
       } finally {
@@ -76,14 +81,14 @@ export default function Dashboard() {
 
   return (
     <div className="admin-dash">
-      <h1>Dashboard Home</h1>
+      <h1>{storeName ? `Dashboard Home for ${storeName}` : "Dashboard Home"}</h1>
 
       <div className="dash-info-bar">
-        <p>Today is {today}</p>
+        <p><span style={{marginRight:"-1px"}}>📅</span>Today is {today}</p>
       </div>
 
       <div className="dash-recent-file">
-        <p className="dash-recent-label">Pick Up Where You Left Off</p>
+        <p className="dash-recent-label"><span style={{marginRight:"-1px"}}>🔖</span>Pick Up Where You Left Off</p>
         {recentViews.length === 0 ? (
           <p className="dash-recent-value">No recent activity yet. Visit a section to get started.</p>
         ) : (
@@ -113,7 +118,7 @@ export default function Dashboard() {
             className="dash-low-stock-label"
             onClick={() => navigate("/admin/inventory")}
           >
-            Inventory Alerts
+            <span style={{marginRight:"-1px"}}>📋</span>Inventory Alerts
           </p>
           <div className="dash-low-stock-grid">
             {inventoryAlerts.map((item) => {

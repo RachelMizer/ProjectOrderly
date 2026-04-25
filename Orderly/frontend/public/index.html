@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
-      name="Quick Sip Cafe"
-      content="The homepage for Quick Sip Cafe"
+      name="description"
+      content="Welcome to our store"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
 
@@ -21,9 +21,33 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Quick Sip Cafe</title>
+    <title>My Store</title>
   </head>
   <body>
+    <script>
+      try {
+        var s = JSON.parse(localStorage.getItem('sf_theme'));
+        if (s) {
+          var r = document.documentElement.style;
+          if (s.pageBackgroundColor)    r.setProperty('--sf-page-bg',        s.pageBackgroundColor);
+          if (s.headerSpecialTextColor) r.setProperty('--sf-header-special',  s.headerSpecialTextColor);
+          if (s.headerTextColor)        r.setProperty('--sf-header-text',     s.headerTextColor);
+          if (s.navBgColor)             r.setProperty('--sf-nav-bg',          s.navBgColor);
+          if (s.navLinkColor)           r.setProperty('--sf-nav-link',        s.navLinkColor);
+          if (s.navTextColor)           r.setProperty('--sf-nav-text',        s.navTextColor);
+          if (s.mainLinkColor)          r.setProperty('--sf-main-link',       s.mainLinkColor);
+          if (s.mainTextColor)          r.setProperty('--sf-main-text',       s.mainTextColor);
+          if (s.footerBgColor)          r.setProperty('--sf-footer-bg',       s.footerBgColor);
+          if (s.footerLinkColor)        r.setProperty('--sf-footer-link',     s.footerLinkColor);
+          if (s.btnBgColor)             r.setProperty('--sf-btn-bg',          s.btnBgColor);
+          if (s.btnTextColor)           r.setProperty('--sf-btn-text',        s.btnTextColor);
+          if (s.sectionBg1Color)        r.setProperty('--sf-section-bg-1',    s.sectionBg1Color);
+          if (s.sectionBg2Color)        r.setProperty('--sf-section-bg-2',    s.sectionBg2Color);
+          var fm = {arimo:"'Arimo',sans-serif",lora:"'Lora',serif",roboto:"'RobotoCondensed',sans-serif",playfair:"'PlayfairDisplay',serif",raleway:"'Raleway',sans-serif",munson:"'Munson',serif"};
+          if (s.fontChoice && fm[s.fontChoice]) r.setProperty('--sf-font', fm[s.fontChoice]);
+        }
+      } catch(e) {}
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--

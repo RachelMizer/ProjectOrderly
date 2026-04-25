@@ -54,17 +54,17 @@ Sales Dashboard Search Shows No Results Message
     Close Browser
 
 Business Admin Can Reach Sales Dashboard From Reports Hub
-    Open Browser    ${BASE_URL}    ${BROWSER}
-    Maximize Browser Window
+    Open Browser To App
     Login As Business User
-    Go To    ${ADMIN_REPORTS_URL}
+    Go To    ${BASE_URL}/admin/reports
+    Wait Until Page Contains    Reports
 
-    Wait Until Page Contains    Generate a Report    15s
-    Click Link    Sales Summary
-    Wait Until Page Contains    Sales Summary    15s
-    Wait Until Page Contains    Total Revenue    15s
-    Wait Until Page Contains    Sales by Product    15s
-    Capture Page Screenshot
+    Click Element
+    ...    xpath=//*[self::a or self::button][contains(.,'Sales')]
+
+    Wait Until Location Contains    /admin/reports/sales    10s
+    Page Should Contain    Revenue
+    Page Should Contain    Orders
     Close Browser
 
 Customer Cannot Access Sales Dashboard

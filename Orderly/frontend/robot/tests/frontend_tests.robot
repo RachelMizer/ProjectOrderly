@@ -132,7 +132,7 @@ Profile Save Submits Updated Data
 
 StoreFront Renders Product Grid
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.product-grid    10s
     Wait Until Page Contains Element    css=.product-card    10s
 
@@ -161,7 +161,7 @@ StoreFront Shows View And Customize Link
 
 StoreFront Category Filter Can Be Toggled
     Go To    ${BASE_URL}
-    Wait Until Page Contains    Filter the Menu    10s
+    Wait Until Page Contains    Filters    10s
     Wait Until Page Contains Element    css=.filter input[type="checkbox"]    10s
     Click Element    css=.filter input[type="checkbox"]
 

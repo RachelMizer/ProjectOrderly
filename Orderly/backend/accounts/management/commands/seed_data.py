@@ -21,6 +21,7 @@ from catalog.models import (
     ModifierGroup,
     ModifierOption,
 )
+from settings.models import StoreSettings
 
 
 def make_unique_sku(base: str) -> str:
@@ -188,6 +189,10 @@ class Command(BaseCommand):
         if dev_created:
             dev_user.set_password("rmdevpass")
             dev_user.save(update_fields=["password"])
+        if not dev_user.first_name:
+            dev_user.first_name = "Rachel"
+            dev_user.last_name = "Mizer"
+            dev_user.save(update_fields=["first_name", "last_name"])
         UserRole.objects.get_or_create(
             user=dev_user,
             defaults={"role": UserRoleChoices.BUSINESS},
@@ -639,15 +644,24 @@ class Command(BaseCommand):
         # ------------------------------------------------------------
         # 5) Catalog categories
         # ------------------------------------------------------------
-        category_names = ["Coffee", "Tea", "Bakery", "Breakfast", "Seasonal"]
+        category_data = [
+            ("Coffee",   "☕"),
+            ("Tea",      "🍵"),
+            ("Bakery",   "🥐"),
+            ("Breakfast","🍳"),
+            ("Seasonal", "✨"),
+        ]
 
         categories = {}
-        for name in category_names:
+        for name, icon in category_data:
             c, _ = Category.objects.get_or_create(name=name)
+            if c.icon != icon:
+                c.icon = icon
+                c.save(update_fields=["icon"])
             categories[name] = c
 
         self.stdout.write(
-            self.style.SUCCESS(f"Categories seeded: {len(category_names)}")
+            self.style.SUCCESS(f"Categories seeded: {len(category_data)}")
         )
 
         # ------------------------------------------------------------
@@ -1204,7 +1218,60 @@ class Command(BaseCommand):
         )
 
         # ------------------------------------------------------------
-        # 10) Final summary
+        # 10) Store settings
+        # ------------------------------------------------------------
+        store_settings, _ = StoreSettings.objects.update_or_create(
+            pk=1,
+            defaults=dict(
+                store_name="Quick Sip Cafe",
+                tax_rate=Decimal("8.00"),
+                contact_phone="7045550192",
+                contact_email="hello@quicksipcafe.com",
+                hq_address="201 W Main St. Raleigh, NC 27601",
+                store_address="201 W Main St. Raleigh, NC 27601",
+                store_phone="7045550192",
+                hours="Mon-Fri 6am-2pm\nSat-Sun 6am-3pm",
+                store_tagline="Your pause, perfected.",
+                show_tagline=False,
+                header_special_text_color="#9a4422",
+                header_text_color="#482e1d",
+                nav_bg_color="#a3966a",
+                nav_link_color="#f5f0e8",
+                nav_text_color="#ffffff",
+                main_link_color="#6e5b50",
+                main_text_color="#3b2a20",
+                footer_bg_color="#a3966a",
+                footer_link_color="#f5f0e8",
+                footer_text_color="#ffffff",
+                btn_bg_color="#9a4422",
+                btn_text_color="#ffffff",
+                section_bg_1_color="#f5f0e8",
+                section_bg_2_color="#e8dfd0",
+                page_background_color="#faf7f2",
+                font_choice="munson",
+            ),
+        )
+
+        media_store_dir = Path(settings.MEDIA_ROOT) / "store"
+        media_store_dir.mkdir(parents=True, exist_ok=True)
+        store_img_src = settings.BASE_DIR.parent / "frontend" / "public" / "img" / "store"
+
+        for field_name, filename in [("store_image", "logo.png"), ("favicon", "favicon.ico")]:
+            src = store_img_src / filename
+            if not src.exists():
+                self.stdout.write(self.style.WARNING(f"  Store image not found, skipping: {src}"))
+                continue
+            dst = media_store_dir / filename
+            shutil.copy2(str(src), str(dst))
+            relative_path = f"store/{filename}"
+            current = getattr(store_settings, field_name)
+            if not current or current.name != relative_path:
+                setattr(store_settings, field_name, relative_path)
+                store_settings.save(update_fields=[field_name])
+
+        self.stdout.write(self.style.SUCCESS("Store settings seeded: Quick Sip Cafe branding"))
+
+        # ------------------------------------------------------------
+        # 11) Final summary
         # ------------------------------------------------------------
         self.stdout.write(self.style.SUCCESS("Seed data loaded successfully."))
-        self.stdout.write(self.style.SUCCESS("Seed complete for Sprint 3 testing."))

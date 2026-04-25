@@ -30,21 +30,33 @@ ORDER_TEMPLATES = [
     {
         "seasonal": False,
         "items": [
-            {"product": "Latte", "variant": "Medium", "modifiers": [("Milk Type", "Oat Milk"), ("Flavor Syrup", "Vanilla")]},
+            {
+                "product": "Latte",
+                "variant": "Medium",
+                "modifiers": [("Milk Type", "Oat Milk"), ("Flavor Syrup", "Vanilla")],
+            },
             {"product": "Blueberry Muffin", "variant": "Standard"},
         ],
     },
     {
         "seasonal": False,
         "items": [
-            {"product": "Latte", "variant": "Large", "modifiers": [("Milk Type", "Whole Milk")]},
+            {
+                "product": "Latte",
+                "variant": "Large",
+                "modifiers": [("Milk Type", "Whole Milk")],
+            },
             {"product": "Chocolate Croissant", "variant": "Standard"},
         ],
     },
     {
         "seasonal": False,
         "items": [
-            {"product": "Latte", "variant": "Small", "modifiers": [("Flavor Syrup", "Caramel")]},
+            {
+                "product": "Latte",
+                "variant": "Small",
+                "modifiers": [("Flavor Syrup", "Caramel")],
+            },
         ],
     },
     {
@@ -76,7 +88,11 @@ ORDER_TEMPLATES = [
                 "variant": "Standard",
                 "modifiers": [("Bread Choice", "Bagel"), ("Protein Add-On", "Bacon")],
             },
-            {"product": "Cold Brew", "variant": "Large", "modifiers": [("Cold Brew Add-Ons", "Sweet Cream")]},
+            {
+                "product": "Cold Brew",
+                "variant": "Large",
+                "modifiers": [("Cold Brew Add-Ons", "Sweet Cream")],
+            },
         ],
     },
     {
@@ -93,7 +109,11 @@ ORDER_TEMPLATES = [
     {
         "seasonal": False,
         "items": [
-            {"product": "Cold Brew", "variant": "Large", "modifiers": [("Cold Brew Add-Ons", "Sweet Cream")]},
+            {
+                "product": "Cold Brew",
+                "variant": "Large",
+                "modifiers": [("Cold Brew Add-Ons", "Sweet Cream")],
+            },
         ],
     },
     {
@@ -106,7 +126,11 @@ ORDER_TEMPLATES = [
     {
         "seasonal": False,
         "items": [
-            {"product": "Chai Tea Latte", "variant": "Medium", "modifiers": [("Milk Type", "Almond Milk")]},
+            {
+                "product": "Chai Tea Latte",
+                "variant": "Medium",
+                "modifiers": [("Milk Type", "Almond Milk")],
+            },
             {"product": "Green Tea", "variant": "Small"},
         ],
     },
@@ -130,7 +154,10 @@ ORDER_TEMPLATES = [
             {
                 "product": "Pumpkin Spice Latte",
                 "variant": "Small",
-                "modifiers": [("Seasonal Toppings", "Whipped Cream"), ("Seasonal Toppings", "Pumpkin Drizzle")],
+                "modifiers": [
+                    ("Seasonal Toppings", "Whipped Cream"),
+                    ("Seasonal Toppings", "Pumpkin Drizzle"),
+                ],
             },
             {"product": "Cake Pop", "variant": "Birthday Cake"},
         ],
@@ -177,7 +204,6 @@ def _modifier(product_name, variant_name, group_name, option_name):
         )
 
 
-
 def _add_item(order, product_name, variant_name, modifiers=None):
     variant = _variant(product_name, variant_name)
     item = OrderItem.objects.create(
@@ -186,7 +212,7 @@ def _add_item(order, product_name, variant_name, modifiers=None):
         quantity=1,
         unit_price_charged=variant.unit_price,
     )
-    for group_name, option_name in (modifiers or []):
+    for group_name, option_name in modifiers or []:
         option = _modifier(product_name, variant_name, group_name, option_name)
         OrderItemModifier.objects.create(
             order_item=item,
@@ -214,7 +240,9 @@ class Command(BaseCommand):
 
         profiles = list(CustomerProfile.objects.select_related("user").all())
         if not profiles:
-            raise CommandError("No customer profiles found. Run seed_data and seed_customers first.")
+            raise CommandError(
+                "No customer profiles found. Run seed_data and seed_customers first."
+            )
 
         today = timezone.now().date()
         current = datetime(2025, 8, 1)
@@ -222,18 +250,22 @@ class Command(BaseCommand):
 
         while (current.year, current.month) <= (today.year, today.month):
             year, month = current.year, current.month
-            is_current_month = (year == today.year and month == today.month)
-            last_day = today.day if is_current_month else calendar.monthrange(year, month)[1]
+            is_current_month = year == today.year and month == today.month
+            last_day = (
+                today.day if is_current_month else calendar.monthrange(year, month)[1]
+            )
 
             available_templates = [
-                t for t in ORDER_TEMPLATES
-                if not t["seasonal"] or month in PSL_MONTHS
+                t for t in ORDER_TEMPLATES if not t["seasonal"] or month in PSL_MONTHS
             ]
 
             count = random.randint(500, 700)
 
-            for _ in range(count):
-                profile = random.choice(profiles)
+            # Build a pool that covers every customer at least once before repeating
+            pool = (profiles * (count // len(profiles) + 1))[:count]
+            random.shuffle(pool)
+
+            for profile in pool:
                 template = random.choice(available_templates)
 
                 day = random.randint(1, last_day)
@@ -242,7 +274,11 @@ class Command(BaseCommand):
                 ts = timezone.make_aware(datetime(year, month, day, hour, minute))
 
                 if is_current_month:
-                    status = OrderStatus.PENDING if random.random() < 0.2 else OrderStatus.COMPLETED
+                    status = (
+                        OrderStatus.PENDING
+                        if random.random() < 0.2
+                        else OrderStatus.COMPLETED
+                    )
                 else:
                     status = OrderStatus.COMPLETED
 
@@ -274,4 +310,6 @@ class Command(BaseCommand):
             else:
                 current = datetime(year, month + 1, 1)
 
-        self.stdout.write(self.style.SUCCESS(f"\nDone. {total_created} order(s) seeded."))
+        self.stdout.write(
+            self.style.SUCCESS(f"\nDone. {total_created} order(s) seeded.")
+        )

@@ -115,6 +115,7 @@ def test_patch_items_updates_quantity_and_recalculates_totals(
     api_client,
     customer_user,
     order_item,
+    store_settings,
 ):
     api_client.force_authenticate(user=customer_user)
 

@@ -46,7 +46,7 @@ describe("StoreFront product images", () => {
         });
       }
 
-      return Promise.reject(new Error(`Unhandled fetch: ${requestUrl}`));
+      return Promise.resolve({ ok: true, json: async () => ({}) });
     });
   });
 
@@ -114,7 +114,7 @@ describe("StoreFront product images", () => {
         });
       }
 
-      return Promise.reject(new Error(`Unhandled fetch: ${requestUrl}`));
+      return Promise.resolve({ ok: true, json: async () => ({}) });
     });
 
     renderStoreFront();

@@ -40,6 +40,8 @@ describe("StoreFront", () => {
       if (url.includes("products")) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve(mockProducts) });
       }
+
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     });
   });
 

@@ -99,7 +99,7 @@ def test_add_item_to_order_creates_separate_rows_for_duplicate_variant(customer_
 
 
 @pytest.mark.django_db
-def test_recalculate_order_totals_uses_sum_of_item_totals_and_tax(customer_user, variant):
+def test_recalculate_order_totals_uses_sum_of_item_totals_and_tax(customer_user, variant, store_settings):
     order, _ = get_or_create_draft_order(customer_user.customer_profile)
     add_item_to_order(order, variant, 2)
 
@@ -115,7 +115,7 @@ def test_recalculate_order_totals_uses_sum_of_item_totals_and_tax(customer_user,
 
 
 @pytest.mark.django_db
-def test_recalculate_order_totals_sums_multiple_line_items(customer_user, variant):
+def test_recalculate_order_totals_sums_multiple_line_items(customer_user, variant, store_settings):
     order, _ = get_or_create_draft_order(customer_user.customer_profile)
     add_item_to_order(order, variant, 1)
     add_item_to_order(order, variant, 2)

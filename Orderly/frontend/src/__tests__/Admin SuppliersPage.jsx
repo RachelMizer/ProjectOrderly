@@ -37,7 +37,7 @@ describe("AdminSupplierFormPage", () => {
     expect(screen.getByRole("button", { name: /add supplier/i })).toBeInTheDocument();
   });
 
-  test("submits successfully and navigates to admin catalog", async () => {
+  test("submits successfully and navigates to suppliers list", async () => {
     fetch.mockResolvedValue({
       ok: true,
       status: 201,
@@ -74,7 +74,7 @@ describe("AdminSupplierFormPage", () => {
       );
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog");
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/suppliers");
   });
 
   test("sends null for blank email and phone", async () => {
@@ -278,15 +278,15 @@ describe("AdminSupplierFormPage", () => {
     });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog");
+      expect(mockNavigate).toHaveBeenCalledWith("/admin/suppliers");
     });
   });
 
-  test("cancel button navigates back to admin catalog", () => {
+  test("cancel button navigates back to suppliers list", () => {
     render(<AdminSupplierFormPage />);
 
     fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(mockNavigate).toHaveBeenCalledWith("/admin/catalog");
+    expect(mockNavigate).toHaveBeenCalledWith("/admin/suppliers");
   });
 });

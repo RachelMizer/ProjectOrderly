@@ -400,7 +400,7 @@ export default function AdminInventoryPage() {
     <div>
       {/* Submenu bar */}
       <div className="submenu-bar">
-        <span className="submenu-label">Inventory Management</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>📋</span>Inventory Management</span>
         <div className="submenu-actions">
           <div className="submenu-filter-group">
             <input
@@ -421,6 +421,17 @@ export default function AdminInventoryPage() {
             onClick={() => setShowCreate((v) => !v)}
           >
             {showCreate ? "CANCEL" : "+ ADD ITEM"}
+          </button>
+          <button
+            type="button"
+            className="submenu-action"
+            onClick={() => navigate("/admin/suppliers/new")}
+          >
+            + ADD SUPPLIER
+          </button>
+          <span className="submenu-divider" />
+          <button type="button" className="submenu-action" onClick={() => window.print()}>
+            <span style={{marginRight:"-1px"}}>🖨️</span>PRINT
           </button>
         </div>
       </div>
@@ -483,7 +494,7 @@ export default function AdminInventoryPage() {
                 onChange={(e) =>
                   handleCreateChange("reorder_level", e.target.value)
                 }
-                className={`inv-qty-input${isNegative(newItem.reorder_level) ? " inv-input-error" : ""}`}
+                className={`inv-qty-input inv-qty-input--wide${isNegative(newItem.reorder_level) ? " inv-input-error" : ""}`}
               />
             </div>
 
@@ -525,7 +536,7 @@ export default function AdminInventoryPage() {
         <>
           {productDependencyRows.length > 0 && (
             <div className="inv-dep-panel">
-              <p className="inv-dep-panel__title">Product Dependencies</p>
+              <p className="inv-dep-panel__title"><span style={{marginRight:"-1px"}}>🔗</span>Product Dependencies</p>
               <table className="admin-table admin-table--compact inv-dep-table">
                 <thead>
                   <tr>
@@ -536,7 +547,7 @@ export default function AdminInventoryPage() {
                 <tbody>
                   {productDependencyRows.map(({ product, ingredients }) => (
                     <tr key={product}>
-                      <td className="inv-td-left">{product}</td>
+                      <td className="inv-td-left"><strong>{product}</strong></td>
                       <td className="inv-td-left">
                         {ingredients.map(({ name, status }, idx) => (
                           <span
@@ -558,7 +569,7 @@ export default function AdminInventoryPage() {
             </div>
           )}
 
-          <h3 className="inv-section-header">Supply Inventory</h3>
+          <h3 className="inv-section-header"><span style={{marginRight:"-1px"}}>📦</span>Supply Inventory</h3>
 
           {allItems.length === 0 ? (
             <p className="rpt-empty">No inventory items found.</p>
@@ -581,7 +592,7 @@ export default function AdminInventoryPage() {
                     Current Stock{" "}
                     <SortIndicator tableKey={sortKey} col="stock_quantity" tableDir={sortDir} />
                   </th>
-                  <th className="admin-th admin-th--no-sort">Available</th>
+                  <th className="admin-th admin-th--no-sort no-print">Available</th>
                   <th className="admin-th admin-th--no-sort">Update Stock</th>
                   <th
                     className="admin-th"
@@ -590,7 +601,7 @@ export default function AdminInventoryPage() {
                     Reorder Level{" "}
                     <SortIndicator tableKey={sortKey} col="reorder_level" tableDir={sortDir} />
                   </th>
-                  <th className="admin-th admin-th--no-sort">Save</th>
+                  <th className="admin-th admin-th--no-sort no-print">Save</th>
                 </tr>
               </thead>
               <tbody>
@@ -609,7 +620,12 @@ export default function AdminInventoryPage() {
                       className={isOutOfStock ? "inv-row--dim" : isLowStock ? "inv-row--low-stock" : ""}
                     >
                       <td className="td-name inv-td-left">
-                        {item.name}
+                        <span
+                          className="inv-item-link"
+                          onClick={() => navigate(`/admin/inventory/${item.id}`)}
+                        >
+                          {item.name}
+                        </span>
                         {isOutOfStock && (
                           <span className="inv-badge inv-badge--out">Out of Stock</span>
                         )}
@@ -633,7 +649,7 @@ export default function AdminInventoryPage() {
                         {UNIT_LABELS[item.unit_of_measure] || item.unit_of_measure}
                       </td>
 
-                      <td>
+                      <td className="no-print">
                         <div className="inv-toggle-cell">
                           <label
                             className="inv-toggle"
@@ -677,7 +693,7 @@ export default function AdminInventoryPage() {
                         />
                       </td>
 
-                      <td>
+                      <td className="no-print">
                         {successItemId === item.id ? (
                           <span className="inv-save-success">Saved!</span>
                         ) : (

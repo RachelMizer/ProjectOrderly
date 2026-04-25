@@ -63,28 +63,28 @@ export default function Reports() {
   return (
     <div>
       <div className="submenu-bar">
-        <span className="submenu-label">Reports</span>
+        <span className="submenu-label"><span style={{marginRight:"-1px"}}>📊</span>Reports</span>
         <div className="submenu-actions">
         </div>
       </div>
 
       {!loading && (
         <div className="rpt-chart-wrap">
-          <p className="rpt-chart-title">Revenue by Month — {currentYear}</p>
+          <p className="rpt-chart-title"><span style={{marginRight:"-1px"}}>📅</span>Revenue by Month — {currentYear}</p>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }} barCategoryGap="35%">
+            <BarChart data={chartData} margin={{ top: 4, right: 16, left: 16, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#c4d9e8" vertical={false} />
               <XAxis
                 dataKey="label"
                 tickFormatter={(v) => v.slice(0, 3).toUpperCase()}
-                tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#2a4f6b", fontWeight: 700 }}
+                tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                 axisLine={false}
                 tickLine={false}
                 interval={0}
               />
               <YAxis
                 tickFormatter={(v) => `$${v.toLocaleString()}`}
-                tick={{ fontFamily: "Renner, sans-serif", fontSize: 11, fill: "#5a85a0" }}
+                tick={{ fontFamily: "Renner, sans-serif", fontSize: 13, fill: "#2a4f6b", fontWeight: 700 }}
                 axisLine={false}
                 tickLine={false}
                 width={70}
@@ -94,6 +94,7 @@ export default function Reports() {
                 dataKey="revenue"
                 fill="#33638B"
                 radius={[3, 3, 0, 0]}
+                maxBarSize={40}
                 onClick={handleBarClick}
                 style={{ cursor: "pointer" }}
               >
@@ -113,24 +114,29 @@ export default function Reports() {
         <p className="rpt-nav-section__header">Generate a Report</p>
         <div className="rpt-hub-grid">
           <Link to="/admin/reports/sales" className="rpt-hub-card">
-            <p className="rpt-hub-card__title">Sales Summary</p>
+            <p className="rpt-hub-card__title"><span style={{marginRight:"-1px"}}>💰</span>Sales Summary</p>
             <p className="rpt-hub-card__desc">
               Total revenue, order count, and top-selling products.
             </p>
           </Link>
           <Link to="/admin/reports/products" className="rpt-hub-card">
-            <p className="rpt-hub-card__title">Product Performance</p>
+            <p className="rpt-hub-card__title rpt-hub-card__title--tight"><span style={{marginRight:"-1px"}}>📈</span>Product Performance</p>
             <p className="rpt-hub-card__desc">
               Monthly revenue trend, units sold, and best month per product.
             </p>
           </Link>
-          <div className="rpt-hub-card rpt-hub-card--pending">
-            <p className="rpt-hub-card__title">Create Purchase Order</p>
+          <Link to="/admin/export" className="rpt-hub-card">
+            <p className="rpt-hub-card__title"><span style={{marginRight:"-1px"}}>📥</span>Export Data</p>
+            <p className="rpt-hub-card__desc">
+              Download orders, products, or inventory as CSV files.
+            </p>
+          </Link>
+          <Link to="/admin/purchase-order" className="rpt-hub-card">
+            <p className="rpt-hub-card__title"><span style={{marginRight:"-1px"}}>🛒</span> Purchase Order</p>
             <p className="rpt-hub-card__desc">
               Create a purchase order based on low-stock inventory.
             </p>
-            <span className="rpt-hub-card__badge">Pending further development</span>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
