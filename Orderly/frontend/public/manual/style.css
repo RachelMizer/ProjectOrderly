@@ -213,7 +213,7 @@ body {
 }
 
 .sidebar-chapter-desc {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: #5a8fb5;
   padding: 2px 8px 6px 20px;
   line-height: 1.35;
@@ -334,6 +334,11 @@ ul, ol {
 
 li {
   margin-bottom: 6px;
+  color: #1a1a1a;
+}
+
+strong, em, span {
+  color: inherit;
 }
 
 .img-placeholder {
