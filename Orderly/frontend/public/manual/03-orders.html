@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Managing Orders — Orderly User Manual</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-home">← Contents</a>
+  </aside>
+
+  <div class="page-layout">
+    <div class="container">
+      <h1>3. Managing Orders</h1>
+
+      <h2>Viewing the Order List</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>The Orders section displays all orders placed through your store in a sortable table. Each row represents a single order and shows five pieces of information: the <strong>Order #</strong>, the <strong>Date</strong> the order was placed, the <strong>Customer</strong> name, the order's current <strong>Status</strong>, and the order <strong>Total</strong>.</p>
+      <p>Every order carries one of three statuses. <strong>Pending</strong> orders have been placed but not yet fulfilled. <strong>Completed</strong> orders have been marked as fulfilled. <strong>Cancelled</strong> orders were called off before completion. Each status is displayed as a colour-coded badge so you can read the state of your orders at a glance.</p>
+      <p>You can sort the list by any column by clicking its header. Click the same header again to reverse the sort direction. An arrow indicator in the column header shows which column is active and whether it is sorted ascending or descending. By default, the list is sorted by date with the most recent orders at the top.</p>
+      <p>At the bottom of the list, Orderly shows how many orders are currently displayed and provides pagination controls — <strong>First</strong>, <strong>Prev</strong>, <strong>Next</strong>, and <strong>Last</strong> — to move through large order histories. The current page and total page count are shown between the controls.</p>
+      <p>For any order with a <strong>Pending</strong> status, a <strong>Mark Complete</strong> button appears in the Actions column. Clicking it marks the order as fulfilled without needing to open the order detail — useful for quickly processing a batch of orders.</p>
+
+      <h2>Filtering Orders</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>The toolbar at the top of the Orders section contains several tools for narrowing down the order list. You can use them individually or in combination.</p>
+      <p>The <strong>search bar</strong> filters the list as you type, matching against order number and customer name. It is useful for jumping directly to a specific order or finding all orders from a particular customer.</p>
+      <p>The <strong>Status</strong> dropdown lets you view only orders of a particular status — Pending, Completed, or Cancelled. Select <strong>All Statuses</strong> to return to the full list.</p>
+      <p>The date dropdowns let you filter by <strong>Year</strong>, <strong>Month</strong>, and <strong>Day</strong>. They work in sequence — you must select a year before a month becomes available, and a month before a day becomes available. You can stop at any level: filtering by year alone shows all orders from that year, filtering by year and month narrows to that month, and so on. The page title updates to reflect the active date range, for example <em>Orders from March 2026</em> or <em>Pending Orders from March 5, 2026</em>.</p>
+      <p>When any filter is active, a <strong>Clear Filters</strong> button appears in the toolbar. Click it to remove all filters and return to the full, unfiltered order list.</p>
+
+      <h2>Opening an Order Detail</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>To view the full details of an order, click its order number in the list. This opens the order detail page, which gives you a complete breakdown of everything associated with that order.</p>
+      <p>At the top of the page you will find the order's key information at a glance: the order number, the date and time it was placed, the customer's name, and the current status badge. For Pending orders, the <strong>Mark Complete</strong> button also appears here.</p>
+      <p>Below the header, the <strong>Order Details</strong> table lists every item in the order. Each row shows the product name, the selected variant, any modifiers that were applied (such as add-ons or customisations), the quantity ordered, the unit price charged, and the line total. At the bottom of the table, Orderly displays the order subtotal, the tax amount, and the final total due.</p>
+      <p>To return to the order list, click <strong>Back to Orders</strong> in the toolbar. You can also print the order detail page using the <strong>Print</strong> button in the same toolbar.</p>
+
+      <h2>Changing Order Status</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>Every order in Orderly has a status that reflects where it is in its lifecycle: <strong>Pending</strong>, <strong>Completed</strong>, or <strong>Cancelled</strong>. You can update an order's status from either the order list or the order detail page.</p>
+      <p>To <strong>mark an order as complete</strong>, click the <strong>Mark Complete</strong> button next to the order. This moves the order from Pending to Completed and signals that the order has been fulfilled. Once marked complete, the button is removed and the status badge updates accordingly.</p>
+      <p>To <strong>cancel an order</strong>, open the order detail page and click the <strong>Cancel Order</strong> button. Cancelling an order moves it to a Cancelled status. Cancelled orders remain visible in the order list and can be filtered by status, but no further actions can be taken on them.</p>
+      <p>If an order has been marked complete in error, you can <strong>revert it to Pending</strong> using the <strong>Revert to Pending</strong> button on the order detail page. This returns the order to an active state so it can be fulfilled or cancelled as needed.</p>
+
+      <a href="#" class="chapter-back-to-top">↑ Back to top</a>
+
+    </div>
+  </div>
+
+  <script src="manual.js"></script>
+</body>
+</html>

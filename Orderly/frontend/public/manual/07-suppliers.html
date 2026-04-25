@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7. Suppliers — Orderly User Manual</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-home">← Contents</a>
+  </aside>
+
+  <div class="page-layout">
+    <div class="container">
+      <h1>7. Suppliers</h1>
+
+      <h2>Viewing the Supplier Directory</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>The Supplier Management section lists all of your saved suppliers in a single table. Each row shows the supplier's name, email address, and phone number, along with action buttons for editing and deleting. You can reach Supplier Management from the sidebar when you are in the Inventory or Product Catalog sections.</p>
+      <p>If no suppliers have been added yet, the page shows an empty state message inviting you to add your first supplier. Once suppliers exist, they become available for assignment to individual inventory items.</p>
+
+      <h2>Adding a Supplier</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>Click the <strong>+ Add Supplier</strong> button at the top of the Supplier Management page to open the add supplier form. The form has three fields: <strong>Supplier Name</strong> (required), <strong>Email</strong> (optional), and <strong>Phone</strong> (optional). Email and phone are contact details only — they are displayed in the directory and on any inventory item the supplier is assigned to, but are not used by Orderly for any automated communication.</p>
+      <p>Click <strong>Add Supplier</strong> to save the new entry and return to the directory, or <strong>Cancel</strong> to discard the form without saving.</p>
+
+      <h2>Editing a Supplier</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>To edit a supplier, click the <strong>Edit</strong> button in that supplier's row. The row converts to editable fields in place, allowing you to update the name, email, and phone number without leaving the page. Click <strong>Save</strong> to apply your changes or <strong>Cancel</strong> to discard them and restore the original values.</p>
+      <p>To remove a supplier entirely, click <strong>Delete</strong> in the supplier's row. You will be asked to confirm before the deletion is carried out. Deleting a supplier removes it from the directory permanently; any inventory items that had this supplier assigned will have their supplier field cleared.</p>
+
+      <h2>Assigning Suppliers to Inventory Items</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>Suppliers are assigned to inventory items from each item's detail page. Open the detail page by clicking the item's name in the inventory list, then locate the <strong>Supplier</strong> card. The card contains a dropdown listing all suppliers currently in your directory. Select the appropriate supplier and click <strong>Save</strong> in the Supplier card to apply the assignment.</p>
+      <p>Once a supplier is assigned, the card displays the supplier's email address and phone number beneath the dropdown for quick reference, so you can contact them without leaving the inventory page.</p>
+      <p>To remove a supplier assignment, open the same dropdown and choose <strong>— None —</strong> at the top of the list, then save. If the supplier you need does not exist yet, the Supplier card includes a <strong>+ New Supplier</strong> shortcut that takes you directly to the add supplier form. After saving the new supplier there, return to the inventory item's detail page to complete the assignment.</p>
+
+      <a href="#" class="chapter-back-to-top">↑ Back to top</a>
+
+    </div>
+  </div>
+
+  <script src="manual.js"></script>
+</body>
+</html>

@@ -237,7 +237,8 @@ function AdminLayout() {
         <div className="admin-topbar">
           <p className="admin-welcome">Welcome, {userName}!</p>
           <div className="admin-topbar-actions">
-            <Link to="/admin/account">⚙ Account Settings</Link>
+            <a href="/manual/01-introduction.html" target="_blank" rel="noreferrer"><span style={{fontSize: "1.1rem", marginRight: "-1px"}}>❓</span>Help</a>
+            <Link to="/admin/account"><span style={{fontSize: "1.1rem", marginRight: "2px"}}>⚙</span>Account Settings</Link>
             <a onClick={handleLogout} style={{cursor: "pointer"}}>Logout</a>
           </div>
         </div>

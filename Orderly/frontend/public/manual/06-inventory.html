@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6. Inventory — Orderly User Manual</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-home">← Contents</a>
+  </aside>
+
+  <div class="page-layout">
+    <div class="container">
+      <h1>6. Inventory</h1>
+
+      <h2>Viewing Inventory Levels</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>The Inventory section displays all of your stock items in a single table. Each row shows the item name, which products it affects (if any), the current stock level and unit of measure, an availability toggle, editable fields for stock quantity and reorder level, and a Save button.</p>
+      <p>You can sort the list by item name, current stock, or reorder level by clicking the relevant column header. The search bar at the top filters the list by item name as you type.</p>
+      <p>Clicking an item's name opens its detail page, where you can view and edit all of its properties in one place, including its unit of measure and assigned supplier.</p>
+      <p>When any item in your inventory is low or out of stock, a <strong>Product Dependencies</strong> panel appears at the top of the page. This panel lists any products that depend on affected items, with the problem ingredients highlighted in amber (low stock) or red (out of stock), so you can see at a glance which products may be impacted.</p>
+
+      <h2>Stock Quantities and Reorder Levels</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>You can update stock quantities and reorder levels directly from the inventory list without opening the detail page. Each row has an <strong>Update Stock</strong> field and a <strong>Reorder Level</strong> field — edit the values you want to change and click <strong>Save</strong> in that row.</p>
+      <p>The <strong>Available</strong> toggle gives you a quick way to mark an item as in or out of stock. Toggling an item off immediately sets its stock quantity to zero, making it unavailable. Toggling it back on prompts you to enter a new stock quantity before saving.</p>
+      <p>For more detailed editing, click the item's name to open its detail page. From there you can update the stock quantity, unit of measure, and reorder level together in a single save. The unit of measure options are Units, Ounces, Pounds, Grams, Milliliters, and Litres.</p>
+      <p>The reorder level is the quantity at which Orderly considers an item to be running low. If an item's stock falls to or below this number it will be flagged with a low stock warning. Leave the reorder level blank if you do not want low stock alerts for that item.</p>
+
+      <h2>The Low-Stock Alert View</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>Orderly uses colour-coded badges to flag items that need attention. An <strong>Out of Stock</strong> badge (red) appears when an item's quantity is zero. A <strong>Low Stock</strong> badge (amber) appears when stock is at or below the reorder level. A <strong>Critical Stock</strong> badge (dark red) appears when stock has fallen to or below half of the reorder level.</p>
+      <p>Rows for out-of-stock items are visually dimmed in the table to help you distinguish them from items that are still available.</p>
+      <p>The Dashboard Home also surfaces your six lowest-stock items in the Inventory Alerts panel, sorted from least stock to most. This gives you a quick view of your most urgent inventory needs without having to open the full Inventory section.</p>
+
+      <h2>Linking Inventory Items to Products</h2>
+      <div class="img-placeholder">placeholder</div>
+      <p>Some inventory items are linked to specific products — for example, an ingredient like Milk may be connected to every product that uses it, such as Latte, Cappuccino, and Mocha. When an item is linked to products, those product names appear in the <strong>Affects</strong> column of the inventory list.</p>
+      <p>Opening the item's detail page shows a <strong>Used In Products</strong> card listing every product that depends on this item. This makes it easy to understand the downstream impact of a stock shortage — if Milk runs out, you can see immediately which products will be unavailable on the storefront.</p>
+      <p>When a linked item is out of stock or critically low, the Product Dependencies panel at the top of the inventory list will flag the affected products so you can act before customers are impacted.</p>
+
+      <a href="#" class="chapter-back-to-top">↑ Back to top</a>
+
+    </div>
+  </div>
+
+  <script src="manual.js"></script>
+</body>
+</html>
