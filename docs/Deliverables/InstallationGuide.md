@@ -20,8 +20,6 @@ Here are instructions for installing and launching Orderly locally using Docker
 
 For local hosting, ensure you have Docker Desktop and Git installed.   
 
-# 
-
 ## Software Installation Guide (Local Hosting)
 
 1. Verify that docker is installed.  
@@ -54,10 +52,10 @@ docker compose up --build
 
 5. Run Database Migrations
     Sometimes, MySQL can take a moment to start. Wait a few minutes to run this next command:
-   
-   ```
-   docker compose exec backend python manage.py migrate
-   ```
+
+```
+docker compose exec backend python manage.py migrate
+```
 
 6. Seed Demo Data (OPTIONAL)
 
@@ -69,4 +67,4 @@ docker compose exec backend python manage.py seed_orders
 
 You can now access the application frontend at http://localhost:3000 or backend at http://localhost:8000
 
-**Known issue:** Images will not show
+
