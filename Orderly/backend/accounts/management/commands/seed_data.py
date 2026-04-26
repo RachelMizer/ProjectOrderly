@@ -751,6 +751,8 @@ class Command(BaseCommand):
                 continue
 
             src = frontend_img_root / subfolder / filename
+            print("looking for:", src)
+            print("exists?", src.exists())
             if not src.exists():
                 self.stdout.write(
                     self.style.WARNING(f"  Image not found, skipping: {src}")
@@ -1254,10 +1256,14 @@ class Command(BaseCommand):
 
         media_store_dir = Path(settings.MEDIA_ROOT) / "store"
         media_store_dir.mkdir(parents=True, exist_ok=True)
-        store_img_src = Path("/app/frontend/public/img")
+        store_img_src = Path("/app/frontend/public/img/store")
 
         for field_name, filename in [("store_image", "logo.png"), ("favicon", "favicon.ico")]:
             src = store_img_src / filename
+
+            print("looking for:", src)
+            print("exists?", src.exists())
+
             if not src.exists():
                 self.stdout.write(self.style.WARNING(f"  Store image not found, skipping: {src}"))
                 continue
