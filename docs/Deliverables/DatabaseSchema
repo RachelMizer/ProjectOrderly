@@ -1,0 +1,231 @@
+# Database Schema Documentation  
+**Project Name:** Orderly  
+**Version:** 1.0.0  
+**Team Number:** 7  
+**Team Project Manager:** Serina Rodriguez  
+**Team Members:** Kenny Bacdayan, Caleb James Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer  
+
+---
+
+## 1. Overview
+
+The Orderly system is built on a relational database model designed to support a full-stack ordering and inventory management application. The schema integrates customer interactions, product catalog management, inventory tracking, order processing, and reporting into a cohesive structure.
+
+The database emphasizes data integrity, scalability, and flexibility through normalized tables, well-defined relationships, and enforced constraints.
+
+---
+
+## 2. Entity Relationship Diagram
+
+![Orderly ERD](Order_ERD.png)
+
+---
+
+## 3. Database Design Principles
+
+- **Normalization:** Data is structured to minimize redundancy and maintain consistency.
+- **Relational Integrity:** Foreign keys enforce relationships across entities.
+- **Constraint Enforcement:** Validation occurs at both the application and database levels.
+- **Separation of Concerns:** Each domain is modularized by app.
+- **Scalability:** The schema supports future extensions such as reporting, suppliers, and expanded admin tools.
+
+---
+
+## 4. Core Entities
+
+### Accounts Domain
+
+Manages user roles and customer-specific data.
+
+- **UserRole:** Associates each user with either a BUSINESS or CUSTOMER role.
+- **CustomerProfile:** Stores customer-specific information such as address, phone number, and email verification status.
+
+### Catalog Domain
+
+Defines products, categories, variants, and customization options.
+
+- **Category:** Product classification.
+- **Product:** Abstract product definition.
+- **ProductVariant:** Sellable SKU with pricing and optional stock tracking.
+- **ModifierGroup:** Group of customization options for a variant.
+- **ModifierOption:** Individual selectable customization option.
+
+### Inventory Domain
+
+Tracks stock levels and ingredient usage.
+
+- **InventoryItem:** Represents raw materials or stock-tracked items.
+- **VariantInventoryUsage:** Links product variants to required inventory items.
+- **ModifierInventoryUsage:** Links modifier options to required inventory items.
+
+### Orders Domain
+
+Handles customer transactions and the order lifecycle.
+
+- **Order:** Represents a customer or guest transaction.
+- **OrderItem:** Represents one product variant within an order.
+- **OrderItemModifier:** Captures selected modifier options for an order item.
+- **Payment:** Stores payment records connected to orders.
+
+### Suppliers Domain
+
+Stores vendor information.
+
+- **Supplier:** Stores supplier name, email, phone number, and timestamps.
+
+### Sales / Reporting Domain
+
+Supports sales analytics and imported historical sales records.
+
+- **SalesImportBatch:** Tracks each imported sales file.
+- **DailySale:** Stores daily sales records by product variant.
+
+### Settings Domain
+
+Stores business-level configuration.
+
+- **StoreSettings:** Stores store name, tagline, hours, image, addresses, contact information, and tax rate.
+
+---
+
+## 5. Relationships
+
+### One-to-One Relationships
+
+- User → UserRole
+- User → CustomerProfile
+
+### One-to-Many Relationships
+
+- Category → Products
+- Product → ProductVariants
+- Supplier → Products
+- ProductVariant → ModifierGroups
+- ModifierGroup → ModifierOptions
+- CustomerProfile → Orders
+- Order → OrderItems
+- Order → Payments
+- ProductVariant → OrderItems
+- SalesImportBatch → DailySales
+- ProductVariant → DailySales
+
+### Many-to-Many Relationships Through Join Tables
+
+- ProductVariant ↔ InventoryItem through VariantInventoryUsage
+- ModifierOption ↔ InventoryItem through ModifierInventoryUsage
+- OrderItem ↔ ModifierOption through OrderItemModifier
+
+---
+
+## 6. Key Constraints and Validation
+
+### Unique Constraints
+
+- Category names are unique.
+- Supplier names are unique.
+- Inventory item names are unique.
+- Product names are unique within each category.
+- Variant names are unique within each product.
+- SKUs are unique.
+- Modifier group names are unique per variant.
+- Modifier option names are unique per group.
+- Only one DRAFT order is allowed per customer.
+- Daily sales records are unique per sale date and variant.
+
+### Check Constraints
+
+- Stock quantities cannot be negative.
+- Reorder levels cannot be negative.
+- Quantity used in inventory recipes must be greater than zero.
+- Order subtotal, tax amount, and total payment due cannot be negative.
+- Order item totals cannot be negative.
+- Payment totals cannot be negative.
+- Sales month must be between 1 and 12.
+- Sales year must be 2000 or later.
+- Daily revenue, unit price, and units sold cannot be negative.
+
+### Application-Level Validation
+
+- Customer profiles must be connected to users with the CUSTOMER role.
+- Orders must belong to either a registered customer or a guest email, but not both.
+- Order totals are automatically calculated from subtotal and tax.
+- Order item totals are automatically calculated from quantity and unit price.
+- Daily sales revenue must equal units sold multiplied by unit price.
+- Inventory item units cannot be changed while used in recipes.
+
+---
+
+## 7. Data Flow Overview
+
+1. A customer browses categories, products, variants, and modifiers.
+2. The customer creates or updates a draft order.
+3. Order items and selected modifiers are added to the order.
+4. The system calculates item totals, subtotal, tax, and total payment due.
+5. The order is finalized and moves out of DRAFT status.
+6. Business users manage products, inventory, orders, and reporting.
+7. Imported sales data supports reporting and analytics.
+
+---
+
+## 8. Schema Highlights
+
+### Hybrid Inventory System
+
+The schema supports both direct stock tracking and ingredient-based inventory usage. Product variants may track stock directly or use inventory usage records to represent ingredients required for production.
+
+### Flexible Ordering Model
+
+The order schema supports registered customers and guest checkout while preserving clear validation rules and transaction integrity.
+
+### Historical Sales Tracking
+
+The sales schema stores product and variant name snapshots, allowing reports to remain meaningful even if catalog names change later.
+
+### Strong Data Integrity
+
+The schema uses model validation, database constraints, foreign keys, and unique rules to protect the consistency of business data.
+
+---
+
+## 9. Key Table Structures (Summary)
+
+### Order
+- id (Primary Key)
+- customer (Foreign Key → CustomerProfile)
+- guest_email
+- status (DRAFT, PENDING, COMPLETED, CANCELLED)
+- subtotal
+- tax_amount
+- total_payment_due
+- created_at
+- updated_at
+
+### OrderItem
+- id (Primary Key)
+- order (Foreign Key → Order)
+- variant (Foreign Key → ProductVariant)
+- quantity
+- unit_price_charged
+- item_total
+
+### ProductVariant
+- id (Primary Key)
+- product (Foreign Key → Product)
+- name
+- sku (Unique)
+- unit_price
+- stock_quantity
+- reorder_level
+
+### InventoryItem
+- id (Primary Key)
+- name (Unique)
+- stock_quantity
+- unit_of_measure
+- reorder_level
+
+---
+
+## 10. Conclusion
+
+The Orderly database schema provides a strong foundation for a full-stack ordering and inventory management system. Its modular structure supports customer ordering, business administration, inventory tracking, supplier management, and sales reporting while maintaining data integrity across the application.
