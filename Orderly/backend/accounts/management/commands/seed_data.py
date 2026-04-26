@@ -865,18 +865,23 @@ class Command(BaseCommand):
             dest = media_products_dir / filename
             shutil.copy2(src, dest)
 
+
+
+            relative_path = f"products/{filename}"
+
+            
             print("SETTING IMAGE:", product_name, "->", relative_path)
             product.image = relative_path
             product.save(update_fields=["image"])
 
-            print("AFTER SAVE:", product.image, product.image.name)
-
-            relative_path = f"products/{filename}"
             if product.image.name != relative_path:
                 product.image = relative_path
                 product.save(update_fields=["image"])
 
             images_seeded += 1
+
+            print("AFTER SAVE:", product.image, product.image.name)
+
 
         self.stdout.write(self.style.SUCCESS(f"Product images seeded: {images_seeded}"))
 
