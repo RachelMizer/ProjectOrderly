@@ -1,12 +1,19 @@
-version: "3.9"
 
 services:
   backend:
     build: ./backend
+    command: /app/entrypoint.sh
+    volumes:
+      - ./backend:/app
+      - ./backend/media:/app/media
+      - ./backend/staticfiles:/app/staticfiles
+      - ./frontend/public/img:/app/frontend/public/img
+      - ./frontend:/app/frontend
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    
 
   frontend:
     build: ./frontend

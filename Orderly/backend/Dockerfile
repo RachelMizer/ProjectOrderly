@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y netcat-openbsd \
     default-libmysqlclient-dev \
     build-essential \
     pkg-config \
@@ -14,6 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 8000
 
 CMD ["gunicorn", "orderly.wsgi:application", "--bind", "0.0.0.0:8000"]
+
