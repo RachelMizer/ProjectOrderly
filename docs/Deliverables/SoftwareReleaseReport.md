@@ -146,7 +146,7 @@ Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach alig
 
 ---
 
-### Bug Fixes and Improvements (QA)  
+### Defect Fixes Verified in This Release  
 
 - Duplicate email login issue  
   * Confirmed and resolved through API validation testing  
