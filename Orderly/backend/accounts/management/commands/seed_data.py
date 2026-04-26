@@ -13,7 +13,12 @@ from django.utils.text import slugify
 
 from accounts.models import UserRole, CustomerProfile, UserRoleChoices
 from suppliers.models import Supplier
-from inventory.models import InventoryItem, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
+from inventory.models import (
+    InventoryItem,
+    UnitOfMeasure,
+    VariantInventoryUsage,
+    ModifierInventoryUsage,
+)
 from catalog.models import (
     Category,
     Product,
@@ -184,7 +189,11 @@ class Command(BaseCommand):
         # Dev account (superuser + business role)
         dev_user, dev_created = User.objects.get_or_create(
             username="ramizer",
-            defaults={"email": "ramizer@my.waketech.edu", "is_staff": True, "is_superuser": True},
+            defaults={
+                "email": "ramizer@my.waketech.edu",
+                "is_staff": True,
+                "is_superuser": True,
+            },
         )
         if dev_created:
             dev_user.set_password("rmdevpass")
@@ -326,7 +335,9 @@ class Command(BaseCommand):
                 "phone": "9195554783",
             },
         )
-        self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
+        self.stdout.write(
+            self.style.SUCCESS("Personal customer account seeded: Rachel")
+        )
 
         self.stdout.write(
             self.style.SUCCESS("Users seeded: 3 business, 6 customers + dev + personal")
@@ -394,7 +405,10 @@ class Command(BaseCommand):
 
         # Purge retired inventory items so stale DB records don't linger
         retired_inventory = [
-            "Flour", "Blueberries", "Chocolate Chips", "Chocolate Croissant",
+            "Flour",
+            "Blueberries",
+            "Chocolate Chips",
+            "Chocolate Croissant",
         ]
         retired_qs = InventoryItem.objects.filter(name__in=retired_inventory)
         VariantInventoryUsage.objects.filter(inventory_item__in=retired_qs).delete()
@@ -645,10 +659,10 @@ class Command(BaseCommand):
         # 5) Catalog categories
         # ------------------------------------------------------------
         category_data = [
-            ("Coffee",   "☕"),
-            ("Tea",      "🍵"),
-            ("Bakery",   "🥐"),
-            ("Breakfast","🍳"),
+            ("Coffee", "☕"),
+            ("Tea", "🍵"),
+            ("Bakery", "🥐"),
+            ("Breakfast", "🍳"),
             ("Seasonal", "✨"),
         ]
 
@@ -668,23 +682,114 @@ class Command(BaseCommand):
         # 6) Products
         # ------------------------------------------------------------
         products_spec = [
-            ("House Coffee",        "Coffee",    suppliers[6], True, False, "Our signature daily brew — smooth, comforting, and roasted to bring out a rich, balanced flavor in every cup."),
-            ("Latte",               "Coffee",    suppliers[6], True, True,  "Our latte blends rich espresso with silky steamed milk for a creamy, balanced cup that's perfect for slow mornings or steady afternoons."),
-            ("Cappuccino",          "Coffee",    suppliers[6], True, True,  "A cozy classic made with rich espresso and a cloud of silky steamed milk, finished with a light, velvety foam."),
-            ("Mocha",               "Coffee",    suppliers[6], True, True,  "A cozy fusion of bold espresso and velvety chocolate, finished with steamed milk for a cup that's equal parts rich, warm, and indulgent. It's your coffee break with a little extra joy."),
-            ("Cold Brew",           "Coffee",    suppliers[6], True, True,  "Slow-steeped to bring out deep, smooth coffee flavor with none of the bitterness."),
-            ("Green Tea",           "Tea",       suppliers[6], True, False, "Light, calming, and naturally uplifting. Our green tea is smooth and gently grassy, brewed to bring out its delicate flavor and soothing warmth."),
-            ("Chai Tea Latte",      "Tea",       suppliers[6], True, True,  "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla."),
-            ("Blueberry Muffin",    "Bakery",    suppliers[3], True, False, "Warm, soft, and bursting with juicy blueberries, this muffin is everything you want from a morning treat."),
-            ("Chocolate Croissant", "Bakery",    suppliers[3], True, False, "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within."),
-            ("Breakfast Sandwich",  "Breakfast", suppliers[2], True, True,  "Choose from a toasted bagel, buttery croissant, or classic English muffin. Each sandwich comes with a freshly cooked egg, and you can make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage."),
-            ("Pumpkin Spice Latte", "Seasonal",  suppliers[6], True, True,  "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning."),
-            ("Cake Pop",           "Bakery",    suppliers[5], True, False, "A decadent 'pop' of confectionery goodness, our sweet cake pops will quickly brighten up your day!"),
+            (
+                "House Coffee",
+                "Coffee",
+                suppliers[6],
+                True,
+                False,
+                "Our signature daily brew — smooth, comforting, and roasted to bring out a rich, balanced flavor in every cup.",
+            ),
+            (
+                "Latte",
+                "Coffee",
+                suppliers[6],
+                True,
+                True,
+                "Our latte blends rich espresso with silky steamed milk for a creamy, balanced cup that's perfect for slow mornings or steady afternoons.",
+            ),
+            (
+                "Cappuccino",
+                "Coffee",
+                suppliers[6],
+                True,
+                True,
+                "A cozy classic made with rich espresso and a cloud of silky steamed milk, finished with a light, velvety foam.",
+            ),
+            (
+                "Mocha",
+                "Coffee",
+                suppliers[6],
+                True,
+                True,
+                "A cozy fusion of bold espresso and velvety chocolate, finished with steamed milk for a cup that's equal parts rich, warm, and indulgent. It's your coffee break with a little extra joy.",
+            ),
+            (
+                "Cold Brew",
+                "Coffee",
+                suppliers[6],
+                True,
+                True,
+                "Slow-steeped to bring out deep, smooth coffee flavor with none of the bitterness.",
+            ),
+            (
+                "Green Tea",
+                "Tea",
+                suppliers[6],
+                True,
+                False,
+                "Light, calming, and naturally uplifting. Our green tea is smooth and gently grassy, brewed to bring out its delicate flavor and soothing warmth.",
+            ),
+            (
+                "Chai Tea Latte",
+                "Tea",
+                suppliers[6],
+                True,
+                True,
+                "Our chai tea latte blends black tea with cinnamon, cardamom, and sweet spices, finished with steamed milk. Add extra chai or a splash of vanilla.",
+            ),
+            (
+                "Blueberry Muffin",
+                "Bakery",
+                suppliers[3],
+                True,
+                False,
+                "Warm, soft, and bursting with juicy blueberries, this muffin is everything you want from a morning treat.",
+            ),
+            (
+                "Chocolate Croissant",
+                "Bakery",
+                suppliers[3],
+                True,
+                False,
+                "A flaky, buttery croissant wrapped around a ribbon of rich, melted chocolate. Lightly crisp on the outside, soft and indulgent within.",
+            ),
+            (
+                "Breakfast Sandwich",
+                "Breakfast",
+                suppliers[2],
+                True,
+                True,
+                "Choose from a toasted bagel, buttery croissant, or classic English muffin. Each sandwich comes with a freshly cooked egg, and you can make it yours with any two protein add-ons — creamy avocado, crispy bacon, or savory sausage.",
+            ),
+            (
+                "Pumpkin Spice Latte",
+                "Seasonal",
+                suppliers[6],
+                True,
+                True,
+                "Warm, spiced, and unmistakably seasonal. Espresso and steamed milk meet pumpkin, cinnamon, and cozy autumn spices for a cup that feels like a soft sweater and a crisp fall morning.",
+            ),
+            (
+                "Cake Pop",
+                "Bakery",
+                suppliers[5],
+                True,
+                False,
+                "A decadent 'pop' of confectionery goodness, our sweet cake pops will quickly brighten up your day!",
+            ),
         ]
 
         products = {}
 
-        for pname, cname, supp, has_variants, has_modifiers, description in products_spec:
+        for (
+            pname,
+            cname,
+            supp,
+            has_variants,
+            has_modifiers,
+            description,
+        ) in products_spec:
             defaults = {
                 "category": categories[cname],
                 "supplier": supp,
@@ -718,26 +823,24 @@ class Command(BaseCommand):
 
             products[pname] = product
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Products seeded: {len(products_spec)}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Products seeded: {len(products_spec)}"))
 
         # ------------------------------------------------------------
         # 6.5) Product images — copy from frontend/public/img into media
         # ------------------------------------------------------------
         product_images = {
-            "House Coffee":        ("bev", "house-coffee.png"),
-            "Latte":               ("bev", "latte.png"),
-            "Cappuccino":          ("bev", "capp.png"),
-            "Mocha":               ("bev", "mocha.png"),
-            "Cold Brew":           ("bev", "cold-brew.png"),
-            "Green Tea":           ("bev", "green-tea.png"),
-            "Chai Tea Latte":      ("bev", "chai-latte.png"),
-            "Blueberry Muffin":    ("food", "muffin.png"),
+            "House Coffee": ("bev", "house-coffee.png"),
+            "Latte": ("bev", "latte.png"),
+            "Cappuccino": ("bev", "capp.png"),
+            "Mocha": ("bev", "mocha.png"),
+            "Cold Brew": ("bev", "cold-brew.png"),
+            "Green Tea": ("bev", "green-tea.png"),
+            "Chai Tea Latte": ("bev", "chai-latte.png"),
+            "Blueberry Muffin": ("food", "muffin.png"),
             "Chocolate Croissant": ("food", "croissant.png"),
-            "Breakfast Sandwich":  ("food", "sandwich.png"),
+            "Breakfast Sandwich": ("food", "sandwich.png"),
             "Pumpkin Spice Latte": ("bev", "PSL.png"),
-            "Cake Pop":            ("food", "choc_pop.png"),
+            "Cake Pop": ("food", "choc_pop.png"),
         }
 
         frontend_img_root = Path("/app/frontend/public/img")
@@ -762,6 +865,12 @@ class Command(BaseCommand):
             dest = media_products_dir / filename
             shutil.copy2(src, dest)
 
+            print("SETTING IMAGE:", product_name, "->", relative_path)
+            product.image = relative_path
+            product.save(update_fields=["image"])
+
+            print("AFTER SAVE:", product.image, product.image.name)
+
             relative_path = f"products/{filename}"
             if product.image.name != relative_path:
                 product.image = relative_path
@@ -769,9 +878,7 @@ class Command(BaseCommand):
 
             images_seeded += 1
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Product images seeded: {images_seeded}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Product images seeded: {images_seeded}"))
 
         # ------------------------------------------------------------
         # 7) Variants
@@ -843,9 +950,7 @@ class Command(BaseCommand):
                 variants_by_product[product_name][variant_name] = variant
 
         total_variants = sum(len(v) for v in variants_spec.values())
-        self.stdout.write(
-            self.style.SUCCESS(f"Variants seeded: {total_variants}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Variants seeded: {total_variants}"))
 
         # ------------------------------------------------------------
         # 8) Modifiers
@@ -1067,16 +1172,16 @@ class Command(BaseCommand):
             )
 
         espresso = [
-            ("Latte",               ["Small", "Medium", "Large"]),
-            ("Cappuccino",          ["Small", "Medium", "Large"]),
-            ("Mocha",               ["Small", "Medium", "Large"]),
+            ("Latte", ["Small", "Medium", "Large"]),
+            ("Cappuccino", ["Small", "Medium", "Large"]),
+            ("Mocha", ["Small", "Medium", "Large"]),
             ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
         ]
         milk_drinks = [
-            ("Latte",               ["Small", "Medium", "Large"]),
-            ("Cappuccino",          ["Small", "Medium", "Large"]),
-            ("Mocha",               ["Small", "Medium", "Large"]),
-            ("Chai Tea Latte",      ["Small", "Medium", "Large"]),
+            ("Latte", ["Small", "Medium", "Large"]),
+            ("Cappuccino", ["Small", "Medium", "Large"]),
+            ("Mocha", ["Small", "Medium", "Large"]),
+            ("Chai Tea Latte", ["Small", "Medium", "Large"]),
             ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
         ]
         mocha_syrup_drinks = [
@@ -1087,7 +1192,7 @@ class Command(BaseCommand):
         ]
         coffee_bean_drinks = [
             ("House Coffee", ["Small", "Medium", "Large"]),
-            ("Cold Brew",    ["Small", "Large"]),
+            ("Cold Brew", ["Small", "Large"]),
         ]
 
         for product_name, sizes in espresso:
@@ -1104,51 +1209,53 @@ class Command(BaseCommand):
 
         for product_name, sizes in green_tea_drinks:
             for size in sizes:
-                link(variants_by_product[product_name][size], "Green Tea Leaves", "0.02")
+                link(
+                    variants_by_product[product_name][size], "Green Tea Leaves", "0.02"
+                )
 
         for product_name, sizes in coffee_bean_drinks:
             for size in sizes:
                 link(variants_by_product[product_name][size], "Coffee Beans", "0.04")
 
         small_drinks = [
-            ("House Coffee",        ["Small"]),
-            ("Latte",               ["Small"]),
-            ("Cappuccino",          ["Small"]),
-            ("Mocha",               ["Small"]),
-            ("Cold Brew",           ["Small"]),
-            ("Green Tea",           ["Small"]),
-            ("Chai Tea Latte",      ["Small"]),
+            ("House Coffee", ["Small"]),
+            ("Latte", ["Small"]),
+            ("Cappuccino", ["Small"]),
+            ("Mocha", ["Small"]),
+            ("Cold Brew", ["Small"]),
+            ("Green Tea", ["Small"]),
+            ("Chai Tea Latte", ["Small"]),
             ("Pumpkin Spice Latte", ["Small"]),
         ]
 
         medium_drinks = [
-            ("House Coffee",        ["Medium"]),
-            ("Latte",               ["Medium"]),
-            ("Cappuccino",          ["Medium"]),
-            ("Mocha",               ["Medium"]),
-            ("Green Tea",           ["Medium"]),
-            ("Chai Tea Latte",      ["Medium"]),
+            ("House Coffee", ["Medium"]),
+            ("Latte", ["Medium"]),
+            ("Cappuccino", ["Medium"]),
+            ("Mocha", ["Medium"]),
+            ("Green Tea", ["Medium"]),
+            ("Chai Tea Latte", ["Medium"]),
             ("Pumpkin Spice Latte", ["Medium"]),
         ]
 
         large_drinks = [
-            ("House Coffee",        ["Large"]),
-            ("Latte",               ["Large"]),
-            ("Cappuccino",          ["Large"]),
-            ("Mocha",               ["Large"]),
-            ("Cold Brew",           ["Large"]),
-            ("Green Tea",           ["Large"]),
-            ("Chai Tea Latte",      ["Large"]),
+            ("House Coffee", ["Large"]),
+            ("Latte", ["Large"]),
+            ("Cappuccino", ["Large"]),
+            ("Mocha", ["Large"]),
+            ("Cold Brew", ["Large"]),
+            ("Green Tea", ["Large"]),
+            ("Chai Tea Latte", ["Large"]),
             ("Pumpkin Spice Latte", ["Large"]),
         ]
 
         hot_drinks = [
-            ("House Coffee",        ["Small", "Medium", "Large"]),
-            ("Latte",               ["Small", "Medium", "Large"]),
-            ("Cappuccino",          ["Small", "Medium", "Large"]),
-            ("Mocha",               ["Small", "Medium", "Large"]),
-            ("Green Tea",           ["Small", "Medium", "Large"]),
-            ("Chai Tea Latte",      ["Small", "Medium", "Large"]),
+            ("House Coffee", ["Small", "Medium", "Large"]),
+            ("Latte", ["Small", "Medium", "Large"]),
+            ("Cappuccino", ["Small", "Medium", "Large"]),
+            ("Mocha", ["Small", "Medium", "Large"]),
+            ("Green Tea", ["Small", "Medium", "Large"]),
+            ("Chai Tea Latte", ["Small", "Medium", "Large"]),
             ("Pumpkin Spice Latte", ["Small", "Medium", "Large"]),
         ]
 
@@ -1183,14 +1290,26 @@ class Command(BaseCommand):
                 link(variants_by_product[product_name][size], "Lids (24oz)", "1")
 
         # Blueberry Muffin — premade, sourced from supplier
-        link(variants_by_product["Blueberry Muffin"]["Standard"], "Blueberry Muffins", "1")
+        link(
+            variants_by_product["Blueberry Muffin"]["Standard"],
+            "Blueberry Muffins",
+            "1",
+        )
 
         # Chocolate Croissant — premade, tracked as a stock unit
-        link(variants_by_product["Chocolate Croissant"]["Standard"], "Chocolate Croissants", "1")
+        link(
+            variants_by_product["Chocolate Croissant"]["Standard"],
+            "Chocolate Croissants",
+            "1",
+        )
 
         # Pumpkin Spice Latte — requires pumpkin spice
         for size in ["Small", "Medium", "Large"]:
-            link(variants_by_product["Pumpkin Spice Latte"][size], "Pumpkin Spice (8oz)", "0.5")
+            link(
+                variants_by_product["Pumpkin Spice Latte"][size],
+                "Pumpkin Spice (8oz)",
+                "0.5",
+            )
 
         # Chai Tea Latte — requires chai spice
         for size in ["Small", "Medium", "Large"]:
@@ -1201,19 +1320,25 @@ class Command(BaseCommand):
 
         # Breakfast Sandwich — bread choices (premade, sourced from supplier)
         breakfast_variant = variants_by_product["Breakfast Sandwich"]["Standard"]
-        link_modifier(breakfast_variant, "Bread Choice", "Croissant",     "Croissant",      "1")
-        link_modifier(breakfast_variant, "Bread Choice", "Bagel",         "Bagel",          "1")
-        link_modifier(breakfast_variant, "Bread Choice", "English Muffin","English Muffin", "1")
+        link_modifier(breakfast_variant, "Bread Choice", "Croissant", "Croissant", "1")
+        link_modifier(breakfast_variant, "Bread Choice", "Bagel", "Bagel", "1")
+        link_modifier(
+            breakfast_variant, "Bread Choice", "English Muffin", "English Muffin", "1"
+        )
 
         # Breakfast Sandwich — protein add-ons
-        link_modifier(breakfast_variant, "Protein Add-On", "Bacon",   "Bacon",   "0.1")
+        link_modifier(breakfast_variant, "Protein Add-On", "Bacon", "Bacon", "0.1")
         link_modifier(breakfast_variant, "Protein Add-On", "Sausage", "Sausage", "1")
         link_modifier(breakfast_variant, "Protein Add-On", "Avocado", "Avocado", "0.5")
 
         # Cake Pops — premade by supplier, each flavor tracked as its own stock unit
-        link(variants_by_product["Cake Pop"]["Chocolate"],    "Cake Pop - Chocolate",     "1")
-        link(variants_by_product["Cake Pop"]["Birthday Cake"],"Cake Pop - Birthday Cake", "1")
-        link(variants_by_product["Cake Pop"]["Vanilla"],      "Cake Pop - Vanilla",       "1")
+        link(variants_by_product["Cake Pop"]["Chocolate"], "Cake Pop - Chocolate", "1")
+        link(
+            variants_by_product["Cake Pop"]["Birthday Cake"],
+            "Cake Pop - Birthday Cake",
+            "1",
+        )
+        link(variants_by_product["Cake Pop"]["Vanilla"], "Cake Pop - Vanilla", "1")
 
         self.stdout.write(
             self.style.SUCCESS("Inventory usage seeded: ingredients linked to variants")
@@ -1258,14 +1383,19 @@ class Command(BaseCommand):
         media_store_dir.mkdir(parents=True, exist_ok=True)
         store_img_src = Path("/app/frontend/public/img/store")
 
-        for field_name, filename in [("store_image", "logo.png"), ("favicon", "favicon.ico")]:
+        for field_name, filename in [
+            ("store_image", "logo.png"),
+            ("favicon", "favicon.ico"),
+        ]:
             src = store_img_src / filename
 
             print("looking for:", src)
             print("exists?", src.exists())
 
             if not src.exists():
-                self.stdout.write(self.style.WARNING(f"  Store image not found, skipping: {src}"))
+                self.stdout.write(
+                    self.style.WARNING(f"  Store image not found, skipping: {src}")
+                )
                 continue
             dst = media_store_dir / filename
             shutil.copy2(str(src), str(dst))
@@ -1275,7 +1405,9 @@ class Command(BaseCommand):
                 setattr(store_settings, field_name, relative_path)
                 store_settings.save(update_fields=[field_name])
 
-        self.stdout.write(self.style.SUCCESS("Store settings seeded: Quick Sip Cafe branding"))
+        self.stdout.write(
+            self.style.SUCCESS("Store settings seeded: Quick Sip Cafe branding")
+        )
 
         # ------------------------------------------------------------
         # 11) Final summary
