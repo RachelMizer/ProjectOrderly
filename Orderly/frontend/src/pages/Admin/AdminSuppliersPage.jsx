@@ -4,7 +4,7 @@ import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
 import { formatPhone } from "../../utils/formatPhone";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin/suppliers";
+const API_BASE = `${process.env.REACT_APP_API_URL}/api/v1/admin/suppliers`;
 
 async function parseJson(res) {
   const ct = res.headers.get("content-type") || "";

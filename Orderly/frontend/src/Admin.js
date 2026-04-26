@@ -71,7 +71,7 @@ function AdminLayout() {
     const token = localStorage.getItem("accessToken");
     Promise.all(
       stored.map((o) =>
-        fetch(`http://127.0.0.1:8000/api/v1/orders/${o.id}`, {
+        fetch(`${process.env.REACT_APP_API_URL}/api/v1/orders/${o.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         }).then((r) => (r.status === 404 ? o.id : null))
       )

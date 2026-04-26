@@ -5,7 +5,7 @@ import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
 import { formatPhone } from "../../utils/formatPhone";
 
-const SUPPLIERS_URL = "http://127.0.0.1:8000/api/v1/admin/suppliers";
+const SUPPLIERS_URL = `${process.env.REACT_APP_API_URL}/api/v1/admin/suppliers`;
 
 const UNIT_OPTIONS = [
   { value: "units", label: "Units" },
