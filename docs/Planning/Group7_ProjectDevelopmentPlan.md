@@ -336,10 +336,10 @@ Trello serves as the primary project management tool, providing capabilities for
 >
 > - **Sprint 1** laid the foundation -- architecture, design, development environment, and team standards
 > - **Sprint 2** established the core data layer and application infrastructure -- authentication, database, and application shell
-> - **Sprint 3** brought the customer experience to life -- the ordering pipeline, customer UI, and JWT integration
-> - **Sprint 4** extended the customer experience and introduced the business admin toolset
-> - **Sprint 5** deepened the business admin feature set, introduced variant management, and stabilized the codebase through code freeze
-> - **Phase 4** (the final phase, replacing the Sprint 6 designation) was dedicated to application polish, final testing, documentation, deployment, and presentation preparation
+> - **Sprint 3** built the API layer and engineering backbone -- the ordering and profile APIs, CI/CD pipeline, seed data, and contributing standards.
+> - **Sprint 4** brought the complete customer experience to life -- the ordering pipeline, customer UI, and role-based access control.
+> - **Sprint 5** delivered the full admin platform-- including a dashboard, product/inventory management, sales analytics, and order management.
+> - **Phase 4** (the final working phase) finished the admin feature set and was dedicated to application polish, final testing, documentation, deployment, and presentation preparation
 >
 > The result was a fully functional application delivered on the projected date with a process that stayed true to Agile SCRUM while responding honestly to the realities of the team.
 
