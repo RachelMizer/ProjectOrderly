@@ -96,6 +96,7 @@ logs/
 *.pem
 *.key
 *.crt
+*.env
 Orderly/frontend/log.html
 Orderly/frontend/output.xml
 Orderly/frontend/playwright-log.txt
