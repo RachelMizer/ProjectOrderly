@@ -9,23 +9,19 @@ services:
       MYSQL_USER: orderly_user
       MYSQL_PASSWORD: localdevpass
       MYSQL_ROOT_PASSWORD: rootpass
-    ports:
-      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
 
   backend:
     build: ./backend
+    volumes:
+      - ./backend:/app
+      - ./frontend:/app/frontend
     ports:
       - "8000:8000"
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_started
-    command: >
-      sh -c "python manage.py migrate &&
-             gunicorn orderly.wsgi:application --bind 0.0.0.0:8000"
+    command: gunicorn orderly.wsgi:application --bind 0.0.0.0:8000
 
   frontend:
     build:

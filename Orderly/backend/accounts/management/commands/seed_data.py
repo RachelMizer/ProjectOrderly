@@ -740,7 +740,7 @@ class Command(BaseCommand):
             "Cake Pop":            ("food", "choc_pop.png"),
         }
 
-        frontend_img_root = settings.BASE_DIR.parent / "frontend" / "public" / "img"
+        frontend_img_root = Path("/app/frontend/public/img")
         media_products_dir = Path(settings.MEDIA_ROOT) / "products"
         media_products_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1254,7 +1254,7 @@ class Command(BaseCommand):
 
         media_store_dir = Path(settings.MEDIA_ROOT) / "store"
         media_store_dir.mkdir(parents=True, exist_ok=True)
-        store_img_src = settings.BASE_DIR.parent / "frontend" / "public" / "img" / "store"
+        store_img_src = Path("/app/frontend/public/img")
 
         for field_name, filename in [("store_image", "logo.png"), ("favicon", "favicon.ico")]:
             src = store_img_src / filename
