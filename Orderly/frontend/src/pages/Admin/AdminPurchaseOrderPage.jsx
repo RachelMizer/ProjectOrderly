@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
 
-const API_ADMIN_BASE = "http://127.0.0.1:8000/api/v1/admin";
+const API_ADMIN_BASE = `${process.env.REACT_APP_API_URL}/api/v1/admin`;
 
 function fmt(val) {
   const n = parseFloat(val);
