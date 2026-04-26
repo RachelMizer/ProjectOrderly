@@ -42,8 +42,8 @@ cd orderly
    inside example-env.txt, replace both <CHANGEME> to secure passwords. Then run:
 
 ```
-cp example-backend-env.txt .env
-cp example-frontend-env.txt /frontend/.env
+cp example-env-backend.txt .env
+cp example-env-frontend.txt frontend/.env
 ```
 
 4. Build and Start Application
