@@ -1,7 +1,7 @@
 # Software Release Report
 
 **Project Name:** Orderly  
-**Version** 1.0.0  
+**Version:** 1.0.0  
 **Team Number:** 7  
 **Team Project Manager:** Serina Rodriguez  
 **Team Members:** Kenny Bacdayan, Caleb James Fowlkes, Tristin Gatt, Kim Mayo, Rachel Mizer  
@@ -24,12 +24,12 @@ The Project Kickoff Meeting was held January 26, 2026 at 7:00 pm, with team form
 
 Roles were assigned as follows:
 
-- **Scrum Master**: Serina Rodriguez
-- **Product Owner**: Kim Mayo  
-- **Software Architect**: Tristin Gatt  
-- **QA Testing Lead**: Kenny Bacdayan  
-- **Frontend Lead**: Rachel Mizer  
-- **Technical Writer**: Caleb Fowlkes  
+- **Project Manager/Scrum Master**: Serina Rodriguez
+- **Product Owner & Full Stack Developer**: Kim Mayo  
+- **Software Architect & Backend Lead**: Tristin Gatt  
+- **Testing & Quality Assurance Lead**: Kenny Bacdayan  
+- **Frontend & UI/UX Lead**: Rachel Mizer  
+- **Code Review Lead & Database Specialist**: Caleb Fowlkes  
 
 ---
 
@@ -45,7 +45,7 @@ Continuous collaboration using tools such as Trello, Microsoft Teams, and GitHub
 
 ### Design and Architecture
 
-Orderly uses a modular, domain-driven backend architecture with clearly defined responsibilities:
+Orderly uses a modular, domain-driven backend architecture with clearly defined responsibilities, where components are designed to remain largely uncoupled and independently maintainable.  
 
 - `accounts` — authentication, roles, user profiles  
 - `catalog` — products, categories, variants, modifiers  
@@ -55,7 +55,7 @@ Orderly uses a modular, domain-driven backend architecture with clearly defined 
 - `reporting` — analytics and administrative insights  
 - `settings` — business user settings for customization
 
-This separation of concerns improves scalability, reduces coupling, and supports team collaboration.
+This approach reduces dependencies between modules, allowing changes in one domain to occur without impacting others.
 
 The system uses a relational data model supporting:
 
@@ -276,8 +276,6 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 ### Deferred Features
 
 - Modifier management (CRUD): scope risk to Wave 1 deadline, S5 W1
-- Email verification (tasks 2.5): deferred to later sprint during S2 planning, complete
-- Password reset (task 2.7): deferred to later sprint during S2 planning, complete
 - Supplier management (B5.7, UX5.7, F5.7): out of scope for this version
 
 ---
@@ -303,19 +301,21 @@ While Orderly makes use of the following, they are not required to install if bu
 
 ### Backend Setup
 
-git pull origin main   
-
-create venv   
-pip install -r requirements.txt   
-python manage.py migrate   
-python manage.py runserver    
+```
+git pull origin main
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver  
+```
 
 ### Frontend Setup
-
+```
 cd frontend
 npm install
 npm start
-
+```
 ### Authentication Notes
 
 - JWT required for protected endpoints  
