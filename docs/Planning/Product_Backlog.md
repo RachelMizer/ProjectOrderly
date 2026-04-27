@@ -1,88 +1,127 @@
-# Orderly | Product Backlog
+# Orderly | Product Backlog  
 
-**Project Name:**     Orderly
-**Team Number:**    Group #7
-**Team PM/Scrum Master:** Serina Rodriguez 
-**Product Owner:** Kim Mayo
-**Team Members:** Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Rachel Mizer, Tyler Royal
+**Project Name:** Orderly  
+**Team Number:** Group #7  
+**Scrum Master:** Serina Rodriguez  
+**Product Owner:** Kim Mayo  
+**Team Members:** Kenny Bacdayan, Caleb Fowlkes, Tristin Gatt, Rachel Mizer, Tyler Royal  
 
 ---
 
 ## Product Backlog
 
-| Task ID | Task Name(Feature)                                           | user story                                                   | MOSCOW PRIORITY | STATUS      |
-| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------- | ----------- |
-| 1.1     | Review and finalize project scope                            | "As a team member, I want to adapt the SRS to new team realities and create a greater sense of ownership." | Should          | Completed   |
-| 1.2     | Review and finalize project architecture                     | "As a team leader, I want to understand the high-level design to choose appropriate technologies and delegate tasks." | Must            | In progress |
-| 1.3     | Review and finalize development environment / technologies / languages | "As a developer, I want to research and use technologies that facilitate the product architecture." | Must            | Not Started |
-| 1.4     | Customer/Admin Interface Concept                             | "As a frontend developer, I want an example of what the user interface should look like for both admin and customers." | Should          | Not Started |
-| 1.5     | Setup Environment(codebase)                                  | "As a developer, I want to use technologies that facilitate the product architecture to build our development environment." | Must            | In progress |
-| 1.6     | Create the Project Development Plan                          | "As a team leader, I want an up-to-date document outlining the project and development strategies." | Must            | Completed   |
-| 1.7     | Develop test methods and strategies                          | As a QA Lead, I want to develop a test plan, cases, and sample scenarios so we can implement them to verify Sprint 1 features are stable and meet acceptance criteria. | Must            | In progress |
-| 1.8     | Execute Sprint 1 testing                                     | As a QA Lead, I want to execute test cases against Sprint 1 features so that we can identify defects and verify the codebase meets acceptance criteria before the sprint review. | Must            | Not started |
-| 1.5     | Set-up guide for local development environment               | "As a developer, I want clear setup instructions so that I can quickly get the project running on my machine" | Should          | Not Started |
-| 1.9     | Documentation for Roles and Responsibilities                 | "As a team member, I want an idea of what aspects of development I should focus on, as well as team strengths and weaknesses." | Must            | Complete    |
-| 1.10    | Organize the Product Backlog by Sprint                       | "As a developer, I want to quickly determine which backlog items are relevant to the current sprint." | Must            | On-going    |
-| 1.6.3   | Git Branching Strategy                                       | As a developer, I want a clear branching strategy so that we can collaborate without merge conflicts. | Must            | Not Started |
-| 1.11    | Code Review Guidelines                                       | As a developer, I want code review standards so that we maintain high code quality and share knowledge across the team. | Must            | Not Started |
-| 1.12    | Sprint 1 Demo Script                                         | “As the Presentation Lead, I need to create a demonstration script for Sprint 1 completed work so that the team can effectively showcase accomplishments during the Sprint Review.” | Must            | Not Started |
-| 1.13    | Sprint 1 Visual Documentation                                | “As the Presentation Lead, I need to prepare visual materials of Sprint 1 accomplishments so that stakeholders can clearly see what was completed.” | Must            | Not Started |
-| 2.2     | Database Validation                               | As a developer, I want to validate database constraints and relationships so that data integrity is maintained throughout the application. | Must            | Not Started |
-| 2.1     | Database Schema Implementation                               | As a developer, I want a properly structured database so that all application data is stored securely and efficiently. | Must            | Started |
-| 2.4     |Backend User Registration                                     | "As a new user, I want to create an account with my email and password so that I can access the application" | Must            | Not Started |
-| 2.3     |Backend API Endpoint for Business Features                    | As a system administrator, I want to implement role-based data access controls so that users can only access data appropriate to their role. | Must            | Not Started |
-| 2.5     |Email Verification                    | As a user, I want the system to grant me access only to features appropriate for my role (customer or business admin) so that I have a secure and relevant experience. | Must            | Not Started |
-| 2.6     |Backend User Login                    | As a registered user, I want to log in to my account so that I can access personalized features. | Must            | Not Started |
-| 2.7     | Backend Password Reset                          | As a registered user, I want to reset my password so that I can regain access if I forget my credentials. | Must            | Not Started |
-| 2.8     |Backend API Endpoints for Authentication                    | As a front-end developer, I want backend API endpoints for authentication so that I can integrate user registration, login, and account management into the UI. | Must            | Not Started |
-| 2.9     |Frontend Authentication Components                    | As a user, I want user interface for registration and login so that I can create an account and access the application. | Must            | Not Started |
-| 2.10     |Sprint 2 Demo Materials Preparation                    | As the Presentation Lead, I need to prepare visual documentation and coordinate the demo order for Sprint 2 Review so that stakeholders can clearly see what was accomplished and team members know what to present. | Must            | Not Started |
-| 2.12     |UI & Admin Page Shells                    | I want a complete routing structure, navigation system, and placeholder page shells so that users can navigate the application and Sprint 3 developers can build features within an established UI structure. | Must            | Not Started |
-| 2.11     |Comprehensive Seed Data Population                    | As a developer, I want realistic seed data populated in the database so that I can test features with representative content and teammates can develop against consistent data. | Must            | Not Started |
-| 2.13     |UI Design System & Component Library                    | As a developer, I want a design system with reusable components so that the application has consistent styling and teammates can build features faster. | Must            | Not Started |
-| 2.14     |Expand API Contract (Users & Orders)                    | As a developer, I want the API contract to define the Users and Orders endpoints so that frontend and backend development can proceed in Sprint 2 without ambiguity about requests, responses, and error handling. | Must            | Not Started |
-|         | Create separate authentication flow for business administrators | As a business owner, I want to log into a secure admin panel so that I can manage my inventory and view sales data. | Must            | Not Started |
-|         | User Profile Management                                      | As a customer, I want to update my profile information so that my contact details and preferences stay current. | Must            | Not started |
-|         | Product browsing interface                                   | As a customer, I want to browse available products or menu items so that I can decide what I want to order. | Must            | Not Started |
-|         | Shopping Cart System                                         | As a customer, I want to add multiple items to a cart before checkout so that I can review and modify my order before submitting. | Must            | Not started |
-|         | Order item customization                                     | As a customer, I want to customize my order with extras or modifications so that I can get exactly what I want. | Must            | Not Started |
-|         | Order submission and status tracking                         | As a customer, I want to submit my order and see its current status so that I know when it is being prepared or completed. | Must            | Not Started |
-|         | Order Submission & Confirmatin with Receipt                  | As a customer, I want to see a confirmation screen with my receipt after placing an order so that I have immediate proof of my purchase. | Must            | Not Started |
-|         | Auto-save Shopping Cart                                      | As a customer, I want my in-progress order to be saved automatically, so that I don't lose my selections if the app refreshes or closes unexpectedly. | Must            | Not Started |
-|         | Product Management (Add/Edit/Delete)                         | As a business owner, I want to easily add, edit, or remove menu items so that I can keep my offerings current and customers cannot order items that are out of stock. | Must            | Not started |
-|         | Manage products and pricing                                  | As a business owner, I want to add, edit, or remove products and prices so that my menu stays accurate. | Must            | Not Started |
-|         | Real-Time Inventory Tracking                                 | As a business owner, I want inventory to automatically update when customers order so that I don't oversell products. | Must            | Not started |
-|         | Role-based user permissions                                  | As a system administrator, I want to restrict access based on user roles so that customers and business users can only access features relevant to them. | Must            | Not Started |
-|         | User Role Enforcement in Data Access                         | As a system, I want database queries to respect user roles (customer vs business admin), so that users can only access data they are authorized to see. | Must            | Not Started |
-|         | Data Validation at Database Level                            | As a system administrator, I want the database to enforce constraints (non-negative inventory, valid prices, required fields), so that invalid or corrupt data cannot be stored. | Must            | Not Started |
-|         | Unit Test Suite                                              | As a developer, I want comprehensive unit tests so that I can catch bugs early and ensure code reliability. | Must            | Not started |
-|         | Integration Testing Framework                                | As a developer, I want integration tests so that I can verify that different system components work together correctly. | Must            | Not started |
-|         | End-to-End Testing Suite                                     | As a developer, I want E2E tests so that I can verify complete user journeys work as expected. | Must            | Not started |
-| *       | Configure continuous integration and deployment pipeline     | "As a developer, I want integration tests so that I can catch bugs early and ensure code reliability" | Should          | Not Started |
-|         | API Documentation                                            | As a developer, I want well-documented APIs so that I can easily understand and integrate with the backend services. | Must            | Not started |
-|         | Customer Access to Order History                             | "As a customer, I want to view my previous orders so that I can reorder my favorites quickly." | Must            | Not Started |
-|         | Order Status History Tracking                                | As a business admin, I want each order's status changes to be recorded in the database, so that I can review how long orders stay in each stage (Pending, In Progress, Ready, Completed). | Must            | Not Started |
-|         | System Audit Log                                             | As a business admin, I want to view a log of system actions so that I can track changes made to products, inventory, and settings. | Must            | Not Started |
-|         | Business Configuration/Settings Page                         | As a business admin, I want to configure tax rates and service fees so that order totals reflect my business's pricing and legal requirements. | Must            | Not Started |
-|         | Business Profile                                             | "As a business owner, I want to set my operating hours, address, and contact information so my customers can have access" | Should          | Not Started |
-|         | View sales summaries                                         | As a business owner, I want to view daily or weekly sales summaries so that I can track performance and identify trends. | Should          | Not Started |
-|         | Best Sellers Report                                          | As a business owner, I want to see my best-selling items so that I can prioritize ordering and stocking popular products. | Should          | Not Started |
-|         | Convert and Export Sales Summaries                           | "As a business owner, I want to save sales reports in a more convenient and portable format." | Should          | Not Started |
-|         | Dashboard view for Supplier List                             | "As a business owner, I want to maintain a list of my suppliers so that I can easily place orders when needed." | Must            | Not Started |
-|         | Supplier Order History                                       | As a business owner, I want to view my supplier order history so that I can track purchasing patterns and costs. | Should          | Not Started |
-|         | Inventory Transaction Logging                                | As a business owner, I want all inventory changes (sales, restocks, manual edits) logged with timestamps, so that I can audit stock discrepancies and track inventory history. | Should          | Not Started |
-|         | Soft Deletion of Products                                    | As a business owner, I want products to be soft-deleted instead of permanently removed, so that historical orders referencing those products remain intact. | Should          | Not Started |
-|         | Product Image Upload                                         | As a business owner, I want to add photos to my products so that customers can see what they're ordering. | Should          | Not started |
-|         | Email Order Confirmation                                     | As a customer, I want to receive an email confirmation of my order so that I have a record for my reference. | Should          | Not started |
-|         | Order Status Email Notifications                             | As a customer, I want to be notified by email when my order is ready so that I know when to pick it up. | Should          | Not started |
-|         | Order Cancellation                                           | As a customer, I want to cancel my order if I change my mind so that I'm not charged for something I don't want. | Should          | Not started |
-|         | Payment Simulation Module                                    | As a developer, I want to simulate completing payment so that I can understand the full ordering process. | Should          | Not Started |
-|         | Check-Out Process for Unregistered Users/Guests              | "As a first-time customer, I want to place an order without creating an account that I can quickly make a purchase" | Should          | Not Started |
-|         | Popular Items Highlighting                                   | As a customer, I want to see which items are popular so that I can discover what others are ordering. | Should          | Not started |
-|         | Order Status Timeline (Pending → In Progress → Ready → Completed) | As a customer, I want to see a timeline of my order's status changes so that I can track its progress from placement to delivery. | Could           | Not Started |
-|         | Automated Low-Stock Flagging                                 | As a business admin, I want to receive notifications when product inventory falls below a threshold so that I can restock before running out. | Could           | Not Started |
-|         | Responsive Mobile Design                                     | As a customer, I want to place orders from my phone or tablet so that I can order from anywhere. | Could           | Not Started |
-|         | Multi-Image Gallery per Product                              | As a customer, I want to view multiple photos of a product so that I can better understand what I'm ordering. | Could           | Not started |
-|         | Tax Calculation Engine Based on Location                     | As a business owner, I want taxes calculated automatically so that I comply with regulations and simplify checkout. | Could           | Not started |
-|         | Discount Code System                                         | As a business owner, I want to offer discount codes so that I can run promotions and attract customers. | Could           | Not started |
-|         | Refund Processing System                                     | As a business owner, I want to process refunds easily so that I can handle customer service issues efficiently. | Could           | Not started |
+| Task ID | Task Name (Feature) | User Story | Priority | Status |
+|--------|--------------------|-----------|----------|--------|
+
+### 🔹 Project Planning & Setup (Sprint 1)
+
+| 1.1 | Project Scope Finalization | As a team member, I want to adapt the SRS so the project reflects team goals | Should | Completed   
+| 1.2 | Review and finalize project architecture | As a software architecture lead, I want to understand the high-level design to choose appropriate technologies. | Must | Completed   
+| 1.3 | Review and finalize development environment/technologies | As a developer, I want to research and use technologies that facilitate the product architecture. | Must | Completed   
+| 1.4 | Create customer and admin UI concept | As a frontend developer, I want an example of what the user interface should look like. | Should | Completed   
+| 1.5 | Set up environment | As a developer, I want to use technologies that facilitate the product architecture to build our development environment. | Should | Completed   
+| 1.6 | Finalize Project Development Plan | As a team leader, I want a plan so development stays organized | Must | Completed   
+| 1.7 | Develop Test Plan & Strategy | As a QA lead, I want testing strategies so features are validated | Must | Completed   
+| 1.8 | Execute Sprint 1 Testing | As a QA lead, I want to validate Sprint 1 features | Must | Completed |Completed  
+| 1.9 | Role Assignments | As a team member, I want an idea of what aspects of development I should focus on, as well as team strengths and weaknesses. | Must | Completed  
+| 1.10 | Maintain Product Backlog | As a developer, I want backlog items grouped by sprint | Must | Completed   
+| 1.11 | Build Code Review Guidelines | As a developer, I want standards for reviewing code | Must | Completed   
+| 1.12 | Create Sprint 1 Demo Script | As a presenter, I want demo materials for Sprint Review | Must | Completed   
+| 1.13 | Sprint 1 Visual Documentation | As the Presentation Lead, I need to prepare visual materials of Sprint 1 accomplishments so that stakeholders can clearly see what was completed. | Must | Completed   
+
+---
+
+### 🔹 Core Backend & Authentication (Sprint 2)
+
+| 2.1 | Database Schema Implementation | As a developer, I want structured data storage | Must | Completed   
+| 2.2 | Database Validation | As a developer, I want constraints enforced for data integrity | Must | Completed   
+| 2.3 | Role-Based API Access | As an admin, I want role-based permissions enforced | Must | Deferred  to later sprint   
+| 2.4 | User Registration | As a user, I want to create an account | Must | Completed   
+| 2.5 | Email Verification | As a user, I want secure account verification | Must | Completed   
+| 2.6 | Backend User Login | As a user, I want to log into the system | Must | Completed   
+| 2.7 | Backend Password Reset | As a user, I want to reset my password | Must | Completed   
+| 2.8 | Backend API Endpoints for Authentication | As a frontend dev, I want API endpoints for auth | Must | Completed   
+| 2.9 | Frontend Authentication Components | As a user, I want login/register UI | Must | Completed   
+| 2.10 | Sprint 2 Demo Materials Preparation | As the Presentation Lead, I need to prepare visual documentation | Must | Completed   
+| 2.11 | Comprehensive Seed Data Population | As a developer, I want realistic seed data populated in the database | Must | Completed   
+| 2.12 | UI & Admin Page Shells | As a developer, I want a complete routing structure, navigation system, and placeholder page shells | Must | Completed   
+| 2.13 | UI Design System & Component Library | As a dev, I want reusable UI components | Must | Completed   
+| 2.14 | Expand API Contract (Users & Orders) | As a developer, I want the API contract to define the Users and Orders endpoints so that frontend and backend development can proceed | Must | Completed  
+| 2.15 | Sprint 2 QA Execution | As a QA Lead, I want to track my testing progress across all Sprint 2 user stories | Must | Completed  
+
+---
+
+### 🔹 Customer Features (Sprint 3)
+
+| F3.1.1 | Product Browsing Page | As a customer, I want to view a list of products | Must | Completed   
+| B3.1.2 | Product Browsing API | As a customer, I want to view a list of products with names, prices, and availability so that I can select items to order. | Must | Completed  
+| PM3.1 | Sprint 3 PM Tasks | As a Scrum Master, I want to actively manage and communicate sprint progress | Should | Completed  
+| B3.2.2 | Draft Order API | As a customer, I want to add, remove, and update quantities in my cart | Must | Completed   
+| F3.2.1 | Shopping Cart Page(Persistent) | As a customer, I want to add, remove, and update quantities in my cart and have it saved automatically | Must | Completed  
+| PM3.2 | CI/CD Pipeline & Contributing Documentation | As a PM, I want to establish a clear and documented development workflow | Should | Completed  
+| B3.3.2 | Finalize Order API |  As a customer, I want to submit my order and see its current status | Must | Completed  
+| F3.3.1 | Checkout Page | As a customer, I want to submit my order and see its current status | Must | Completed  
+| F3.4.1 | Order Confirmation Page | As a customer, I want to place orders | Must | Completed   
+| B3.4.2 | Order Status API | As a customer, I want to see a confirmation screen with my receipt after placing an order | Must | Completed  
+| F3.5.1 | Order History Page | As a customer, I want to view my previous orders | Must | Completed   
+| B3.5.2 | Order History API | As a customer, I want to view my previous orders | Must | Completed  
+| F3.6.1 | Profile Page | As a customer, I want to update my profile information | Must | Completed   
+| B3.6.2 | Profile Management API | As a customer, I want to update my profile information | Must | Completed  
+| F3.7.1 | Item Customization Page | As a customer, I want to customize items (extras or options) so that my order matches my preferences. | Must | Completed   
+| B3.7.2 | Modifier Retrieval API | As a customer, I want to customize items (extras or options) so that my order matches my preferences. | Must | Completed   
+| B3.7.3/4 | Add Item with Modifiers API | As a customer, I want to customize items (extras or options) so that my order matches my preferences. | Must | Completed   
+| US3.8 | Extend Seed Data — Products, Variants & Modifiers | As a developer, I want extended seed data so the team can develop and test Sprint 3 | Must | Completed   
+| US3.9 | Sprint 3 Demo Materials | As the Presentation Lead, I need to prepare a demo script and a structured visual summary for the Sprint 3 Review | Must | Completed  
+| US3.10 | Sprint 3 QA Execution | As a QA Lead, I want to track my testing progress across all Sprint 3 user stories | Must | Completed  
+
+---
+
+### 🔹 Admin Features (Sprint 4 & 5)
+
+| B4.1 | Role-Based Access Control (Backend) | As a system, I want permissions enforced | Must | Completed    
+| F4.1 | Role-Based Access Control (Frontend) | As a system, I want all admin endpoints and UI to enforce role-based access so that only authenticated business users can reach admin tools | Must | Completed  
+| PM4.1 CI/CD Pipeline Maintenance & Stability | As a PM, I want the CI/CD pipeline to run cleanly and without workarounds so that every PR to main is validated against a stable, accurate set of checks | Must | Completed  
+| F5.1 | Admin Dashboard Navigation (Frontend) | As an admin, I want navigation for management tools | Must | Completed   
+| DC5.1 | API Contract Updates | As a developer, I want the API contract to stay current as each endpoint is built | Must | Completed   
+| UX5.1 | Admin Dashboard Navigation (UI) | As an admin, I want navigation for management tools | Must | Completed   
+| B5.2 | Product & Variant Management API (backend) | As a business admin, I want to create, edit, and delete products and their variants | Must | Completed  
+| F5.2 | Product Management Page (Frontend Integration) | As a business admin, I want to create, edit, and delete products and their variants | Must | Completed  
+| UX5.2 | Product Management Page (UI) | As a business admin, I want to create, edit, and delete products and their variants | Must | Completed  
+| B5.3 | Inventory Management API (Backend) | As a business admin, I want to view and update inventory levels per variant so that stock is accurate and customers cannot order unavailable items | Must | Completed  
+| F5.3 | Inventory Management Page (Frontend Integration) | As a business admin, I want to manage inventory and availability through an admin interface | Must | Completed  
+| UX5.3 | Inventory Management Page (UI) | As a business admin, I want to manage product availability in a way that reflects real operations | Must | Completed  
+| B5.4 | Sales Summary API (Backend) | As a business admin, I want a sales summary dashboard | Should | Completed  
+| UX5.4 | Sales Summary Dashboard Page (UI) | As a business admin, I want a sales summary dashboard | Should | Completed  
+| F5.4 | Sales Summary Dashboard Page (Frontend Integration) | As a business admin, I want a sales summary dashboard | Should | Completed  
+| B5.5 | Low Stock Indicators (Backend) | As a business admin, I want low-stock items visually flagged in the inventory list | Should | Completed  
+| F5.5 | Low Stock Indicators (Frontend) | As a business admin, I want low-stock items visually flagged in the inventory list | Should | Completed  
+| B5.6 | Settings API (Backend) | As a business admin, I want to view and update store settings so that the application reflects my business configuration | Should | Completed  
+| F5.6 | Settings Integration (Frontend) | As a business admin, I want to view and update store settings so that the application reflects my business configuration | Should | Completed  
+| UX5.6 | Settings Page (UI) | As a business admin, I want to view and update store settings so that the application reflects my business configuration | Should | Completed  
+| F5.9 | Admin Orders Page (Frontend Integration) | As a business admin, I want the orders page wired to the backend so that I can see real pending orders and mark them complete | Must | Completed  
+| B5.9 | Admin Order Management API (Backend) | As a business admin, I want admin order endpoints that list and update non-draft orders | Must | Completed   
+| UX5.9 | Admin Orders Page (UI) | As a business admin, I want a clear orders page layout so that I can view pending orders and act on them without friction | Must | Completed   
+
+---
+
+### 🔹 Final Deliverables (Phase 4)
+
+| P4.1 | Release Report | As a business user, I want final documentation of Orderly | Must | Completed   
+| P4.2 | User Manual + FAQs | As a business user, I want a user manual | Must | Completed   
+| P4.3 |Installation Guide | As a business user, I want an installation guide | Must | Completed   
+| P4.4 | QA Documentation + Test Artifacts | As QA, I want testing documentation | Must | Completed   
+| P4.5 | License + Privacy Policy | As a team, we want legal documentation | Must | Completed   
+| P4.6 | Presentation Slide Deck | As a team, we want slides to accompany our presentation | Must | Completed   
+| P4.7 | Repository Cleanup | As a team, we want our repo clean | Must | Completed   
+| P4.8 | Code Comments Audit | As a developer, I want readable code | Must | Completed   
+| P4.9 | Updated Project Plan + Risk Management Plan | As a team, we need a risk management plan | Must | Completed   
+| P4.10 | Database Schema Documentation | As a dev, I want schema clarity | Must | Completed   
+
+---
+
+### 🔹 Deferred / Future Enhancements
+
+| F1 | Modifier Management (CRUD) | As an admin, I want to manage modifiers | Must | Deferred   
+| F2 | Email Notifications | As a customer, I want order updates via email | Should | Not Started   
+| F4 | Supplier Management | As an admin, I want supplier tracking | Must | Not Completed   
+| F5 | Mobile Responsiveness | As a user, I want mobile access | Could | Not Started   
