@@ -14,7 +14,7 @@
 
 ## Introduction
 
-Here are instructions for installing and launching Orderly locally using Docker
+Orderly is a storefront and store management, web-based application. The frontend, ui side, and backend, underlying logic, are separate systems but both live inside the Orderly codebase. The backend and frontend urls can be edited inside the .env files in the Orderly root and frontend directory.
 
 ## System Requirements
 
@@ -66,5 +66,3 @@ docker compose exec backend python manage.py seed_orders
 ```
 
 You can now access the application frontend at http://localhost:3000 or backend at http://localhost:8000
-
-
