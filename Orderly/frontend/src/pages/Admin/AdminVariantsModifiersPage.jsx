@@ -532,7 +532,7 @@ export default function AdminVariantsModifiersPage() {
                 value={addVarStock} onChange={(e) => setAddVarStock(e.target.value)} disabled={addingVar} />
             </div>
           </div>
-          <div className="inv-create-actions">
+          <div className="inv-create-actions" style={{ marginTop: "12px" }}>
             <button type="submit" disabled={addingVar}>{addingVar ? "Adding..." : "Add Variant"}</button>
           </div>
           {addVarError && <p className="inv-error" style={{ marginTop: "8px" }}>{addVarError}</p>}
