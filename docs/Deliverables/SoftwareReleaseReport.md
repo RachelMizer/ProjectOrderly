@@ -173,7 +173,7 @@ Testing for Orderly followed a structured, iterative approach. This aligned with
 
 ### Install
 
-Its reccomended that you familiarize yourself with the local installation process found in the installation guide.   
+It's recomended that you familiarize yourself with the local installation process found in the installation guide.   
 
 #### 1. Build & Push Docker Images to AWS ECR
 

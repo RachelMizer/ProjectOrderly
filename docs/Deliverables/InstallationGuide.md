@@ -14,7 +14,7 @@
 
 ## Introduction
 
-Orderly is a storefront and store management, web-based application. The frontend, ui side, and backend, underlying logic, are separate systems but both live inside the Orderly codebase. The backend and frontend urls can be edited inside the .env files in the Orderly root and frontend directory.
+Orderly is a storefront and store management, web-based application. The frontend, UI side, and backend, underlying logic, are separate systems but both live inside the Orderly codebase. The backend and frontend URLs can be edited inside the .env files in the Orderly root and frontend directory.
 
 ## System Requirements
 
@@ -38,7 +38,7 @@ cd <Orderly feat_local-Docker-Dist path>
 ```
 
 3. Create Environment File
-   inside example-env.txt, replace both <CHANGEME> to secure passwords. Then run:   
+   inside example-env.txt, replace both <CHANGEME> with secure passwords. Then run:   
 
 ```
 cp example-env-backend.txt .env
@@ -75,7 +75,7 @@ The following commands are used to start and stop the docker container
 ```
 docker compose up ## Start, rebuild, and view logs
 docker compose start ## Start a stopped, previously built container
-docker compost down ## stop a running container
+docker compose down ## stop a running container
 ```
 
 ## Uninstalling
