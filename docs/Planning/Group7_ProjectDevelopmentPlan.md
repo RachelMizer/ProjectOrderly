@@ -62,7 +62,7 @@
 
 | Name             | Email                      | Role(s)                                |
 | ---------------- | -------------------------- | -------------------------------------- |
-| Kenny Bacdayan   | kbacdayan@my.waketech.edu  | Testing & Quality Assurance Lead       |
+| Kenny Bacdayan   | kbacdayan@my.waketech.edu  | Quality Assurance & Testing Lead       |
 | Caleb Fowlkes    | cjfowlkes@my.waketech.edu  | Code Review Lead & Database Specialist |
 | Tristin Gatt     | tjgatt@my.waketech.edu     | Software Architect & Backend Lead      |
 | Kim Mayo         | kamayo@my.waketech.edu     | Product Owner & Full Stack Developer   |
