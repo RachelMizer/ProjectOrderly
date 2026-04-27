@@ -1,26 +1,23 @@
 # 🧾 Orderly
+
 ## Fast, Flexible Ordering for Any Business
 
-Orderly is a flexible, full-stack, self-service ordering and business management platform
-built for small to mid-sized businesses that need an intuitive, affordable way to manage
-customer orders and business operations — all from one place.
+Orderly is a flexible, full-stack, self-service ordering and business management platform built for small to mid-sized businesses that need an intuitive, affordable way to manage customer orders and business operations — all from one place.
 
----
+------
 
 ## 📌 About the Project
 
-Traditional ordering systems are either too complex or too expensive for smaller
-operations. Orderly solves this with a clean, responsive customer-facing interface
-and a business admin dashboard that puts real control in the hands of owners and staff.
+Traditional ordering systems are either too complex or too expensive for smaller operations. Orderly solves this with a clean, responsive customer-facing interface and a business admin dashboard that puts real control in the hands of owners and staff.
 
-Customers can browse, customize, and submit orders with confidence. Admins can manage
-products, monitor inventory, and track sales — all backed by a secure, role-separated API.
+Customers can browse, customize, and submit orders with confidence. Admins can manage products, monitor inventory, and track sales — all backed by a secure, role-separated API.
 
----
+------
 
 ## ✨ Features
 
 ### Customer Experience
+
 - [x] User registration, login, and JWT-based authentication
 - [x] Email verification and password reset workflows
 - [x] Product browsing with categories, variants, and modifier customization
@@ -29,28 +26,46 @@ products, monitor inventory, and track sales — all backed by a secure, role-se
 - [x] Customer profile management
 
 ### Business Admin Tools
+
 - [x] Role-based access control — customer and business roles enforced server-side
 - [x] Admin dashboard navigation
 - [x] Product and variant management (create, update, delete)
 - [x] Inventory management with real-time stock level tracking
+- [x] Low stock indicators and visual flags
 - [x] Sales summary dashboard — total revenue, order count, top-selling products
-- [ ] Low stock indicators and visual flags *(Sprint 5 — in progress)*
-- [ ] Admin settings page *(Sprint 5 — stretch)*
+- [x] Admin settings page — branding, storefront customization, business profile
 
 ### Platform & Infrastructure
+
 - [x] RESTful API with versioned endpoints (`/api/v1/`)
 - [x] GitHub Actions CI/CD pipeline (Django/pytest + React/Node)
 - [x] Robot Framework E2E test suite (SeleniumLibrary)
 - [x] Seed data for local development and testing
-- [ ] Deployment documentation and live URL *(Sprint 5)*
+- [x] Docker Compose local deployment
+- [x] AWS EC2 + RDS production deployment
 
 ### Stretch Goals
+
 - [ ] Payment gateway integration
 - [ ] Supplier management module
 - [ ] Loyalty programs and customer analytics
 - [ ] Multi-location support
 
----
+------
+
+## 📸 Screenshots
+
+### Customer Experience
+
+**Shopping Cart** ![Shopping Cart](images/Orderly_Captures/Orderly_ShoppingCart.png)
+
+**Admin Dashboard** ![Admin Dashboard](images/Orderly_Captures/Orderly_AdminDashboard.png)
+
+**Sales Report** ![Sales Report](images/Orderly_Captures/Orderly_CustomerProfileHistory.png)
+
+**Business Settings** ![Business Settings](images/Orderly_Captures/Orderly_BusinessSettings.png)
+
+------
 
 ## 🗂️ Data Model Overview
 
@@ -72,75 +87,152 @@ Order (customer FK)
             └── OrderItemModifier (item FK)
 ```
 
----
+------
 
 ## 🛠️ Tech Stack
 
 | Layer           | Technology                                                |
-|-----------------|-----------------------------------------------------------|
+| --------------- | --------------------------------------------------------- |
 | Frontend        | React 18, React Router v6, Axios                          |
 | Backend         | Django 4.x, Django REST Framework                         |
 | Authentication  | SimpleJWT (Access + Refresh tokens)                       |
 | Database        | MySQL 8.0                                                 |
 | Testing         | pytest (backend), Robot Framework + SeleniumLibrary (E2E) |
 | CI/CD           | GitHub Actions                                            |
+| Deployment      | Docker Compose, AWS EC2 + RDS                             |
 | Version Control | Git / GitHub                                              |
 
----
+------
 
 ## ⚙️ Getting Started
 
-### Prerequisites
+### Option 1: Docker (Recommended)
 
-- Python 3.x
-- Node.js
-- MySQL **8.4.8 LTS** (see installation steps below)
+The fastest way to run Orderly locally. Works on Windows, macOS, and Linux.
+
+#### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - Git
 
-### 1. Clone the Repository
+#### Setup
+
+1. Verify Docker is installed:
+
+```bash
+docker --version
+docker compose version
+```
+
+1. Clone the repository and switch to the local distribution branch:
 
 ```bash
 git clone https://github.com/[your-username]/Orderly.git
 cd Orderly
 ```
 
-### 2. Backend Setup
+> Switch to the `feat_local-Docker-Dist` branch for the Docker-ready build.
 
-In PowerShell, navigate to the `Orderly` directory (the one containing this README), then run:
+1. Create environment files:
 
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+```bash
+cp example-env-backend.txt .env
+cp example-env-frontend.txt frontend/.env
 ```
 
-> **Note:** Navigate to `Orderly/backend/` before starting the backend server.
+> Open both files and replace the `<CHANGEME>` placeholders with secure passwords before continuing.
 
-```powershell
-python manage.py runserver
+1. Build and start the application:
+
+```bash
+docker compose up --build
 ```
 
-### 3. Database Setup
+1. Run database migrations (MySQL may take a moment to initialize — wait a few seconds before running this):
 
-Go to [mysql.com](https://www.mysql.com) → Downloads → MySQL Community (GPL) Downloads → MySQL Community Server.
-Select **version 8.4.8 LTS** for Windows and download the MSI installer.
+```bash
+docker compose exec backend python manage.py migrate
+```
 
-Run the installer (select **Typical**), then run the MySQL Configurator:
-- *(Optional)* Choose a database directory
+1. Seed demo data (optional):
+
+```bash
+docker compose exec backend python manage.py seed_data
+docker compose exec backend python manage.py seed_customers
+docker compose exec backend python manage.py seed_orders
+```
+
+The frontend is available at `http://localhost:3000` and the API at `http://localhost:8000`.
+
+#### Managing the Container
+
+```bash
+docker compose up        # Start, rebuild, and view logs
+docker compose start     # Start a stopped, previously built container
+docker compose down      # Stop a running container
+```
+
+#### Uninstalling
+
+```bash
+docker compose down                  # Stop and remove containers and networks
+docker compose down -v               # Also remove volumes
+docker compose down --rmi all -v     # Full wipe — removes all containers, networks, volumes, and images
+```
+
+------
+
+### Option 2: Manual Setup
+
+For contributors who prefer a direct development environment without Docker.
+
+#### Prerequisites
+
+- Python 3.x
+- Node.js
+- MySQL **8.4.8 LTS**
+- Git
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/[your-username]/Orderly.git
+cd Orderly
+```
+
+#### 2. Database Setup
+
+**Install MySQL 8.4.8 LTS**
+
+**Windows:** Go to [mysql.com](https://www.mysql.com/) → Downloads → MySQL Community (GPL) Downloads → MySQL Community Server. Select version **8.4.8 LTS** and download the MSI installer. Run the installer (select **Typical**), then complete the MySQL Configurator:
+
 - Choose **Development Computer**
 - Keep the default port: `3306`
 - Create a root password and store it safely
 - Apply changes → Execute → Finish
 
-In `cmd`, connect to MySQL:
+**macOS:** Install via Homebrew:
+
+```bash
+brew install mysql@8.4
+brew services start mysql@8.4
+```
+
+Then secure the installation:
+
+```bash
+mysql_secure_installation
+```
+
+**Connect to MySQL** (both platforms):
 
 ```bash
 mysql -u root -p
 ```
 
-> If this fails, add `MySQL\MySQL Server 8.4\bin` to your PATH environment variable using the full installation path.
+> **Windows only:** If this fails, add `MySQL\MySQL Server 8.4\bin` to your PATH environment variable using the full installation path.
 
-Once logged in, run the following:
+**Create the database and user:**
 
 ```sql
 CREATE DATABASE orderly
@@ -155,8 +247,7 @@ GRANT ALL PRIVILEGES ON orderly.* TO 'orderly_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-<details>
-<summary>Verify your setup</summary>
+<details> <summary>Verify your setup</summary>
 
 ```sql
 -- Confirm the database exists
@@ -176,7 +267,7 @@ SHOW GRANTS FOR 'orderly_user'@'localhost';
 
 </details>
 
-Open `orderly/backend/orderly/settings.py` and confirm the `DATABASES` block matches:
+Open `backend/orderly/settings.py` and confirm the `DATABASES` block matches:
 
 ```python
 DATABASES = {
@@ -194,27 +285,53 @@ DATABASES = {
 }
 ```
 
-In PowerShell, from the `Orderly` directory:
+#### 3. Backend Setup
+
+**Windows (PowerShell):**
 
 ```powershell
+python -m venv .venv
 .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 cd backend
 python manage.py migrate
+python manage.py runserver
 ```
 
-### 4. Frontend Setup
+**macOS/Linux:**
 
-Install Node.js (Windows installer is fine), then:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd backend
+python3 manage.py migrate
+python3 manage.py runserver
+```
+
+#### 4. Frontend Setup
+
+**Windows (PowerShell):**
 
 ```powershell
 cd Orderly/frontend
-npm install       # Ignore vulnerability warnings
+npm install
 npm start
 ```
 
+**macOS/Linux:**
+
+```bash
+cd Orderly/frontend
+npm install
+npm start
+```
+
+> Ignore vulnerability warnings from `npm install`.
+
 Visit `http://localhost:3000` for the frontend and `http://localhost:8000/api/v1/` for the API.
 
----
+------
 
 ### Running Tests
 
@@ -236,70 +353,72 @@ npm run lint
 npm test
 ```
 
----
+------
 
 ### CI/CD Pipeline
 
 Every pull request to `main` runs three automated checks via GitHub Actions:
 
-| Job | What Runs |
-|---|---|
-| **Backend Tests** | Spins up MySQL 8.0, runs migrations, seeds database, runs full pytest suite |
+| Job                 | What Runs                                                    |
+| ------------------- | ------------------------------------------------------------ |
+| **Backend Tests**   | Spins up MySQL 8.0, runs migrations, seeds database, runs full pytest suite |
 | **Frontend Checks** | Installs dependencies, verifies `react-router-dom`, runs CI smoke tests |
-| **E2E Tests** | Spins up MySQL 8.0, starts Django + React dev servers, runs Robot Framework suite (SeleniumLibrary, headless) |
+| **E2E Tests**       | Spins up MySQL 8.0, starts Django + React dev servers, runs Robot Framework suite (SeleniumLibrary, headless) |
 
 All three checks must pass before a PR is eligible to merge. After pushing, open your pull request on GitHub — check statuses appear near the bottom of the PR page. Click **Details** on any check to see the full log output.
 
 #### Seed Data
 
 The CI pipeline seeds the database using `python manage.py seed_data --seed=42`. This creates a reproducible dataset including:
+
 - Users: `customer1` through `customer5` with password `Password123!`
 - Products, variants, categories, suppliers, and orders
 
 The same seed command can be used locally to match the CI environment.
 
-#### Active Workarounds
+To flush and reseed a local database from a clean state, run the following from the `backend/` directory with your virtual environment active:
 
-The following are temporary — see PR comments for full context:
+**macOS/Linux:**
 
-| Workaround | Owner | Action Required |
-|---|---|---|
-| Hardcoded DB credentials in `settings.py` | Tristin G. | Migrate to environment variables |
-| `npm install` instead of `npm ci` | Rachel M. | Run `npm install` locally, commit updated `package-lock.json` |
-| `continue-on-error` on E2E tests | Kenny B. | Remove flag once Robot suite is stable in CI |
+```bash
+python3 manage.py flush --no-input
+python3 manage.py migrate  # required between flush and reseed
+python3 manage.py seed_data --seed=42
+python3 manage.py seed_customers
+python3 manage.py seed_orders
+```
 
-Once all workarounds are resolved, CI will fully enforce quality gates on every PR.
+**Windows (PowerShell):**
 
-See [CONTRIBUTING.md](../docs/StandardsAndProcedures/CONTRIBUTING.md) for the full workflow.
+```powershell
+python manage.py flush --no-input
+python manage.py migrate  # required between flush and reseed
+python manage.py seed_data --seed=42
+python manage.py seed_customers
+python manage.py seed_orders
+```
 
----
+See [CONTRIBUTING.md](https://claude.ai/docs/StandardsAndProcedures/CONTRIBUTING.md) for the full workflow.
+
+------
 
 ## 🔒 Security
 
-Authentication is handled via JWT — access tokens expire after 1 hour, with rotation
-via HTTP-only refresh token cookies. Role-based access control separates customer and
-business permissions, enforced server-side on every protected endpoint. All API
-communication uses HTTPS, and all inputs are validated to guard against injection attacks.
+Authentication is handled via JWT — access tokens expire after 1 hour, with rotation via HTTP-only refresh token cookies. Role-based access control separates customer and business permissions, enforced server-side on every protected endpoint. All API communication uses HTTPS, and all inputs are validated to guard against injection attacks.
 
----
-
-## 📸 Screenshots
-
-> *Coming soon — will be added prior to final submission.*
-
----
+------
 
 ## 🎓 Academic Context
 
-**Course:** CSC 289 — Programming Project Capstone  
-**Institution:** Wake Technical Community College  
-**Instructor:** Professor Alex Tabbal  
-**Methodology:** Agile Scrum (6 two-week sprints)  
+**Course:** CSC 289 — Programming Project Capstone
+ **Institution:** Wake Technical Community College
+ **Instructor:** Professor Alex Tabbal
+ **Methodology:** Agile Scrum (6 two-week sprints)
 
 **Team 7:**
 
 | Name             | Role                                  |
-|------------------|---------------------------------------|
+| ---------------- | ------------------------------------- |
 | Serina Rodriguez | Scrum Master / Project Manager        |
 | Kim Mayo         | Product Owner, Full-Stack Development |
 | Tristin Gatt     | Software Architect, Backend Lead      |
@@ -309,6 +428,6 @@ communication uses HTTPS, and all inputs are validated to guard against injectio
 
 *Special thanks to Tyler Royal, who contributed as Presentation Lead during the first half of the project.*
 
----
+------
 
-*Last updated: April 17, 2026*
+*Last updated: April 27, 2026*
