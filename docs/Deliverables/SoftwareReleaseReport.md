@@ -70,10 +70,10 @@ The system uses a relational data model supporting:
 Key milestones included:
 
 - Sprint 1 Epic: Foundation & Architecture 
-- Sprint 2 Epic: Core Features & Data Layer  
-- Sprint 3 Epic: Customer Experience  
-- Sprint 4 Epic: Business Admin Tools  
-- Sprint 5 Epic: Polish & Testing
+- Sprint 2 Epic: Infrastructure & Data Layer  
+- Sprint 3 Epic: Engineering Backbone  
+- Sprint 4 Epic: Customer Experience  
+- Sprint 5 Epic: Business Admin
 - Final Phase: Documentation, Testing, & Release Preparation
 
 ---
@@ -110,34 +110,23 @@ Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach alig
 
 - Testing evolved incrementally across all sprints:
 
-- Formal test cases for:
-  * Database schema and relational integrity
-  * Authentication (registration, login, password reset)
+- Sprint 1-2:
+  * Environment
+  * Authentication
+  * Data Integrity
   * Role-based access control
-- All critical tests passed with validated constraints and secure endpoints
-- Testing matrices used to track coverage, risks, and execution status
 
-  - Environment
-  - Authentication
-  - Data integrity
-  - RBAC foundation
-
-- Full validation of customer experience:
-  * Product browsing
-  * Cart (draft orders)
+- Sprint 3-4:
+  * Full customer ordering workflows 
+  * Admin foundation
   * Order submission and confirmation
   * Order history and profile management
-- All user stories tested against acceptance criteria with passing results
 
-  - Full customer ordering workflows 
-  - Admin foundation
-
-  **Sprint 5:**
-
-  - Admin operations
-  - Reporting
-  - Inventory controls
-  - Final regression validation
+- Sprint 5
+  * Admin operations 
+  * Reporting
+  * Inventory controls
+  * Final regression validation
 
 - Sprint test cases, testing matrices, acceptance coverage reports, and automated test reports were used to track execution and coverage throughout development.
 
@@ -186,111 +175,49 @@ Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach alig
 
 ## 3. Deployment
 
-### Install
+Orderly is deployed using a containerized architecture on AWS, leveraging Docker, Amazon EC2, Amazon RDS, and Amazon ECR to provide a scalable and maintainable production environment.
 
-It's recomended that you familiarize yourself with the local installation process found in the installation guide.   
+### Deployment Architecture
 
-#### 1. Build & Push Docker Images to AWS ECR
+The system consists of the following components:
 
-+ Build the backend and frontend locally with Docker (you will only need to create the frontend .env at this stage)
+- **Frontend**: React application served via a Docker container  
+- **Backend**: Django REST API running in a Docker container  
+- **Database**: MySQL instance hosted on AWS RDS  
+- **Container Registry**: AWS Elastic Container Registry (ECR) for storing Docker images  
+- **Compute Environment**: AWS EC2 instance hosting the application containers  
 
-+ Tag the images for backend and frontend AWS ECRs
+### Deployment Process Overview
 
-+ Push both images to their respective ECR
+The deployment process follows these stages:
 
-#### 2. Launch EC2 Instance
+1. **Containerization and Image Management**  
+   The frontend and backend applications are containerized using Docker. Images are built locally and pushed to AWS ECR for centralized storage and versioning.
 
-+ Launch an AWS EC2 Instance (Amazon Linux 2023)
+2. **Cloud Infrastructure Setup**  
+   An EC2 instance is provisioned to host the application containers. Security groups are configured to allow necessary traffic (SSH, HTTP, HTTPS, and application ports).  
+   A managed MySQL database is created using AWS RDS, ensuring reliable and scalable data storage.
 
-+ Configure security groups
-  
-  + SSH (22)
-  
-  + HTTP (80)
-  
-  + HTTPS (443)
-  
-  + Custom TCP (8000 Backend)
-  
-  + Custom TCP (3000 Frontend)
+3. **Environment Configuration**  
+   Environment variables are configured on the EC2 instance to support secure and flexible deployment. This includes database connection settings, allowed hosts, CORS configuration, and application settings such as debug mode.
 
-+ SSH into instance
+4. **Application Deployment**  
+   Docker is installed and configured on the EC2 instance. The backend and frontend images are pulled from AWS ECR and run as containers. The backend connects to the RDS database, and migrations are applied to initialize the schema.
 
-+ At this point, you'll want to include the EC2 IP as the API URL in the frontend .env. You'll need to build, tag, and push again from phase 1
+5. **Optional Data Initialization**  
+   The system supports optional database seeding to preload sample or required data for testing and demonstration purposes.
 
-#### 3. Install & Configure Docker on EC2
+6. **System Verification**  
+   After deployment, the system is verified by confirming that:
+   - The backend API is accessible and responding correctly  
+   - The frontend application loads successfully  
+   - API requests between frontend and backend function as expected  
 
-+ Install docker
+### Notes
 
-+ Start docker service
-
-+ Add ec2-user to docker group
-
-#### 4. Pull Images from ECR
-
-+ Run aws configure
-
-+ Authenticate Docker to ECR
-
-+ Pull backend and frontend images
-
-#### 5. Set up AWS RDS
-
-+ Create an AWS RDS MySQL instance
-
-+ Configure
-  
-  + DB name
-  
-  + Master username and password
-  
-  + size
-
-+ Ensure EC2 is connected with same VPC security group
-
-#### 6. Configure Backend Env
-
-+ Create .env on EC2
-
-+ Set:
-  
-  + DB connection (RDS endpoint)
-  
-  + ALLOWED_HOSTS (include EC2 IP)
-  
-  + CORS_ALLOWED_ORIGINS (frontend url)
-  
-  + DEBUG=False
-  
-  + SECURE_SSL_REDIRECT=False (until SSL is setup)
-
-#### 7. Run Backend Container
-
-+ Start backend container with --env-file .env and port mapping 8000:8000 in command
-
-+ Run migrations
-
-#### 8. Seed Database (OPTIONAL)
-
-+ Execute seed commands inside backend container
-
-+ You may now authenticate APIs return appropriate data
-
-#### 9. Run Frontend Container
-
-+ Ensure frontend is built with EC2 IP as API URL
-
-+ Run container mapping 3000 -> 80
-
-+ You may also need to alter the backend url in nginx config 
-
-#### 10. Verify
-
-+ Confirm the backend is reachable at http://EC2-IP:8000
-
-+ Confirm the frontend is reachable at http://EC2-IP:3000
-
-+ Test API calls and app functionality. 
+- The frontend is configured to communicate with the backend using the EC2 public IP address.  
+- Security settings such as HTTPS and SSL configuration can be added in future deployments.  
+- The deployment process supports future scalability through container-based infrastructure and cloud services.
 
 ---
 
