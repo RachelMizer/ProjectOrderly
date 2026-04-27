@@ -20,27 +20,24 @@ const chapters = [
     ],
   },
   {
-    href: '03-orders.html',
-    title: 'Managing Orders',
-    icon: '📋',
+    href: '03-settings.html',
+    title: 'Settings',
+    icon: '⚙️',
     sections: [
-      'Viewing the Order List',
-      'Filtering Orders',
-      'Opening an Order Detail',
-      'Changing Order Status',
+      'Business Information',
+      'Storefront Appearance',
+      'Your Account',
     ],
   },
   {
-    href: '04-catalog.html',
-    title: 'Product Catalog',
-    icon: '📦',
+    href: '04-suppliers.html',
+    title: 'Suppliers',
+    icon: '🤝',
     sections: [
-      'Browsing the Catalog',
-      'Adding a New Product',
-      'Editing a Product',
-      'Variants and SKUs',
-      'Modifier Groups and Options',
-      'Deleting a Product',
+      'Viewing the Supplier Directory',
+      'Adding a Supplier',
+      'Editing a Supplier',
+      'Assigning Suppliers to Inventory Items',
     ],
   },
   {
@@ -55,7 +52,20 @@ const chapters = [
     ],
   },
   {
-    href: '06-inventory.html',
+    href: '06-catalog.html',
+    title: 'Product Catalog',
+    icon: '📦',
+    sections: [
+      'Browsing the Catalog',
+      'Adding a New Product',
+      'Editing a Product',
+      'Variants and SKUs',
+      'Modifier Groups and Options',
+      'Deleting a Product',
+    ],
+  },
+  {
+    href: '07-inventory.html',
     title: 'Inventory',
     icon: '🏪',
     sections: [
@@ -63,17 +73,6 @@ const chapters = [
       'Stock Quantities and Reorder Levels',
       'The Low-Stock Alert View',
       'Linking Inventory Items to Products',
-    ],
-  },
-  {
-    href: '07-suppliers.html',
-    title: 'Suppliers',
-    icon: '🤝',
-    sections: [
-      'Viewing the Supplier Directory',
-      'Adding a Supplier',
-      'Editing a Supplier',
-      'Assigning Suppliers to Inventory Items',
     ],
   },
   {
@@ -98,17 +97,7 @@ const chapters = [
     ],
   },
   {
-    href: '10-settings.html',
-    title: 'Settings',
-    icon: '⚙️',
-    sections: [
-      'Business Information',
-      'Storefront Appearance',
-      'Your Account',
-    ],
-  },
-  {
-    href: '11-support.html',
+    href: '10-support.html',
     title: 'Support',
     icon: '🆘',
     sections: [],
@@ -239,4 +228,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('scroll', updateActiveLink, { passive: true });
   updateActiveLink();
+
+  // Lightbox
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  const lightboxImg = document.createElement('img');
+  overlay.appendChild(lightboxImg);
+  document.body.appendChild(overlay);
+
+  document.querySelectorAll('.img-wrap img').forEach(img => {
+    img.addEventListener('click', () => {
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      overlay.classList.add('open');
+    });
+  });
+
+  overlay.addEventListener('click', () => overlay.classList.remove('open'));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') overlay.classList.remove('open');
+  });
 });

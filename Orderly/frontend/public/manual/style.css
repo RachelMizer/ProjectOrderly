@@ -357,11 +357,39 @@ strong, em, span {
   margin: 16px auto 24px;
 }
 
-img {
-  max-width: 100%;
+.img-wrap {
+  max-width: 750px;
+  margin: 20px auto;
+}
+
+.img-wrap img {
+  width: 100%;
+  display: block;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  margin: 20px 0;
+  border-radius: 10px;
+  cursor: zoom-in;
+}
+
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-overlay.open {
+  display: flex;
+}
+
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  cursor: zoom-out;
 }
 
 .note {

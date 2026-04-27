@@ -22,6 +22,7 @@ import AdminExportPage from "./pages/Admin/AdminExportPage";
 import AdminPurchaseOrderPage from "./pages/Admin/AdminPurchaseOrderPage";
 import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
 import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
+import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -53,7 +54,7 @@ function AdminLayout() {
           setAuthorized(false);
         } else {
           setAuthorized(true);
-          setUserName(user.username || user.firstName || user.email || "Admin");
+          setUserName(user.firstName || user.username || user.email || "Admin");
         }
       })
       .catch(() => setAuthorized(false));
@@ -146,6 +147,15 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/categories")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏷️</span>Category Management</p>
+        <p className="sidebar-desc">Create, rename, and delete product categories. Categories group your products on the storefront.</p>
+        <Link to="/admin/catalog" className="sidebar-back sidebar-back--sub">⬅️ Return to Catalog</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/suppliers")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏭</span>Supplier Management</p>
@@ -166,6 +176,7 @@ function AdminLayout() {
         </p>
 
         <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
+        <Link to="/admin/categories" className="sidebar-btn">🏷️ CATEGORY MANAGEMENT</Link>
         <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -272,6 +283,7 @@ function AdminLayout() {
             <Route path="/purchase-order" element={<AdminPurchaseOrderPage />} />
             <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
             <Route path="/suppliers" element={<AdminSuppliersPage />} />
+            <Route path="/categories" element={<AdminCategoriesPage />} />
           </Routes>
         </div>
 

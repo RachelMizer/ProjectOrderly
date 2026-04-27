@@ -341,7 +341,7 @@ body.admin-body {
 
 .nav-card {
     flex: 1;
-    min-width: 200px;
+    min-width: 150px;
     max-width: 250px;
     aspect-ratio: 2 / 1;
     white-space: nowrap;
@@ -447,7 +447,7 @@ body.admin-body {
 
 .dash-recent-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-top: 10px;
 }
