@@ -80,33 +80,35 @@ Key milestones included:
 
 ### Testing and Quality Assurance
 
-Testing for Orderly followed a structured, iterative approach. This aligned with Agile Scrum, ensuring continuous validation of system functionality, security, and user workflows throughout development.
+Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach aligned with Agile Scrum, with validation integrated throughout Sprints 1–5. Testing focused on functional correctness, system stability, security controls, regression protection, and end-to-end workflow reliability.
 
-#### Testing Strategy:
+#### **Testing Methods**
 
-- Incremental testing performed across all sprints
-- Focus on validating Must/Should requirements and core workflows  
-- Test cases and scenarios developed alongside user stories
-- Entry/exit criteria ensured features were complete, stable, and demo-ready
+  **Quality assurance included:**  
 
-#### Test Methods:
+- Manual functional and exploratory testing
+  * Automated backend testing using Pytest
+  * Frontend component and integration testing using Jest / React Testing Library
+  * End-to-end workflow automation using Robot Framework
+  * Smoke and regression testing through CI workflows
+  * API contract and RBAC validation using manual and automated testing
 
-- **Manual Functional Testing**: Primary method for validating user-facing features  
-- **Automated Testing (Pytest / Jest / Robot Framework):** Validated backend logic, frontend components, and end-to-end user workflows across all sprints.
-- **Smoke Testing**: Verified system stability after builds  
-- **Regression Testing**: Ensured existing features remained functional after changes 
-- **API Testing**: Validated endpoints (status codes, JSON structure, authentication) using Postman/PowerShell
-- **Exploratory Testing**: Identified edge cases during sprint reviews
-- **UI Validation**: Checked navigation, responsiveness, and role-based access using structured checklists
+**Automated Testing Results**  
 
-#### Sprint-Based Testing Progression:
+- Testing produced strong coverage across all layers:
+  * Backend: 301 passing tests, 90%+ coverage
+  * Frontend: 54 passing test suites, 626 passing tests, 90%+ statement coverage
+  * End-to-End: 166 Robot tests, 100% pass rate
 
-**Sprint 1 – Foundation**
+- Testing validated:
+  * Customer ordering workflows
+  * Authentication and role-based access control
+  * Admin operations, inventory, reporting, and fulfillment
+  * Regression stability across final integrations
 
-- Environment and application startup validation
-- Initial test scenarios for authentication, RBAC, and system stability
+#### **Sprint Testing Progression**
 
-**Sprint 2 – Core System Validation**
+- Testing evolved incrementally across all sprints:
 
 - Formal test cases for:
   * Database schema and relational integrity
@@ -115,7 +117,10 @@ Testing for Orderly followed a structured, iterative approach. This aligned with
 - All critical tests passed with validated constraints and secure endpoints
 - Testing matrices used to track coverage, risks, and execution status
 
-**Sprint 3 – End-to-End Workflows**
+  - Environment
+  - Authentication
+  - Data integrity
+  - RBAC foundation
 
 - Full validation of customer experience:
   * Product browsing
@@ -124,24 +129,34 @@ Testing for Orderly followed a structured, iterative approach. This aligned with
   * Order history and profile management
 - All user stories tested against acceptance criteria with passing results
 
-**Automated Testing:**
+  - Full customer ordering workflows 
+  - Admin foundation
 
-- Backend (Pytest): 400+ tests, ~96% coverage
-- Frontend (Jest): 68 tests, all passing
-- End-to-End (Robot Framework): 57 tests covering full user workflows
-- Overall Result: 100% pass rate across all automated test suites
+  **Sprint 5:**
+
+  - Admin operations
+  - Reporting
+  - Inventory controls
+  - Final regression validation
+
+- Sprint test cases, testing matrices, acceptance coverage reports, and automated test reports were used to track execution and coverage throughout development.
 
 **Defect Management:**
 
 - Defects tracked using Trello
-- Issues resolved by developers and retested by QA
-- Validation ensured no critical defects remained before completion
+- Issues resolved collaboratively, and retested by QA verification
+- Validation at release confirmed no critical unresolved defects remained
 
-**Overall Assessment:**
+**Overall Quality Assessment:**
 
-- Strong backend test coverage and reliability
-- Full validation of critical user workflows
-- Secure authentication and role enforcement confirmed
+- Testing demonstrated:
+  * Strong backend and frontend reliability
+  * Comprehensive end-to-end workflow coverage
+  * Secure authentication and access control enforcement
+  * Stable regression behavior through CI automation
+
+**Release Quality Result:**
+- Orderly Version 1.0.0 met quality expectations for release readiness through layered manual, automated, and end-to-end testing.
 
 ---
 
