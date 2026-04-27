@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from catalog.models import Category, Product, ProductVariant
+from catalog.models import Category, ModifierGroup, ModifierOption, Product, ProductVariant
 from suppliers.models import Supplier
 
 
@@ -117,6 +117,80 @@ class AdminProductVariantSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         product = self.context["product"]
         return ProductVariant.objects.create(product=product, **validated_data)
+
+
+class AdminVariantFlatSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source="product.name", read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = ["id", "product", "product_name", "name", "sku", "unit_price", "stock_quantity", "reorder_level"]
+        read_only_fields = ["id", "product_name"]
+
+    def validate_name(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("name is required")
+        return value.strip()
+
+    def validate_unit_price(self, value):
+        if value is None:
+            raise serializers.ValidationError("unit_price is required")
+        if value < Decimal("0.00"):
+            raise serializers.ValidationError("unit_price must be greater than or equal to 0")
+        return value
+
+    def validate_stock_quantity(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("Stock quantity cannot be set below 0.")
+        return value
+
+    def validate_reorder_level(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("reorder_level must be greater than or equal to 0")
+        return value
+
+    def validate(self, attrs):
+        stock_quantity = attrs.get("stock_quantity", getattr(self.instance, "stock_quantity", None))
+        reorder_level = attrs.get("reorder_level", getattr(self.instance, "reorder_level", None))
+        if (
+            reorder_level is not None
+            and stock_quantity is not None
+            and reorder_level > stock_quantity
+        ):
+            raise serializers.ValidationError(
+                {"reorder_level": "Reorder level cannot exceed stock quantity."}
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        validated_data.pop("product", None)
+        return super().update(instance, validated_data)
+
+
+class AdminModifierOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModifierOption
+        fields = ["id", "name", "price_adjustment"]
+        read_only_fields = ["id"]
+
+
+class AdminModifierGroupSerializer(serializers.ModelSerializer):
+    variant_name = serializers.CharField(source="variant.name", read_only=True)
+    product_name = serializers.CharField(source="variant.product.name", read_only=True)
+    product_id = serializers.IntegerField(source="variant.product.id", read_only=True)
+    options = AdminModifierOptionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ModifierGroup
+        fields = [
+            "id", "variant", "variant_name", "product_id", "product_name",
+            "name", "required", "min_selections", "max_selections", "options",
+        ]
+        read_only_fields = ["id", "variant_name", "product_id", "product_name", "options"]
+
+    def update(self, instance, validated_data):
+        validated_data.pop("variant", None)
+        return super().update(instance, validated_data)
 
 
 class AdminVariantInventorySerializer(serializers.ModelSerializer):

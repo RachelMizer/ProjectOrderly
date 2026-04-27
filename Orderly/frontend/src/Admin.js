@@ -23,6 +23,7 @@ import AdminPurchaseOrderPage from "./pages/Admin/AdminPurchaseOrderPage";
 import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
 import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
+import AdminVariantsModifiersPage from "./pages/Admin/AdminVariantsModifiersPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -156,6 +157,15 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/variants-modifiers")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🔧</span>Variants &amp; Modifiers</p>
+        <p className="sidebar-desc">Add product variants, create modifier groups, and manage the options within each group.</p>
+        <Link to="/admin/catalog" className="sidebar-back sidebar-back--sub">⬅️ Return to Catalog</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/suppliers")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏭</span>Supplier Management</p>
@@ -177,6 +187,7 @@ function AdminLayout() {
 
         <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
         <Link to="/admin/categories" className="sidebar-btn">🏷️ CATEGORY MANAGEMENT</Link>
+        <Link to="/admin/variants-modifiers" className="sidebar-btn">🔧 VARIANTS &amp; MODIFIERS</Link>
         <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -284,6 +295,7 @@ function AdminLayout() {
             <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
             <Route path="/suppliers" element={<AdminSuppliersPage />} />
             <Route path="/categories" element={<AdminCategoriesPage />} />
+            <Route path="/variants-modifiers" element={<AdminVariantsModifiersPage />} />
           </Routes>
         </div>
 

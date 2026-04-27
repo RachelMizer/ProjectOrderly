@@ -17,14 +17,13 @@
       <h1>6. Product Catalog</h1>
 
       <h2>Browsing the Catalog</h2>
-      <div class="img-placeholder">placeholder</div>
       <p>The Product Catalog displays all of your products in a sortable table. Each row shows the product's <strong>ID</strong>, <strong>Name</strong>, <strong>Category</strong>, <strong>Supplier</strong>, and <strong>Description</strong>. Click any column header to sort the list by that column; click it again to reverse the order.</p>
       <p>The search bar at the top of the page filters the list as you type, matching against product name, category, supplier, and description. Click <strong>Clear Filters</strong> to remove the search and return to the full catalog.</p>
       <p>Each product row has three action buttons. <strong>Edit</strong> opens the product form so you can update its details. <strong>Delete</strong> permanently removes the product. <strong>Edit Options</strong> expands the row in place to show the product's variants — each with its name, SKU, unit price, stock quantity, and reorder level — and gives you a form to add or modify them without leaving the catalog view.</p>
       <p>The toolbar also provides quick access to <strong>Export</strong> and <strong>Print</strong> for the full catalog, as well as buttons to create a new product or add a new supplier.</p>
 
       <h2>Adding a New Product</h2>
-      <div class="img-placeholder">placeholder</div>
+      <div class="img-wrap"><img src="images/ss14.png" alt="Adding a new product" /></div>
       <p>To add a new product, click <strong>Create New Product</strong> in the catalog toolbar. This opens the product creation form.</p>
       <p><strong>Product Name</strong> and <strong>Category</strong> are required. The category must already exist — if you have not yet created the relevant category, set it up in the Categories section first and then return here. <strong>Supplier</strong> and <strong>Description</strong> are optional but recommended for keeping your catalog organized.</p>
       <p>The <strong>Options</strong> checkboxes let you indicate whether the product has variants and whether it supports modifier groups. <strong>Has Variants</strong> is ticked by default, as most products will have at least one variant (for example, a size or a default option). <strong>Has Modifiers</strong> should be ticked if customers will be able to make add-on selections when ordering this product, such as extras or customizations. These settings determine what will be available to configure after the product is created.</p>
@@ -32,26 +31,25 @@
       <p>You can optionally upload a <strong>Product Image</strong> using the file picker at the bottom of the form. A preview is shown once a file is selected. Click <strong>Create Product</strong> to save, or <strong>Cancel</strong> to return to the catalog without saving.</p>
 
       <h2>Editing a Product</h2>
-      <div class="img-placeholder">placeholder</div>
       <p>To edit an existing product, click the <strong>Edit</strong> button in its row on the catalog page. This opens the same form used to create a product, pre-filled with the product's current details.</p>
       <p>You can update the product's name, category, supplier, description, image, and its Has Variants and Has Modifiers settings. When editing, the first-variant fields shown during creation are not present — variants are managed separately using the <strong>Edit Options</strong> panel directly in the catalog view.</p>
       <p>Click <strong>Update Product</strong> to save your changes, or <strong>Cancel</strong> to discard them and return to the catalog.</p>
 
       <h2>Variants and SKUs</h2>
-      <div class="img-placeholder">placeholder</div>
       <p>Variants represent the individual purchasable options of a product — for example, sizes, volumes, or styles. Each variant has its own SKU, unit price, stock quantity, and reorder level, and is tracked independently in your inventory.</p>
-      <p>To manage a product's variants, click <strong>Edit Options</strong> in the product's row. This expands a panel below the row showing all existing variants in a table, along with a form to add a new one. Fill in the <strong>Variant Name</strong>, <strong>SKU</strong>, <strong>Unit Price</strong>, and optionally the <strong>Stock Quantity</strong> and <strong>Reorder Level</strong>, then click <strong>Add Option</strong> to save it.</p>
-      <p>To edit an existing variant, click <strong>Edit</strong> in its row within the expanded panel. The form above the table will populate with that variant's current values — make your changes and click <strong>Save Option</strong>. To remove a variant entirely, click <strong>Delete</strong> in its row. Deleted variants cannot be recovered.</p>
+      <p>You can manage variants in two places. From the catalog view, click <strong>Edit Options</strong> in a product's row to expand an inline panel showing that product's variants, with a form to add a new one. For a dedicated management view across all products, click <strong>🔧 Variants &amp; Modifiers</strong> in the Product Catalog sidebar or in the catalog toolbar — this opens the Variants &amp; Modifiers page, where you can add a new variant by selecting a product from the dropdown and filling in the variant name, SKU, unit price, and optional stock quantity.</p>
+      <p>To edit an existing variant, click <strong>Edit</strong> in its row. To remove a variant entirely, click <strong>Delete</strong>. Deleted variants cannot be recovered.</p>
       <p>Every product should have at least one variant. If a product has only one option with no meaningful name — for example, a standard item sold at a single price — use the product's name or a label like <em>Default</em> as the variant name.</p>
 
       <h2>Modifier Groups and Options</h2>
-      <div class="img-placeholder">placeholder</div>
+      <div class="img-wrap"><img src="images/ss15.png" alt="Modifier groups and options" /></div>
       <p>Modifier groups allow customers to customise their order when selecting a product — for example, choosing a milk type for a coffee, or selecting add-ons for a meal. Each modifier group belongs to a specific variant and contains a set of options the customer can choose from.</p>
-      <p>When creating a modifier group, you give it a name (such as <em>Milk Type</em> or <em>Extras</em>), set whether it is <strong>required</strong> or optional, and define the minimum and maximum number of selections a customer must make. Each option within the group has a name and an optional price adjustment that is added to the variant's base price when selected.</p>
+      <p>To create and manage modifier groups, click <strong>🔧 Variants &amp; Modifiers</strong> in the Product Catalog sidebar or in the catalog toolbar. On the Variants &amp; Modifiers page, scroll to the <strong>Modifier Groups &amp; Options</strong> section. To add a new group, select the product and then the specific variant it belongs to, enter a group name (such as <em>Milk Type</em> or <em>Extras</em>), set whether it is <strong>required</strong> or optional, and define the minimum and maximum number of selections a customer must make. Click <strong>Add Group</strong> to save it.</p>
+      <p>Once a group exists, click <strong>▼ Options</strong> in its row to expand the options panel. From there you can add individual options — each has a name and an optional price adjustment that is added to the variant's base price when the customer selects it. Use the <strong>Edit</strong> and <strong>Delete</strong> buttons to manage existing options.</p>
+      <div class="img-wrap"><img src="images/ss17.png" alt="Managing modifier group options" /></div>
       <p>Modifier groups only appear on the storefront for products that have <strong>Has Modifiers</strong> enabled. If a product does not require customisation, leave this setting unticked and no modifier prompts will be shown to customers.</p>
 
       <h2>Deleting a Product</h2>
-      <div class="img-placeholder">placeholder</div>
       <p>To delete a product, click the <strong>Delete</strong> button in its row on the catalog page. A confirmation prompt will appear asking you to confirm the action. Click <strong>OK</strong> to proceed or <strong>Cancel</strong> to go back.</p>
       <p>Deleting a product permanently removes it and all of its associated variants from your catalog. This action cannot be undone. Orders that already reference the product are not affected — their records remain intact.</p>
 

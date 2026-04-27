@@ -31,7 +31,7 @@ class SalesSummaryView(APIView):
         group_by = params["groupBy"]
 
         qs = Order.objects.filter(
-            status="COMPLETED",
+            status__in=["PENDING", "COMPLETED"],
             order_date__date__range=[start_date, end_date],
         )
 
@@ -62,7 +62,7 @@ class SalesSummaryView(APIView):
 
         product_qs = (
             OrderItem.objects.filter(
-                order__status="COMPLETED",
+                order__status__in=["PENDING", "COMPLETED"],
                 order__order_date__date__range=[start_date, end_date],
             )
             .values("variant__product__name", "variant__name")
@@ -87,9 +87,9 @@ class SalesSummaryView(APIView):
         ]
 
         # --- Metadata for Filters ---
-        all_completed = Order.objects.filter(status="COMPLETED")
+        all_counted = Order.objects.filter(status__in=["PENDING", "COMPLETED"])
         available_years = (
-            all_completed.annotate(year=F("order_date__year"))
+            all_counted.annotate(year=F("order_date__year"))
             .values_list("year", flat=True)
             .distinct()
             .order_by("-year")
@@ -99,7 +99,7 @@ class SalesSummaryView(APIView):
         # If the range represents a single year, provide month options for that year
         if start_date.year == end_date.year and start_date.month == 1 and end_date.month == 12:
             months_qs = (
-                all_completed.filter(order_date__year=start_date.year)
+                all_counted.filter(order_date__year=start_date.year)
                 .annotate(month=F("order_date__month"))
                 .values_list("month", flat=True)
                 .distinct()
@@ -138,7 +138,7 @@ class BestSellersView(APIView):
         limit = params["limit"]
 
         qs = OrderItem.objects.filter(
-            order__status="COMPLETED",
+            order__status__in=["PENDING", "COMPLETED"],
             order__order_date__date__range=[start_date, end_date],
         )
 
@@ -185,7 +185,7 @@ class WorstSellersView(APIView):
         limit = params["limit"]
 
         qs = OrderItem.objects.filter(
-            order__status="COMPLETED",
+            order__status__in=["PENDING", "COMPLETED"],
             order__order_date__date__range=[start_date, end_date],
         )
 
@@ -231,7 +231,7 @@ class SalesByCategoryView(APIView):
         end_date = params["endDate"]
 
         qs = OrderItem.objects.filter(
-            order__status="COMPLETED",
+            order__status__in=["PENDING", "COMPLETED"],
             order__order_date__date__range=[start_date, end_date],
         )
 
