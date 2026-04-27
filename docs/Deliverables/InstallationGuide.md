@@ -29,16 +29,15 @@ docker --version
 docker compose version
 ```
 
-2. Clone the Orderly repository
+2. Download the Orderly feat_local-Docker-Dist branch code   
+   
+   Navigate to the Orderly repo, switch the branch from main to feat_local-Docker-Dist, then click code and download zip. Unzip and navigate to the directory
 
 ```
-git clone <ordery-repo-url>
-cd orderly
+cd <Orderly feat_local-Docker-Dist path>
 ```
 
 3. Create Environment File
-   cd to the Orderly root directory   
-   
    inside example-env.txt, replace both <CHANGEME> to secure passwords. Then run:   
 
 ```
@@ -88,5 +87,3 @@ docker compose down ## Stop and remove containers and networks
 docker compose down -v ## Stop and remove containers, networks, and volumes
 docker compose down --rmi all -v ## stop and remove all containers, networks, volumes, and images. Full wipe
 ```
-
-
