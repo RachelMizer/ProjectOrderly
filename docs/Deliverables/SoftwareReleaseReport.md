@@ -1,4 +1,5 @@
-#  Software Release Report  
+# Software Release Report
+
 **Project Name:** Orderly  
 **Version** 1.0.0  
 **Team Number:** 7  
@@ -7,7 +8,7 @@
 
 ---
 
-##  1. Overview
+## 1. Overview
 
 Orderly is a full-stack web application designed to streamline online ordering and inventory management for small businesses. The system enables customers to browse products, customize orders, and complete purchases, while business users manage products, inventory, and orders through an administrative interface.
 
@@ -15,9 +16,10 @@ Version 1.0.0 represents the first fully integrated release of Orderly, combinin
 
 ---
 
-##  2. Development Highlights
+## 2. Development Highlights
 
-### Project Initiation 
+### Project Initiation
+
 The Project Kickoff Meeting was held January 26, 2026 at 7:00 pm, with team formation, discussion of project goals, scope and timeline.  
 
 Roles were assigned as follows:
@@ -31,7 +33,8 @@ Roles were assigned as follows:
 
 ---
 
-### Requirements Gathering 
+### Requirements Gathering
+
 The Orderly team gathered requirements through an iterative Agile process that combined stakeholder goals, user stories, and structured specification development. 
 
 The team defined project objectives and scope to address the need for a flexible, user-friendly ordering system for small and mid-sized businesses, then translated these goals into detailed user stories and use cases representing both customer and business admin interactions (e.g., inventory management, order customization, and sales tracking). These were further refined into business, user, functional, and non-functional requirements using the MoSCoW prioritization method to ensure alignment with system priorities and constraints. 
@@ -40,7 +43,7 @@ Continuous collaboration using tools such as Trello, Microsoft Teams, and GitHub
 
 ---
 
-### Design and Architecture 
+### Design and Architecture
 
 Orderly uses a modular, domain-driven backend architecture with clearly defined responsibilities:
 
@@ -55,13 +58,14 @@ Orderly uses a modular, domain-driven backend architecture with clearly defined 
 This separation of concerns improves scalability, reduces coupling, and supports team collaboration.
 
 The system uses a relational data model supporting:
+
 - Orders with multiple items and modifiers  
 - Product variants linked to inventory usage  
 - Hybrid inventory tracking (stock-based and ingredient-based)  
 
 ---
 
-### Development Progress  
+### Development Progress
 
 Key milestones included:
 
@@ -74,7 +78,7 @@ Key milestones included:
 
 ---
 
-### Testing and Quality Assurance  
+### Testing and Quality Assurance
 
 Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach aligned with Agile Scrum, with validation integrated throughout Sprints 1–5. Testing focused on functional correctness, system stability, security controls, regression protection, and end-to-end workflow reliability.
 
@@ -106,14 +110,24 @@ Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach alig
 
 - Testing evolved incrementally across all sprints:
 
-  **Sprint 1 – 2:** 
+- Formal test cases for:
+  * Database schema and relational integrity
+  * Authentication (registration, login, password reset)
+  * Role-based access control
+- All critical tests passed with validated constraints and secure endpoints
+- Testing matrices used to track coverage, risks, and execution status
 
   - Environment
   - Authentication
   - Data integrity
   - RBAC foundation
 
-  **Sprint 3-4:**
+- Full validation of customer experience:
+  * Product browsing
+  * Cart (draft orders)
+  * Order submission and confirmation
+  * Order history and profile management
+- All user stories tested against acceptance criteria with passing results
 
   - Full customer ordering workflows 
   - Admin foundation
@@ -146,54 +160,168 @@ Testing for Orderly Version 1.0.0 followed a layered, iterative QA approach alig
 
 ---
 
-### Defect Fixes Verified in This Release  
+### Bug Fixes and Improvements (QA)
 
 - Duplicate email login issue  
+  
   * Confirmed and resolved through API validation testing  
 
 - Authentication and RBAC enforcement improvements  
+  
   * Validated handling of 401 (unauthenticated) and 403 (unauthorized) responses  
   * Confirmed protection of restricted endpoints  
 
 - Order and cart validation fixes  
+  
   * Prevented submission of empty orders  
   * Prevented resubmission of non-draft orders  
   * Improved handling of invalid inputs and unauthorized access  
 
 - Data integrity and validation improvements  
+  
   * Enforced database constraints and relational integrity  
   * Rejected invalid and duplicate data inputs  
----
-
-##  3. Deployment
-
 
 ---
 
-##  4. Release Notes
+## 3. Deployment
 
-###  New Features
+### Install
+
+It's recomended that you familiarize yourself with the local installation process found in the installation guide.   
+
+#### 1. Build & Push Docker Images to AWS ECR
+
++ Build the backend and frontend locally with Docker (you will only need to create the frontend .env at this stage)
+
++ Tag the images for backend and frontend AWS ECRs
+
++ Push both images to their respective ECR
+
+#### 2. Launch EC2 Instance
+
++ Launch an AWS EC2 Instance (Amazon Linux 2023)
+
++ Configure security groups
+  
+  + SSH (22)
+  
+  + HTTP (80)
+  
+  + HTTPS (443)
+  
+  + Custom TCP (8000 Backend)
+  
+  + Custom TCP (3000 Frontend)
+
++ SSH into instance
+
++ At this point, you'll want to include the EC2 IP as the API URL in the frontend .env. You'll need to build, tag, and push again from phase 1
+
+#### 3. Install & Configure Docker on EC2
+
++ Install docker
+
++ Start docker service
+
++ Add ec2-user to docker group
+
+#### 4. Pull Images from ECR
+
++ Run aws configure
+
++ Authenticate Docker to ECR
+
++ Pull backend and frontend images
+
+#### 5. Set up AWS RDS
+
++ Create an AWS RDS MySQL instance
+
++ Configure
+  
+  + DB name
+  
+  + Master username and password
+  
+  + size
+
++ Ensure EC2 is connected with same VPC security group
+
+#### 6. Configure Backend Env
+
++ Create .env on EC2
+
++ Set:
+  
+  + DB connection (RDS endpoint)
+  
+  + ALLOWED_HOSTS (include EC2 IP)
+  
+  + CORS_ALLOWED_ORIGINS (frontend url)
+  
+  + DEBUG=False
+  
+  + SECURE_SSL_REDIRECT=False (until SSL is setup)
+
+#### 7. Run Backend Container
+
++ Start backend container with --env-file .env and port mapping 8000:8000 in command
+
++ Run migrations
+
+#### 8. Seed Database (OPTIONAL)
+
++ Execute seed commands inside backend container
+
++ You may now authenticate APIs return appropriate data
+
+#### 9. Run Frontend Container
+
++ Ensure frontend is built with EC2 IP as API URL
+
++ Run container mapping 3000 -> 80
+
++ You may also need to alter the backend url in nginx config 
+
+#### 10. Verify
+
++ Confirm the backend is reachable at http://EC2-IP:8000
+
++ Confirm the frontend is reachable at http://EC2-IP:3000
+
++ Test API calls and app functionality. 
+
+---
+
+## 4. Release Notes
+
+### New Features
 
 As this is the initial release (Version 1.0.0), all core system functionality is considered new and included for the first time.
 
 #### Core System
+
 - JWT authentication (login, register, logout, password reset)  
 - Role-based access control (Customer vs Business) 
 - Customer profile management (view and update account information) 
 - Standardized REST API  
 
 #### Ordering System
+
 - Draft order creation and updates  
 - Item customization with modifiers  
 - Order submission and status tracking  
 - Order history retrieval  
 
 #### Product & Inventory
+
 - Product and variant management  
 - Inventory tracking with reorder levels  
 - Hybrid inventory system  
 
 #### Admin Features
+
 - Admin product endpoints  
 - Profile management  
 - Protected admin routes  
@@ -201,6 +329,7 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 ---
 
 ### Bug Fixes
+
 - Fixed duplicate email login issue  
 - Improved authentication and access control behavior  
 - Resolved order submission and validation errors  
@@ -209,6 +338,7 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 ---
 
 ### Known Issues
+
 - Modifier Management (Admin UI)  
   - Administrators are unable to create, edit, or delete product modifiers through the admin interface  
   - This functionality was formally deferred due to scope constraints  
@@ -217,6 +347,7 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 ---
 
 ### Deferred Features
+
 - Modifier management (CRUD): scope risk to Wave 1 deadline, S5 W1
 - Email verification (tasks 2.5): deferred to later sprint during S2 planning, complete
 - Password reset (task 2.7): deferred to later sprint during S2 planning, complete
@@ -226,12 +357,16 @@ As this is the initial release (Version 1.0.0), all core system functionality is
 
 ## 5. Upgrade Guide
 
-### Introduction  
+### Introduction
+
 This release introduces the first fully integrated version of Orderly.
 
 ---
 
 ### Requirements
+
+While Orderly makes use of the following, they are not required to install if building with Docker.
+
 - Python 3.10+  
 - Node.js 16+  
 - Django + DRF  
@@ -241,11 +376,12 @@ This release introduces the first fully integrated version of Orderly.
 
 ### Backend Setup
 
+git pull origin main   
 
-git pull origin main
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+create venv   
+pip install -r requirements.txt   
+python manage.py migrate   
+python manage.py runserver    
 
 ### Frontend Setup
 
@@ -254,18 +390,21 @@ npm install
 npm start
 
 ### Authentication Notes
+
 - JWT required for protected endpoints  
 - Tokens may need to be refreshed after upgrade  
 
 ---
 
 ### API Changes
+
 - All endpoints use `/api/v1/`  
 - Standard JSON response format  
 
 ---
 
 ### Breaking Changes
+
 - JWT authentication required  
 - Updated API structure  
 - Database migrations required  
@@ -273,6 +412,7 @@ npm start
 ---
 
 ### Verification Checklist
+
 - Backend runs without errors  
 - Frontend loads correctly  
 - Login/register works  
@@ -284,14 +424,17 @@ npm start
 ### Troubleshooting
 
 #### Backend Issues
+
 - Ensure dependencies are installed  
 - Verify virtual environment is active  
 
 #### Authentication Issues
+
 - Clear browser storage  
 - Log out and log back in  
 
 #### Frontend Issues
+
 - Verify backend is running  
 - Check API URL configuration  
 
