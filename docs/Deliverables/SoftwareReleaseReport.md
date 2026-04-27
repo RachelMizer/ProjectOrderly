@@ -350,6 +350,8 @@ This release introduces the first fully integrated version of Orderly.
 
 ### Requirements
 
+While Orderly makes use of the following, they are not required to install if building with Docker.
+
 - Python 3.10+  
 - Node.js 16+  
 - Django + DRF  
@@ -359,10 +361,12 @@ This release introduces the first fully integrated version of Orderly.
 
 ### Backend Setup
 
-git pull origin main
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+git pull origin main   
+
+create venv   
+pip install -r requirements.txt   
+python manage.py migrate   
+python manage.py runserver    
 
 ### Frontend Setup
 
