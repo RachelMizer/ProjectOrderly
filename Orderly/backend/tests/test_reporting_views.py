@@ -60,12 +60,12 @@ def setup_sales_data(db):
     """
     Creates deterministic reporting data.
 
-    Included completed orders:
-    - Pizza: qty 3, gross 30.00, order total 33.00
-    - Burger: qty 2, gross 10.00, order total 11.00
+    Both COMPLETED and PENDING orders are counted as revenue:
+    - Pizza: qty 3, gross 30.00, order total 33.00  (COMPLETED)
+    - Burger: qty 2, gross 10.00, order total 11.00  (COMPLETED)
+    - Soda: qty 2, gross 6.00, order total 6.60  (PENDING — still counted)
 
-    Excluded order:
-    - Pending order not counted in reports
+    Total revenue: 50.60 | Total orders: 3
     """
     category = Category.objects.create(name="Food")
     other_category = Category.objects.create(name="Drinks")
@@ -173,16 +173,16 @@ def test_sales_summary_success(admin_client, setup_sales_data):
 
     data = response.data
 
-    # Completed order totals: 33.00 + 11.00 = 44.00
-    assert float(data["totalRevenue"]) == 44.00
-    assert data["totalOrders"] == 2
-    assert float(data["averageOrderValue"]) == 22.00
+    # All three orders (COMPLETED + PENDING): 33.00 + 11.00 + 6.60 = 50.60
+    assert float(data["totalRevenue"]) == 50.60
+    assert data["totalOrders"] == 3
+    assert float(data["averageOrderValue"]) == 16.87
 
     assert data["groupBy"] == "day"
     assert len(data["breakdown"]) == 1
     assert data["breakdown"][0]["period"] == str(target_date)
-    assert float(data["breakdown"][0]["revenue"]) == 44.00
-    assert data["breakdown"][0]["orders"] == 2
+    assert float(data["breakdown"][0]["revenue"]) == 50.60
+    assert data["breakdown"][0]["orders"] == 3
 
 
 @pytest.mark.django_db
@@ -209,6 +209,7 @@ def test_best_sellers_ranking(admin_client, setup_sales_data):
     target_date = setup_sales_data["target_date"]
     pizza = setup_sales_data["pizza"]
     burger = setup_sales_data["burger"]
+    soda = setup_sales_data["soda"]
 
     response = admin_client.get(
         f"/api/v1/reports/sales/best-sellers?startDate={target_date}&endDate={target_date}"
@@ -217,9 +218,9 @@ def test_best_sellers_ranking(admin_client, setup_sales_data):
     assert response.status_code == 200
 
     results = response.data["results"]
-    assert len(results) == 2
+    assert len(results) == 3
 
-    # Pizza sold 3, Burger sold 2
+    # Pizza sold 3, Burger sold 2, Soda sold 2 (PENDING orders counted)
     assert results[0]["productId"] == pizza.id
     assert results[0]["productName"] == "Pizza"
     assert results[0]["quantitySold"] == 3
@@ -229,6 +230,11 @@ def test_best_sellers_ranking(admin_client, setup_sales_data):
     assert results[1]["productName"] == "Burger"
     assert results[1]["quantitySold"] == 2
     assert float(results[1]["grossSales"]) == 10.00
+
+    assert results[2]["productId"] == soda.id
+    assert results[2]["productName"] == "Soda"
+    assert results[2]["quantitySold"] == 2
+    assert float(results[2]["grossSales"]) == 6.00
 
 
 @pytest.mark.django_db
@@ -254,6 +260,7 @@ def test_best_sellers_limit(admin_client, setup_sales_data):
 def test_sales_by_category_success(admin_client, setup_sales_data):
     target_date = setup_sales_data["target_date"]
     category = setup_sales_data["category"]
+    other_category = setup_sales_data["other_category"]
 
     response = admin_client.get(
         f"/api/v1/reports/sales/by-category?startDate={target_date}&endDate={target_date}"
@@ -262,12 +269,18 @@ def test_sales_by_category_success(admin_client, setup_sales_data):
     assert response.status_code == 200
 
     results = response.data["results"]
-    assert len(results) == 1
+    assert len(results) == 2
 
+    # Food: pizza (3) + burger (2), Drinks: soda (2) from PENDING order (counted)
     assert results[0]["categoryId"] == category.id
     assert results[0]["categoryName"] == category.name
     assert results[0]["quantitySold"] == 5
     assert float(results[0]["grossSales"]) == 40.00
+
+    assert results[1]["categoryId"] == other_category.id
+    assert results[1]["categoryName"] == other_category.name
+    assert results[1]["quantitySold"] == 2
+    assert float(results[1]["grossSales"]) == 6.00
 
 
 # =========================
@@ -286,7 +299,7 @@ def test_sales_data_matches_db(admin_client, setup_sales_data):
 
     total_db = (
         Order.objects.filter(
-            status=OrderStatus.COMPLETED,
+            status__in=[OrderStatus.COMPLETED, OrderStatus.PENDING],
             order_date__date__range=[target_date, target_date],
         ).aggregate(total=Sum("total_payment_due"))["total"]
         or Decimal("0.00")

@@ -223,7 +223,7 @@ export default function AdminCategoriesPage() {
                     </tr>
                   ) : (
                     <tr key={cat.id}>
-                      <td className="td-name">{cat.name}</td>
+                      <td className="td-name" style={{ fontSize: "1.1rem" }}>{cat.name}</td>
                       <td className="td-actions">
                         <button
                           type="button"

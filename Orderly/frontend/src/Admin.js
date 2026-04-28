@@ -268,7 +268,7 @@ function AdminLayout() {
         <nav className="admin-nav-cards">
           <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
           <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
-          <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product<br />Catalog</span></Link>
+          <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
           <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
           <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
         </nav>

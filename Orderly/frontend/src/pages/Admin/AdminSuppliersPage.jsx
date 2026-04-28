@@ -186,7 +186,7 @@ export default function AdminSuppliersPage() {
                     </tr>
                   ) : (
                     <tr key={s.id}>
-                      <td className="td-name">{s.name}</td>
+                      <td className="td-name" style={{ fontSize: "1.1rem" }}>{s.name}</td>
                       <td>{s.email || "—"}</td>
                       <td>{formatPhone(s.phone)}</td>
                       <td className="td-actions">
