@@ -22,6 +22,8 @@ import AdminExportPage from "./pages/Admin/AdminExportPage";
 import AdminPurchaseOrderPage from "./pages/Admin/AdminPurchaseOrderPage";
 import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
 import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
+import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
+import AdminVariantsModifiersPage from "./pages/Admin/AdminVariantsModifiersPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 function AdminLayout() {
@@ -53,7 +55,7 @@ function AdminLayout() {
           setAuthorized(false);
         } else {
           setAuthorized(true);
-          setUserName(user.username || user.firstName || user.email || "Admin");
+          setUserName(user.firstName || user.username || user.email || "Admin");
         }
       })
       .catch(() => setAuthorized(false));
@@ -146,6 +148,24 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/categories")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏷️</span>Category Management</p>
+        <p className="sidebar-desc">Create, rename, and delete product categories. Categories group your products on the storefront.</p>
+        <Link to="/admin/catalog" className="sidebar-back sidebar-back--sub">⬅️ Return to Catalog</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/variants-modifiers")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🔧</span>Variants &amp; Modifiers</p>
+        <p className="sidebar-desc">Add product variants, create modifier groups, and manage the options within each group.</p>
+        <Link to="/admin/catalog" className="sidebar-back sidebar-back--sub">⬅️ Return to Catalog</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/suppliers")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🏭</span>Supplier Management</p>
@@ -166,6 +186,8 @@ function AdminLayout() {
         </p>
 
         <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
+        <Link to="/admin/categories" className="sidebar-btn">🏷️ CATEGORY MANAGEMENT</Link>
+        <Link to="/admin/variants-modifiers" className="sidebar-btn">🔧 VARIANTS &amp; MODIFIERS</Link>
         <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -237,7 +259,8 @@ function AdminLayout() {
         <div className="admin-topbar">
           <p className="admin-welcome">Welcome, {userName}!</p>
           <div className="admin-topbar-actions">
-            <Link to="/admin/account">⚙ Account Settings</Link>
+            <a href="/manual/01-introduction.html" target="_blank" rel="noreferrer"><span style={{fontSize: "1.1rem", marginRight: "-1px"}}>❓</span>Help</a>
+            <Link to="/admin/account"><span style={{fontSize: "1.1rem", marginRight: "2px"}}>⚙</span>Account Settings</Link>
             <a onClick={handleLogout} style={{cursor: "pointer"}}>Logout</a>
           </div>
         </div>
@@ -247,7 +270,7 @@ function AdminLayout() {
           <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
           <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
           <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
-          <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business<br />&amp; Store Settings</span></Link>
+          <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
         </nav>
 
         <div className="admin-content">
@@ -271,6 +294,8 @@ function AdminLayout() {
             <Route path="/purchase-order" element={<AdminPurchaseOrderPage />} />
             <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
             <Route path="/suppliers" element={<AdminSuppliersPage />} />
+            <Route path="/categories" element={<AdminCategoriesPage />} />
+            <Route path="/variants-modifiers" element={<AdminVariantsModifiersPage />} />
           </Routes>
         </div>
 

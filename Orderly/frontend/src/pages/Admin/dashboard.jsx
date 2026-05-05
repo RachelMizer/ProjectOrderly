@@ -112,14 +112,16 @@ export default function Dashboard() {
         )}
       </div>
 
-      {inventoryAlerts.length > 0 && (
-        <div className="dash-low-stock-section">
+      <div className="dash-low-stock-section">
           <p
             className="dash-low-stock-label"
             onClick={() => navigate("/admin/inventory")}
           >
             <span style={{marginRight:"-1px"}}>📋</span>Inventory Alerts
           </p>
+          {inventoryAlerts.length === 0 ? (
+            <p className="dash-recent-value">No inventory items to display. Add items in the Inventory section.</p>
+          ) : (
           <div className="dash-low-stock-grid">
             {inventoryAlerts.map((item) => {
               const reorder = Number(item.reorder_level);
@@ -150,8 +152,8 @@ export default function Dashboard() {
               );
             })}
           </div>
+          )}
         </div>
-      )}
 
     </div>
   );

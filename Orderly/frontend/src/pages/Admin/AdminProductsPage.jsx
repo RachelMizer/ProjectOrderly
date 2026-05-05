@@ -529,6 +529,9 @@ export default function AdminProductsPage() {
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/suppliers/new")}>
             + ADD SUPPLIER
           </button>
+          <button type="button" className="submenu-action" onClick={() => navigate("/admin/categories")}>
+            + ADD CATEGORY
+          </button>
           <button type="button" className="submenu-action" onClick={() => navigate("/admin/export")}>
             <span style={{marginRight:"-1px"}}>📤</span>EXPORT
           </button>
