@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsBusinessOrExecutive
 from catalog.models import Product
 
 
@@ -283,7 +283,7 @@ def _all_products():
 
 
 class AdminProductPerformanceView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         name         = request.query_params.get("name")
@@ -396,7 +396,7 @@ class AdminProductPerformanceView(APIView):
 
 
 class AdminSalesSummaryView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         month_filter = request.query_params.get("month")

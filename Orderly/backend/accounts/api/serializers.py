@@ -283,21 +283,28 @@ class MeSerializer(serializers.Serializer):
     
     # Adding better validation for state, zipcode, and phone to ensure data integrity and provide clearer error messages for users.
     def to_representation(self, user):
-        profile = getattr(user, "customer_profile", None)
         user_role = getattr(getattr(user, "profile", None), "role", None)
+        is_customer = user_role == UserRoleChoices.CUSTOMER
+        profile = getattr(user, "customer_profile", None) if is_customer else None
 
-        return {
+        data = {
             "username": user.username,
             "firstName": user.first_name,
             "lastName": user.last_name,
             "email": user.email,
             "role": user_role,
-            "streetAddress": profile.street_address if profile else "",
-            "city": profile.city if profile else "",
-            "state": profile.state if profile else "",
-            "zipcode": profile.zipcode if profile else "",
-            "phone": profile.phone if profile else "",
         }
+
+        if is_customer:
+            data.update({
+                "streetAddress": profile.street_address if profile else "",
+                "city": profile.city if profile else "",
+                "state": profile.state if profile else "",
+                "zipcode": profile.zipcode if profile else "",
+                "phone": profile.phone if profile else "",
+            })
+
+        return data
 
     def update(self, user, validated_data):
         profile_data = validated_data.pop("customer_profile", {})

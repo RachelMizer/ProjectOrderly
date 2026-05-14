@@ -51,7 +51,7 @@ function AdminLayout() {
     })
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((user) => {
-        if (user.role !== "BUSINESS") {
+        if (user.role !== "BUSINESS" && user.role !== "EXECUTIVE") {
           setAuthorized(false);
         } else {
           setAuthorized(true);

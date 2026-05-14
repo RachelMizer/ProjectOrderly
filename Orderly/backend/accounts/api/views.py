@@ -84,7 +84,7 @@ class RegisterView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.profile.role,
+                    "role": getattr(getattr(user, "profile", None), "role", None),
                 },
             },
             status=status.HTTP_201_CREATED,
@@ -122,7 +122,7 @@ class LoginView(APIView):
                 "customer": {
                     "id": user.pk,
                     "email": user.email,
-                    "role": user.profile.role,
+                    "role": getattr(getattr(user, "profile", None), "role", None),
                 },
             },
             status=status.HTTP_200_OK,

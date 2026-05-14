@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsBusinessOrExecutive
 from catalog.models import Category, ModifierGroup, ModifierOption, Product, ProductVariant
 
 from .admin_serializers import (
@@ -20,7 +20,7 @@ from .admin_serializers import (
 
 
 class AdminCategoryListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         categories = Category.objects.all()
@@ -35,7 +35,7 @@ class AdminCategoryListCreateView(APIView):
 
 
 class AdminCategoryDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, categoryId):
         category = get_object_or_404(Category, pk=categoryId)
@@ -55,7 +55,7 @@ class AdminProductListCreateView(APIView):
     Business-only admin endpoint for listing and creating products.
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         products = Product.objects.select_related("category", "supplier").order_by("name")
@@ -85,7 +85,7 @@ class AdminProductDetailView(APIView):
     Business-only admin endpoint for updating and deleting a product.
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
@@ -116,7 +116,7 @@ class AdminProductVariantListCreateView(APIView):
     creating variants for a product.
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request, productId):
         product = get_object_or_404(Product, pk=productId)
@@ -152,7 +152,7 @@ class AdminProductVariantDetailView(APIView):
     that belongs to a specific product.
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get_object(self, productId, variantId):
         return get_object_or_404(
@@ -184,7 +184,7 @@ class AdminProductVariantDetailView(APIView):
 
 
 class AdminVariantListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         variants = ProductVariant.objects.select_related("product").order_by("product__name", "name")
@@ -200,7 +200,7 @@ class AdminVariantListCreateView(APIView):
 
 
 class AdminVariantDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, variantId):
         variant = get_object_or_404(ProductVariant, pk=variantId)
@@ -217,7 +217,7 @@ class AdminVariantDetailView(APIView):
 
 
 class AdminModifierGroupListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         groups = (
@@ -243,7 +243,7 @@ class AdminModifierGroupListCreateView(APIView):
 
 
 class AdminModifierGroupDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, groupId):
         group = get_object_or_404(ModifierGroup, pk=groupId)
@@ -265,7 +265,7 @@ class AdminModifierGroupDetailView(APIView):
 
 
 class AdminModifierOptionListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def post(self, request, groupId):
         group = get_object_or_404(ModifierGroup, pk=groupId)
@@ -276,7 +276,7 @@ class AdminModifierOptionListCreateView(APIView):
 
 
 class AdminModifierOptionDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, groupId, optionId):
         option = get_object_or_404(ModifierOption, pk=optionId, group_id=groupId)

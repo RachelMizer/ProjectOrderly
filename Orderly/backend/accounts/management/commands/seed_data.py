@@ -199,6 +199,20 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS("Dev account seeded: ramizer"))
 
+        # Executive user
+        exec_user, exec_created = User.objects.get_or_create(
+            username="execuser",
+            defaults={"email": "exec@quicksip.com", "first_name": "Quinn", "last_name": "Executive"},
+        )
+        if exec_created:
+            exec_user.set_password("ExecPass123!")
+            exec_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=exec_user,
+            defaults={"role": UserRoleChoices.EXECUTIVE},
+        )
+        self.stdout.write(self.style.SUCCESS("Executive account seeded: execuser"))
+
         # Business users
         for i in range(1, 4):
             u = make_user(f"business{i}", f"business{i}@example.com")

@@ -5,13 +5,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsBusinessOrExecutive
 from suppliers.models import Supplier
 from catalog.api.admin_serializers import AdminSupplierSerializer
 
 
 class AdminSupplierListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         suppliers = Supplier.objects.all().order_by("name")
@@ -29,7 +29,7 @@ class AdminSupplierListCreateView(APIView):
 
 
 class AdminSupplierDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, supplierId):
         supplier = get_object_or_404(Supplier, pk=supplierId)

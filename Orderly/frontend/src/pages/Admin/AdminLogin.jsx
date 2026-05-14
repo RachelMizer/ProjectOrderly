@@ -38,12 +38,14 @@ export default function AdminLogin() {
         return;
       }
 
-      if (data.customer?.role !== "BUSINESS") {
+      const role = data.customer?.role;
+      if (role !== "BUSINESS" && role !== "EXECUTIVE") {
         setError("This account does not have admin access.");
         return;
       }
 
       localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("user", JSON.stringify(data.customer));
       navigate("/admin");
     } catch {
       setError("Unable to reach the server. Please try again.");

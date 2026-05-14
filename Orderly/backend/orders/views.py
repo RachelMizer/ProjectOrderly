@@ -31,7 +31,7 @@ def _validation_error_message(exc):
     return "; ".join(str(m) for m in messages)
 
 from accounts.models import CustomerProfile
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsBusinessUser, IsBusinessOrExecutive
 from orders.models import Order, OrderItem, OrderStatus
 from orders.serializers import (
     AddDraftOrderItemSerializer,
@@ -463,7 +463,7 @@ class OrderDetailView(APIView):
 
     def get(self, request, orderId):
         if request.user.is_authenticated:
-            if IsBusinessUser().has_permission(request, self):
+            if IsBusinessOrExecutive().has_permission(request, self):
                 order = get_object_or_404(
                     Order.objects.prefetch_related("items__modifiers__modifier_option__group", "items__variant"),
                     pk=orderId,
@@ -575,7 +575,7 @@ class BusinessOrderListView(APIView):
         - supports optional ?status= filter
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         queryset = Order.objects.exclude(
@@ -646,7 +646,7 @@ class OrderYearsView(APIView):
     GET /api/v1/orders/years
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def get(self, request):
         from django.db.models.functions import ExtractYear
@@ -673,7 +673,7 @@ class CompleteOrderView(APIView):
         - only PENDING -> COMPLETED is allowed
     """
 
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
 
     def patch(self, request, orderId):
         order = get_object_or_404(Order, pk=orderId)

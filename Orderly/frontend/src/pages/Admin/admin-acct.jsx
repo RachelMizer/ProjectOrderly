@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const ROLE_LABELS = {
   BUSINESS: "Business User",
   CUSTOMER: "Customer User",
+  EXECUTIVE: "Executive",
 };
 
 const ROLE_PERMISSIONS = {
@@ -19,6 +20,14 @@ const ROLE_PERMISSIONS = {
     "Place orders",
     "View order history",
     "Manage personal account",
+  ],
+  EXECUTIVE: [
+    "Access admin dashboard",
+    "View all locations",
+    "View aggregate reports across locations",
+    "View inventory across locations",
+    "View orders across locations",
+    "View and manage account settings",
   ],
 };
 
