@@ -11,6 +11,12 @@ from .views import (
     PasswordResetRequestView,
     PasswordResetConfirmView,
     MeView,
+    AdminUserListView,
+    AdminUserDetailView,
+    DeletedAccountListView,
+    MyStatusView,
+    TeamStatusView,
+    HeartbeatView,
 )
 
 urlpatterns = [
@@ -39,4 +45,10 @@ urlpatterns = [
         name="confirm-email-verification",
     ),
     path("me/", MeView.as_view(), name="me"),
+    path("admin-accounts/", AdminUserListView.as_view(), name="admin-accounts"),
+    path("admin-accounts/<int:user_id>/", AdminUserDetailView.as_view(), name="admin-account-detail"),
+    path("deleted-accounts/", DeletedAccountListView.as_view(), name="deleted-accounts"),
+    path("my-status/", MyStatusView.as_view(), name="my-status"),
+    path("team-status/", TeamStatusView.as_view(), name="team-status"),
+    path("heartbeat/", HeartbeatView.as_view(), name="heartbeat"),
 ]

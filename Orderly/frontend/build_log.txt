@@ -1,0 +1,86 @@
+ORDERLY BUILD LOG
+=================
+
+--- SUPPORT DASHBOARD (feat-supp-dash) ---
+
+Backend:
+- tickets/ app: Ticket model (status, priority, assigned_to, customer, guest_email, attachment)
+- Migrations: 0001_initial_ticket_model, 0002_add_ticket_attachment
+- API views: AllTicketsView (GET/POST), NewTicketsView, AssignedTicketsView, TicketDetailView (GET/PATCH)
+- URLs mounted at /api/v1/support/
+- tickets app added to INSTALLED_APPS
+
+Accounts:
+- Added SUPPORT role to UserRoleChoices
+- Migration 0011_add_support_role
+- IsSupportUser permission class added
+- IsBusinessOrExecutive updated to include SUPPORT
+- MeSerializer.to_representation now includes `id` field
+- Seed data: supportuser / SupportPass123!
+
+Frontend:
+- SupportDashboard.jsx — landing page for SUPPORT role; recent tickets, new tickets, assigned to me
+- TicketDashboard.jsx — filterable list of all tickets (status + priority filters)
+- TicketCreateForm.jsx — submit a ticket with optional file attachment
+- TicketDetail.jsx — view ticket details, update status/priority, assign/unassign self
+- utils/recentTickets.js — localStorage-based recent ticket tracker (max 10)
+- Admin.js: SUPPORT role recognized in auth, support sidebar, all four routes wired
+- Admin.css: full styles for support dashboard, ticket rows, badges, filters, form, sidebar search, detail page
+
+- TicketNote model: body, author (FK), created_at, updated_at; migration 0005_add_ticket_note
+- case_notes field on Ticket model; migration 0006_add_case_notes
+- API: GET/POST /tickets/{id}/notes/, PATCH/DELETE /tickets/{id}/notes/{note_id}/; PATCH ticket accepts caseNotes
+- TicketDetail.jsx: Case Notes section (single editable text block, saves to ticket); Progress Log section (multi-entry log, add/edit/delete, author + datetime per entry)
+- FeatureRequestForm.jsx: form for submitting FEATURE type BacklogItems; accessible to all roles via /admin/feature-request; linked from SUPPORT sidebar and main sidebar
+- AdminUserSerializer + AdminUserListView + AdminUserDetailView: SUPPORT-only endpoints for listing, creating, editing, and toggling active status of admin accounts (GET/POST /users/admin-accounts/, GET/PATCH/DELETE /users/admin-accounts/{id}/)
+- AdminAccountsPage.jsx: list of BUSINESS/EXECUTIVE/SUPPORT accounts with inline create form; role and status badges
+- AdminAccountDetail.jsx: edit name/email/role, change password, deactivate/reactivate account, permanent delete
+- UserRole.password_changed_at field (migration 0012_add_password_changed_at); set on account create and password update; exposed as passwordChangedAt in AdminUserSerializer
+- AdminAccountDetail.jsx: shows last password change timestamp under Change Password section
+- Admin.css: .support-section-label bumped to 1rem / font-weight 900 for better visual hierarchy
+- DeletedAccount model (migration 0013): snapshots first_name, last_name, email, role, deleted_by (FK), deleted_by_name at deletion time
+- AdminUserDetailView.delete() creates DeletedAccount record before hard-deleting user
+- GET /api/v1/users/deleted-accounts/ (IsSupportUser) — lists all deletion records
+- AdminAccountsPage.jsx: Deleted Accounts section below active list; shows name, email, role, deleted by, date
+- AdminUserSerializer: added dateJoined field (user.date_joined)
+- SupportTeamRoster.jsx: card grid of SUPPORT-role members; avatar initials, name, email, status badge, member-since date, edit link
+- Route: /admin/support/team
+- Admin.js: sidebar ticket search moved to top (under header); Team Roster link added at bottom of support sidebar
+- UserAccountsDashboard.jsx: 4 role-type tiles (Support/Executive/Admin/Customer) with live counts; Deleted Accounts section below
+- AccountsListPage.jsx: generic role-filtered list page; search bar + create form submenu; customer form includes optional address/phone fields
+- CustomerAccountDetail.jsx: customer account detail with Account Info, Contact Info, Change Password, Account Status sections; inline delete confirmation
+- AdminAccountDetail.jsx: fixed role label in header (Support/Executive/Admin); back navigation to role-specific list; self-delete/deactivate protection; inline confirmation replaces window.confirm
+- SupportTeamRoster.jsx: roster edit link updated; back button fixed from <Link> to <button> (fixes white text); city/state shown on cards
+- Admin.js: stores currentUserId in localStorage on auth; new routes for 4 role pages + customer detail; sidebar renamed "User Accounts Dashboard"
+- UserRole model: added city + state fields (migration 0014_userrole_city_state)
+- AdminUserSerializer: exposes city/state; update() persists them; used in AdminAccountDetail for SUPPORT accounts
+- CustomerAdminSerializer: full CRUD for customer accounts including contact info (phone, address, city, state, zip)
+- AdminUserListView: ?role= query param for filtering by role; routes CUSTOMER to CustomerAdminSerializer
+- AdminUserDetailView: _serializer_for() helper routes CUSTOMER to CustomerAdminSerializer
+- Admin.css: accounts tile grid, role-variant tile colors, acct-page-controls submenu bar, acct-search-input; sidebar search label tweaks; inline delete confirmation; roster location style
+
+- UserRole.status field (StatusChoices: ONLINE/OFFLINE/BUSY/AWAY, default ONLINE); migration 0015_userrole_status
+- LoginView: sets status=ONLINE on login; LogoutView: sets status=OFFLINE on logout
+- MyStatusView: GET/PATCH /users/my-status/ (ONLINE/BUSY/AWAY only; OFFLINE blocked from UI)
+- TeamStatusView: GET /users/team-status/ — returns all active SUPPORT users with id/name/status
+- Admin.js: myStatus + teamStatuses state; polls team-status every 30s; handleStatusChange; handleLogout sets OFFLINE before clearing session
+- Sidebar (SUPPORT): status toggle bar above "Support Options" (dropdown: ONLINE/BUSY/AWAY); team presence list at sidebar bottom with colored dots
+- Admin.css: .presence-dot, .sidebar-status-bar, .sidebar-status-dropdown, .sidebar-status-option, .sidebar-team-list, .sidebar-team-member
+- UserAccountsDashboard tiles: smaller (minmax 210px, padding 14px 16px); match reports hub card styling (#dce8f0 bg, #5a87a8 border, dark text); icon inline with label; centered column layout; hover matches reports cards
+- Admin footer: shows role + username (e.g. "SUPPORT USER | RACHEL")
+- Sidebar (SUPPORT): Support Options header larger (1.15rem, .18rem letter-spacing); sidebar-btn letter-spacing bumped to .14rem; sidebar-back font-size 1rem; Ticket Search label size matched to buttons; Go button fixed with align-items:stretch + height:100%
+- Team Member Status tile: inline layout (display:block + inline-block dot) fixes bubble proximity; heading styled with #33638b bg + white text; online members bold #33638b, busy italic dark gray, offline muted
+
+- Unified table styling: BacklogPage, AccountsListPage, AdminAccountsPage (active + deleted) converted from flex-div lists to <table className="support-ticket-table"> — dark blue header, #dce8f0 rows, hover effect matching TicketDashboard
+
+- .ticket-detail__title font-size increased 1.45rem → 1.9rem across all support pages
+- TicketCreateForm.jsx: bare <h1> given ticket-detail__title class for consistency
+- SupportTeamRoster roster__edit-link: filter: hue-rotate(210deg) shifts pencil icon from red to blue
+- acct-create-grid / acct-edit-grid: flex-wrap changed to nowrap; min-width removed from field labels so create form fields stay on a single row
+- UserRole.status default changed ONLINE → OFFLINE; migration 0016_change_status_default_to_offline
+
+Fixes:
+- Applied migration 0004_backlogitem_linked_tickets (M2M table was missing from DB, broke BacklogPage GET and POST)
+- Migration 0015 backfilled all existing UserRole rows with status=ONLINE; fixed via migration 0017_reset_status_to_offline (data migration sets all rows to OFFLINE, login sets ONLINE as intended)
+- TeamStatusView fallback changed from "ONLINE" to "OFFLINE" (was unreachable but wrong)
+- Wiped all test tickets from DB (3 tickets, 2 notes, 1 backlog link deleted)

@@ -17,7 +17,7 @@ export default function ProtectedAdminRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  if (role !== "BUSINESS" && role !== "EXECUTIVE") {
+  if (role !== "BUSINESS" && role !== "EXECUTIVE" && role !== "SUPPORT") {
     return <Navigate to="/" replace />;
   }
 

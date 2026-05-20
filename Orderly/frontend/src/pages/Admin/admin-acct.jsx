@@ -4,6 +4,7 @@ const ROLE_LABELS = {
   BUSINESS: "Business User",
   CUSTOMER: "Customer User",
   EXECUTIVE: "Executive",
+  SUPPORT: "Support",
 };
 
 const ROLE_PERMISSIONS = {
@@ -27,6 +28,14 @@ const ROLE_PERMISSIONS = {
     "View aggregate reports across locations",
     "View inventory across locations",
     "View orders across locations",
+    "View and manage account settings",
+  ],
+  SUPPORT: [
+    "Access admin dashboard",
+    "View and generate reports",
+    "Manage inventory",
+    "Manage product catalog",
+    "Manage orders",
     "View and manage account settings",
   ],
 };

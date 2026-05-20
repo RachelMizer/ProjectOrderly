@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "reporting",
     "sales",
     "settings",
+    "tickets",
 ]
 
 MIDDLEWARE = [

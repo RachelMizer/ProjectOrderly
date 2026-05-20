@@ -10,7 +10,7 @@ from rest_framework_simplejwt.token_blacklist.models import (
     BlacklistedToken,
 )
 
-from accounts.models import UserRoleChoices, CustomerProfile, UserRole
+from accounts.models import UserRoleChoices, CustomerProfile, UserRole, DeletedAccount
 
 User = get_user_model()
 
@@ -202,6 +202,236 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         return user
     
+ADMIN_ROLE_CHOICES = [
+    (UserRoleChoices.BUSINESS, "Business"),
+    (UserRoleChoices.EXECUTIVE, "Executive"),
+    (UserRoleChoices.SUPPORT, "Support"),
+]
+
+
+class AdminUserSerializer(serializers.Serializer):
+    firstName = serializers.CharField(source="first_name")
+    lastName  = serializers.CharField(source="last_name")
+    email     = serializers.EmailField()
+    role      = serializers.ChoiceField(choices=ADMIN_ROLE_CHOICES)
+    password  = serializers.CharField(write_only=True, required=False, allow_blank=True, min_length=8)
+    city      = serializers.CharField(required=False, allow_blank=True, default="")
+    state     = serializers.CharField(required=False, allow_blank=True, default="")
+
+    def validate_email(self, value):
+        email = value.strip().lower()
+        qs = User.objects.filter(email__iexact=email)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Email is already registered.")
+        return email
+
+    def validate_password(self, value):
+        if value:
+            try:
+                password_validation.validate_password(value)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def to_representation(self, user):
+        profile = getattr(user, "profile", None)
+        role = getattr(profile, "role", None)
+        pw_changed = getattr(profile, "password_changed_at", None)
+        return {
+            "id": user.pk,
+            "firstName": user.first_name,
+            "lastName": user.last_name,
+            "email": user.email,
+            "role": role,
+            "isActive": user.is_active,
+            "passwordChangedAt": pw_changed.isoformat() if pw_changed else None,
+            "dateJoined": user.date_joined.isoformat() if user.date_joined else None,
+            "city":  getattr(profile, "city",  "") or "",
+            "state": getattr(profile, "state", "") or "",
+        }
+
+    def create(self, validated_data):
+        role = validated_data["role"]
+        password = validated_data["password"]
+        email = validated_data["email"]
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+        )
+        UserRole.objects.create(user=user, role=role, password_changed_at=timezone.now())
+        return user
+
+    def update(self, user, validated_data):
+        role = validated_data.pop("role", None)
+        password = validated_data.pop("password", None)
+
+        if "first_name" in validated_data:
+            user.first_name = validated_data["first_name"]
+        if "last_name" in validated_data:
+            user.last_name = validated_data["last_name"]
+        if "email" in validated_data:
+            new_email = validated_data["email"]
+            user.email = new_email
+            user.username = new_email
+        if password:
+            user.set_password(password)
+        user.save()
+
+        profile = getattr(user, "profile", None)
+        if profile:
+            if role:
+                profile.role = role
+            if password:
+                profile.password_changed_at = timezone.now()
+            if "city" in validated_data:
+                profile.city = validated_data["city"]
+            if "state" in validated_data:
+                profile.state = validated_data["state"].strip().upper()
+            if role or password or "city" in validated_data or "state" in validated_data:
+                profile.save()
+        elif role:
+            UserRole.objects.create(user=user, role=role, password_changed_at=timezone.now() if password else None)
+
+        return user
+
+
+class CustomerAdminSerializer(serializers.Serializer):
+    firstName     = serializers.CharField(source="first_name")
+    lastName      = serializers.CharField(source="last_name")
+    email         = serializers.EmailField()
+    password      = serializers.CharField(write_only=True, required=False, allow_blank=True, min_length=8)
+    phone         = serializers.CharField(required=False, allow_blank=True, default="")
+    streetAddress = serializers.CharField(required=False, allow_blank=True, default="")
+    city          = serializers.CharField(required=False, allow_blank=True, default="")
+    state         = serializers.CharField(required=False, allow_blank=True, default="")
+    zipcode       = serializers.CharField(required=False, allow_blank=True, default="")
+
+    def validate_email(self, value):
+        email = value.strip().lower()
+        qs = User.objects.filter(email__iexact=email)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("Email is already registered.")
+        return email
+
+    def validate_password(self, value):
+        if value:
+            try:
+                password_validation.validate_password(value)
+            except DjangoValidationError as e:
+                raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def validate_state(self, value):
+        value = value.strip().upper()
+        if value and (len(value) != 2 or not value.isalpha()):
+            raise serializers.ValidationError("State must be a 2-letter code (e.g., NC).")
+        return value
+
+    def validate_zipcode(self, value):
+        import re
+        value = value.strip()
+        if value and not re.fullmatch(r"\d{5}(-\d{4})?", value):
+            raise serializers.ValidationError("Enter a valid ZIP code (e.g., 12345 or 12345-6789).")
+        return value
+
+    def validate_phone(self, value):
+        import re
+        value = value.strip()
+        if not value:
+            return value
+        normalized = re.sub(r"[^\d+]", "", value)
+        if not re.fullmatch(r"\+?1?\d{10,15}", normalized):
+            raise serializers.ValidationError("Enter a valid phone number (10–15 digits).")
+        return normalized
+
+    def to_representation(self, user):
+        cp = getattr(user, "customer_profile", None)
+        ur = getattr(user, "profile", None)
+        pw_changed = getattr(ur, "password_changed_at", None)
+        return {
+            "id": user.pk,
+            "firstName": user.first_name,
+            "lastName": user.last_name,
+            "email": user.email,
+            "role": "CUSTOMER",
+            "isActive": user.is_active,
+            "passwordChangedAt": pw_changed.isoformat() if pw_changed else None,
+            "dateJoined": user.date_joined.isoformat() if user.date_joined else None,
+            "phone": cp.phone if cp else "",
+            "streetAddress": cp.street_address if cp else "",
+            "city": cp.city if cp else "",
+            "state": cp.state if cp else "",
+            "zipcode": cp.zipcode if cp else "",
+            "emailVerified": cp.email_verified if cp else False,
+        }
+
+    def create(self, validated_data):
+        email    = validated_data["email"]
+        password = validated_data["password"]
+        user = User.objects.create_user(
+            username=email, email=email, password=password,
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+        )
+        UserRole.objects.create(user=user, role=UserRoleChoices.CUSTOMER, password_changed_at=timezone.now())
+        CustomerProfile.objects.create(user=user)
+        profile_updates = {}
+        for key, db_col in [("phone","phone"),("city","city"),("state","state"),
+                             ("zipcode","zipcode"),("streetAddress","street_address")]:
+            val = validated_data.get(key, "")
+            if val:
+                profile_updates[db_col] = val
+        if profile_updates:
+            CustomerProfile.objects.filter(user=user).update(**profile_updates)
+        return user
+
+    def update(self, user, validated_data):
+        password = validated_data.pop("password", None)
+        if "first_name" in validated_data:
+            user.first_name = validated_data["first_name"]
+        if "last_name" in validated_data:
+            user.last_name = validated_data["last_name"]
+        if "email" in validated_data:
+            new_email = validated_data["email"]
+            user.email = new_email
+            user.username = new_email
+        if password:
+            user.set_password(password)
+        user.save()
+
+        ur = getattr(user, "profile", None)
+        if ur and password:
+            ur.password_changed_at = timezone.now()
+            ur.save()
+
+        profile_updates = {}
+        for key, db_col in [("phone","phone"),("city","city"),("state","state"),
+                             ("zipcode","zipcode"),("streetAddress","street_address")]:
+            if key in validated_data:
+                profile_updates[db_col] = validated_data[key]
+        if profile_updates:
+            CustomerProfile.objects.filter(user=user).update(**profile_updates)
+        return user
+
+
+class DeletedAccountSerializer(serializers.ModelSerializer):
+    firstName     = serializers.CharField(source="first_name")
+    lastName      = serializers.CharField(source="last_name")
+    deletedAt     = serializers.DateTimeField(source="deleted_at")
+    deletedByName = serializers.CharField(source="deleted_by_name")
+
+    class Meta:
+        model  = DeletedAccount
+        fields = ["id", "firstName", "lastName", "email", "role", "deletedAt", "deletedByName"]
+
+
 class MeSerializer(serializers.Serializer):
     firstName = serializers.CharField(source="first_name", required=False)
     lastName = serializers.CharField(source="last_name", required=False)
@@ -288,6 +518,7 @@ class MeSerializer(serializers.Serializer):
         profile = getattr(user, "customer_profile", None) if is_customer else None
 
         data = {
+            "id": user.pk,
             "username": user.username,
             "firstName": user.first_name,
             "lastName": user.last_name,

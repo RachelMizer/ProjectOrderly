@@ -213,6 +213,20 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS("Executive account seeded: execuser"))
 
+        # Support user
+        support_user, support_created = User.objects.get_or_create(
+            username="supportuser",
+            defaults={"email": "support@quicksip.com", "first_name": "Sam", "last_name": "Support"},
+        )
+        if support_created:
+            support_user.set_password("SupportPass123!")
+            support_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=support_user,
+            defaults={"role": UserRoleChoices.SUPPORT},
+        )
+        self.stdout.write(self.style.SUCCESS("Support account seeded: supportuser"))
+
         # Business users
         for i in range(1, 4):
             u = make_user(f"business{i}", f"business{i}@example.com")

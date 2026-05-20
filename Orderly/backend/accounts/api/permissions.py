@@ -43,9 +43,9 @@ class IsExecutiveUser(BasePermission):
         return profile.role == UserRoleChoices.EXECUTIVE
 
 
-class IsBusinessOrExecutive(BasePermission):
+class IsSupportUser(BasePermission):
     """
-    Allows access to authenticated users with BUSINESS or EXECUTIVE role.
+    Allows access only to authenticated users with SUPPORT role.
     """
 
     message = "User does not have this permission."
@@ -60,4 +60,28 @@ class IsBusinessOrExecutive(BasePermission):
         if profile is None:
             return False
 
-        return profile.role in (UserRoleChoices.BUSINESS, UserRoleChoices.EXECUTIVE)
+        return profile.role == UserRoleChoices.SUPPORT
+
+
+class IsBusinessOrExecutive(BasePermission):
+    """
+    Allows access to authenticated users with BUSINESS, EXECUTIVE, or SUPPORT role.
+    """
+
+    message = "User does not have this permission."
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        if not user or not user.is_authenticated:
+            return False
+
+        profile = getattr(user, "profile", None)
+        if profile is None:
+            return False
+
+        return profile.role in (
+            UserRoleChoices.BUSINESS,
+            UserRoleChoices.EXECUTIVE,
+            UserRoleChoices.SUPPORT,
+        )

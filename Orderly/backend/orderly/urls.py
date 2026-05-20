@@ -40,4 +40,6 @@ urlpatterns = [
     path("api/v1/reports/", include("reporting.api.urls")),
     # Settings API
     path("api/v1/settings/", include("settings.api.urls")),
+    # Support tickets API
+    path("api/v1/support/", include("tickets.api.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
