@@ -111,7 +111,7 @@ class Command(BaseCommand):
             if created:
                 user.set_password("Password123!")
                 user.save()
-            ensure_profile(user, "BUSINESS")
+            ensure_profile(user, "STORE_MANAGER")
             business_users.append(user)
 
         customer_users = []

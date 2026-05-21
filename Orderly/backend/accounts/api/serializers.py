@@ -203,7 +203,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         return user
     
 ADMIN_ROLE_CHOICES = [
-    (UserRoleChoices.BUSINESS, "Business"),
+    (UserRoleChoices.STORE_MANAGER, "Store Manager"),
+    (UserRoleChoices.EMPLOYEE, "Employee"),
     (UserRoleChoices.EXECUTIVE, "Executive"),
     (UserRoleChoices.SUPPORT, "Support"),
 ]

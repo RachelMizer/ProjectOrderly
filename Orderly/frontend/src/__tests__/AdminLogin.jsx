@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AdminLogin from "../pages/Admin/AdminLogin";
 
@@ -38,7 +38,7 @@ describe("AdminLogin", () => {
       ok: true,
       json: jest.fn().mockResolvedValue({
         accessToken: "abc123",
-        customer: { role: "BUSINESS" },
+        customer: { role: "STORE_MANAGER" },
       }),
     });
 
@@ -209,7 +209,7 @@ describe("AdminLogin", () => {
       ok: true,
       json: jest.fn().mockResolvedValue({
         accessToken: "abc123",
-        customer: { role: "BUSINESS" },
+        customer: { role: "STORE_MANAGER" },
       }),
     });
 
@@ -228,7 +228,7 @@ describe("AdminLogin", () => {
         ok: true,
         json: jest.fn().mockResolvedValue({
           accessToken: "abc123",
-          customer: { role: "BUSINESS" },
+          customer: { role: "STORE_MANAGER" },
         }),
       });
 

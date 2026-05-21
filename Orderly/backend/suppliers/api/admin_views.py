@@ -1,17 +1,17 @@
-from django.shortcuts import get_object_or_404
+﻿from django.shortcuts import get_object_or_404
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessOrExecutive
+from accounts.api.permissions import IsStoreManagerOrAbove
 from suppliers.models import Supplier
 from catalog.api.admin_serializers import AdminSupplierSerializer
 
 
 class AdminSupplierListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         suppliers = Supplier.objects.all().order_by("name")
@@ -29,7 +29,7 @@ class AdminSupplierListCreateView(APIView):
 
 
 class AdminSupplierDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def patch(self, request, supplierId):
         supplier = get_object_or_404(Supplier, pk=supplierId)

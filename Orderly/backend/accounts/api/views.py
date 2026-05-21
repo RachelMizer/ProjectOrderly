@@ -284,7 +284,7 @@ class AdminUserListView(APIView):
             else:
                 data = [AdminUserSerializer(u).data for u in users]
         else:
-            admin_roles = [UserRoleChoices.BUSINESS, UserRoleChoices.EXECUTIVE, UserRoleChoices.SUPPORT]
+            admin_roles = [UserRoleChoices.STORE_MANAGER, UserRoleChoices.EXECUTIVE, UserRoleChoices.SUPPORT]
             users = User.objects.filter(profile__role__in=admin_roles).order_by("first_name", "last_name", "username")
             data = [AdminUserSerializer(u).data for u in users]
         return Response({"count": len(data), "results": data})

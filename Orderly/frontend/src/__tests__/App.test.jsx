@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../App";
 
@@ -298,7 +298,7 @@ describe("App", () => {
       "user",
       JSON.stringify({
         firstName:"Kenny",
-        role:"BUSINESS"
+        role:"STORE_MANAGER"
       })
     );
 
@@ -320,7 +320,7 @@ describe("App", () => {
       "user",
       JSON.stringify({
         firstName:"Kenny",
-        role:"BUSINESS"
+        role:"STORE_MANAGER"
       })
     );
 

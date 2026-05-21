@@ -1,4 +1,4 @@
-from rest_framework import status
+﻿from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,7 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from settings.models import StoreSettings
 from settings.api.serializers import StoreSettingsSerializer
-from accounts.api.permissions import IsBusinessOrExecutive
+from accounts.api.permissions import IsStoreManagerOrAbove
 
 
 class StoreSettingsView(APIView):
@@ -15,7 +15,7 @@ class StoreSettingsView(APIView):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-        return [IsAuthenticated(), IsBusinessOrExecutive()]
+        return [IsAuthenticated(), IsStoreManagerOrAbove()]
 
     @staticmethod
     def get_object():

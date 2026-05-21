@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const API = "http://localhost:8000/api/v1";
 
-const ROLE_LABELS = { BUSINESS: "Business", EXECUTIVE: "Executive", SUPPORT: "Support" };
+const ROLE_LABELS = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support" };
 
 function fmtDate(iso) {
   if (!iso) return "—";

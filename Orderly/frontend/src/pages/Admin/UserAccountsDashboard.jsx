@@ -21,12 +21,20 @@ const TILES = [
     colorClass: "accounts-tile--executive",
   },
   {
-    role: "BUSINESS",
-    label: "Admin Accounts",
-    description: "Business administrators with full dashboard and management access",
+    role: "STORE_MANAGER",
+    label: "Store Manager Accounts",
+    description: "Store managers with dashboard and location-specific management access",
     icon: "⚙️",
-    path: "/admin/support/accounts/business",
+    path: "/admin/support/accounts/store-manager",
     colorClass: "accounts-tile--business",
+  },
+  {
+    role: "EMPLOYEE",
+    label: "Employee Accounts",
+    description: "Store employees with limited access to orders and inventory",
+    icon: "👷",
+    path: "/admin/support/accounts/employee",
+    colorClass: "accounts-tile--employee",
   },
   {
     role: "CUSTOMER",
@@ -38,7 +46,7 @@ const TILES = [
   },
 ];
 
-const ROLE_LABELS = { BUSINESS: "Admin", EXECUTIVE: "Executive", SUPPORT: "Support", CUSTOMER: "Customer" };
+const ROLE_LABELS = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support", CUSTOMER: "Customer" };
 
 function fmtDate(iso) {
   if (!iso) return "—";

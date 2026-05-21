@@ -1,15 +1,15 @@
-import csv
+﻿import csv
 from django.http import HttpResponse
 from rest_framework.views import APIView
 
-from accounts.api.permissions import IsBusinessOrExecutive
+from accounts.api.permissions import IsStoreManagerOrAbove
 from catalog.models import ProductVariant
 from inventory.models import InventoryItem
 from orders.models import Order
 
 
 class ExportOrdersView(APIView):
-    permission_classes = [IsBusinessOrExecutive]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         start_date = request.GET.get("startDate")
@@ -50,7 +50,7 @@ class ExportOrdersView(APIView):
 
 
 class ExportInventoryView(APIView):
-    permission_classes = [IsBusinessOrExecutive]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         response = HttpResponse(content_type="text/csv")
@@ -74,7 +74,7 @@ class ExportInventoryView(APIView):
 
 
 class ExportProductsView(APIView):
-    permission_classes = [IsBusinessOrExecutive]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         response = HttpResponse(content_type="text/csv")

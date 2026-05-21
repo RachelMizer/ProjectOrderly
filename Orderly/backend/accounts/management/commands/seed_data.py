@@ -195,7 +195,7 @@ class Command(BaseCommand):
             dev_user.save(update_fields=["first_name", "last_name"])
         UserRole.objects.get_or_create(
             user=dev_user,
-            defaults={"role": UserRoleChoices.BUSINESS},
+            defaults={"role": UserRoleChoices.STORE_MANAGER},
         )
         self.stdout.write(self.style.SUCCESS("Dev account seeded: ramizer"))
 
@@ -227,12 +227,12 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS("Support account seeded: supportuser"))
 
-        # Business users
+        # Store manager users
         for i in range(1, 4):
-            u = make_user(f"business{i}", f"business{i}@example.com")
+            u = make_user(f"manager{i}", f"manager{i}@example.com")
             UserRole.objects.get_or_create(
                 user=u,
-                defaults={"role": UserRoleChoices.BUSINESS},
+                defaults={"role": UserRoleChoices.STORE_MANAGER},
             )
 
         # Customer users
@@ -357,7 +357,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
 
         self.stdout.write(
-            self.style.SUCCESS("Users seeded: 3 business, 6 customers + dev + personal")
+            self.style.SUCCESS("Users seeded: 3 store managers, 6 customers + dev + personal")
         )
 
         # ------------------------------------------------------------

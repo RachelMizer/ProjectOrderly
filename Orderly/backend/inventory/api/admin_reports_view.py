@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessOrExecutive
+from accounts.api.permissions import IsStoreManagerOrAbove
 from catalog.models import Product
 
 
@@ -128,9 +128,9 @@ def _read_daily(filepath):
 def _build_chart_data(files, month_filter, year_filter):
     """
     Returns a list of chart points.
-    - Month selected  → one point per day  (label = "1", "2", …)
-    - Year selected   → one point per month, all 12 months, zeros for missing ones
-    - No filter       → one point per month across all available files
+    - Month selected  â†’ one point per day  (label = "1", "2", â€¦)
+    - Year selected   â†’ one point per month, all 12 months, zeros for missing ones
+    - No filter       â†’ one point per month across all available files
     """
     if month_filter:
         filepath = _COMMANDS_DIR / f"{month_filter}_sales.csv"
@@ -172,7 +172,7 @@ def _build_chart_data(files, month_filter, year_filter):
             })
         return points
 
-    # No year filter — just show available months
+    # No year filter â€” just show available months
     points = []
     for f in sorted(files):
         stem = f.stem.replace("_sales", "")
@@ -223,7 +223,7 @@ def _serialize_rows(rows):
         {
             "name": r["name"],
             "variant": r["variant"],
-            "category": categories.get(r["name"], "—"),
+            "category": categories.get(r["name"], "â€”"),
             "unit_price": str(r["unit_price"].quantize(Decimal("0.01"))),
             "units_sold": r["units_sold"],
             "revenue": str(r["revenue"].quantize(Decimal("0.01"))),
@@ -283,7 +283,7 @@ def _all_products():
 
 
 class AdminProductPerformanceView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         name         = request.query_params.get("name")
@@ -307,7 +307,7 @@ class AdminProductPerformanceView(APIView):
             breakdown     = []
 
             if month_filter:
-                # Daily granularity — one row per day in the month
+                # Daily granularity â€” one row per day in the month
                 granularity = "daily"
                 filepath = _COMMANDS_DIR / f"{month_filter}_sales.csv"
                 if not filepath.exists():
@@ -335,7 +335,7 @@ class AdminProductPerformanceView(APIView):
                     })
 
             else:
-                # Monthly granularity — one row per available month
+                # Monthly granularity â€” one row per available month
                 granularity  = "monthly"
                 all_files    = sorted(_COMMANDS_DIR.glob("*_sales.csv"))
                 scoped_files = []
@@ -396,7 +396,7 @@ class AdminProductPerformanceView(APIView):
 
 
 class AdminSalesSummaryView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         month_filter = request.query_params.get("month")

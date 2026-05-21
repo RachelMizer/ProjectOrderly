@@ -3,9 +3,9 @@ from rest_framework.permissions import BasePermission
 from accounts.models import UserRoleChoices
 
 
-class IsBusinessUser(BasePermission):
+class IsStoreManager(BasePermission):
     """
-    Allows access only to authenticated users with BUSINESS role.
+    Allows access only to authenticated users with STORE_MANAGER role.
     """
 
     message = "User does not have this permission."
@@ -20,7 +20,7 @@ class IsBusinessUser(BasePermission):
         if profile is None:
             return False
 
-        return profile.role == UserRoleChoices.BUSINESS
+        return profile.role == UserRoleChoices.STORE_MANAGER
 
 
 class IsExecutiveUser(BasePermission):
@@ -63,9 +63,9 @@ class IsSupportUser(BasePermission):
         return profile.role == UserRoleChoices.SUPPORT
 
 
-class IsBusinessOrExecutive(BasePermission):
+class IsStoreManagerOrAbove(BasePermission):
     """
-    Allows access to authenticated users with BUSINESS, EXECUTIVE, or SUPPORT role.
+    Allows access to authenticated users with STORE_MANAGER, EXECUTIVE, or SUPPORT role.
     """
 
     message = "User does not have this permission."
@@ -81,7 +81,7 @@ class IsBusinessOrExecutive(BasePermission):
             return False
 
         return profile.role in (
-            UserRoleChoices.BUSINESS,
+            UserRoleChoices.STORE_MANAGER,
             UserRoleChoices.EXECUTIVE,
             UserRoleChoices.SUPPORT,
         )

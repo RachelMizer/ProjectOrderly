@@ -1,4 +1,4 @@
-import pytest
+﻿import pytest
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -26,7 +26,7 @@ def business_user(db):
     )
     ProfileModel.objects.create(
         user=user,
-        role=UserRoleChoices.BUSINESS,
+        role=UserRoleChoices.STORE_MANAGER,
     )
     return user
 

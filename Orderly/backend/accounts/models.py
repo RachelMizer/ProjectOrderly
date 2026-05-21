@@ -23,7 +23,8 @@ STATE_VALIDATOR = RegexValidator(
 
 
 class UserRoleChoices(models.TextChoices):
-    BUSINESS = "BUSINESS", "Business"
+    STORE_MANAGER = "STORE_MANAGER", "Store Manager"
+    EMPLOYEE = "EMPLOYEE", "Employee"
     CUSTOMER = "CUSTOMER", "Customer"
     EXECUTIVE = "EXECUTIVE", "Executive"
     SUPPORT = "SUPPORT", "Support"

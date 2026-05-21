@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -35,7 +35,7 @@ describe("ProtectedAdminRoute", () => {
     expect(screen.getByText(/Redirected to \/login/)).toBeInTheDocument();
   });
 
-  test("redirects to home if not BUSINESS role", () => {
+  test("redirects to home if not STORE_MANAGER role", () => {
     localStorage.setItem(
       "user",
       JSON.stringify({ role: "CUSTOMER" })
@@ -57,10 +57,10 @@ describe("ProtectedAdminRoute", () => {
     expect(screen.getByText(/Redirected to \//)).toBeInTheDocument();
   });
 
-  test("renders outlet content if BUSINESS role", () => {
+  test("renders outlet content if STORE_MANAGER role", () => {
     localStorage.setItem(
       "user",
-      JSON.stringify({ role: "BUSINESS" })
+      JSON.stringify({ role: "STORE_MANAGER" })
     );
 
     render(

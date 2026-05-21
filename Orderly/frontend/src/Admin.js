@@ -76,7 +76,7 @@ function AdminLayout() {
     })
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((user) => {
-        if (user.role !== "BUSINESS" && user.role !== "EXECUTIVE" && user.role !== "SUPPORT") {
+        if (user.role !== "STORE_MANAGER" && user.role !== "EMPLOYEE" && user.role !== "EXECUTIVE" && user.role !== "SUPPORT") {
           setAuthorized(false);
         } else {
           setAuthorized(true);
@@ -508,7 +508,8 @@ function AdminLayout() {
             <Route path="/support/accounts" element={<UserAccountsDashboard />} />
             <Route path="/support/accounts/support" element={<AccountsListPage role="SUPPORT" />} />
             <Route path="/support/accounts/executive" element={<AccountsListPage role="EXECUTIVE" />} />
-            <Route path="/support/accounts/business" element={<AccountsListPage role="BUSINESS" />} />
+            <Route path="/support/accounts/store-manager" element={<AccountsListPage role="STORE_MANAGER" />} />
+            <Route path="/support/accounts/employee" element={<AccountsListPage role="EMPLOYEE" />} />
             <Route path="/support/accounts/customer" element={<AccountsListPage role="CUSTOMER" />} />
             <Route path="/support/accounts/customer/:userId" element={<CustomerAccountDetail />} />
             <Route path="/support/accounts/:userId" element={<AdminAccountDetail />} />

@@ -5,8 +5,9 @@ const API = "http://localhost:8000/api/v1";
 
 const PAGE_CONFIG = {
   SUPPORT:   { title: "Support Team Accounts",   roleLabel: "Support" },
-  EXECUTIVE: { title: "Executive Accounts", roleLabel: "Executive" },
-  BUSINESS:  { title: "Admin Accounts",     roleLabel: "Admin" },
+  EXECUTIVE:     { title: "Executive Accounts",     roleLabel: "Executive" },
+  STORE_MANAGER: { title: "Store Manager Accounts", roleLabel: "Store Manager" },
+  EMPLOYEE:      { title: "Employee Accounts",      roleLabel: "Employee" },
   CUSTOMER:  { title: "Customer Accounts",  roleLabel: "Customer" },
 };
 

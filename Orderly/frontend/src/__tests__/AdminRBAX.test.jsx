@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, cleanup } from "@testing-library/react";
 import App from "../App";
 import * as auth from "../api/auth";
@@ -18,7 +18,7 @@ function mockFetch({
     firstName: "Biz",
     lastName: "Admin",
     email: "business1@example.com",
-    role: "BUSINESS",
+    role: "STORE_MANAGER",
   },
   categoriesResponse = { results: [] },
   storefrontProductsResponse = { results: [] },
@@ -144,7 +144,7 @@ describe("Admin RBAC", () => {
   test("business user can access admin route", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS", "Biz");
+    setUser("STORE_MANAGER", "Biz");
 
     window.history.pushState({}, "", "/admin/catalog");
     render(<App />);
@@ -184,7 +184,7 @@ describe("Admin RBAC", () => {
   test("admin links visible to business user", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS", "Biz");
+    setUser("STORE_MANAGER", "Biz");
 
     window.history.pushState({}, "", "/admin");
     render(<App />);

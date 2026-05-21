@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
 
 const ROLE_LABELS = {
-  BUSINESS: "Business User",
+  STORE_MANAGER: "Store Manager",
+  EMPLOYEE: "Employee",
   CUSTOMER: "Customer User",
   EXECUTIVE: "Executive",
   SUPPORT: "Support",
 };
 
 const ROLE_PERMISSIONS = {
-  BUSINESS: [
+  STORE_MANAGER: [
     "Access admin dashboard",
-    "View and generate reports",
-    "Manage inventory",
+    "View and generate reports for their store",
+    "Manage inventory for their store",
     "Manage product catalog",
     "Manage orders",
     "View and manage account settings",
+  ],
+  EMPLOYEE: [
+    "Access admin dashboard",
+    "View their store's inventory",
+    "Manage orders",
   ],
   CUSTOMER: [
     "Browse product catalog",

@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 const API = "http://localhost:8000/api/v1";
 
-const ROLE_OPTIONS = ["BUSINESS", "EXECUTIVE", "SUPPORT"];
-const ROLE_LABELS  = { BUSINESS: "Business", EXECUTIVE: "Executive", SUPPORT: "Support" };
+const ROLE_OPTIONS = ["STORE_MANAGER", "EMPLOYEE", "EXECUTIVE", "SUPPORT"];
+const ROLE_LABELS  = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support" };
 
-const EMPTY_FORM = { firstName: "", lastName: "", email: "", role: "BUSINESS", password: "" };
+const EMPTY_FORM = { firstName: "", lastName: "", email: "", role: "STORE_MANAGER", password: "" };
 
-const ROLE_LABELS_DEL = { ...{ BUSINESS: "Business", EXECUTIVE: "Executive", SUPPORT: "Support" } };
+const ROLE_LABELS_DEL = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support" };
 
 function fmtDate(iso) {
   if (!iso) return "—";

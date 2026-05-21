@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, cleanup } from "@testing-library/react";
 import App from "../App";
 import * as auth from "../api/auth";
@@ -39,7 +39,7 @@ function mockFetch({
     firstName: "Biz",
     lastName: "Admin",
     email: "business1@example.com",
-    role: "BUSINESS",
+    role: "STORE_MANAGER",
   },
   categoriesResponse = { results: [] },
   storefrontProductsResponse = { results: [] },
@@ -102,7 +102,7 @@ describe("Admin navigation and layout (US4.2)", () => {
   test("business user sees persistent admin nav links on admin home", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS");
+    setUser("STORE_MANAGER");
 
     window.history.pushState({}, "", "/admin");
     render(<App />);
@@ -128,7 +128,7 @@ describe("Admin navigation and layout (US4.2)", () => {
   test("business user can route to catalog and keeps admin layout", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS");
+    setUser("STORE_MANAGER");
 
     window.history.pushState({}, "", "/admin/catalog");
     render(<App />);
@@ -147,7 +147,7 @@ describe("Admin navigation and layout (US4.2)", () => {
   test("business user can route to inventory and keeps admin layout", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS");
+    setUser("STORE_MANAGER");
 
     mockFetch({
       inventoryResponse: [
@@ -181,12 +181,12 @@ describe("Admin navigation and layout (US4.2)", () => {
   test("business user can route to reports and keeps admin layout", async () => {
     auth.isAuthenticated.mockReturnValue(true);
     localStorage.setItem("accessToken", "fake-business-token");
-    setUser("BUSINESS");
+    setUser("STORE_MANAGER");
 
     window.history.pushState({}, "", "/admin/reports");
     render(<App />);
 
-    // ✅ use unique content instead of "Reports"
+    // âœ… use unique content instead of "Reports"
     expect(await screen.findByText(/generate a report/i)).toBeInTheDocument();
 
     expect(screen.getByText(/welcome,\s*biz!/i)).toBeInTheDocument();

@@ -3,12 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const API = "http://localhost:8000/api/v1";
 
-const ROLE_OPTIONS = ["BUSINESS", "EXECUTIVE", "SUPPORT"];
-const ROLE_LABELS  = { BUSINESS: "Admin", EXECUTIVE: "Executive", SUPPORT: "Support" };
+const ROLE_OPTIONS = ["STORE_MANAGER", "EMPLOYEE", "EXECUTIVE", "SUPPORT"];
+const ROLE_LABELS  = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support" };
 const BACK_PATHS   = {
-  SUPPORT:   "/admin/support/accounts/support",
-  EXECUTIVE: "/admin/support/accounts/executive",
-  BUSINESS:  "/admin/support/accounts/business",
+  SUPPORT:       "/admin/support/accounts/support",
+  EXECUTIVE:     "/admin/support/accounts/executive",
+  STORE_MANAGER: "/admin/support/accounts/store-manager",
+  EMPLOYEE:      "/admin/support/accounts/employee",
 };
 
 export default function AdminAccountDetail() {
@@ -59,7 +60,7 @@ export default function AdminAccountDetail() {
       firstName: account.firstName || "",
       lastName:  account.lastName  || "",
       email:     account.email     || "",
-      role:      account.role      || "BUSINESS",
+      role:      account.role      || "STORE_MANAGER",
       city:      account.city      || "",
       state:     account.state     || "",
     });
@@ -227,7 +228,7 @@ export default function AdminAccountDetail() {
           </label>
           <label className="support-filter-label">
             Role
-            <select className="support-filter-select" value={draft.role || "BUSINESS"}
+            <select className="support-filter-select" value={draft.role || "STORE_MANAGER"}
               onChange={(e) => setDraft((d) => ({ ...d, role: e.target.value }))}
               disabled={saving}>
               {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}

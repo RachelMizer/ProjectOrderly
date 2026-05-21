@@ -1,4 +1,4 @@
-from decimal import Decimal
+﻿from decimal import Decimal
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -36,7 +36,7 @@ def business_user(db):
         email="biz1@example.com",
         password="password123",
     )
-    UserRole.objects.create(user=user, role=UserRoleChoices.BUSINESS)
+    UserRole.objects.create(user=user, role=UserRoleChoices.STORE_MANAGER)
     return user
 
 
@@ -175,7 +175,7 @@ def test_category_and_product_variant_str():
 
     assert str(category) == "Food"
     assert str(product) == "Bagel"
-    assert str(variant) == "Bagel — Regular"
+    assert str(variant) == "Bagel â€” Regular"
 
 
 @pytest.mark.django_db
@@ -193,7 +193,7 @@ def test_modifier_option_str(variant):
         price_adjustment=Decimal("1.00"),
     )
 
-    assert str(group) == f"{variant} — Extras"
+    assert str(group) == f"{variant} â€” Extras"
     assert str(option) == "Extras: Extra Shot"
 
 
@@ -308,7 +308,7 @@ def test_order_item_auto_calculates_item_total(customer_profile, variant):
     )
 
     assert item.item_total == Decimal("9.00")
-    assert str(item) == f"{order} — {variant} x2"
+    assert str(item) == f"{order} â€” {variant} x2"
 
 
 @pytest.mark.django_db

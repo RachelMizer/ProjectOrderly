@@ -39,7 +39,7 @@ export default function AdminLogin() {
       }
 
       const role = data.customer?.role;
-      if (role !== "BUSINESS" && role !== "EXECUTIVE" && role !== "SUPPORT") {
+      if (role !== "STORE_MANAGER" && role !== "EMPLOYEE" && role !== "EXECUTIVE" && role !== "SUPPORT") {
         setError("This account does not have admin access.");
         return;
       }

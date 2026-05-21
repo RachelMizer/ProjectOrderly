@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.api.permissions import IsBusinessOrExecutive, IsSupportUser
+from accounts.api.permissions import IsStoreManagerOrAbove, IsSupportUser
 from accounts.models import UserRoleChoices
 from tickets.models import BacklogItem, BacklogItemStatus, BacklogItemType, KnowledgeArticle, TeamAnnouncement, Ticket, TicketAssignmentHistory, TicketNote, TicketPriority, TicketStatus
 from .serializers import BacklogItemSerializer, KnowledgeArticleSerializer, TeamAnnouncementSerializer, TicketAssignmentHistorySerializer, TicketNoteSerializer, TicketSerializer
@@ -17,7 +17,7 @@ class AllTicketsView(APIView):
     Returns all tickets, ordered by creation date descending.
     Supports ?status= and ?priority= query params for filtering.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         qs = Ticket.objects.all().order_by("-created_at")
@@ -56,7 +56,7 @@ class SupportAgentsView(APIView):
     GET /api/v1/support/agents/
     Returns all users with the SUPPORT role.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         agents = User.objects.filter(profile__role=UserRoleChoices.SUPPORT).order_by("first_name", "username")
@@ -77,7 +77,7 @@ class MyTicketsView(APIView):
     GET /api/v1/support/my-tickets/
     Returns tickets submitted by the requesting user, newest first.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         tickets = Ticket.objects.filter(customer=request.user).order_by("-created_at")
@@ -90,7 +90,7 @@ class NewTicketsView(APIView):
     GET /api/v1/support/tickets/new/
     Returns all tickets with status NEW, ordered by creation date descending.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         tickets = Ticket.objects.filter(status=TicketStatus.NEW)
@@ -103,7 +103,7 @@ class AssignedTicketsView(APIView):
     GET /api/v1/support/tickets/assigned/
     Returns tickets assigned to the requesting user.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         tickets = Ticket.objects.filter(assigned_to=request.user)
@@ -116,7 +116,7 @@ class TicketDetailView(APIView):
     GET  /api/v1/support/tickets/{id}/
     PATCH /api/v1/support/tickets/{id}/  — update status, priority, or assignment
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def _get_ticket(self, ticket_id):
         try:
@@ -186,7 +186,7 @@ class FeatureRequestView(APIView):
     Creates a FEATURE type BacklogItem on behalf of the requesting user.
     Accessible to BUSINESS, EXECUTIVE, and SUPPORT roles.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def post(self, request):
         title = request.data.get("title", "").strip()
@@ -215,7 +215,7 @@ class TicketNoteListView(APIView):
     GET  /api/v1/support/tickets/{id}/notes/  — list all notes for a ticket
     POST /api/v1/support/tickets/{id}/notes/  — add a note (author = requesting user)
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def _get_ticket(self, ticket_id):
         try:
@@ -246,7 +246,7 @@ class TicketNoteDetailView(APIView):
     PATCH  /api/v1/support/tickets/{id}/notes/{note_id}/  — edit note body
     DELETE /api/v1/support/tickets/{id}/notes/{note_id}/  — delete note
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def _get_note(self, ticket_id, note_id):
         try:
@@ -391,7 +391,7 @@ class TicketAssignmentHistoryView(APIView):
     GET /api/v1/support/tickets/{id}/assignments/
     Returns the reassignment history for a ticket, newest first.
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request, ticket_id):
         try:
@@ -407,7 +407,7 @@ class TeamAnnouncementListView(APIView):
     GET  /api/v1/support/announcements/  — list active announcements
     POST /api/v1/support/announcements/  — create a new announcement
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         announcements = TeamAnnouncement.objects.filter(is_active=True)
@@ -425,7 +425,7 @@ class TeamAnnouncementDetailView(APIView):
     """
     DELETE /api/v1/support/announcements/{pk}/  — dismiss/remove an announcement
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def delete(self, request, pk):
         try:
@@ -441,7 +441,7 @@ class KnowledgeArticleListView(APIView):
     GET  /api/v1/support/knowledge/  — list all articles; ?category= filter
     POST /api/v1/support/knowledge/  — create a new article
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         qs = KnowledgeArticle.objects.all()
@@ -470,7 +470,7 @@ class KnowledgeArticleDetailView(APIView):
     PATCH  /api/v1/support/knowledge/{pk}/  — update title, body, or category
     DELETE /api/v1/support/knowledge/{pk}/  — delete an article
     """
-    permission_classes = [IsAuthenticated, IsBusinessOrExecutive]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def _get_article(self, pk):
         try:

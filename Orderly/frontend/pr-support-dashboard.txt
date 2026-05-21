@@ -1,0 +1,57 @@
+PR Title: Add support dashboard with ticket management, knowledge base, and team tools
+
+## Summary
+
+This PR introduces a fully built internal support dashboard for the Orderly admin panel, alongside
+several account management improvements and a new executive role.
+
+### Tickets App (new)
+- New `tickets` Django app with models for `Ticket`, `TicketNote`, `TicketAssignmentHistory`,
+  `BacklogItem`, `TeamAnnouncement`, and `KnowledgeArticle`
+- Full CRUD REST API for tickets, notes, backlog items, announcements, and knowledge articles
+- Assignment history is recorded automatically on every reassignment
+- 8 migrations covering the full schema evolution of the tickets app
+
+### Support Dashboard (frontend)
+- Ticket dashboard with filtering by status, priority, and assignee; sortable columns
+- Ticket detail page: update status/priority/assignee, case notes, progress log (notes), attachment
+  download, markdown export, and assignment history
+- Ticket creation form
+- "My Tickets" view scoped to the logged-in agent
+- Backlog page with bug/feature item management, archiving, and linked-ticket associations
+- Backlog item detail page
+- Knowledge base page (create, edit, delete articles by category)
+- Announcements page (create, toggle active/inactive, delete)
+- Support team roster with online/offline/busy/away status indicators
+- Feature request form
+
+### Account Management
+- User accounts dashboard with tiles for each role type
+- Admin account list page (filterable, paginated) for each role
+- Admin account detail page: edit name/email/role/city/state, reset password, toggle active,
+  delete account
+- Customer account detail page: full profile editing including address, phone, and email-verified flag
+- Deleted accounts tracked via `DeletedAccount` model
+
+### Roles & Auth
+- Added `EXECUTIVE` role with its own permission class (`IsExecutiveUser`)
+- Added `SUPPORT` role
+- Added `password_changed_at`, `last_seen_at`, `city`, `state`, and `status` fields to `UserRole`
+- Protected admin routes now enforce role-based access (BUSINESS, EXECUTIVE, SUPPORT only)
+
+### Docs & Build
+- Support staff manual (HTML) added to public/support-manual/
+- PDF version of the manual included
+- Build log updated
+
+## Test Plan
+- [ ] Log in as a support user and verify ticket dashboard loads
+- [ ] Create a ticket, assign it, update status — confirm assignment history records the change
+- [ ] Add/edit/delete a progress log note on a ticket
+- [ ] Create and archive a backlog item; link a ticket to it
+- [ ] Create/edit/delete a knowledge article
+- [ ] Post and deactivate a team announcement
+- [ ] Verify admin account detail page can edit role, reset password, toggle active, and delete
+- [ ] Verify customer account detail page saves profile changes correctly
+- [ ] Confirm non-admin roles (CUSTOMER) are redirected away from /admin routes
+- [ ] Run backend tests: pytest backend/
