@@ -71,7 +71,7 @@ def variant(db, product):
 
 
 # =========================
-# TESTS â€” VIEW INVENTORY
+# TESTS — VIEW INVENTORY
 # =========================
 
 @pytest.mark.django_db
@@ -90,7 +90,7 @@ def test_admin_can_view_variant_inventory(admin_client, product, variant):
 
 
 # =========================
-# TESTS â€” UPDATE INVENTORY
+# TESTS — UPDATE INVENTORY
 # =========================
 
 @pytest.mark.django_db

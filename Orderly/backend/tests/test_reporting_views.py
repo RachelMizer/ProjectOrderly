@@ -63,7 +63,7 @@ def setup_sales_data(db):
     Both COMPLETED and PENDING orders are counted as revenue:
     - Pizza: qty 3, gross 30.00, order total 33.00  (COMPLETED)
     - Burger: qty 2, gross 10.00, order total 11.00  (COMPLETED)
-    - Soda: qty 2, gross 6.00, order total 6.60  (PENDING â€” still counted)
+    - Soda: qty 2, gross 6.00, order total 6.60  (PENDING — still counted)
 
     Total revenue: 50.60 | Total orders: 3
     """

@@ -172,7 +172,7 @@ def _build_chart_data(files, month_filter, year_filter):
             })
         return points
 
-    # No year filter â€” just show available months
+    # No year filter — just show available months
     points = []
     for f in sorted(files):
         stem = f.stem.replace("_sales", "")
@@ -223,7 +223,7 @@ def _serialize_rows(rows):
         {
             "name": r["name"],
             "variant": r["variant"],
-            "category": categories.get(r["name"], "â€”"),
+            "category": categories.get(r["name"], "—"),
             "unit_price": str(r["unit_price"].quantize(Decimal("0.01"))),
             "units_sold": r["units_sold"],
             "revenue": str(r["revenue"].quantize(Decimal("0.01"))),
@@ -307,7 +307,7 @@ class AdminProductPerformanceView(APIView):
             breakdown     = []
 
             if month_filter:
-                # Daily granularity â€” one row per day in the month
+                # Daily granularity — one row per day in the month
                 granularity = "daily"
                 filepath = _COMMANDS_DIR / f"{month_filter}_sales.csv"
                 if not filepath.exists():
@@ -335,7 +335,7 @@ class AdminProductPerformanceView(APIView):
                     })
 
             else:
-                # Monthly granularity â€” one row per available month
+                # Monthly granularity — one row per available month
                 granularity  = "monthly"
                 all_files    = sorted(_COMMANDS_DIR.glob("*_sales.csv"))
                 scoped_files = []

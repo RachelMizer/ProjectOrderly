@@ -119,9 +119,9 @@ def test_seed_command_creates_expected_core_records():
     call_command("seed_data", seed=42)
 
     assert User.objects.filter(username="admin").exists()
-    assert User.objects.filter(username="business1").exists()
-    assert User.objects.filter(username="business2").exists()
-    assert User.objects.filter(username="business3").exists()
+    assert User.objects.filter(username="manager1").exists()
+    assert User.objects.filter(username="manager2").exists()
+    assert User.objects.filter(username="manager3").exists()
 
     assert User.objects.filter(username="jortega").exists()
     assert User.objects.filter(username="mpatel").exists()
