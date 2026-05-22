@@ -18,6 +18,8 @@ import CustomerAccountDetail from "./pages/Admin/CustomerAccountDetail";
 import UserAccountsDashboard from "./pages/Admin/UserAccountsDashboard";
 import AccountsListPage from "./pages/Admin/AccountsListPage";
 import SupportTeamRoster from "./pages/Admin/SupportTeamRoster";
+import TicketArchivePage from "./pages/Admin/TicketArchivePage";
+import AccountCreatePage from "./pages/Admin/AccountCreatePage";
 import AnnouncementsPage from "./pages/Admin/AnnouncementsPage";
 import KnowledgeBasePage from "./pages/Admin/KnowledgeBasePage";
 import Reports from "./pages/Admin/reports";
@@ -39,6 +41,10 @@ import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
 import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import AdminVariantsModifiersPage from "./pages/Admin/AdminVariantsModifiersPage";
+import LocationManagementPage from "./pages/Admin/LocationManagementPage";
+import LocationCreatePage from "./pages/Admin/LocationCreatePage";
+import LocationDetailPage from "./pages/Admin/LocationDetailPage";
+import RegionManagementPage from "./pages/Admin/RegionManagementPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -226,7 +232,6 @@ function AdminLayout() {
                 <button className="sidebar-announcement__dismiss" onClick={() => handleDismissAnnouncement(a.id)} title="Dismiss">×</button>
               </div>
             ))}
-            <Link to="/admin/support/announcements" className="sidebar-announcements__manage">Manage announcements →</Link>
           </div>
         )}
 
@@ -270,13 +275,15 @@ function AdminLayout() {
           <button type="submit" className="sidebar-ticket-search__btn">Go</button>
         </form>
         <Link to="/admin/support/tickets" className="sidebar-btn">🎫 Ticket Dashboard</Link>
+        <Link to="/admin/support/archive" className="sidebar-btn" style={{marginTop: "6px"}}>🗄️ Ticket Archive</Link>
         <Link to="/admin/support/backlog" className="sidebar-btn" style={{marginTop: "6px"}}>📋 Backlog</Link>
         <Link to="/admin/support/knowledge" className="sidebar-btn" style={{marginTop: "6px"}}>📖 Knowledge Base</Link>
         <Link to="/admin/feature-request" className="sidebar-btn" style={{marginTop: "6px"}}>💡 Feature Request</Link>
         <div style={{marginTop: "16px", marginBottom: "4px", borderTop: "1px solid rgba(255,255,255,0.2)"}} />
         <Link to="/admin/support/announcements" className="sidebar-btn">📢 Team Announcements</Link>
         <Link to="/admin/support/accounts" className="sidebar-btn" style={{marginTop: "6px"}}>👤 User Accounts Dashboard</Link>
-        <Link to="/admin/support/team" className="sidebar-btn" style={{marginTop: "6px", marginBottom: "16px"}}>👥 Team Roster</Link>
+        <Link to="/admin/support/team" className="sidebar-btn" style={{marginTop: "6px"}}>👥 Team Roster</Link>
+        <a href="/manual/support/index.html" target="_blank" rel="noreferrer" className="sidebar-btn" style={{marginTop: "6px", marginBottom: "16px"}}>📘 Support Manual</a>
         {path !== "/admin" && (
           <Link to="/admin" className="sidebar-back" style={{marginTop: "4px"}}>⬅️ Return to Dashboard</Link>
         )}
@@ -460,6 +467,44 @@ function AdminLayout() {
     );
 }
 
+    if (path === "/admin/locations/regions") return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">🗺️ Region Management</p>
+        <p className="sidebar-desc">Add countries, regions, and states/provinces. These are used when creating or editing locations.</p>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path === "/admin/locations/new") return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 New Location</p>
+        <p className="sidebar-desc">Add a new company location. Set up your regions and states first before creating locations.</p>
+        <Link to="/admin/locations/regions" className="sidebar-btn" style={{ marginBottom: "8px" }}>🗺️ Manage Regions</Link>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (/^\/admin\/locations\/\d+$/.test(path)) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 Location Detail</p>
+        <p className="sidebar-desc">Edit this location's information and manager assignment. Changes are saved when you click Save Changes.</p>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/locations")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 Location Management</p>
+        <p className="sidebar-desc">View all company locations. Filter by country, region, state, or city. Use the search bar to find a specific store.</p>
+        <Link to="/admin/locations/regions" className="sidebar-btn">🗺️ Manage Regions</Link>
+        <Link to="/admin/locations/new" className="sidebar-btn" style={{ marginTop: "6px" }}>+ New Location</Link>
+        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/feature-request")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">💡 Feature Requests</p>
@@ -493,24 +538,40 @@ function AdminLayout() {
           </div>
         </div>
 
-        <nav className="admin-nav-cards">
-          <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
-          <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
-          <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
-          <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
-          <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
-        </nav>
+        {userRole !== "SUPPORT" && (
+          <nav className="admin-nav-cards">
+            <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
+            )}
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
+            )}
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
+            )}
+            <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
+            {userRole === "EXECUTIVE" && (
+              <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
+            )}
+          </nav>
+        )}
 
         <div className="admin-content">
           <Routes>
-            <Route path="/" element={userRole === "SUPPORT" ? <SupportDashboard /> : <Dashboard />} />
+            <Route path="/" element={userRole === "SUPPORT" ? <SupportDashboard /> : <Dashboard userRole={userRole} />} />
             <Route path="/feature-request" element={<FeatureRequestForm />} />
             <Route path="/support/accounts" element={<UserAccountsDashboard />} />
             <Route path="/support/accounts/support" element={<AccountsListPage role="SUPPORT" />} />
+            <Route path="/support/accounts/support/new" element={<AccountCreatePage role="SUPPORT" />} />
             <Route path="/support/accounts/executive" element={<AccountsListPage role="EXECUTIVE" />} />
+            <Route path="/support/accounts/executive/new" element={<AccountCreatePage role="EXECUTIVE" />} />
             <Route path="/support/accounts/store-manager" element={<AccountsListPage role="STORE_MANAGER" />} />
+            <Route path="/support/accounts/store-manager/new" element={<AccountCreatePage role="STORE_MANAGER" />} />
             <Route path="/support/accounts/employee" element={<AccountsListPage role="EMPLOYEE" />} />
+            <Route path="/support/accounts/employee/new" element={<AccountCreatePage role="EMPLOYEE" />} />
             <Route path="/support/accounts/customer" element={<AccountsListPage role="CUSTOMER" />} />
+            <Route path="/support/accounts/customer/new" element={<AccountCreatePage role="CUSTOMER" />} />
             <Route path="/support/accounts/customer/:userId" element={<CustomerAccountDetail />} />
             <Route path="/support/accounts/:userId" element={<AdminAccountDetail />} />
             <Route path="/support/team" element={<SupportTeamRoster />} />
@@ -520,6 +581,7 @@ function AdminLayout() {
             <Route path="/support/announcements" element={<AnnouncementsPage />} />
             <Route path="/support/knowledge" element={<KnowledgeBasePage />} />
             <Route path="/support/tickets" element={<TicketDashboard />} />
+            <Route path="/support/archive" element={<TicketArchivePage />} />
             <Route path="/support/tickets/new" element={<TicketCreateForm />} />
             <Route path="/support/tickets/:ticketId" element={<TicketDetail />} />
             <Route path="/reports" element={<Reports />} />
@@ -542,6 +604,10 @@ function AdminLayout() {
             <Route path="/suppliers" element={<AdminSuppliersPage />} />
             <Route path="/categories" element={<AdminCategoriesPage />} />
             <Route path="/variants-modifiers" element={<AdminVariantsModifiersPage />} />
+            <Route path="/locations" element={<LocationManagementPage />} />
+            <Route path="/locations/new" element={<LocationCreatePage />} />
+            <Route path="/locations/regions" element={<RegionManagementPage />} />
+            <Route path="/locations/:locationId" element={<LocationDetailPage />} />
           </Routes>
         </div>
 

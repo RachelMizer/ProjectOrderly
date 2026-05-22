@@ -21,6 +21,7 @@ export default function AdminAccountDetail() {
   const [notFound, setNotFound] = useState(false);
 
   const [draft,       setDraft]       = useState({});
+  const [locations,   setLocations]   = useState([]);
   const [saving,      setSaving]      = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError,   setSaveError]   = useState("");
@@ -63,8 +64,18 @@ export default function AdminAccountDetail() {
       role:      account.role      || "STORE_MANAGER",
       city:      account.city      || "",
       state:     account.state     || "",
+      storeId:   account.store     ?? null,
     });
   }, [account]);
+
+  useEffect(() => {
+    if (draft.role !== "EMPLOYEE" || locations.length > 0) return;
+    const token = localStorage.getItem("accessToken");
+    fetch(`${API}/locations/`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => (r.ok ? r.json() : { results: [] }))
+      .then((data) => setLocations(data.results || []))
+      .catch(() => {});
+  }, [draft.role]);
 
   const hasChanges = account && (
     draft.firstName !== (account.firstName || "") ||
@@ -72,7 +83,8 @@ export default function AdminAccountDetail() {
     draft.email     !== (account.email     || "") ||
     draft.role      !== account.role             ||
     draft.city      !== (account.city      || "") ||
-    draft.state     !== (account.state     || "")
+    draft.state     !== (account.state     || "") ||
+    draft.storeId   !== (account.store     ?? null)
   );
 
   async function handleSave() {
@@ -197,6 +209,12 @@ export default function AdminAccountDetail() {
 
       <div className="ticket-detail__meta">
         <span className="ticket-detail__meta-item"><strong>Email:</strong> {account.email}</span>
+        {account.role === "EMPLOYEE" && (
+          <span className="ticket-detail__meta-item">
+            <strong>Store:</strong>{" "}
+            {account.storeName || "Unassigned"}
+          </span>
+        )}
         {account.role === "SUPPORT" && (account.city || account.state) && (
           <span className="ticket-detail__meta-item">
             <strong>Location:</strong>{" "}
@@ -234,6 +252,24 @@ export default function AdminAccountDetail() {
               {ROLE_OPTIONS.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
             </select>
           </label>
+          {draft.role === "EMPLOYEE" && (
+            <label className="support-filter-label">
+              Store Assignment
+              <select
+                className="support-filter-select"
+                value={draft.storeId ?? ""}
+                onChange={(e) => setDraft((d) => ({ ...d, storeId: e.target.value === "" ? null : Number(e.target.value) }))}
+                disabled={saving}
+              >
+                <option value="">— Unassigned —</option>
+                {locations.map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    #{String(loc.location_number).padStart(3, "0")} {loc.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {account.role === "SUPPORT" && (
             <>
               <label className="support-filter-label">

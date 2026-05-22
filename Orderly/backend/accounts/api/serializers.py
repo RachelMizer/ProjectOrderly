@@ -218,6 +218,7 @@ class AdminUserSerializer(serializers.Serializer):
     password  = serializers.CharField(write_only=True, required=False, allow_blank=True, min_length=8)
     city      = serializers.CharField(required=False, allow_blank=True, default="")
     state     = serializers.CharField(required=False, allow_blank=True, default="")
+    storeId   = serializers.IntegerField(required=False, allow_null=True)
 
     def validate_email(self, value):
         email = value.strip().lower()
@@ -240,6 +241,7 @@ class AdminUserSerializer(serializers.Serializer):
         profile = getattr(user, "profile", None)
         role = getattr(profile, "role", None)
         pw_changed = getattr(profile, "password_changed_at", None)
+        store = getattr(profile, "store", None)
         return {
             "id": user.pk,
             "firstName": user.first_name,
@@ -251,6 +253,8 @@ class AdminUserSerializer(serializers.Serializer):
             "dateJoined": user.date_joined.isoformat() if user.date_joined else None,
             "city":  getattr(profile, "city",  "") or "",
             "state": getattr(profile, "state", "") or "",
+            "store": store.pk if store else None,
+            "storeName": str(store) if store else None,
         }
 
     def create(self, validated_data):
@@ -268,8 +272,11 @@ class AdminUserSerializer(serializers.Serializer):
         return user
 
     def update(self, user, validated_data):
+        from locations.models import Location
+
         role = validated_data.pop("role", None)
         password = validated_data.pop("password", None)
+        store_id = validated_data.pop("storeId", "MISSING")
 
         if "first_name" in validated_data:
             user.first_name = validated_data["first_name"]
@@ -293,7 +300,16 @@ class AdminUserSerializer(serializers.Serializer):
                 profile.city = validated_data["city"]
             if "state" in validated_data:
                 profile.state = validated_data["state"].strip().upper()
-            if role or password or "city" in validated_data or "state" in validated_data:
+            if store_id != "MISSING":
+                if store_id is None:
+                    profile.store = None
+                else:
+                    try:
+                        profile.store = Location.objects.get(pk=store_id)
+                    except Location.DoesNotExist:
+                        pass
+            profile_dirty = role or password or "city" in validated_data or "state" in validated_data or store_id != "MISSING"
+            if profile_dirty:
                 profile.save()
         elif role:
             UserRole.objects.create(user=user, role=role, password_changed_at=timezone.now() if password else None)
@@ -518,6 +534,9 @@ class MeSerializer(serializers.Serializer):
         is_customer = user_role == UserRoleChoices.CUSTOMER
         profile = getattr(user, "customer_profile", None) if is_customer else None
 
+        user_profile = getattr(user, "profile", None)
+        store = getattr(user_profile, "store", None)
+
         data = {
             "id": user.pk,
             "username": user.username,
@@ -525,6 +544,8 @@ class MeSerializer(serializers.Serializer):
             "lastName": user.last_name,
             "email": user.email,
             "role": user_role,
+            "store": store.pk if store else None,
+            "storeName": str(store) if store else None,
         }
 
         if is_customer:

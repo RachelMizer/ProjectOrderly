@@ -52,6 +52,13 @@ class UserRole(models.Model):
         BUSY    = "BUSY",    "Busy"
         AWAY    = "AWAY",    "Away"
 
+    store = models.ForeignKey(
+        "locations.Location",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="staff",
+    )
     password_changed_at = models.DateTimeField(null=True, blank=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
     city   = models.CharField(max_length=120, blank=True, default="")

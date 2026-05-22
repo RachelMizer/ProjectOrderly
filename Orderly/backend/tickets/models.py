@@ -3,10 +3,9 @@ from django.db import models
 
 
 class TicketStatus(models.TextChoices):
-    NEW = "NEW", "New"
-    OPEN = "OPEN", "Open"
+    UNASSIGNED = "UNASSIGNED", "Unassigned"
     IN_PROGRESS = "IN_PROGRESS", "In Progress"
-    RESOLVED = "RESOLVED", "Resolved"
+    IN_REVIEW = "IN_REVIEW", "In Review"
     CLOSED = "CLOSED", "Closed"
 
 
@@ -23,7 +22,7 @@ class Ticket(models.Model):
     status = models.CharField(
         max_length=20,
         choices=TicketStatus.choices,
-        default=TicketStatus.NEW,
+        default=TicketStatus.UNASSIGNED,
     )
     priority = models.CharField(
         max_length=10,

@@ -23,10 +23,16 @@ class AllTicketsView(APIView):
         qs = Ticket.objects.all().order_by("-created_at")
         status = request.query_params.get("status")
         priority = request.query_params.get("priority")
+        created_after = request.query_params.get("created_after")
+        created_before = request.query_params.get("created_before")
         if status:
             qs = qs.filter(status=status.upper())
         if priority:
             qs = qs.filter(priority=priority.upper())
+        if created_after:
+            qs = qs.filter(created_at__date__gte=created_after)
+        if created_before:
+            qs = qs.filter(created_at__date__lte=created_before)
         serializer = TicketSerializer(qs, many=True, context={"request": request})
         return Response({"count": qs.count(), "results": serializer.data})
 
@@ -43,7 +49,7 @@ class AllTicketsView(APIView):
         ticket = Ticket.objects.create(
             title=title,
             description=description,
-            status=TicketStatus.NEW,
+            status=TicketStatus.UNASSIGNED,
             customer=request.user,
             attachment=attachment,
         )
@@ -88,12 +94,12 @@ class MyTicketsView(APIView):
 class NewTicketsView(APIView):
     """
     GET /api/v1/support/tickets/new/
-    Returns all tickets with status NEW, ordered by creation date descending.
+    Returns all tickets with status UNASSIGNED, ordered by creation date descending.
     """
     permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
-        tickets = Ticket.objects.filter(status=TicketStatus.NEW)
+        tickets = Ticket.objects.filter(status=TicketStatus.UNASSIGNED)
         serializer = TicketSerializer(tickets, many=True, context={"request": request})
         return Response({"count": tickets.count(), "results": serializer.data})
 

@@ -4,14 +4,13 @@ import { saveRecentTicket } from "../../utils/recentTickets";
 
 const API = "http://localhost:8000/api/v1";
 
-const STATUS_OPTIONS = ["NEW", "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+const STATUS_OPTIONS = ["UNASSIGNED", "IN_PROGRESS", "IN_REVIEW", "CLOSED"];
 const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH", "URGENT"];
 
 const STATUS_LABELS = {
-  NEW: "New",
-  OPEN: "Open",
+  UNASSIGNED: "Unassigned",
   IN_PROGRESS: "In Progress",
-  RESOLVED: "Resolved",
+  IN_REVIEW: "In Review",
   CLOSED: "Closed",
 };
 
@@ -22,7 +21,7 @@ const PRIORITY_LABELS = {
   URGENT: "Urgent",
 };
 
-const OPEN_STATUSES = new Set(["NEW", "OPEN", "IN_PROGRESS"]);
+const OPEN_STATUSES = new Set(["UNASSIGNED", "IN_PROGRESS", "IN_REVIEW"]);
 
 function daysOpen(createdAt) {
   const ms = Date.now() - new Date(createdAt).getTime();

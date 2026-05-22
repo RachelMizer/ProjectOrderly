@@ -4,11 +4,12 @@ import { getRecentTickets, setRecentTickets as persistRecentTickets } from "../.
 
 const API = "http://localhost:8000/api/v1";
 
+const STATUSES = ["IN_PROGRESS", "IN_REVIEW"];
+
 const STATUS_LABELS = {
-  NEW: "New",
-  OPEN: "Open",
+  UNASSIGNED: "Unassigned",
   IN_PROGRESS: "In Progress",
-  RESOLVED: "Resolved",
+  IN_REVIEW: "In Review",
   CLOSED: "Closed",
 };
 
@@ -73,6 +74,7 @@ export default function SupportDashboard() {
   const [recentTickets, setRecentTickets] = useState([]);
   const [newTickets, setNewTickets] = useState([]);
   const [assignedTickets, setAssignedTickets] = useState([]);
+  const [statusCounts, setStatusCounts] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -82,9 +84,10 @@ export default function SupportDashboard() {
         const headers = { Authorization: `Bearer ${token}` };
         const cached = getRecentTickets();
 
-        const [newRes, assignedRes, ...recentResults] = await Promise.all([
+        const [newRes, assignedRes, ...rest] = await Promise.all([
           fetch(`${API}/support/tickets/new/`, { headers }),
           fetch(`${API}/support/tickets/assigned/`, { headers }),
+          ...STATUSES.map((s) => fetch(`${API}/support/tickets/?status=${s}`, { headers })),
           ...cached.map((t) => fetch(`${API}/support/tickets/${t.id}/`, { headers })),
         ]);
 
@@ -97,7 +100,20 @@ export default function SupportDashboard() {
           setAssignedTickets(data.results || []);
         }
 
-        const validRecent = cached.filter((_, i) => recentResults[i].ok);
+        const countResults = rest.slice(0, STATUSES.length);
+        const recentResults = rest.slice(STATUSES.length);
+        const counts = {};
+        await Promise.all(
+          STATUSES.map(async (s, i) => {
+            if (countResults[i].ok) {
+              const data = await countResults[i].json();
+              counts[s] = data.count ?? 0;
+            }
+          })
+        );
+        setStatusCounts(counts);
+
+        const validRecent = cached.filter((_, i) => recentResults[i]?.ok);
         if (validRecent.length !== cached.length) {
           persistRecentTickets(validRecent);
         }
@@ -119,6 +135,17 @@ export default function SupportDashboard() {
 
       <div className="dash-info-bar">
         <p>📅 Today is {formatToday()}</p>
+      </div>
+
+      <div className="dash-status-tiles">
+        {STATUSES.map((s) => (
+          <div key={s} className={`dash-status-tile dash-status-tile--${s.toLowerCase()}`}>
+            <span className="dash-status-tile__count">
+              {statusCounts[s] ?? "—"}
+            </span>
+            <span className="dash-status-tile__label">{STATUS_LABELS[s]}</span>
+          </div>
+        ))}
       </div>
 
       {/* Section 1 — Pick Up Where You Left Off */}

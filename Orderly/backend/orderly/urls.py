@@ -42,4 +42,6 @@ urlpatterns = [
     path("api/v1/settings/", include("settings.api.urls")),
     # Support tickets API
     path("api/v1/support/", include("tickets.api.urls")),
+    # Locations API
+    path("api/v1/locations/", include("locations.api.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

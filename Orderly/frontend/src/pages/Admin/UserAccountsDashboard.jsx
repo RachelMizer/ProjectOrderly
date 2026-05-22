@@ -94,11 +94,9 @@ export default function UserAccountsDashboard() {
       <div className="accounts-tile-grid">
         {TILES.map(({ role, label, description, icon, path, colorClass }) => (
           <Link key={role} to={path} className={`accounts-tile ${colorClass}`}>
+            <span className="accounts-tile__icon">{icon}</span>
             <div className="accounts-tile__body">
-              <p className="accounts-tile__label">
-                <span className="accounts-tile__icon">{icon}</span>
-                {label}
-              </p>
+              <p className="accounts-tile__label">{label}</p>
               <p className="accounts-tile__desc">{description}</p>
               <div className="accounts-tile__count">
                 <span className="accounts-tile__num">

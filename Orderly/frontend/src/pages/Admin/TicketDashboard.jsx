@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API = "http://localhost:8000/api/v1";
 
-const STATUS_OPTIONS = ["", "NEW", "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"];
+const COLUMNS = ["UNASSIGNED", "IN_PROGRESS", "IN_REVIEW", "CLOSED"];
 const PRIORITY_OPTIONS = ["", "LOW", "MEDIUM", "HIGH", "URGENT"];
 
-const STATUS_LABELS = {
-  NEW: "New",
-  OPEN: "Open",
+const COLUMN_LABELS = {
+  UNASSIGNED: "Unassigned",
   IN_PROGRESS: "In Progress",
-  RESOLVED: "Resolved",
+  IN_REVIEW: "In Review",
   CLOSED: "Closed",
 };
 
@@ -20,6 +19,9 @@ const PRIORITY_LABELS = {
   HIGH: "High",
   URGENT: "Urgent",
 };
+
+// Moving into these columns requires an assigned agent
+const REQUIRES_ASSIGNEE = new Set(["IN_PROGRESS", "IN_REVIEW"]);
 
 function formatDate(date) {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -31,19 +33,33 @@ function formatDate(date) {
   return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
 }
 
+function getInitials(assignedTo) {
+  if (!assignedTo) return null;
+  const first = assignedTo.firstName?.[0] || "";
+  const last = assignedTo.lastName?.[0] || "";
+  const initials = (first + last).toUpperCase();
+  return initials || assignedTo.username?.slice(0, 2).toUpperCase() || "?";
+}
+
+function agentDisplayName(agent) {
+  const full = [agent.firstName, agent.lastName].filter(Boolean).join(" ");
+  return full || agent.username;
+}
+
 export default function TicketDashboard() {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [dragOverColumn, setDragOverColumn] = useState(null);
+  const [dropError, setDropError] = useState("");
+  const draggedTicket = useRef(null);
 
   useEffect(() => {
     async function load() {
       try {
         const token = localStorage.getItem("accessToken");
         const params = new URLSearchParams();
-        if (statusFilter) params.set("status", statusFilter);
         if (priorityFilter) params.set("priority", priorityFilter);
         const res = await fetch(`${API}/support/tickets/?${params}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -59,26 +75,79 @@ export default function TicketDashboard() {
       }
     }
     load();
-  }, [statusFilter, priorityFilter]);
+  }, [priorityFilter]);
+
+  const byColumn = COLUMNS.reduce((acc, col) => {
+    acc[col] = tickets.filter((t) => t.status === col);
+    return acc;
+  }, {});
+
+  function handleDragStart(e, ticket, fromColumn) {
+    draggedTicket.current = { ticket, fromColumn };
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(ticket.id));
+  }
+
+  function handleDragOver(e, column) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverColumn !== column) setDragOverColumn(column);
+  }
+
+  function handleDragLeave(e) {
+    // Only clear when the cursor genuinely leaves the column, not when
+    // it moves over a child element inside it.
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDragOverColumn(null);
+    }
+  }
+
+  async function handleDrop(e, targetColumn) {
+    e.preventDefault();
+    setDragOverColumn(null);
+
+    const dragged = draggedTicket.current;
+    draggedTicket.current = null;
+    if (!dragged || targetColumn === dragged.fromColumn) return;
+
+    const { ticket } = dragged;
+
+    // Block move to IN_PROGRESS or IN_REVIEW if ticket has no assignee
+    if (REQUIRES_ASSIGNEE.has(targetColumn) && !ticket.assignedTo) {
+      setDropError("Assign this ticket to a team member before moving it to In Progress or In Review.");
+      setTimeout(() => setDropError(""), 4000);
+      return;
+    }
+
+    // Optimistic update
+    setTickets((prev) =>
+      prev.map((t) => (t.id === ticket.id ? { ...t, status: targetColumn } : t))
+    );
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${API}/support/tickets/${ticket.id}/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: targetColumn }),
+      });
+      if (!res.ok) throw new Error("PATCH failed");
+    } catch {
+      // Revert on failure
+      setTickets((prev) =>
+        prev.map((t) => (t.id === ticket.id ? { ...t, status: ticket.status } : t))
+      );
+    }
+  }
 
   return (
     <div className="admin-dash support-dash">
       <h1 className="ticket-detail__title">Ticket Dashboard</h1>
 
       <div className="support-filters">
-        <label className="support-filter-label">
-          Status
-          <select
-            className="support-filter-select"
-            value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setLoading(true); }}
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s ? STATUS_LABELS[s] : "All"}</option>
-            ))}
-          </select>
-        </label>
-
         <label className="support-filter-label">
           Priority
           <select
@@ -87,51 +156,75 @@ export default function TicketDashboard() {
             onChange={(e) => { setPriorityFilter(e.target.value); setLoading(true); }}
           >
             {PRIORITY_OPTIONS.map((p) => (
-              <option key={p} value={p}>{p ? PRIORITY_LABELS[p] : "All"}</option>
+              <option key={p} value={p}>{p ? PRIORITY_LABELS[p] : "All Priorities"}</option>
             ))}
           </select>
         </label>
       </div>
 
+      {dropError && (
+        <p className="kanban-drop-error">{dropError}</p>
+      )}
+
       {loading ? (
         <p className="admin-loading">Loading...</p>
-      ) : tickets.length === 0 ? (
-        <p className="support-empty">No tickets match the selected filters.</p>
       ) : (
-        <table className="support-ticket-table">
-          <thead>
-            <tr>
-              <th>Ticket #</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Date Opened</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map((ticket) => (
-              <tr
-                key={ticket.id}
-                className="support-ticket-table__row"
-                onClick={() => navigate(`/admin/support/tickets/${ticket.id}`)}
+        <div className="kanban-board">
+          {COLUMNS.map((column) => (
+              <div
+                key={column}
+                className={`kanban-column kanban-column--${column.toLowerCase()}${dragOverColumn === column ? " kanban-column--drag-over" : ""}`}
+                onDragOver={(e) => handleDragOver(e, column)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, column)}
               >
-                <td>#{ticket.id}</td>
-                <td>{ticket.title}</td>
-                <td>
-                  <span className={`support-badge support-badge--status support-badge--${ticket.status?.toLowerCase()}`}>
-                    {STATUS_LABELS[ticket.status] || ticket.status}
-                  </span>
-                </td>
-                <td>
-                  <span className={`support-badge support-badge--priority support-badge--${ticket.priority?.toLowerCase()}`}>
-                    {PRIORITY_LABELS[ticket.priority] || ticket.priority}
-                  </span>
-                </td>
-                <td>{ticket.createdAt ? formatDate(ticket.createdAt) : ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                <div className="kanban-column__header">
+                  <span className="kanban-column__label">{COLUMN_LABELS[column]}</span>
+                  <span className="kanban-column__count">{byColumn[column].length}</span>
+                </div>
+                <div className="kanban-column__cards">
+                  {byColumn[column].length === 0 ? (
+                    <p className="kanban-empty">No tickets</p>
+                  ) : (
+                    byColumn[column].map((ticket) => (
+                      <div
+                        key={ticket.id}
+                        className="kanban-card"
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, ticket, column)}
+                        onClick={() => navigate(`/admin/support/tickets/${ticket.id}`)}
+                      >
+                        <div className="kanban-card__top">
+                          <span className="kanban-card__id">#{ticket.id}</span>
+                          {ticket.assignedTo ? (
+                            <span
+                              className="kanban-card__assignee"
+                              title={agentDisplayName(ticket.assignedTo)}
+                            >
+                              {getInitials(ticket.assignedTo)}
+                            </span>
+                          ) : (
+                            <span className="kanban-card__assignee kanban-card__assignee--none" title="Unassigned">
+                              —
+                            </span>
+                          )}
+                        </div>
+                        <p className="kanban-card__title">{ticket.title}</p>
+                        <div className="kanban-card__footer">
+                          <span className={`support-badge support-badge--priority support-badge--${ticket.priority?.toLowerCase()}`}>
+                            {PRIORITY_LABELS[ticket.priority] || ticket.priority}
+                          </span>
+                          {ticket.createdAt && (
+                            <span className="kanban-card__date">{formatDate(ticket.createdAt)}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+          ))}
+        </div>
       )}
     </div>
   );
