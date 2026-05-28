@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AdminProductsPage from "../pages/Admin/AdminProductsPage";
@@ -26,7 +26,7 @@ jest.mock("../api/handleApiError", () => ({
 global.fetch = jest.fn();
 
 function setBusinessUser() {
-  localStorage.setItem("user", JSON.stringify({ role: "BUSINESS" }));
+  localStorage.setItem("user", JSON.stringify({ role: "STORE_MANAGER" }));
   localStorage.setItem("accessToken", "fake-token");
   auth.isAuthenticated.mockReturnValue(true);
 }

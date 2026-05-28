@@ -1,4 +1,4 @@
-import calendar
+﻿import calendar
 from decimal import Decimal
 
 from django.db.models import Max, Sum, Count, Avg, F
@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from orders.models import Order, OrderItem
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsStoreManagerOrAbove
 
 from .serializers import (
     ProductSalesListSerializer,
@@ -19,7 +19,7 @@ from .serializers import (
 
 
 class SalesSummaryView(APIView):
-    permission_classes = [IsBusinessUser]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         query_serializer = SalesSummaryQuerySerializer(data=request.GET)
@@ -126,7 +126,7 @@ class SalesSummaryView(APIView):
 
 
 class BestSellersView(APIView):
-    permission_classes = [IsBusinessUser]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         query_serializer = ProductSalesQuerySerializer(data=request.GET)
@@ -173,7 +173,7 @@ class BestSellersView(APIView):
 
 
 class WorstSellersView(APIView):
-    permission_classes = [IsBusinessUser]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         query_serializer = ProductSalesQuerySerializer(data=request.GET)
@@ -220,7 +220,7 @@ class WorstSellersView(APIView):
 
 
 class SalesByCategoryView(APIView):
-    permission_classes = [IsBusinessUser]
+    permission_classes = [IsStoreManagerOrAbove]
 
     def get(self, request):
         query_serializer = DateRangeSerializer(data=request.GET)

@@ -131,12 +131,6 @@ export default function Reports() {
               Download orders, products, or inventory as CSV files.
             </p>
           </Link>
-          <Link to="/admin/purchase-order" className="rpt-hub-card">
-            <p className="rpt-hub-card__title"><span style={{marginRight:"-1px"}}>🛒</span> Purchase Order</p>
-            <p className="rpt-hub-card__desc">
-              Create a purchase order based on low-stock inventory.
-            </p>
-          </Link>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+﻿from django.shortcuts import get_object_or_404
 from django.db.models import F, Q
 
 from rest_framework.permissions import IsAuthenticated
@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsStoreManagerOrAbove
 from inventory.models import InventoryItem
 from catalog.models import ProductVariant
 from .admin_serializers import (
@@ -17,7 +17,7 @@ from .admin_serializers import (
 
 
 class AdminInventoryListCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         items = InventoryItem.objects.all().order_by("name")
@@ -35,7 +35,7 @@ class AdminInventoryListCreateView(APIView):
 
 
 class AdminInventoryDetailView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request, itemId):
         item = get_object_or_404(InventoryItem, pk=itemId)
@@ -59,7 +59,7 @@ class AdminInventoryDetailView(APIView):
 
 
 class AdminLowStockView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         low_stock_variants = ProductVariant.objects.filter(

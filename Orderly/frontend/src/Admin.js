@@ -1,10 +1,27 @@
 // ADMIN.JS - Admin dashboard layout and routing
 import "./Admin.css";
-import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { isAuthenticated, logout } from "./api/auth";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import Dashboard from "./pages/Admin/dashboard";
+import SupportDashboard from "./pages/Admin/SupportDashboard";
+import TicketDashboard from "./pages/Admin/TicketDashboard";
+import TicketCreateForm from "./pages/Admin/TicketCreateForm";
+import TicketDetail from "./pages/Admin/TicketDetail";
+import MyTickets from "./pages/Admin/MyTickets";
+import BacklogPage from "./pages/Admin/BacklogPage";
+import BacklogItemDetail from "./pages/Admin/BacklogItemDetail";
+import FeatureRequestForm from "./pages/Admin/FeatureRequestForm";
+import AdminAccountDetail from "./pages/Admin/AdminAccountDetail";
+import CustomerAccountDetail from "./pages/Admin/CustomerAccountDetail";
+import UserAccountsDashboard from "./pages/Admin/UserAccountsDashboard";
+import AccountsListPage from "./pages/Admin/AccountsListPage";
+import SupportTeamRoster from "./pages/Admin/SupportTeamRoster";
+import TicketArchivePage from "./pages/Admin/TicketArchivePage";
+import AccountCreatePage from "./pages/Admin/AccountCreatePage";
+import AnnouncementsPage from "./pages/Admin/AnnouncementsPage";
+import KnowledgeBasePage from "./pages/Admin/KnowledgeBasePage";
 import Reports from "./pages/Admin/reports";
 import AdminInventoryPage from "./pages/Admin/AdminInventoryPage";
 import AdminSalesDashboard from "./pages/Admin/AdminSalesDashboard";
@@ -24,13 +41,27 @@ import AdminInventoryDetailPage from "./pages/Admin/AdminInventoryDetailPage";
 import AdminSuppliersPage from "./pages/Admin/AdminSuppliersPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import AdminVariantsModifiersPage from "./pages/Admin/AdminVariantsModifiersPage";
+import LocationManagementPage from "./pages/Admin/LocationManagementPage";
+import LocationCreatePage from "./pages/Admin/LocationCreatePage";
+import LocationDetailPage from "./pages/Admin/LocationDetailPage";
+import RegionManagementPage from "./pages/Admin/RegionManagementPage";
 import { removeRecentOrder } from "./utils/recentOrders";
+
+const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
+const STATUS_LABELS = { ONLINE: "Online", BUSY: "Busy", AWAY: "Away", OFFLINE: "Offline" };
 
 function AdminLayout() {
   const [authorized, setAuthorized] = useState(null);
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [recentOrdersKey, setRecentOrdersKey] = useState(0);
+  const [ticketSearch, setTicketSearch] = useState("");
+  const [myStatus, setMyStatus] = useState("ONLINE");
+  const [teamStatuses, setTeamStatuses] = useState([]);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [announcements, setAnnouncements] = useState([]);
   const location = useLocation();
+  const navigate = useNavigate();
   const path = location.pathname;
 
   useEffect(() => {
@@ -51,19 +82,100 @@ function AdminLayout() {
     })
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((user) => {
-        if (user.role !== "BUSINESS") {
+        if (user.role !== "STORE_MANAGER" && user.role !== "EMPLOYEE" && user.role !== "EXECUTIVE" && user.role !== "SUPPORT") {
           setAuthorized(false);
         } else {
           setAuthorized(true);
+          setUserRole(user.role);
           setUserName(user.firstName || user.username || user.email || "Admin");
+          localStorage.setItem("currentUserId", user.id);
+          if (user.role === "SUPPORT") {
+            fetch("http://localhost:8000/api/v1/users/my-status/", {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .then((data) => { if (data) setMyStatus(data.status); })
+              .catch(() => {});
+          }
         }
       })
       .catch(() => setAuthorized(false));
   }, []);
 
+  useEffect(() => {
+    if (!authorized) return;
+    const token = localStorage.getItem("accessToken");
+    fetch("http://localhost:8000/api/v1/support/announcements/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : { results: [] }))
+      .then((data) => setAnnouncements(data.results || []))
+      .catch(() => {});
+  }, [authorized]);
+
+  useEffect(() => {
+    if (!authorized || userRole !== "SUPPORT") return;
+    function fetchTeam() {
+      const token = localStorage.getItem("accessToken");
+      fetch("http://localhost:8000/api/v1/users/team-status/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => (r.ok ? r.json() : { members: [] }))
+        .then((data) => setTeamStatuses(data.members || []))
+        .catch(() => {});
+    }
+    fetchTeam();
+    const interval = setInterval(fetchTeam, 30000);
+    return () => clearInterval(interval);
+  }, [authorized, userRole]);
+
+  useEffect(() => {
+    if (!authorized || userRole !== "SUPPORT") return;
+    function sendHeartbeat() {
+      const token = localStorage.getItem("accessToken");
+      fetch("http://localhost:8000/api/v1/users/heartbeat/", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    sendHeartbeat();
+    const interval = setInterval(sendHeartbeat, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [authorized, userRole]);
+
   function handleLogout() {
-    logout();
-    window.location.href = "/admin/login";
+    const token = localStorage.getItem("accessToken");
+    fetch("http://localhost:8000/api/v1/auth/logout", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
+    })
+      .catch(() => {})
+      .finally(() => {
+        logout();
+        window.location.href = "/admin/login";
+      });
+  }
+
+  function handleStatusChange(newStatus) {
+    const token = localStorage.getItem("accessToken");
+    setMyStatus(newStatus);
+    setStatusDropdownOpen(false);
+    fetch("http://localhost:8000/api/v1/users/my-status/", {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((r) => {
+        if (r.ok) {
+          setTeamStatuses((prev) =>
+            prev.map((m) =>
+              m.id === Number(localStorage.getItem("currentUserId")) ? { ...m, status: newStatus } : m
+            )
+          );
+        }
+      })
+      .catch(() => {});
   }
 
   useEffect(() => {
@@ -89,7 +201,121 @@ function AdminLayout() {
   if (authorized === null) return null;
   if (authorized === false) return <Navigate to="/admin/login" replace />;
 
+  function handleTicketSearch(e) {
+    e.preventDefault();
+    const id = ticketSearch.trim();
+    if (id) {
+      navigate(`/admin/support/tickets/${id}`);
+      setTicketSearch("");
+    }
+  }
+
+  function handleDismissAnnouncement(id) {
+    const token = localStorage.getItem("accessToken");
+    fetch(`http://localhost:8000/api/v1/support/announcements/${id}/`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+  }
+
   function SidebarMenu() {
+    if (userRole === "SUPPORT") return (
+      <div className="sidebar-menu">
+        {/* Team Announcements */}
+        {announcements.length > 0 && (
+          <div className="sidebar-announcements">
+            <p className="sidebar-announcements__heading">📢 Team Announcements</p>
+            {announcements.slice(0, 3).map((a) => (
+              <div key={a.id} className="sidebar-announcement">
+                <p className="sidebar-announcement__body">{a.body}</p>
+                <button className="sidebar-announcement__dismiss" onClick={() => handleDismissAnnouncement(a.id)} title="Dismiss">×</button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Status toggle */}
+        <p style={{fontSize: ".68rem", textTransform: "uppercase", letterSpacing: ".1rem", color: "rgba(255,255,255,0.9)", margin: "0 0 3px 2px", fontWeight: 700}}>Your Status</p>
+        <div
+          className="sidebar-status-bar"
+          onClick={(e) => { e.stopPropagation(); setStatusDropdownOpen((o) => !o); }}
+        >
+          <span
+            className="presence-dot"
+            style={{
+              background: myStatus === "OFFLINE" ? "transparent" : STATUS_COLORS[myStatus] || "#22c55e",
+              border: myStatus === "OFFLINE" ? "2px solid #9ca3af" : "none",
+            }}
+          />
+          <span className="sidebar-status-bar__label">{STATUS_LABELS[myStatus] || myStatus}</span>
+          <span style={{fontSize: ".65rem", color: "white"}}>▾</span>
+          {statusDropdownOpen && (
+            <div className="sidebar-status-dropdown" onClick={(e) => e.stopPropagation()}>
+              {["ONLINE", "BUSY", "AWAY"].map((s) => (
+                <div key={s} className="sidebar-status-option" onClick={() => handleStatusChange(s)}>
+                  <span className="presence-dot" style={{ background: STATUS_COLORS[s] }} />
+                  {STATUS_LABELS[s]}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="sidebar-title" style={{marginTop: "10px", fontSize: "1.15rem", letterSpacing: ".18rem"}}>Support Options</p>
+        <p className="sidebar-sub sidebar-sub--search">Ticket Search</p>
+        <form className="sidebar-ticket-search" onSubmit={handleTicketSearch} style={{marginBottom: "14px"}}>
+          <input
+            type="text"
+            className="sidebar-ticket-search__input"
+            placeholder="Ticket ID"
+            value={ticketSearch}
+            onChange={(e) => setTicketSearch(e.target.value)}
+          />
+          <button type="submit" className="sidebar-ticket-search__btn">Go</button>
+        </form>
+        <Link to="/admin/support/tickets" className="sidebar-btn">🎫 Ticket Dashboard</Link>
+        <Link to="/admin/support/archive" className="sidebar-btn" style={{marginTop: "6px"}}>🗄️ Ticket Archive</Link>
+        <Link to="/admin/support/backlog" className="sidebar-btn" style={{marginTop: "6px"}}>📋 Backlog</Link>
+        <Link to="/admin/support/knowledge" className="sidebar-btn" style={{marginTop: "6px"}}>📖 Knowledge Base</Link>
+        <Link to="/admin/feature-request" className="sidebar-btn" style={{marginTop: "6px"}}>💡 Feature Request</Link>
+        <div style={{marginTop: "16px", marginBottom: "4px", borderTop: "1px solid rgba(255,255,255,0.2)"}} />
+        <Link to="/admin/support/announcements" className="sidebar-btn">📢 Team Announcements</Link>
+        <Link to="/admin/support/accounts" className="sidebar-btn" style={{marginTop: "6px"}}>👤 User Accounts Dashboard</Link>
+        <Link to="/admin/support/team" className="sidebar-btn" style={{marginTop: "6px"}}>👥 Team Roster</Link>
+        <a href="/manual/support/index.html" target="_blank" rel="noreferrer" className="sidebar-btn" style={{marginTop: "6px", marginBottom: "16px"}}>📘 Support Manual</a>
+        {path !== "/admin" && (
+          <Link to="/admin" className="sidebar-back" style={{marginTop: "4px"}}>⬅️ Return to Dashboard</Link>
+        )}
+
+        {/* Team presence list */}
+        {teamStatuses.length > 0 && (
+          <div className="sidebar-team-list">
+            <p className="sidebar-team-list__heading">Team Member Status</p>
+            {teamStatuses.map((m) => (
+              <div key={m.id} className="sidebar-team-member">
+                <span
+                  className="presence-dot"
+                  style={{
+                    background: m.status === "OFFLINE" ? "transparent" : STATUS_COLORS[m.status] || "#9ca3af",
+                    border: m.status === "OFFLINE" ? "2px solid #9ca3af" : "none",
+                  }}
+                />
+                <span
+                  className="sidebar-team-member__name"
+                  style={{
+                    color: m.status === "OFFLINE" ? "#8faabf" : m.status === "BUSY" ? "#4a5568" : m.status === "ONLINE" ? "#33638b" : m.status === "AWAY" ? "#9ca3af" : undefined,
+                    fontWeight: m.status === "ONLINE" ? "800" : undefined,
+                    fontStyle: m.status === "BUSY" || m.status === "AWAY" ? "italic" : undefined,
+                  }}
+                >{m.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+
     if (path.startsWith("/admin/export")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>📥</span>Export Data</p>
@@ -241,6 +467,52 @@ function AdminLayout() {
     );
 }
 
+    if (path === "/admin/locations/regions") return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">🗺️ Region Management</p>
+        <p className="sidebar-desc">Add countries, regions, and states/provinces. These are used when creating or editing locations.</p>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path === "/admin/locations/new") return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 New Location</p>
+        <p className="sidebar-desc">Add a new company location. Set up your regions and states first before creating locations.</p>
+        <Link to="/admin/locations/regions" className="sidebar-btn" style={{ marginBottom: "8px" }}>🗺️ Manage Regions</Link>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (/^\/admin\/locations\/\d+$/.test(path)) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 Location Detail</p>
+        <p className="sidebar-desc">Edit this location's information and manager assignment. Changes are saved when you click Save Changes.</p>
+        <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/locations")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">📍 Location Management</p>
+        <p className="sidebar-desc">View all company locations. Filter by country, region, state, or city. Use the search bar to find a specific store.</p>
+        <Link to="/admin/locations/regions" className="sidebar-btn">🗺️ Manage Regions</Link>
+        <Link to="/admin/locations/new" className="sidebar-btn" style={{ marginTop: "6px" }}>+ New Location</Link>
+        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/feature-request")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">💡 Feature Requests</p>
+        <p className="sidebar-desc">Submit ideas and improvements directly to the support team's backlog for review.</p>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     return null;
   }
 
@@ -259,23 +531,59 @@ function AdminLayout() {
         <div className="admin-topbar">
           <p className="admin-welcome">Welcome, {userName}!</p>
           <div className="admin-topbar-actions">
-            <a href="/manual/01-introduction.html" target="_blank" rel="noreferrer"><span style={{fontSize: "1.1rem", marginRight: "-1px"}}>❓</span>Help</a>
+            <Link to="/admin/support/my-tickets">Help</Link>
+            <a href="/manual/01-introduction.html" target="_blank" rel="noreferrer">User Manual</a>
             <Link to="/admin/account"><span style={{fontSize: "1.1rem", marginRight: "2px"}}>⚙</span>Account Settings</Link>
             <a onClick={handleLogout} style={{cursor: "pointer"}}>Logout</a>
           </div>
         </div>
 
-        <nav className="admin-nav-cards">
-          <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
-          <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
-          <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
-          <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
-          <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
-        </nav>
+        {userRole !== "SUPPORT" && (
+          <nav className="admin-nav-cards">
+            <Link to="/admin/reports" className="nav-card" style={{backgroundImage: "url('/img/rep_button.png')"}}><span>Reports</span></Link>
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/inventory" className="nav-card" style={{backgroundImage: "url('/img/inv_button.png')"}}><span>Inventory</span></Link>
+            )}
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/catalog" className="nav-card nav-card--wrap" style={{backgroundImage: "url('/img/prodcat_button.png')"}}><span>Product Catalog</span></Link>
+            )}
+            {userRole !== "EXECUTIVE" && (
+              <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
+            )}
+            <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
+            {userRole === "EXECUTIVE" && (
+              <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
+            )}
+          </nav>
+        )}
 
         <div className="admin-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={userRole === "SUPPORT" ? <SupportDashboard /> : <Dashboard userRole={userRole} />} />
+            <Route path="/feature-request" element={<FeatureRequestForm />} />
+            <Route path="/support/accounts" element={<UserAccountsDashboard />} />
+            <Route path="/support/accounts/support" element={<AccountsListPage role="SUPPORT" />} />
+            <Route path="/support/accounts/support/new" element={<AccountCreatePage role="SUPPORT" />} />
+            <Route path="/support/accounts/executive" element={<AccountsListPage role="EXECUTIVE" />} />
+            <Route path="/support/accounts/executive/new" element={<AccountCreatePage role="EXECUTIVE" />} />
+            <Route path="/support/accounts/store-manager" element={<AccountsListPage role="STORE_MANAGER" />} />
+            <Route path="/support/accounts/store-manager/new" element={<AccountCreatePage role="STORE_MANAGER" />} />
+            <Route path="/support/accounts/employee" element={<AccountsListPage role="EMPLOYEE" />} />
+            <Route path="/support/accounts/employee/new" element={<AccountCreatePage role="EMPLOYEE" />} />
+            <Route path="/support/accounts/customer" element={<AccountsListPage role="CUSTOMER" />} />
+            <Route path="/support/accounts/customer/new" element={<AccountCreatePage role="CUSTOMER" />} />
+            <Route path="/support/accounts/customer/:userId" element={<CustomerAccountDetail />} />
+            <Route path="/support/accounts/:userId" element={<AdminAccountDetail />} />
+            <Route path="/support/team" element={<SupportTeamRoster />} />
+            <Route path="/support/my-tickets" element={<MyTickets />} />
+            <Route path="/support/backlog" element={<BacklogPage />} />
+            <Route path="/support/backlog/:itemId" element={<BacklogItemDetail />} />
+            <Route path="/support/announcements" element={<AnnouncementsPage />} />
+            <Route path="/support/knowledge" element={<KnowledgeBasePage />} />
+            <Route path="/support/tickets" element={<TicketDashboard />} />
+            <Route path="/support/archive" element={<TicketArchivePage />} />
+            <Route path="/support/tickets/new" element={<TicketCreateForm />} />
+            <Route path="/support/tickets/:ticketId" element={<TicketDetail />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/reports/sales" element={<AdminSalesDashboard />} />
             <Route path="/reports/products" element={<AdminProductPerformance />} />
@@ -296,11 +604,15 @@ function AdminLayout() {
             <Route path="/suppliers" element={<AdminSuppliersPage />} />
             <Route path="/categories" element={<AdminCategoriesPage />} />
             <Route path="/variants-modifiers" element={<AdminVariantsModifiersPage />} />
+            <Route path="/locations" element={<LocationManagementPage />} />
+            <Route path="/locations/new" element={<LocationCreatePage />} />
+            <Route path="/locations/regions" element={<RegionManagementPage />} />
+            <Route path="/locations/:locationId" element={<LocationDetailPage />} />
           </Routes>
         </div>
 
         <div className="admin-footer">
-          <span>USER | {userName.toUpperCase()}</span>
+          <span>{userRole} USER | {userName.toUpperCase()}</span>
         </div>
       </div>
 

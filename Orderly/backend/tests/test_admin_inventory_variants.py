@@ -1,4 +1,4 @@
-import pytest
+﻿import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
@@ -23,7 +23,7 @@ def business_user(db):
         username="business@test.com",
         password="Password123!"
     )
-    UserRole.objects.create(user=user, role=UserRoleChoices.BUSINESS)
+    UserRole.objects.create(user=user, role=UserRoleChoices.STORE_MANAGER)
     return user
 
 

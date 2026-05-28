@@ -23,8 +23,11 @@ STATE_VALIDATOR = RegexValidator(
 
 
 class UserRoleChoices(models.TextChoices):
-    BUSINESS = "BUSINESS", "Business"
+    STORE_MANAGER = "STORE_MANAGER", "Store Manager"
+    EMPLOYEE = "EMPLOYEE", "Employee"
     CUSTOMER = "CUSTOMER", "Customer"
+    EXECUTIVE = "EXECUTIVE", "Executive"
+    SUPPORT = "SUPPORT", "Support"
 
 
 class UserRole(models.Model):
@@ -42,6 +45,28 @@ class UserRole(models.Model):
         max_length=20,
         choices=UserRoleChoices.choices,
         default=UserRoleChoices.CUSTOMER,
+    )
+    class StatusChoices(models.TextChoices):
+        ONLINE  = "ONLINE",  "Online"
+        OFFLINE = "OFFLINE", "Offline"
+        BUSY    = "BUSY",    "Busy"
+        AWAY    = "AWAY",    "Away"
+
+    store = models.ForeignKey(
+        "locations.Location",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="staff",
+    )
+    password_changed_at = models.DateTimeField(null=True, blank=True)
+    last_seen_at = models.DateTimeField(null=True, blank=True)
+    city   = models.CharField(max_length=120, blank=True, default="")
+    state  = models.CharField(max_length=2,   blank=True, default="")
+    status = models.CharField(
+        max_length=10,
+        choices=StatusChoices.choices,
+        default=StatusChoices.OFFLINE,
     )
 
     def __str__(self) -> str:
@@ -125,3 +150,24 @@ class CustomerProfile(models.Model):
 
     def __str__(self) -> str:
         return f"CustomerProfile for {self.user.username}"
+
+
+class DeletedAccount(models.Model):
+    first_name = models.CharField(max_length=150, blank=True, default="")
+    last_name  = models.CharField(max_length=150, blank=True, default="")
+    email      = models.EmailField()
+    role       = models.CharField(max_length=20, blank=True, default="")
+    deleted_at = models.DateTimeField(auto_now_add=True)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="deletions_performed",
+    )
+    deleted_by_name = models.CharField(max_length=300, blank=True, default="")
+
+    class Meta:
+        ordering = ["-deleted_at"]
+
+    def __str__(self):
+        return f"Deleted: {self.email} (by {self.deleted_by_name or 'unknown'})"

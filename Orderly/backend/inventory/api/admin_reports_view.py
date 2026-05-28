@@ -1,4 +1,4 @@
-import csv
+﻿import csv
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from accounts.api.permissions import IsBusinessUser
+from accounts.api.permissions import IsStoreManagerOrAbove
 from catalog.models import Product
 
 
@@ -128,9 +128,9 @@ def _read_daily(filepath):
 def _build_chart_data(files, month_filter, year_filter):
     """
     Returns a list of chart points.
-    - Month selected  → one point per day  (label = "1", "2", …)
-    - Year selected   → one point per month, all 12 months, zeros for missing ones
-    - No filter       → one point per month across all available files
+    - Month selected  â†’ one point per day  (label = "1", "2", â€¦)
+    - Year selected   â†’ one point per month, all 12 months, zeros for missing ones
+    - No filter       â†’ one point per month across all available files
     """
     if month_filter:
         filepath = _COMMANDS_DIR / f"{month_filter}_sales.csv"
@@ -283,7 +283,7 @@ def _all_products():
 
 
 class AdminProductPerformanceView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         name         = request.query_params.get("name")
@@ -396,7 +396,7 @@ class AdminProductPerformanceView(APIView):
 
 
 class AdminSalesSummaryView(APIView):
-    permission_classes = [IsAuthenticated, IsBusinessUser]
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
 
     def get(self, request):
         month_filter = request.query_params.get("month")

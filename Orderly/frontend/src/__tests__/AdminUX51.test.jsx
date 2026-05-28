@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -31,7 +31,7 @@ function mockFetch({
     firstName: "Biz",
     lastName: "Admin",
     email: "business1@example.com",
-    role: "BUSINESS",
+    role: "STORE_MANAGER",
   },
   categoriesResponse = { results: [] },
   productsResponse = { results: [] },
@@ -404,7 +404,7 @@ describe("UX5.1 Admin navigation shell, layout, and RBAC", () => {
         firstName: "Biz",
         lastName: "Admin",
         email: "business1@example.com",
-        role: "BUSINESS",
+        role: "STORE_MANAGER",
       },
     });
 

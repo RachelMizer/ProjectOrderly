@@ -36,7 +36,7 @@ def business_user(db):
         email="biz1@example.com",
         password="password123",
     )
-    UserRole.objects.create(user=user, role=UserRoleChoices.BUSINESS)
+    UserRole.objects.create(user=user, role=UserRoleChoices.STORE_MANAGER)
     return user
 
 

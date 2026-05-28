@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Team Manual — Orderly</title>
+  <link rel="icon" href="../../o_favicon.ico" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <!-- populated by manual.js -->
+  </aside>
+
+  <div class="page-layout">
+    <div class="container">
+      <h1>Support Team Manual</h1>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="🎯">Your Role</h2>
+
+      <p>As a support team member in Orderly, your primary responsibilities are managing customer and internal support tickets, maintaining user accounts, and keeping team resources organized. You have access to all of the tools needed to do this from your support dashboard.</p>
+
+      <p>Your account has a different set of permissions than store managers, employees, and executives. You can manage tickets, all user account types, team announcements, the knowledge base, and the backlog. You do not have access to operational business tools such as inventory, the product catalog, order management, or financial reports — those are scoped to store-side roles.</p>
+
+      <div class="note">When you log in, Orderly automatically sets your status to Online. Your session sends a heartbeat every two minutes to confirm you are active, and logging out sets your status to Offline. Your teammates can see your current status in their sidebar at all times.</div>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="🏠">The Support Dashboard</h2>
+
+      <p>The Support Dashboard is the first page you see when you log in. It gives you a quick read of the current ticket load and surfaces the work most relevant to you without requiring any navigation.</p>
+
+      <h3>Status Tiles</h3>
+      <p>Two tiles below the date bar show a live count of tickets currently in each active state across the entire team:</p>
+      <ul>
+        <li><strong>In Progress</strong> — tickets being actively worked on by any agent</li>
+        <li><strong>In Review</strong> — tickets that are complete and awaiting verification or closure</li>
+      </ul>
+      <p>These counts update each time you load the dashboard. They give you a quick sense of team workload before you open the ticket board.</p>
+
+      <h3>Pick Up Where You Left Off</h3>
+      <p>This section shows the last ten tickets you personally opened, ordered by most recently viewed. It is stored locally in your browser, so it follows you across sessions on the same device. Click any row to jump straight back to that ticket. Rows for tickets that have since been deleted are automatically cleaned up.</p>
+
+      <h3>New Tickets</h3>
+      <p>This section lists all tickets currently in <strong>Unassigned</strong> status — tickets that have come in and have not yet been picked up by any agent. Review this section at the start of your shift and any time you have bandwidth to take on a new ticket.</p>
+
+      <h3>Assigned to Me</h3>
+      <p>This section shows every ticket currently assigned to your account, regardless of status. Use it to stay on top of your active workload. If a ticket is assigned to you but you cannot work it, reassign it from the ticket detail page so it gets picked up by someone else.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="🟢">Managing Your Status</h2>
+
+      <p>Your status is visible to all other support team members in their sidebar. It tells your teammates whether you are available to take work, temporarily occupied, or stepping away.</p>
+
+      <h3>Status Options</h3>
+      <ul>
+        <li><strong>Online</strong> — you are at your desk and available (green dot)</li>
+        <li><strong>Busy</strong> — you are working but should not be interrupted for new tickets (pink dot)</li>
+        <li><strong>Away</strong> — you have stepped away temporarily (gray dot)</li>
+      </ul>
+      <p>There is no manual Offline option. Offline status is set automatically when you log out.</p>
+
+      <h3>Changing Your Status</h3>
+      <p>Your current status is shown in the sidebar as a labeled bar with a colored dot. Click it to open a small dropdown, then select the status you want. The change takes effect immediately and is visible to your teammates within about 30 seconds.</p>
+
+      <h3>The Team Presence List</h3>
+      <p>Toward the bottom of your sidebar, under <strong>Team Member Status</strong>, you will see a list of all currently active support accounts and their status. Online members appear in blue bold, Busy members appear in dark italic, Away members appear in muted gray, and Offline members appear in light gray. The list refreshes automatically every 30 seconds.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="🎫">The Ticket Dashboard</h2>
+
+      <p>The Ticket Dashboard is a Kanban board — a visual layout that organizes all tickets by their current status. Access it from the <strong>Ticket Dashboard</strong> link in your sidebar.</p>
+
+      <h3>Board Layout</h3>
+      <p>The board has four columns, each representing a ticket status:</p>
+      <ul>
+        <li><strong>Unassigned</strong> — ticket received, no agent assigned yet</li>
+        <li><strong>In Progress</strong> — ticket is being actively worked on</li>
+        <li><strong>In Review</strong> — work is done, pending verification or final review</li>
+        <li><strong>Closed</strong> — ticket resolved and closed</li>
+      </ul>
+      <p>Each ticket appears as a card in its column showing the ticket number, title, priority badge, open date, and an initials badge for the assigned agent (or a dash if unassigned).</p>
+
+      <h3>Filtering</h3>
+      <p>A <strong>Priority</strong> dropdown at the top of the board lets you filter tickets by priority level (Low, Medium, High, or Urgent). Selecting a priority hides all tickets at other priority levels across all four columns. Select <em>All Priorities</em> to clear the filter.</p>
+
+      <h3>Moving Tickets</h3>
+      <p>Drag any ticket card from one column and drop it onto another to change its status. The change is applied immediately in the interface and saved to the server in the background. If the server save fails, the card returns to its original column automatically.</p>
+
+      <div class="note"><strong>Assignee requirement:</strong> Tickets cannot be moved into <em>In Progress</em> or <em>In Review</em> unless they have an assigned agent. If you attempt to drop an unassigned ticket into one of those columns, the move will be blocked and an error message will appear. Open the ticket, assign it first, then return to the board and move it.</div>
+
+      <h3>Opening a Ticket from the Board</h3>
+      <p>Click any ticket card to open the full ticket detail page. From there you can read the full description, update status and priority, assign or reassign the ticket, add notes, and review the progress log.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="📋">Working with Tickets</h2>
+
+      <h3>Creating a Ticket</h3>
+      <p>To open a new ticket manually — for example, when a customer contacts you by phone — click the <strong>Ticket Dashboard</strong> link in your sidebar to go to the board, then use the <strong>New Ticket</strong> route (accessible from the sidebar on that page). Fill in the title, a description of the issue, priority, and optionally attach a file. Tickets you create start in Unassigned status.</p>
+
+      <h3>Finding a Ticket by Number</h3>
+      <p>The <strong>Ticket Search</strong> field at the top of your sidebar accepts a ticket ID. Type the number and press <strong>Go</strong> to navigate directly to that ticket. This is the fastest way to get to a specific ticket when you already know its number.</p>
+
+      <h3>Status and Priority</h3>
+      <p>On the ticket detail page, the status and priority fields are editable dropdowns. Changing either field and clicking <strong>Save Changes</strong> updates the ticket immediately. The same assignee restriction that applies to the Kanban board also applies here — you cannot set the status to <em>In Progress</em> or <em>In Review</em> unless an agent is assigned.</p>
+
+      <h3>Assigning a Ticket</h3>
+      <p>Use the assignment field on the ticket detail page to assign the ticket to yourself or any other support team member. You can also unassign a ticket by clearing the field. Only support team accounts appear in the assignment list.</p>
+
+      <h3>Case Notes</h3>
+      <p>Case Notes is a shared text block on the ticket detail page for internal observations and context that the whole team can see. Use it to record anything that would help a colleague pick up the ticket without having to start from scratch — key findings, customer communication history, or anything that is not captured in the progress log. Click inside the field, edit the text, and save. Only one version of the text exists at a time (there is no history), so write it as a living document.</p>
+
+      <h3>The Progress Log</h3>
+      <p>The Progress Log is a chronological record of actions taken on the ticket. Each entry shows who added it and when. You can add a new entry describing what you did, edit your own existing entries, or delete them. Use the Progress Log for timestamped updates — when you contacted the customer, what you tried, what the outcome was.</p>
+
+      <h3>Attachments</h3>
+      <p>Files can be attached to a ticket at creation time. If the submitter included a screenshot, document, or other file, it appears in the Attachments section on the ticket detail page. Click the attachment to download or view it.</p>
+
+      <h3>Closing a Ticket</h3>
+      <p>When an issue is fully resolved, set the ticket status to <strong>Closed</strong> and save. Closed tickets no longer appear on the Ticket Dashboard board but remain accessible through the Ticket Archive.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="🗄️">The Ticket Archive</h2>
+
+      <p>The Ticket Archive is a searchable record of every closed ticket. Access it from the <strong>Ticket Archive</strong> link in your sidebar.</p>
+
+      <h3>What It Shows</h3>
+      <p>All tickets with Closed status appear in the archive, ordered by most recently opened. The table shows: Ticket Number, Description, Priority, Assigned To, and Date Opened.</p>
+
+      <h3>Filtering by Date</h3>
+      <p>Use the <strong>Date From</strong> and <strong>Date To</strong> fields to narrow results to tickets opened within a specific window. You can set just one or both fields. A <strong>Clear</strong> button appears whenever a date filter is active — click it to remove both filters and return to the full list.</p>
+
+      <h3>Pagination</h3>
+      <p>Results are shown 25 per page. Use the <strong>Previous</strong> and <strong>Next</strong> buttons at the bottom of the list to move between pages. The total number of matching tickets is shown above the table.</p>
+
+      <h3>Opening an Archived Ticket</h3>
+      <p>Click any row to open the full ticket detail page. You can review all fields, notes, and the progress log. Archived tickets can have their status changed if needed — for example, if a closed issue resurfaces and needs to be reopened.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="👤">User Account Management</h2>
+
+      <p>Access user accounts from the <strong>User Accounts Dashboard</strong> link in your sidebar. This page shows a tile for each account type with a live count of how many accounts exist in that category.</p>
+
+      <h3>Account Types</h3>
+      <ul>
+        <li><strong>Support</strong> — support team members (like you)</li>
+        <li><strong>Executive</strong> — executive-level users with read access to reports and locations</li>
+        <li><strong>Store Manager</strong> — users who manage a store's day-to-day operations</li>
+        <li><strong>Employee</strong> — store-level staff accounts, can be assigned to a specific location</li>
+        <li><strong>Customer</strong> — end customer accounts from the storefront</li>
+      </ul>
+      <p>Click any tile to open the list page for that account type.</p>
+
+      <h3>Browsing and Searching Accounts</h3>
+      <p>Each account list page shows all accounts of that type in a table. Use the search bar to filter by name or email address. Customer accounts can also be searched by phone number.</p>
+
+      <h3>Creating an Account</h3>
+      <p>Click <strong>+ New Account</strong> on any list page to open the account creation form. All account types require a first name, last name, email address, and password. Additional fields appear based on the role:</p>
+      <ul>
+        <li><strong>Employee accounts</strong> — an optional Store Assignment dropdown to assign the account to one of the company's active locations</li>
+        <li><strong>Customer accounts</strong> — optional contact fields: phone number, street address, city, state, and ZIP code</li>
+      </ul>
+      <p>After submitting, you are taken directly to the new account's detail page.</p>
+
+      <h3>Editing Account Information</h3>
+      <p>Click any row on a list page to open the account detail page. From here you can edit the account holder's name, email address, and role. For Employee accounts, you can also update the store assignment. For Support accounts, you can update the city and state fields. Click <strong>Save Changes</strong> to apply edits. The button is disabled until a change is detected, and an "Unsaved changes" indicator appears to remind you to save before navigating away.</p>
+
+      <h3>Changing a Password</h3>
+      <p>The <strong>Change Password</strong> section on the account detail page lets you set a new password for any account. Enter the new password and click <strong>Update Password</strong>. The date of the last password change is displayed above the field so you have a record of when it was last updated.</p>
+
+      <h3>Deactivating and Reactivating an Account</h3>
+      <p>The <strong>Account Status</strong> section shows whether an account is currently active or inactive. Deactivating an account prevents that user from logging in but does not delete any of their data. Click <strong>Deactivate Account</strong> to deactivate, or <strong>Reactivate Account</strong> to restore access. The button label and description update to reflect the current state.</p>
+
+      <h3>Permanently Deleting an Account</h3>
+      <p>To permanently remove an account, click <strong>Permanently Delete Account</strong> and confirm by clicking <strong>Yes, Delete</strong> in the confirmation prompt that appears. This action cannot be undone. A deletion record is created automatically and retained for audit purposes, noting who deleted the account and when.</p>
+
+      <div class="note">You cannot deactivate, reactivate, or delete your own account from the admin interface. If you need to make a change to your own account, contact another support team member to do it for you.</div>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="📢">Team Announcements</h2>
+
+      <p>Team Announcements are short messages posted to the support team — policy reminders, shift notices, urgent updates, or anything else the team needs to see. They are visible to all support team members as long as they have not been dismissed.</p>
+
+      <h3>The Sidebar Preview</h3>
+      <p>Up to three current announcements appear at the top of your sidebar under <strong>Team Announcements</strong>. Each one has a dismiss button (×) on the right. Clicking it removes the announcement from your sidebar view. Dismissed announcements do not reappear.</p>
+
+      <h3>The Announcements Page</h3>
+      <p>Click <strong>Team Announcements</strong> in your sidebar to open the full announcements page. Here you can see all current announcements, create new ones, and manage existing ones. To create a new announcement, enter the message text in the form and submit. Announcements are visible to all support team members immediately.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="📖">Knowledge Base</h2>
+
+      <p>The Knowledge Base is a shared library of articles for the support team. Use it to document step-by-step procedures, common issue resolutions, escalation guidelines, and answers to frequently asked questions.</p>
+
+      <p>Access the Knowledge Base from the <strong>Knowledge Base</strong> link in your sidebar. Browse existing articles, or create a new one to document something useful for the team. Well-maintained knowledge base articles reduce the time it takes to resolve recurring issues and help newer team members get up to speed.</p>
+
+      <div class="note">Think of the Knowledge Base as the team's internal wiki. If you solve an unusual problem or develop a reliable procedure for something, documenting it here means the next person who encounters the same situation does not have to figure it out from scratch.</div>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="📌">The Backlog</h2>
+
+      <p>The Backlog tracks known issues, feature improvements, and larger work items that are separate from individual tickets. Where a ticket represents a single customer interaction, a backlog item represents an ongoing problem or task that may span many tickets and take longer to resolve.</p>
+
+      <h3>Browsing the Backlog</h3>
+      <p>Access the Backlog from the <strong>Backlog</strong> link in your sidebar. Items are listed with their title, status, and priority. Click any item to open its detail page.</p>
+
+      <h3>Backlog Item Detail</h3>
+      <p>Each backlog item has a description, status, priority, and an optional list of linked support tickets. Linking a ticket to a backlog item helps track how many customers are affected by a known issue. You can add notes and update the status of backlog items as work progresses.</p>
+
+      <h3>Feature Requests</h3>
+      <p>Dashboard users (store managers, executives, and employees) can submit feature requests through their own interface. These requests are routed into the backlog as Feature Request type items. You will see them appear in the backlog alongside support-originated items. Review and triage them as part of your regular backlog work.</p>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <h2 data-icon="👥">Team Roster</h2>
+
+      <p>The Team Roster is a directory of all active support team member accounts. Access it from the <strong>Team Roster</strong> link in your sidebar.</p>
+
+      <p>Each roster card shows the member's name and initials avatar, email address, current status indicator, and the date they joined the team. A link on each card takes you directly to that member's account detail page, where you can edit their account information if needed.</p>
+
+      <p>Use the roster to look up a colleague's contact information, check when someone joined the team, or quickly navigate to their account to make an update.</p>
+
+      <a href="#" class="chapter-back-to-top">↑ Back to top</a>
+    </div>
+  </div>
+
+  <script src="manual.js"></script>
+</body>
+</html>

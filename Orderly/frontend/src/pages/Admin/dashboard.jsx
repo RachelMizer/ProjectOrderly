@@ -15,7 +15,7 @@ function formatDate(date) {
 
 const API = "http://localhost:8000/api/v1";
 
-export default function Dashboard() {
+export default function Dashboard({ userRole }) {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,8 +70,13 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    setRecentViews(getRecentViews());
-  }, []);
+    const EXECUTIVE_BLOCKED = ["inventory", "catalog", "orders"];
+    const all = getRecentViews();
+    const visible = userRole === "EXECUTIVE"
+      ? all.filter((v) => !EXECUTIVE_BLOCKED.includes(v.section))
+      : all;
+    setRecentViews(visible);
+  }, [userRole]);
 
   const categoryMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
@@ -112,7 +117,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      <div className="dash-low-stock-section">
+      {userRole !== "EXECUTIVE" && <div className="dash-low-stock-section">
           <p
             className="dash-low-stock-label"
             onClick={() => navigate("/admin/inventory")}
@@ -153,7 +158,7 @@ export default function Dashboard() {
             })}
           </div>
           )}
-        </div>
+        </div>}
 
     </div>
   );

@@ -88,6 +88,22 @@ logs/
 **/.claude/
 
 #######################################
+# Feature Outlines (local only)
+#######################################
+Orderly/*-outline.md
+
+#######################################
+# Local Scripts (local only)
+#######################################
+Orderly/frontend/generate-manual-pdf.js
+
+#######################################
+# Build Logs & PR Notes (local only)
+#######################################
+Orderly/frontend/build_log.txt
+Orderly/frontend/pr-*.txt
+
+#######################################
 
 
 #######################################

@@ -12,6 +12,7 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from accounts.models import UserRole, CustomerProfile, UserRoleChoices
+from locations.models import Location, Region, StateProvince
 from suppliers.models import Supplier
 from inventory.models import InventoryItem, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
 from catalog.models import (
@@ -193,18 +194,49 @@ class Command(BaseCommand):
             dev_user.first_name = "Rachel"
             dev_user.last_name = "Mizer"
             dev_user.save(update_fields=["first_name", "last_name"])
-        UserRole.objects.get_or_create(
+        dev_role, _ = UserRole.objects.get_or_create(
             user=dev_user,
-            defaults={"role": UserRoleChoices.BUSINESS},
+            defaults={"role": UserRoleChoices.EXECUTIVE},
         )
+        if dev_role.role != UserRoleChoices.EXECUTIVE:
+            dev_role.role = UserRoleChoices.EXECUTIVE
+            dev_role.save(update_fields=["role"])
         self.stdout.write(self.style.SUCCESS("Dev account seeded: ramizer"))
 
-        # Business users
+        # Executive user
+        exec_user, exec_created = User.objects.get_or_create(
+            username="execuser",
+            defaults={"email": "exec@quicksip.com", "first_name": "Quinn", "last_name": "Executive"},
+        )
+        if exec_created:
+            exec_user.set_password("ExecPass123!")
+            exec_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=exec_user,
+            defaults={"role": UserRoleChoices.EXECUTIVE},
+        )
+        self.stdout.write(self.style.SUCCESS("Executive account seeded: execuser"))
+
+        # Support user
+        support_user, support_created = User.objects.get_or_create(
+            username="supportuser",
+            defaults={"email": "support@quicksip.com", "first_name": "Sam", "last_name": "Support"},
+        )
+        if support_created:
+            support_user.set_password("SupportPass123!")
+            support_user.save(update_fields=["password"])
+        UserRole.objects.get_or_create(
+            user=support_user,
+            defaults={"role": UserRoleChoices.SUPPORT},
+        )
+        self.stdout.write(self.style.SUCCESS("Support account seeded: supportuser"))
+
+        # Store manager users
         for i in range(1, 4):
-            u = make_user(f"business{i}", f"business{i}@example.com")
+            u = make_user(f"manager{i}", f"manager{i}@example.com")
             UserRole.objects.get_or_create(
                 user=u,
-                defaults={"role": UserRoleChoices.BUSINESS},
+                defaults={"role": UserRoleChoices.STORE_MANAGER},
             )
 
         # Customer users
@@ -329,7 +361,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
 
         self.stdout.write(
-            self.style.SUCCESS("Users seeded: 3 business, 6 customers + dev + personal")
+            self.style.SUCCESS("Users seeded: 3 store managers, 6 customers + dev + personal")
         )
 
         # ------------------------------------------------------------
@@ -1270,6 +1302,105 @@ class Command(BaseCommand):
                 store_settings.save(update_fields=[field_name])
 
         self.stdout.write(self.style.SUCCESS("Store settings seeded: Quick Sip Cafe branding"))
+
+        # ------------------------------------------------------------
+        # 10.5) Regions and Locations
+        # ------------------------------------------------------------
+        region_triangle, _ = Region.objects.get_or_create(
+            name="Triangle Area",
+            defaults={"country": "United States"},
+        )
+        if region_triangle.country != "United States":
+            region_triangle.country = "United States"
+            region_triangle.save(update_fields=["country"])
+
+        region_piedmont, _ = Region.objects.get_or_create(
+            name="Piedmont",
+            defaults={"country": "United States"},
+        )
+        if region_piedmont.country != "United States":
+            region_piedmont.country = "United States"
+            region_piedmont.save(update_fields=["country"])
+
+        sp_nc_triangle, _ = StateProvince.objects.get_or_create(
+            region=region_triangle, name="North Carolina",
+            defaults={"abbreviation": "NC"},
+        )
+        sp_nc_piedmont, _ = StateProvince.objects.get_or_create(
+            region=region_piedmont, name="North Carolina",
+            defaults={"abbreviation": "NC"},
+        )
+
+        location_rows = [
+            {
+                "location_number": 1,
+                "name": "Downtown Raleigh",
+                "region": region_triangle,
+                "state_province": sp_nc_triangle,
+                "address": "201 W Main St",
+                "city": "Raleigh",
+                "state": "NC",
+                "zip_code": "27601",
+                "phone": "9195550101",
+                "email": "raleigh@quicksipcafe.com",
+                "is_active": True,
+            },
+            {
+                "location_number": 2,
+                "name": "North Cary",
+                "region": region_triangle,
+                "state_province": sp_nc_triangle,
+                "address": "4100 Davis Dr",
+                "city": "Cary",
+                "state": "NC",
+                "zip_code": "27519",
+                "phone": "9195550102",
+                "email": "cary@quicksipcafe.com",
+                "is_active": True,
+            },
+            {
+                "location_number": 3,
+                "name": "Greensboro Downtown",
+                "region": region_piedmont,
+                "state_province": sp_nc_piedmont,
+                "address": "220 S Elm St",
+                "city": "Greensboro",
+                "state": "NC",
+                "zip_code": "27401",
+                "phone": "3365550103",
+                "email": "greensboro@quicksipcafe.com",
+                "is_active": True,
+            },
+        ]
+
+        locations = {}
+        for loc in location_rows:
+            num = loc["location_number"]
+            obj, created = Location.objects.get_or_create(
+                location_number=num,
+                defaults=loc,
+            )
+            if not created:
+                changed = False
+                for field in ("name", "region", "state_province", "address", "city", "state", "zip_code", "phone", "email", "is_active"):
+                    if getattr(obj, field) != loc[field]:
+                        setattr(obj, field, loc[field])
+                        changed = True
+                if changed:
+                    obj.save()
+            locations[num] = obj
+
+        # Assign managers to locations
+        for i, loc_num in enumerate([1, 2, 3], start=1):
+            User = get_user_model()
+            mgr_user = User.objects.filter(username=f"manager{i}").first()
+            if mgr_user:
+                role = UserRole.objects.filter(user=mgr_user).first()
+                if role and role.store_id != locations[loc_num].pk:
+                    role.store = locations[loc_num]
+                    role.save(update_fields=["store"])
+
+        self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
 
         # ------------------------------------------------------------
         # 11) Final summary

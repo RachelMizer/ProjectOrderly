@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+﻿import "@testing-library/jest-dom";
 import { render, screen, within, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -32,7 +32,7 @@ function mockFetch({
     firstName: "Biz",
     lastName: "Admin",
     email: "business1@example.com",
-    role: "BUSINESS",
+    role: "STORE_MANAGER",
   },
   productsResponse = {
     results: [
