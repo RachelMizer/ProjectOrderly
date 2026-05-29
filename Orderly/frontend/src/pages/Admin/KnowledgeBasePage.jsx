@@ -150,32 +150,34 @@ export default function KnowledgeBasePage() {
         <div className="support-section">
           <p className="support-section-label">New Article</p>
           <form onSubmit={handleCreate} className="knowledge-form">
-            <label className="support-filter-label">
-              Title
-              <input
-                className="ticket-form__input"
-                type="text"
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                placeholder="Article title"
-                disabled={creating}
-              />
-            </label>
-            <label className="support-filter-label">
-              Category
-              <input
-                className="ticket-form__input"
-                type="text"
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                placeholder="e.g. Returns, Shipping, Billing"
-                list="kb-categories"
-                disabled={creating}
-              />
-              <datalist id="kb-categories">
-                {categories.map((c) => <option key={c} value={c} />)}
-              </datalist>
-            </label>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <label className="support-filter-label" style={{ flex: 2 }}>
+                Title
+                <input
+                  className="ticket-form__input"
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  placeholder="Article title"
+                  disabled={creating}
+                />
+              </label>
+              <label className="support-filter-label" style={{ flex: 1 }}>
+                Category
+                <input
+                  className="ticket-form__input"
+                  type="text"
+                  value={form.category}
+                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                  placeholder="e.g. Returns, Shipping, Billing"
+                  list="kb-categories"
+                  disabled={creating}
+                />
+                <datalist id="kb-categories">
+                  {categories.map((c) => <option key={c} value={c} />)}
+                </datalist>
+              </label>
+            </div>
             <label className="support-filter-label">
               Body
               <textarea
