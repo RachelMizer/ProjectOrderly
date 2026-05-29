@@ -352,6 +352,8 @@ class AdminUserDetailView(APIView):
             return Response({"error": "FORBIDDEN", "message": "You cannot delete your own account."}, status=403)
 
         role = getattr(getattr(user, "profile", None), "role", "")
+        if role == UserRoleChoices.SUPPORT:
+            return Response({"error": "FORBIDDEN", "message": "Support accounts cannot be deleted by other support users."}, status=403)
         deleter = request.user
         deleter_name = " ".join(filter(None, [deleter.first_name, deleter.last_name])) or deleter.email
 
