@@ -166,9 +166,20 @@ CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(",")]
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Email backend (dev/testing)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@orderly.local"
+# Email
+_email_host_user = os.environ.get("EMAIL_HOST_USER", "")
+if _email_host_user:
+    EMAIL_BACKEND      = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST         = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_PORT         = int(os.environ.get("EMAIL_PORT", 587))
+    EMAIL_USE_TLS      = True
+    EMAIL_HOST_USER    = _email_host_user
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", _email_host_user)
+else:
+    # Fallback: print emails to console (local dev without credentials)
+    EMAIL_BACKEND     = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "no-reply@orderly.local"
 
 # Django default token timeout. We use this for email link timeouts.
 PASSWORD_RESET_TIMEOUT = 3600
