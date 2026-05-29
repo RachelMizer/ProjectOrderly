@@ -16,6 +16,14 @@
   --sf-font:          'Munson', serif;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .wrapper {
   width: 100%;
   padding: 0px;
