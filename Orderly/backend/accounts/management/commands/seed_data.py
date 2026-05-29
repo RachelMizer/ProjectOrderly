@@ -192,7 +192,7 @@ class Command(BaseCommand):
         for username, email, first, last, password, role in named_staff:
             u, created = User.objects.get_or_create(
                 username=username,
-                defaults={"email": email, "first_name": first, "last_name": last},
+                defaults={"email": email, "first_name": first, "last_name": last, "is_staff": True},
             )
             if created:
                 u.set_password(password)
@@ -201,6 +201,9 @@ class Command(BaseCommand):
                 u.first_name = first
                 u.last_name = last
                 u.save(update_fields=["first_name", "last_name"])
+            if not u.is_staff:
+                u.is_staff = True
+                u.save(update_fields=["is_staff"])
             UserRole.objects.get_or_create(user=u, defaults={"role": role})
             self.stdout.write(self.style.SUCCESS(f"Seeded: {username} ({role})"))
 
@@ -1373,7 +1376,7 @@ class Command(BaseCommand):
             for username, email, first, last in emp_list:
                 u, created = User.objects.get_or_create(
                     username=username,
-                    defaults={"email": email, "first_name": first, "last_name": last},
+                    defaults={"email": email, "first_name": first, "last_name": last, "is_staff": True},
                 )
                 if created:
                     u.set_password("Password123!")
@@ -1382,6 +1385,9 @@ class Command(BaseCommand):
                     u.first_name = first
                     u.last_name = last
                     u.save(update_fields=["first_name", "last_name"])
+                if not u.is_staff:
+                    u.is_staff = True
+                    u.save(update_fields=["is_staff"])
                 role, _ = UserRole.objects.get_or_create(
                     user=u,
                     defaults={"role": UserRoleChoices.EMPLOYEE, "store": location},
