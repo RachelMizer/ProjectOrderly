@@ -229,6 +229,30 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS("Support account seeded: supportuser"))
 
+        # Named staff accounts
+        named_staff = [
+            ("rmsupport",    "rmsupport@mail.com",    "Rachel",   "Mizer",  "rmsupportpass",  UserRoleChoices.SUPPORT),
+            ("jmsupport",    "jmsupport@mail.com",    "James",    "Mizer",  "jmsupportpass",  UserRoleChoices.SUPPORT),
+            ("pjsupport",    "pjsupport@mail.com",    "Phillip",  "Jarrow", "pjsupportpass",  UserRoleChoices.SUPPORT),
+            ("supp_kgamble", "supp_kgamble@mail.com", "Keith",    "Gamble", "kgamble",        UserRoleChoices.SUPPORT),
+            ("exec_kgamble", "exec_kgamble@mail.com", "Keith",    "Gamble", "kgamble",        UserRoleChoices.EXECUTIVE),
+            ("mgr_kgamble",  "mgr_kgamble@mail.com",  "Keith",    "Gamble", "kgamble",        UserRoleChoices.STORE_MANAGER),
+        ]
+        for username, email, first, last, password, role in named_staff:
+            u, created = User.objects.get_or_create(
+                username=username,
+                defaults={"email": email, "first_name": first, "last_name": last},
+            )
+            if created:
+                u.set_password(password)
+                u.save(update_fields=["password"])
+            if not u.first_name:
+                u.first_name = first
+                u.last_name = last
+                u.save(update_fields=["first_name", "last_name"])
+            UserRole.objects.get_or_create(user=u, defaults={"role": role})
+            self.stdout.write(self.style.SUCCESS(f"Seeded: {username} ({role})"))
+
         # Store manager users
         for i in range(1, 4):
             u = make_user(f"manager{i}", f"manager{i}@example.com")
