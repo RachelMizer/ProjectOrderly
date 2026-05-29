@@ -1394,6 +1394,65 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
 
         # ------------------------------------------------------------
+        # 10.6) Employees per location
+        # ------------------------------------------------------------
+        employees_by_location = {
+            1: [  # Downtown Raleigh — 6 employees
+                ("mwebb_ral",     "mwebb_ral@quicksip.com",     "Marcus",   "Webb"),
+                ("jtorres_ral",   "jtorres_ral@quicksip.com",   "Jasmine",  "Torres"),
+                ("dclark_ral",    "dclark_ral@quicksip.com",    "Devon",    "Clark"),
+                ("pshah_ral",     "pshah_ral@quicksip.com",     "Priya",    "Shah"),
+                ("tbrooks_ral",   "tbrooks_ral@quicksip.com",   "Tyler",    "Brooks"),
+                ("aosei_ral",     "aosei_ral@quicksip.com",     "Amara",    "Osei"),
+            ],
+            2: [  # North Cary — 7 employees
+                ("lpierce_cary",  "lpierce_cary@quicksip.com",  "Logan",    "Pierce"),
+                ("nchen_cary",    "nchen_cary@quicksip.com",    "Natalie",  "Chen"),
+                ("iford_cary",    "iford_cary@quicksip.com",    "Isaiah",   "Ford"),
+                ("sreyes_cary",   "sreyes_cary@quicksip.com",   "Sofia",    "Reyes"),
+                ("cwalsh_cary",   "cwalsh_cary@quicksip.com",   "Connor",   "Walsh"),
+                ("ajames_cary",   "ajames_cary@quicksip.com",   "Aaliyah",  "James"),
+                ("bmoss_cary",    "bmoss_cary@quicksip.com",    "Brendan",  "Moss"),
+            ],
+            3: [  # Greensboro Downtown — 8 employees
+                ("kbrown_gsb",    "kbrown_gsb@quicksip.com",    "Keisha",   "Brown"),
+                ("enakamura_gsb", "enakamura_gsb@quicksip.com", "Eli",      "Nakamura"),
+                ("dprice_gsb",    "dprice_gsb@quicksip.com",    "Destiny",  "Price"),
+                ("cmendez_gsb",   "cmendez_gsb@quicksip.com",   "Carlos",   "Mendez"),
+                ("hgrant_gsb",    "hgrant_gsb@quicksip.com",    "Hailey",   "Grant"),
+                ("dking_gsb",     "dking_gsb@quicksip.com",     "Darnell",  "King"),
+                ("mhoffman_gsb",  "mhoffman_gsb@quicksip.com",  "Mia",      "Hoffman"),
+                ("zrivera_gsb",   "zrivera_gsb@quicksip.com",   "Zack",     "Rivera"),
+            ],
+        }
+
+        emp_count = 0
+        for loc_num, emp_list in employees_by_location.items():
+            location = locations[loc_num]
+            for username, email, first, last in emp_list:
+                u, created = User.objects.get_or_create(
+                    username=username,
+                    defaults={"email": email, "first_name": first, "last_name": last},
+                )
+                if created:
+                    u.set_password("Password123!")
+                    u.save(update_fields=["password"])
+                if not u.first_name:
+                    u.first_name = first
+                    u.last_name = last
+                    u.save(update_fields=["first_name", "last_name"])
+                role, _ = UserRole.objects.get_or_create(
+                    user=u,
+                    defaults={"role": UserRoleChoices.EMPLOYEE, "store": location},
+                )
+                if role.store != location:
+                    role.store = location
+                    role.save(update_fields=["store"])
+                emp_count += 1
+
+        self.stdout.write(self.style.SUCCESS(f"Employees seeded: {emp_count} across 3 locations"))
+
+        # ------------------------------------------------------------
         # 11) Final summary
         # ------------------------------------------------------------
         self.stdout.write(self.style.SUCCESS("Seed data loaded successfully."))
