@@ -188,6 +188,9 @@ class Command(BaseCommand):
             ("supp_kgamble", "supp_kgamble@mail.com", "Keith",    "Gamble", "kgamble",        UserRoleChoices.SUPPORT),
             ("exec_kgamble", "exec_kgamble@mail.com", "Keith",    "Gamble", "kgamble",        UserRoleChoices.EXECUTIVE),
             ("mgr_kgamble",  "mgr_kgamble@mail.com",  "Keith",    "Gamble", "kgamble",        UserRoleChoices.STORE_MANAGER),
+            ("lharmon_ral",  "lharmon_ral@quicksip.com",  "Lisa",     "Harmon", "lharmonpass",    UserRoleChoices.STORE_MANAGER),
+            ("mtate_cary",   "mtate_cary@quicksip.com",   "Marcus",   "Tate",   "mtatepass",      UserRoleChoices.STORE_MANAGER),
+            ("sowens_gsb",   "sowens_gsb@quicksip.com",   "Sandra",   "Owens",  "sowenspass",     UserRoleChoices.STORE_MANAGER),
         ]
         for username, email, first, last, password, role in named_staff:
             u, created = User.objects.get_or_create(
@@ -1327,13 +1330,19 @@ class Command(BaseCommand):
                     obj.save()
             locations[num] = obj
 
-        # Assign mgr_kgamble to Downtown Raleigh (location 1)
-        mgr_user = User.objects.filter(username="mgr_kgamble").first()
-        if mgr_user:
-            role = UserRole.objects.filter(user=mgr_user).first()
-            if role and role.store_id != locations[1].pk:
-                role.store = locations[1]
-                role.save(update_fields=["store"])
+        # Assign store managers to locations
+        location_managers = [
+            ("lharmon_ral", 1),  # Downtown Raleigh
+            ("mtate_cary",  2),  # North Cary
+            ("sowens_gsb",  3),  # Greensboro Downtown
+        ]
+        for username, loc_num in location_managers:
+            mgr_user = User.objects.filter(username=username).first()
+            if mgr_user:
+                role = UserRole.objects.filter(user=mgr_user).first()
+                if role and role.store_id != locations[loc_num].pk:
+                    role.store = locations[loc_num]
+                    role.save(update_fields=["store"])
 
         self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
 
