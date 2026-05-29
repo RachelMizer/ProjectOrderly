@@ -76,15 +76,27 @@ class StoreSettingsSerializer(serializers.ModelSerializer):
     fontChoice              = serializers.CharField(source="font_choice",               required=False, allow_blank=True)
 
     # Image fields
-    storeImage = serializers.ImageField(
-        source="store_image",
-        required=False,
-        allow_null=True,
-    )
-    favicon = serializers.ImageField(
-        required=False,
-        allow_null=True,
-    )
+    storeImage = serializers.SerializerMethodField()
+    favicon = serializers.SerializerMethodField()
+
+    def _frontend_or_media_url(self, field, request):
+        if not field:
+            return None
+        from django.conf import settings as django_settings
+        name = field.name or ""
+        if name.startswith("img/"):
+            return f"{django_settings.FRONTEND_URL}/{name}"
+        if request:
+            return request.build_absolute_uri(field.url)
+        return field.url
+
+    def get_storeImage(self, obj):
+        request = self.context.get("request")
+        return self._frontend_or_media_url(obj.store_image, request)
+
+    def get_favicon(self, obj):
+        request = self.context.get("request")
+        return self._frontend_or_media_url(obj.favicon, request)
 
     class Meta:
         model = StoreSettings

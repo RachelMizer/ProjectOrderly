@@ -44,6 +44,10 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_imageUrl(self, obj):
         if not obj.image:
             return None
+        from django.conf import settings as django_settings
+        name = obj.image.name or ""
+        if name.startswith("img/"):
+            return f"{django_settings.FRONTEND_URL}/{name}"
         request = self.context.get("request")
         if request:
             return request.build_absolute_uri(obj.image.url)

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from decimal import Decimal
 import random
-import shutil
-from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -755,48 +753,30 @@ class Command(BaseCommand):
         )
 
         # ------------------------------------------------------------
-        # 6.5) Product images — copy from frontend/public/img into media
+        # 6.5) Product images — store frontend static paths (served by React)
         # ------------------------------------------------------------
         product_images = {
-            "House Coffee":        ("bev", "house-coffee.png"),
-            "Latte":               ("bev", "latte.png"),
-            "Cappuccino":          ("bev", "capp.png"),
-            "Mocha":               ("bev", "mocha.png"),
-            "Cold Brew":           ("bev", "cold-brew.png"),
-            "Green Tea":           ("bev", "green-tea.png"),
-            "Chai Tea Latte":      ("bev", "chai-latte.png"),
-            "Blueberry Muffin":    ("food", "muffin.png"),
-            "Chocolate Croissant": ("food", "croissant.png"),
-            "Breakfast Sandwich":  ("food", "sandwich.png"),
-            "Pumpkin Spice Latte": ("bev", "PSL.png"),
-            "Cake Pop":            ("food", "choc_pop.png"),
+            "House Coffee":        "img/bev/house-coffee.png",
+            "Latte":               "img/bev/latte.png",
+            "Cappuccino":          "img/bev/capp.png",
+            "Mocha":               "img/bev/mocha.png",
+            "Cold Brew":           "img/bev/cold-brew.png",
+            "Green Tea":           "img/bev/green-tea.png",
+            "Chai Tea Latte":      "img/bev/chai-latte.png",
+            "Blueberry Muffin":    "img/food/muffin.png",
+            "Chocolate Croissant": "img/food/croissant.png",
+            "Breakfast Sandwich":  "img/food/sandwich.png",
+            "Pumpkin Spice Latte": "img/bev/PSL.png",
+            "Cake Pop":            "img/food/choc_pop.png",
         }
 
-        frontend_img_root = settings.BASE_DIR.parent / "frontend" / "public" / "img"
-        media_products_dir = Path(settings.MEDIA_ROOT) / "products"
-        media_products_dir.mkdir(parents=True, exist_ok=True)
-
         images_seeded = 0
-        for product_name, (subfolder, filename) in product_images.items():
+        for product_name, img_path in product_images.items():
             product = products.get(product_name)
             if not product:
                 continue
-
-            src = frontend_img_root / subfolder / filename
-            if not src.exists():
-                self.stdout.write(
-                    self.style.WARNING(f"  Image not found, skipping: {src}")
-                )
-                continue
-
-            dest = media_products_dir / filename
-            shutil.copy2(src, dest)
-
-            relative_path = f"products/{filename}"
-            if product.image.name != relative_path:
-                product.image = relative_path
-                product.save(update_fields=["image"])
-
+            product.image = img_path
+            product.save(update_fields=["image"])
             images_seeded += 1
 
         self.stdout.write(
@@ -1284,22 +1264,9 @@ class Command(BaseCommand):
             ),
         )
 
-        media_store_dir = Path(settings.MEDIA_ROOT) / "store"
-        media_store_dir.mkdir(parents=True, exist_ok=True)
-        store_img_src = settings.BASE_DIR.parent / "frontend" / "public" / "img" / "store"
-
-        for field_name, filename in [("store_image", "logo.png"), ("favicon", "favicon.ico")]:
-            src = store_img_src / filename
-            if not src.exists():
-                self.stdout.write(self.style.WARNING(f"  Store image not found, skipping: {src}"))
-                continue
-            dst = media_store_dir / filename
-            shutil.copy2(str(src), str(dst))
-            relative_path = f"store/{filename}"
-            current = getattr(store_settings, field_name)
-            if not current or current.name != relative_path:
-                setattr(store_settings, field_name, relative_path)
-                store_settings.save(update_fields=[field_name])
+        # Store logo and favicon — served from frontend static files
+        store_settings.store_image = "img/store/logo.png"
+        store_settings.save(update_fields=["store_image"])
 
         self.stdout.write(self.style.SUCCESS("Store settings seeded: Quick Sip Cafe branding"))
 
