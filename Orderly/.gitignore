@@ -1,5 +1,6 @@
 # Sensitive files
 STAFF_ACCOUNTS.txt
+KNOWLEDGE_BASE_ARTICLES.txt
 
 # Python
 __pycache__/
