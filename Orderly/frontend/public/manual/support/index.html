@@ -100,7 +100,7 @@
       <h2 data-icon="📋">Working with Tickets</h2>
 
       <h3>Creating a Ticket</h3>
-      <p>To open a new ticket manually — for example, when a customer contacts you by phone — click the <strong>Ticket Dashboard</strong> link in your sidebar to go to the board, then use the <strong>New Ticket</strong> route (accessible from the sidebar on that page). Fill in the title, a description of the issue, priority, and optionally attach a file. Tickets you create start in Unassigned status.</p>
+      <p>To open a new ticket — for example, when a customer contacts you by phone — click <strong>Help</strong> in the top navigation bar to go to your My Tickets page, then click <strong>+ Submit a New Ticket</strong>. Fill in the subject, a description of the issue, and optionally attach a file. Tickets you create start in Unassigned status and appear on the Ticket Dashboard board immediately.</p>
 
       <h3>Finding a Ticket by Number</h3>
       <p>The <strong>Ticket Search</strong> field at the top of your sidebar accepts a ticket ID. Type the number and press <strong>Go</strong> to navigate directly to that ticket. This is the fastest way to get to a specific ticket when you already know its number.</p>
@@ -120,8 +120,18 @@
       <h3>Attachments</h3>
       <p>Files can be attached to a ticket at creation time. If the submitter included a screenshot, document, or other file, it appears in the Attachments section on the ticket detail page. Click the attachment to download or view it.</p>
 
+      <h3>Assignment History</h3>
+      <p>If a ticket has been reassigned at least once, an <strong>Assignment History</strong> section appears at the bottom of the ticket detail page. It shows a chronological log of every assignment change — who the ticket was moved from, who it was moved to, which agent made the change, and when. This section is hidden when a ticket has never been reassigned.</p>
+
       <h3>Closing a Ticket</h3>
       <p>When an issue is fully resolved, set the ticket status to <strong>Closed</strong> and save. Closed tickets no longer appear on the Ticket Dashboard board but remain accessible through the Ticket Archive.</p>
+
+      <h3>Downloading a Ticket</h3>
+      <p>At the bottom of any ticket detail page, the <strong>Download as Markdown</strong> button exports the full ticket — title, metadata, description, case notes, progress log, and assignment history — as a <code>.md</code> file. Use this to keep an offline record of a ticket, share it outside the system, or archive it separately from the Ticket Archive.</p>
+
+      <h3>My Tickets</h3>
+      <p>The <strong>Help</strong> link in the top navigation bar opens your personal My Tickets page. This is where you view and track support tickets that you yourself have submitted about the Orderly system — separate from the customer tickets you work on the Ticket Dashboard. Each row shows the ticket number, subject, a short description, status, and the date it was submitted.</p>
+      <p>Use the status filter tabs at the top to narrow the list: <strong>All</strong>, <strong>Submitted</strong>, <strong>Open</strong>, <strong>In Progress</strong>, <strong>Resolved</strong>, or <strong>Closed</strong>. Results are paginated eight per page. Click any row to open the ticket detail page.</p>
 
 
       <!-- ═══════════════════════════════════════════════ -->
@@ -136,7 +146,7 @@
       <p>Use the <strong>Date From</strong> and <strong>Date To</strong> fields to narrow results to tickets opened within a specific window. You can set just one or both fields. A <strong>Clear</strong> button appears whenever a date filter is active — click it to remove both filters and return to the full list.</p>
 
       <h3>Pagination</h3>
-      <p>Results are shown 25 per page. Use the <strong>Previous</strong> and <strong>Next</strong> buttons at the bottom of the list to move between pages. The total number of matching tickets is shown above the table.</p>
+      <p>Use the <strong>Previous</strong> and <strong>Next</strong> buttons at the bottom of the list to move between pages. The total number of matching tickets is shown above the table.</p>
 
       <h3>Opening an Archived Ticket</h3>
       <p>Click any row to open the full ticket detail page. You can review all fields, notes, and the progress log. Archived tickets can have their status changed if needed — for example, if a closed issue resurfaces and needs to be reopened.</p>
@@ -180,7 +190,15 @@
       <h3>Permanently Deleting an Account</h3>
       <p>To permanently remove an account, click <strong>Permanently Delete Account</strong> and confirm by clicking <strong>Yes, Delete</strong> in the confirmation prompt that appears. This action cannot be undone. A deletion record is created automatically and retained for audit purposes, noting who deleted the account and when.</p>
 
+      <div class="note"><strong>Support accounts cannot be deleted through the admin interface.</strong> This applies to all support team member accounts, including your own. If a support account needs to be removed, that action must be handled at the system administration level. You can deactivate a support account to prevent login access without deleting it.</div>
+
       <div class="note">You cannot deactivate, reactivate, or delete your own account from the admin interface. If you need to make a change to your own account, contact another support team member to do it for you.</div>
+
+      <h3>Deleted Accounts Log</h3>
+      <p>At the bottom of the User Accounts Dashboard, a <strong>Deleted Accounts</strong> table shows every account that has been permanently deleted through the admin interface. Each row shows the former account holder's name and email, their role, the name of the support agent who deleted them, and the date and time of deletion. This log is retained indefinitely and cannot be edited.</p>
+
+      <h3>Account Suspension Policy</h3>
+      <p>Support accounts that have not logged in for an extended period are automatically suspended by the system. A suspended account behaves like a deactivated account — the user cannot log in until the account is reactivated. If your account is suspended due to inactivity, contact another active support team member to reactivate it for you.</p>
 
 
       <!-- ═══════════════════════════════════════════════ -->
