@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-f+1@2(q9v(0ujuyyvnik+
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 _allowed_hosts = os.environ.get("ALLOWED_HOSTS", "")
-ALLOWED_HOSTS = _allowed_hosts.split(",") if _allowed_hosts else ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = _allowed_hosts.split(",") if _allowed_hosts else ["projectorderly-oah3.onrender.com", "localhost", "127.0.0.1"]
 
 
 # Application definition
