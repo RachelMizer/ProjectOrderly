@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getRecentViews } from "../../utils/recentViews";
 import { fetchInventory } from "../../api/adminInventory";
+import API_HOST from '../../config';
 
 function formatDate(date) {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -12,8 +13,6 @@ function formatDate(date) {
                : day === 3 || day === 23 ? "rd" : "th";
   return `${months[date.getMonth()]} ${day}${suffix}, ${date.getFullYear()}`;
 }
-
-import API_HOST from '../../config';
 
 const API = `${API_HOST}/api/v1`;
 
