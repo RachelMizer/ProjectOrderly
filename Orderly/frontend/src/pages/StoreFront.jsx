@@ -1,6 +1,7 @@
 // STOREFRONT.JSX - Displays products in the database
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import API_HOST from '../config';
 
 const StoreFront = () => {
   const [products, setProducts] = useState([]);
@@ -12,10 +13,10 @@ const StoreFront = () => {
   useEffect(() => {
     const loadInitial = async () => {
       try {
-        const catRes = await fetch("http://localhost:8000/api/v1/categories");
-        const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const catRes = await fetch(`${API_HOST}/api/v1/categories`);
+        const prodRes = await fetch(`${API_HOST}/api/v1/products`);
         const token = localStorage.getItem("accessToken");
-        const settRes = await fetch("http://localhost:8000/api/v1/settings/", {
+        const settRes = await fetch(`${API_HOST}/api/v1/settings/`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
@@ -43,7 +44,7 @@ const StoreFront = () => {
     return Promise.all(
       productList.map(async (product) => {
         const variantRes = await fetch(
-          `http://localhost:8000/api/v1/products/${product.id}/variants`
+          `${API_HOST}/api/v1/products/${product.id}/variants`
         );
         const variantData = await variantRes.json();
 

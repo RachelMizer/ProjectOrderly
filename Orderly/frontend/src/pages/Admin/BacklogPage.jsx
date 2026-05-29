@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1";
+const API = `${API_HOST}/api/v1`;
 
 const TYPE_LABELS   = { BUG: "Bug", FEATURE: "Feature Request" };
 const STATUS_LABELS = { PENDING: "Pending", IN_PROGRESS: "In Progress", DONE: "Done" };

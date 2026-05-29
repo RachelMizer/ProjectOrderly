@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveRecentView } from "../../utils/recentViews";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1";
+const API = `${API_HOST}/api/v1`;
 const PAGE_SIZE = 25;
 
 export default function LocationManagementPage() {

@@ -1,6 +1,7 @@
 import { getAuthHeaders } from "./auth";
+import API_HOST from '../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin/inventory";
+const API_BASE = `${API_HOST}/api/v1/admin/inventory`;
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",

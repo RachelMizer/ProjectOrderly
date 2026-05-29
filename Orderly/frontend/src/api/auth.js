@@ -1,6 +1,7 @@
 // src/api/auth.js
+import API_HOST from '../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/auth/";
+const API_BASE = `${API_HOST}/api/v1/auth/`;
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
 
@@ -137,7 +138,7 @@ export async function confirmPasswordReset({ uid, token, newPassword }) {
 // GET PROFILE
 // -------------------------
 export async function getProfile() {
-  const response = await fetch("http://127.0.0.1:8000/api/v1/users/me/", {
+  const response = await fetch(`${API_HOST}/api/v1/users/me/`, {
     method: "GET",
     headers: {
       ...JSON_HEADERS,
@@ -155,7 +156,7 @@ export async function getProfile() {
 // UPDATE PROFILE
 // -------------------------
 export async function updateProfile(form) {
-  const response = await fetch("http://127.0.0.1:8000/api/v1/users/me/", {
+  const response = await fetch(`${API_HOST}/api/v1/users/me/`, {
     method: "PATCH",
     headers: {
       ...JSON_HEADERS,

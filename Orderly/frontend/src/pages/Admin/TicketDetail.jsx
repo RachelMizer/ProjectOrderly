@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { saveRecentTicket } from "../../utils/recentTickets";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1";
+const API = `${API_HOST}/api/v1`;
 
 const STATUS_OPTIONS = ["UNASSIGNED", "IN_PROGRESS", "IN_REVIEW", "CLOSED"];
 const PRIORITY_OPTIONS = ["LOW", "MEDIUM", "HIGH", "URGENT"];

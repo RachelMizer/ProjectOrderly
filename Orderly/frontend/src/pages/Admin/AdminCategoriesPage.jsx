@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
+import API_HOST from '../../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin/categories";
+const API_BASE = `${API_HOST}/api/v1/admin/categories`;
 
 async function parseJson(res) {
   const ct = res.headers.get("content-type") || "";

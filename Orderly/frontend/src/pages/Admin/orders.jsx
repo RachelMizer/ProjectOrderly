@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { handleApiError } from "../../api/handleApiError";
 import { getAuthHeaders } from "../../api/auth";
 import { pushRecentOrder } from "../../utils/recentOrders";
+import API_HOST from '../../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = `${API_HOST}/api/v1`;
 const PAGE_SIZE = 100;
 
 const MONTH_NAMES = [

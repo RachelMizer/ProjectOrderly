@@ -1,6 +1,7 @@
 import { useState } from "react";
+import API_HOST from '../../config';
 
-const BASE = "http://localhost:8000/api/v1/reports";
+const BASE = `${API_HOST}/api/v1/reports`;
 
 const EXPORTS = [
   {

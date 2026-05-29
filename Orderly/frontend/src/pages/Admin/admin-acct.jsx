@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import API_HOST from '../../config';
 
 const ROLE_LABELS = {
   STORE_MANAGER: "Store Manager",
@@ -60,7 +61,7 @@ export default function AccountSettings() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    fetch("http://localhost:8000/api/v1/users/me", {
+    fetch(`${API_HOST}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

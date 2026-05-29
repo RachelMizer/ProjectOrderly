@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { submitOrder } from "../api/orders";
+import API_HOST from '../config';
 
 const PAYMENT_TYPES = [
   { value: "CREDIT_CARD", label: "Credit Card" },
@@ -39,7 +40,7 @@ export default function Checkout() {
       return;
     }
     loadCart();
-    fetch("http://localhost:8000/api/v1/settings/")
+    fetch(`${API_HOST}/api/v1/settings/`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
       .catch(() => {});
@@ -47,7 +48,7 @@ export default function Checkout() {
 
   async function loadCart() {
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${API_HOST}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +58,7 @@ export default function Checkout() {
       });
       const draft = await draftRes.json();
 
-      const detailRes = await fetch(`http://localhost:8000/api/v1/orders/${draft.id}`, {
+      const detailRes = await fetch(`${API_HOST}/api/v1/orders/${draft.id}`, {
         headers: {
           ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1/settings/";
+const API = `${API_HOST}/api/v1/settings/`;
 const CACHE_KEY = "settings_storefront";
 
 function authHeaders(extra = {}) {
@@ -274,7 +275,7 @@ export default function AdminStorefrontSettings() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/admin/categories", { headers: authHeaders() })
+    fetch(`${API_HOST}/api/v1/admin/categories`, { headers: authHeaders() })
       .then((res) => res.ok ? res.json() : null)
       .then((data) => {
         if (!data) return;
@@ -288,7 +289,7 @@ export default function AdminStorefrontSettings() {
 
   async function handleIconSave(catId, icon) {
     try {
-      await fetch(`http://localhost:8000/api/v1/admin/categories/${catId}`, {
+      await fetch(`${API_HOST}/api/v1/admin/categories/${catId}`, {
         method: "PATCH",
         headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ icon }),

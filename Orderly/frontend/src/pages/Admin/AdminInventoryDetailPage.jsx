@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchInventoryItem, updateInventoryItem } from "../../api/adminInventory";
 import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
+import API_HOST from '../../config';
 import { formatPhone } from "../../utils/formatPhone";
 
-const SUPPLIERS_URL = "http://127.0.0.1:8000/api/v1/admin/suppliers";
+const SUPPLIERS_URL = `${API_HOST}/api/v1/admin/suppliers`;
 
 const UNIT_OPTIONS = [
   { value: "units", label: "Units" },

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1";
+const API = `${API_HOST}/api/v1`;
 
 const COLUMNS = ["UNASSIGNED", "IN_PROGRESS", "IN_REVIEW", "CLOSED"];
 const PRIORITY_OPTIONS = ["", "LOW", "MEDIUM", "HIGH", "URGENT"];

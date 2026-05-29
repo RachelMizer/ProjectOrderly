@@ -1,6 +1,7 @@
 import { getAuthHeaders } from "./auth";
+import API_HOST from '../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/admin";
+const API_BASE = `${API_HOST}/api/v1/admin`;
 
 async function parseJson(response) {
   const contentType = response.headers.get("content-type") || "";
@@ -58,7 +59,7 @@ export async function fetchSalesSummary({ year = null, month = null } = {}) {
     params.set("groupBy", "month");
   }
 
-  const url = `http://127.0.0.1:8000/api/v1/reports/sales/summary?${params.toString()}`;
+  const url = `${API_HOST}/api/v1/reports/sales/summary?${params.toString()}`;
 
   const response = await fetch(url, {
     method: "GET",

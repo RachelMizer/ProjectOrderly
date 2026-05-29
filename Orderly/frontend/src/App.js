@@ -1,4 +1,5 @@
 import "./App.css";
+import API_HOST from './config';
 
 import { useState, useEffect } from "react";
 
@@ -74,7 +75,7 @@ function AppContent() {
   const firstName = user?.firstName || "";
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/settings/")
+    fetch(`${API_HOST}/api/v1/settings/`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => {
         if (!data) return;
@@ -132,7 +133,7 @@ function AppContent() {
       if (!token) return;
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/users/me", {
+        const response = await fetch(`${API_HOST}/api/v1/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -170,7 +171,7 @@ async function fetchCartCount() {
     if (!token && !guestEmail) { setCartCount(0); return; }
 
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${API_HOST}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -183,8 +184,8 @@ async function fetchCartCount() {
       if (!draft.id) { setCartCount(0); return; }
 
       const detailUrl = guestEmail
-        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
-        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+        ? `${API_HOST}/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `${API_HOST}/api/v1/orders/${draft.id}`;
 
       const detailRes = await fetch(detailUrl, {
         headers: { ...(token && { Authorization: `Bearer ${token}` }) }

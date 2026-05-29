@@ -1,5 +1,6 @@
 // ADMIN.JS - Admin dashboard layout and routing
 import "./Admin.css";
+import API_HOST from './config';
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { isAuthenticated, logout } from "./api/auth";
@@ -77,7 +78,7 @@ function AdminLayout() {
     }
 
     const token = localStorage.getItem("accessToken");
-    fetch("http://localhost:8000/api/v1/users/me", {
+    fetch(`${API_HOST}/api/v1/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : Promise.reject()))
@@ -90,7 +91,7 @@ function AdminLayout() {
           setUserName(user.firstName || user.username || user.email || "Admin");
           localStorage.setItem("currentUserId", user.id);
           if (user.role === "SUPPORT") {
-            fetch("http://localhost:8000/api/v1/users/my-status/", {
+            fetch(`${API_HOST}/api/v1/users/my-status/`, {
               headers: { Authorization: `Bearer ${token}` },
             })
               .then((r) => (r.ok ? r.json() : null))
@@ -105,7 +106,7 @@ function AdminLayout() {
   useEffect(() => {
     if (!authorized) return;
     const token = localStorage.getItem("accessToken");
-    fetch("http://localhost:8000/api/v1/support/announcements/", {
+    fetch(`${API_HOST}/api/v1/support/announcements/`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : { results: [] }))
@@ -117,7 +118,7 @@ function AdminLayout() {
     if (!authorized || userRole !== "SUPPORT") return;
     function fetchTeam() {
       const token = localStorage.getItem("accessToken");
-      fetch("http://localhost:8000/api/v1/users/team-status/", {
+      fetch(`${API_HOST}/api/v1/users/team-status/`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((r) => (r.ok ? r.json() : { members: [] }))
@@ -133,7 +134,7 @@ function AdminLayout() {
     if (!authorized || userRole !== "SUPPORT") return;
     function sendHeartbeat() {
       const token = localStorage.getItem("accessToken");
-      fetch("http://localhost:8000/api/v1/users/heartbeat/", {
+      fetch(`${API_HOST}/api/v1/users/heartbeat/`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }).catch(() => {});
@@ -145,7 +146,7 @@ function AdminLayout() {
 
   function handleLogout() {
     const token = localStorage.getItem("accessToken");
-    fetch("http://localhost:8000/api/v1/auth/logout", {
+    fetch(`${API_HOST}/api/v1/auth/logout`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       credentials: "include",
@@ -161,7 +162,7 @@ function AdminLayout() {
     const token = localStorage.getItem("accessToken");
     setMyStatus(newStatus);
     setStatusDropdownOpen(false);
-    fetch("http://localhost:8000/api/v1/users/my-status/", {
+    fetch(`${API_HOST}/api/v1/users/my-status/`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
@@ -185,7 +186,7 @@ function AdminLayout() {
     const token = localStorage.getItem("accessToken");
     Promise.all(
       stored.map((o) =>
-        fetch(`http://127.0.0.1:8000/api/v1/orders/${o.id}`, {
+        fetch(`${API_HOST}/api/v1/orders/${o.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         }).then((r) => (r.status === 404 ? o.id : null))
       )
@@ -212,7 +213,7 @@ function AdminLayout() {
 
   function handleDismissAnnouncement(id) {
     const token = localStorage.getItem("accessToken");
-    fetch(`http://localhost:8000/api/v1/support/announcements/${id}/`, {
+    fetch(`${API_HOST}/api/v1/support/announcements/${id}/`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     }).catch(() => {});

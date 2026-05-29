@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "../../api/auth";
 import { handleApiError } from "../../api/handleApiError";
 import { pushRecentOrder, removeRecentOrder } from "../../utils/recentOrders";
+import API_HOST from '../../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = `${API_HOST}/api/v1`;
 
 const STATUS_LABELS = {
   PENDING:   "Pending",

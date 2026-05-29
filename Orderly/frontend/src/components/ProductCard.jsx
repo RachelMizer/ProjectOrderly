@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { getGuestCartEmail } from "../api/orders";
+import API_HOST from '../config';
 
 const ProductCard = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(product.defaultVariant);
@@ -19,7 +20,7 @@ const ProductCard = ({ product }) => {
     const guestEmail = accessToken ? null : getGuestCartEmail();
 
     try {
-      await fetch("http://localhost:8000/api/v1/orders/draft", {
+      await fetch(`${API_HOST}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +29,7 @@ const ProductCard = ({ product }) => {
         body: JSON.stringify(guestEmail ? { guestEmail } : {})
       });
 
-      await fetch("http://localhost:8000/api/v1/orders/items", {
+      await fetch(`${API_HOST}/api/v1/orders/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

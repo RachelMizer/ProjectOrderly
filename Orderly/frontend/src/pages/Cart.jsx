@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getGuestCartEmail } from "../api/orders";
+import API_HOST from '../config';
 
 function CartPage() {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ function CartPage() {
 
   async function loadCart() {
     try {
-      const draftRes = await fetch("http://localhost:8000/api/v1/orders/draft", {
+      const draftRes = await fetch(`${API_HOST}/api/v1/orders/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,8 +33,8 @@ function CartPage() {
       const draft = await draftRes.json();
 
       const detailUrl = guestEmail
-        ? `http://localhost:8000/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
-        : `http://localhost:8000/api/v1/orders/${draft.id}`;
+        ? `${API_HOST}/api/v1/orders/${draft.id}?guestEmail=${encodeURIComponent(guestEmail)}`
+        : `${API_HOST}/api/v1/orders/${draft.id}`;
 
       const detailRes = await fetch(detailUrl, {
         headers: {
@@ -53,7 +54,7 @@ function CartPage() {
 
   useEffect(() => {
     loadCart();
-    fetch("http://localhost:8000/api/v1/settings/")
+    fetch(`${API_HOST}/api/v1/settings/`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => { if (data?.taxRate) setTaxRate(Number(data.taxRate)); })
       .catch(() => {});
@@ -64,7 +65,7 @@ function CartPage() {
     try {
       await Promise.all(
         items.map((item) =>
-          fetch(`http://localhost:8000/api/v1/orders/items/${item.itemId}`, {
+          fetch(`${API_HOST}/api/v1/orders/items/${item.itemId}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -86,7 +87,7 @@ function CartPage() {
 
   async function updateQuantity(itemId, newQuantity) {
     try {
-      await fetch(`http://localhost:8000/api/v1/orders/items/${itemId}`, {
+      await fetch(`${API_HOST}/api/v1/orders/items/${itemId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

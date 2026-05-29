@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import API_HOST from '../../config';
 
-const API = "http://localhost:8000/api/v1";
+const API = `${API_HOST}/api/v1`;
 
 const ROLE_OPTIONS = ["STORE_MANAGER", "EMPLOYEE", "EXECUTIVE", "SUPPORT"];
 const ROLE_LABELS  = { STORE_MANAGER: "Store Manager", EMPLOYEE: "Employee", EXECUTIVE: "Executive", SUPPORT: "Support" };

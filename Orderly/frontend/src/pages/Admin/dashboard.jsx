@@ -13,7 +13,9 @@ function formatDate(date) {
   return `${months[date.getMonth()]} ${day}${suffix}, ${date.getFullYear()}`;
 }
 
-const API = "http://localhost:8000/api/v1";
+import API_HOST from '../../config';
+
+const API = `${API_HOST}/api/v1`;
 
 export default function Dashboard({ userRole }) {
   const [products, setProducts] = useState([]);

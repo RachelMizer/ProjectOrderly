@@ -1,4 +1,5 @@
 import { getAuthHeaders } from "./auth";
+import API_HOST from '../config';
 
 // Returns a persistent guest cart token stored in localStorage.
 // Acts as the guestEmail identifier for unauthenticated cart operations.
@@ -14,7 +15,7 @@ export function getGuestCartEmail() {
   return email;
 }
 
-const API_BASE = "http://127.0.0.1:8000/api/v1/orders/";
+const API_BASE = `${API_HOST}/api/v1/orders/`;
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",

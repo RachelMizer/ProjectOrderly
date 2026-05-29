@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { getGuestCartEmail } from "../api/orders";
+import API_HOST from '../config';
 
 function flatMsg(val) {
   if (!val) return "";
@@ -43,7 +44,7 @@ const ProductPage = () => {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const prodRes = await fetch("http://localhost:8000/api/v1/products");
+        const prodRes = await fetch(`${API_HOST}/api/v1/products`);
         const prodData = await prodRes.json();
 
         const found = prodData.results.find(p => p.id === Number(id));
@@ -55,7 +56,7 @@ const ProductPage = () => {
         setProduct(found);
 
         const variantRes = await fetch(
-          `http://localhost:8000/api/v1/products/${id}/variants`
+          `${API_HOST}/api/v1/products/${id}/variants`
         );
         const variantData = await variantRes.json();
 
@@ -90,7 +91,7 @@ const ProductPage = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:8000/api/v1/products/${id}/variants/${selectedVariant.id}/modifiers`
+          `${API_HOST}/api/v1/products/${id}/variants/${selectedVariant.id}/modifiers`
         );
         const data = await res.json();
 
@@ -172,7 +173,7 @@ const ProductPage = () => {
 
   async function getDraftOrder() {
     const token = localStorage.getItem("accessToken");
-    const res = await fetch("http://localhost:8000/api/v1/orders/draft", {
+    const res = await fetch(`${API_HOST}/api/v1/orders/draft`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -194,7 +195,7 @@ const ProductPage = () => {
   }
 
   async function addItemToOrder(variantId, quantity) {
-    const res = await fetch("http://localhost:8000/api/v1/orders/items", {
+    const res = await fetch(`${API_HOST}/api/v1/orders/items`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -224,7 +225,7 @@ const ProductPage = () => {
 
     for (const modifierId of allSelected) {
       const res = await fetch(
-        `http://localhost:8000/api/v1/orders/items/${orderItemId}/modifiers`,
+        `${API_HOST}/api/v1/orders/items/${orderItemId}/modifiers`,
         {
           method: "POST",
           headers: {
@@ -250,7 +251,7 @@ const ProductPage = () => {
     setCartError(null);
     try {
       if (isEditMode) {
-        const patchRes = await fetch(`http://localhost:8000/api/v1/orders/items/${editItemId}`, {
+        const patchRes = await fetch(`${API_HOST}/api/v1/orders/items/${editItemId}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { handleApiError } from "../../api/handleApiError";
 import { getAuthHeaders } from "../../api/auth";
+import API_HOST from '../../config';
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+const API_BASE = `${API_HOST}/api/v1`;
 
 function buildValidationMessage(data, fallback = "Validation error") {
   if (!data || typeof data !== "object") return fallback;
