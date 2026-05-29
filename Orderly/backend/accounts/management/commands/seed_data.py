@@ -147,27 +147,6 @@ class Command(BaseCommand):
         User = get_user_model()
 
         # ------------------------------------------------------------
-        # 1) Superuser
-        # ------------------------------------------------------------
-        admin_username = "admin"
-        admin_email = "admin@example.com"
-        admin_password = "AdminPass123!"
-
-        if not User.objects.filter(username=admin_username).exists():
-            User.objects.create_superuser(
-                username=admin_username,
-                email=admin_email,
-                password=admin_password,
-            )
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Created superuser: {admin_username} / {admin_password}"
-                )
-            )
-        else:
-            self.stdout.write("Superuser already exists: admin")
-
-        # ------------------------------------------------------------
         # 2) Users + roles + customer profiles
         # ------------------------------------------------------------
         def make_user(username: str, email: str, password: str = "Password123!"):
@@ -201,20 +180,6 @@ class Command(BaseCommand):
             dev_role.save(update_fields=["role"])
         self.stdout.write(self.style.SUCCESS("Dev account seeded: ramizer"))
 
-        # Executive user
-        exec_user, exec_created = User.objects.get_or_create(
-            username="execuser",
-            defaults={"email": "exec@quicksip.com", "first_name": "Quinn", "last_name": "Executive"},
-        )
-        if exec_created:
-            exec_user.set_password("ExecPass123!")
-            exec_user.save(update_fields=["password"])
-        UserRole.objects.get_or_create(
-            user=exec_user,
-            defaults={"role": UserRoleChoices.EXECUTIVE},
-        )
-        self.stdout.write(self.style.SUCCESS("Executive account seeded: execuser"))
-
         # Named staff accounts
         named_staff = [
             ("rmsupport",    "rmsupport@mail.com",    "Rachel",   "Mizer",  "rmsupportpass",  UserRoleChoices.SUPPORT),
@@ -238,14 +203,6 @@ class Command(BaseCommand):
                 u.save(update_fields=["first_name", "last_name"])
             UserRole.objects.get_or_create(user=u, defaults={"role": role})
             self.stdout.write(self.style.SUCCESS(f"Seeded: {username} ({role})"))
-
-        # Store manager users
-        for i in range(1, 4):
-            u = make_user(f"manager{i}", f"manager{i}@example.com")
-            UserRole.objects.get_or_create(
-                user=u,
-                defaults={"role": UserRoleChoices.STORE_MANAGER},
-            )
 
         # Customer users
         customers = [
@@ -1367,15 +1324,13 @@ class Command(BaseCommand):
                     obj.save()
             locations[num] = obj
 
-        # Assign managers to locations
-        for i, loc_num in enumerate([1, 2, 3], start=1):
-            User = get_user_model()
-            mgr_user = User.objects.filter(username=f"manager{i}").first()
-            if mgr_user:
-                role = UserRole.objects.filter(user=mgr_user).first()
-                if role and role.store_id != locations[loc_num].pk:
-                    role.store = locations[loc_num]
-                    role.save(update_fields=["store"])
+        # Assign mgr_kgamble to Downtown Raleigh (location 1)
+        mgr_user = User.objects.filter(username="mgr_kgamble").first()
+        if mgr_user:
+            role = UserRole.objects.filter(user=mgr_user).first()
+            if role and role.store_id != locations[1].pk:
+                role.store = locations[1]
+                role.save(update_fields=["store"])
 
         self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
 
