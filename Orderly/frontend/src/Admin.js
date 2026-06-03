@@ -46,6 +46,7 @@ import LocationManagementPage from "./pages/Admin/LocationManagementPage";
 import LocationCreatePage from "./pages/Admin/LocationCreatePage";
 import LocationDetailPage from "./pages/Admin/LocationDetailPage";
 import RegionManagementPage from "./pages/Admin/RegionManagementPage";
+import StoreManagerEmployeesPage from "./pages/Admin/StoreManagerEmployeesPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -506,6 +507,15 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/my-store")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">🏪 My Store</p>
+        <p className="sidebar-desc">View and manage your store's staff and store-specific information.</p>
+        <Link to="/admin/my-store/employees" className="sidebar-btn">👥 Employees</Link>
+        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/feature-request")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">💡 Feature Requests</p>
@@ -554,6 +564,9 @@ function AdminLayout() {
             <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
             {userRole === "EXECUTIVE" && (
               <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
+            )}
+            {userRole === "STORE_MANAGER" && (
+              <Link to="/admin/my-store/employees" className="nav-card nav-card--sm"><span>My<br />Store</span></Link>
             )}
           </nav>
         )}
@@ -609,6 +622,7 @@ function AdminLayout() {
             <Route path="/locations/new" element={<LocationCreatePage />} />
             <Route path="/locations/regions" element={<RegionManagementPage />} />
             <Route path="/locations/:locationId" element={<LocationDetailPage />} />
+            <Route path="/my-store/employees" element={<StoreManagerEmployeesPage />} />
           </Routes>
         </div>
 

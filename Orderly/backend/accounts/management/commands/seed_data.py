@@ -332,7 +332,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Personal customer account seeded: Rachel"))
 
         self.stdout.write(
-            self.style.SUCCESS("Users seeded: 3 store managers, 6 customers + dev + personal")
+            self.style.SUCCESS("Users seeded: 6 customers + dev + personal")
         )
 
         # ------------------------------------------------------------
