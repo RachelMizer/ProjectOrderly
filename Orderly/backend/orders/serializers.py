@@ -14,7 +14,7 @@ PATCH  /api/v1/orders/{orderId}/submit
 from django.db.models import Sum
 from rest_framework import serializers
 from catalog.models import ProductVariant, ModifierOption, ModifierGroup
-from orders.models import Order, OrderItem, OrderItemModifier
+from orders.models import Order, OrderItem, OrderItemModifier, OrderChannel
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
 
@@ -487,6 +487,9 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+    orderChannel = serializers.CharField(source="order_channel", read_only=True)
+    storeId = serializers.IntegerField(source="store.id", read_only=True, allow_null=True)
+    storeName = serializers.CharField(source="store.name", read_only=True, allow_null=True, default=None)
 
     items = DraftOrderItemSerializer(many=True, read_only=True)
 
@@ -496,6 +499,9 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "id",
             "date",
             "status",
+            "orderChannel",
+            "storeId",
+            "storeName",
             "items",
             "taxAmount",
             "totalDue",
@@ -535,6 +541,7 @@ class OrderHistoryItemSerializer(serializers.ModelSerializer):
 
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+    orderChannel = serializers.CharField(source="order_channel", read_only=True)
 
     class Meta:
         model = Order
@@ -545,6 +552,7 @@ class OrderHistoryItemSerializer(serializers.ModelSerializer):
             "taxAmount",
             "totalDue",
             "status",
+            "orderChannel",
             "createdAt",
             "updatedAt",
         ]
@@ -575,6 +583,9 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+    orderChannel = serializers.CharField(source="order_channel", read_only=True)
+    storeId = serializers.IntegerField(source="store.id", read_only=True, allow_null=True)
+    storeName = serializers.CharField(source="store.name", read_only=True, allow_null=True, default=None)
 
     class Meta:
         model = Order
@@ -588,6 +599,9 @@ class BusinessOrderListSerializer(serializers.ModelSerializer):
             "taxAmount",
             "totalDue",
             "status",
+            "orderChannel",
+            "storeId",
+            "storeName",
             "createdAt",
             "updatedAt",
         ]
@@ -686,6 +700,9 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source="created_at", read_only=True)
     updatedAt = serializers.DateTimeField(source="updated_at", read_only=True)
+    orderChannel = serializers.CharField(source="order_channel", read_only=True)
+    storeId = serializers.IntegerField(source="store.id", read_only=True, allow_null=True)
+    storeName = serializers.CharField(source="store.name", read_only=True, allow_null=True, default=None)
     items = BusinessOrderDetailItemSerializer(many=True, read_only=True)
 
     class Meta:
@@ -697,6 +714,9 @@ class BusinessOrderDetailSerializer(serializers.ModelSerializer):
             "customerFirstName",
             "customerLastName",
             "status",
+            "orderChannel",
+            "storeId",
+            "storeName",
             "orderSubtotal",
             "taxAmount",
             "totalDue",

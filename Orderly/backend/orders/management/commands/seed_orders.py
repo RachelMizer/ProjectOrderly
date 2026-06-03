@@ -20,7 +20,8 @@ from django.utils import timezone
 
 from accounts.models import CustomerProfile
 from catalog.models import ModifierOption, ProductVariant
-from orders.models import Order, OrderItem, OrderItemModifier, OrderStatus
+from locations.models import Location
+from orders.models import Order, OrderItem, OrderItemModifier, OrderStatus, OrderChannel
 from orders.services import recalculate_order_totals
 
 PSL_MONTHS = {8, 9, 10, 11}
@@ -244,6 +245,8 @@ class Command(BaseCommand):
                 "No customer profiles found. Run seed_data and seed_customers first."
             )
 
+        locations = list(Location.objects.filter(is_active=True))
+
         today = timezone.now().date()
         current = datetime(2025, 8, 1)
         total_created = 0
@@ -282,11 +285,20 @@ class Command(BaseCommand):
                 else:
                     status = OrderStatus.COMPLETED
 
+                if locations and random.random() < 0.4:
+                    channel = OrderChannel.IN_STORE
+                    store = random.choice(locations)
+                else:
+                    channel = OrderChannel.ONLINE
+                    store = None
+
                 order = Order.objects.create(
                     customer=profile,
                     status=status,
                     subtotal=Decimal("0.00"),
                     tax_amount=Decimal("0.00"),
+                    order_channel=channel,
+                    store=store,
                 )
 
                 for item_spec in template["items"]:

@@ -13,6 +13,11 @@ class OrderStatus(models.TextChoices):
     CANCELLED = "CANCELLED", "Cancelled"
 
 
+class OrderChannel(models.TextChoices):
+    ONLINE = "ONLINE", "Online"
+    IN_STORE = "IN_STORE", "In Store"
+
+
 class PaymentType(models.TextChoices):
     CREDIT_CARD = "CREDIT_CARD", "Credit Card"
     CASH = "CASH", "Cash"
@@ -47,6 +52,18 @@ class Order(models.Model):
         max_length=20,
         choices=OrderStatus.choices,
         default=OrderStatus.DRAFT,
+    )
+    store = models.ForeignKey(
+        "locations.Location",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="orders",
+    )
+    order_channel = models.CharField(
+        max_length=10,
+        choices=OrderChannel.choices,
+        default=OrderChannel.ONLINE,
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
