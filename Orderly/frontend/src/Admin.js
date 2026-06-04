@@ -52,6 +52,7 @@ import EmployeeProfilePage from "./pages/Admin/EmployeeProfilePage";
 import ExecutiveEmployeeListPage from "./pages/Admin/ExecutiveEmployeeListPage";
 import PayPeriodPage from "./pages/Admin/PayPeriodPage";
 import TimecardPage from "./pages/Admin/TimecardPage";
+import TimecardManagementPage from "./pages/Admin/TimecardManagementPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -496,7 +497,11 @@ function AdminLayout() {
     if (/^\/admin\/locations\/\d+$/.test(path)) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">📍 Location Detail</p>
-        <p className="sidebar-desc">Edit this location's information and manager assignment. Changes are saved when you click Save Changes.</p>
+        <p className="sidebar-desc">
+          {userRole === "STORE_MANAGER"
+            ? "View your store's information. To request changes, contact an executive."
+            : "Edit this location's information and manager assignment. Changes are saved when you click Save Changes."}
+        </p>
         <Link to="/admin/locations" className="sidebar-back sidebar-back--sub">⬅️ Back to Locations</Link>
         <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
@@ -518,9 +523,13 @@ function AdminLayout() {
         <p className="sidebar-desc">View and manage your store's staff and store-specific information.</p>
         <Link to="/admin/my-store/employees" className="sidebar-btn">👥 Employee Management</Link>
         <Link to="/admin/my-store/schedule" className="sidebar-btn">📅 Schedule</Link>
+        <Link to="/admin/my-store/timecards" className="sidebar-btn">⏱ Timecard Management</Link>
         <Link to="/admin/my-store/pay-periods" className="sidebar-btn">💵 Pay Periods</Link>
         <Link to="/admin/employee-profile/me" className="sidebar-btn">🪪 Employee Information</Link>
-        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+        {path === "/admin/my-store/employees"
+          ? <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+          : <Link to="/admin/my-store/employees" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Employee Management</Link>
+        }
       </div>
     );
 
@@ -536,7 +545,10 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">🕐 Timecard</p>
         <p className="sidebar-desc">View punch records, session hours, and period totals. Managers and executives can add or correct punches within 30 days.</p>
-        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+        {userRole === "STORE_MANAGER"
+          ? <Link to="/admin/my-store/timecards" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Timecard Management</Link>
+          : <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+        }
       </div>
     );
 
@@ -547,7 +559,10 @@ function AdminLayout() {
           <Link to="/admin/employee-directory" className="sidebar-btn">👥 Employee Directory</Link>
         )}
         <Link to="/admin/employee-profile/me" className="sidebar-btn" style={{ marginTop: "6px" }}>👤 My Profile</Link>
-        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+        {userRole === "STORE_MANAGER"
+          ? <Link to="/admin/my-store/employees" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Employee Management</Link>
+          : <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+        }
       </div>
     );
 
@@ -659,10 +674,11 @@ function AdminLayout() {
             <Route path="/locations" element={<LocationManagementPage />} />
             <Route path="/locations/new" element={<LocationCreatePage />} />
             <Route path="/locations/regions" element={<RegionManagementPage />} />
-            <Route path="/locations/:locationId" element={<LocationDetailPage />} />
+            <Route path="/locations/:locationId" element={<LocationDetailPage readOnly={userRole === "STORE_MANAGER"} />} />
             <Route path="/my-store/employees" element={<StoreManagerEmployeesPage />} />
             <Route path="/my-store/schedule" element={<StoreSchedulePage />} />
             <Route path="/my-store/pay-periods" element={<PayPeriodPage />} />
+            <Route path="/my-store/timecards" element={<TimecardManagementPage />} />
             <Route path="/employee-profile/me" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
             <Route path="/employee-profile/:userId" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
             <Route path="/employee-directory" element={<ExecutiveEmployeeListPage />} />

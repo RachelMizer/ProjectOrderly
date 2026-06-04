@@ -153,13 +153,18 @@ export default function PayPeriodPage() {
       {!loading && error && <p className="admin-loading" style={{ color: "#ef4444" }}>{error}</p>}
 
       {!loading && !error && (
-        <table className="support-ticket-table" style={{ marginTop: "16px" }}>
+        <table className="support-ticket-table" style={{ marginTop: "16px", textAlign: "center" }}>
           <thead>
-            <tr><th>Name</th><th>Start</th><th>End</th><th></th></tr>
+            <tr>
+              <th style={{ textAlign: "center" }}>Name</th>
+              <th style={{ textAlign: "center" }}>Start</th>
+              <th style={{ textAlign: "center" }}>End</th>
+              <th></th>
+            </tr>
           </thead>
           <tbody>
             {periods.length === 0 ? (
-              <tr><td colSpan={5} style={{ textAlign: "center", color: "#94a3b8" }}>No pay periods yet.</td></tr>
+              <tr><td colSpan={4} style={{ textAlign: "center", color: "#94a3b8" }}>No pay periods yet.</td></tr>
             ) : (
               periods.map(p => {
                 const isEditing = editingId === p.id;
@@ -167,7 +172,7 @@ export default function PayPeriodPage() {
                   <tr key={p.id}>
                     {isEditing ? (
                       <>
-                        <td><input className="acct-field-input" style={{ fontSize: ".8rem", width: "100%" }} value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} /></td>
+                        <td><input className="acct-field-input" style={{ fontSize: ".8rem", width: "100%", textAlign: "center" }} value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} /></td>
                         <td><input className="acct-field-input" type="date" style={{ fontSize: ".8rem" }} value={editForm.startDate} onChange={e => setEditForm(f => ({ ...f, startDate: e.target.value }))} /></td>
                         <td><input className="acct-field-input" type="date" style={{ fontSize: ".8rem" }} value={editForm.endDate} onChange={e => setEditForm(f => ({ ...f, endDate: e.target.value }))} /></td>
                         <td style={{ whiteSpace: "nowrap" }}>

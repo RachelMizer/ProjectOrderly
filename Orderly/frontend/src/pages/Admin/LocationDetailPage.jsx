@@ -19,7 +19,7 @@ const EMPTY_DRAFT = {
   is_active: true,
 };
 
-export default function LocationDetailPage() {
+export default function LocationDetailPage({ readOnly = false }) {
   const { locationId } = useParams();
   const navigate = useNavigate();
 
@@ -178,7 +178,9 @@ export default function LocationDetailPage() {
         </span>
       </div>
       <p className="ticket-detail__description" style={{ marginBottom: "28px" }}>
-        Edit the details for this location. Changes are saved when you click Save Changes.
+        {readOnly
+          ? "You can view this location's details below. Contact an executive to make changes."
+          : "Edit the details for this location. Changes are saved when you click Save Changes."}
       </p>
 
       <div className="rgn-form-card" style={{ marginBottom: "20px" }}>
@@ -187,12 +189,12 @@ export default function LocationDetailPage() {
           <div className="acct-field-group">
             <label className="acct-field-label">Location Number *</label>
             <input className="acct-field-input" type="number" name="location_number" min="1"
-              value={draft.location_number} onChange={handleChange} />
+              value={draft.location_number} onChange={handleChange} disabled={readOnly} />
           </div>
           <div className="acct-field-group">
             <label className="acct-field-label">Location Name *</label>
             <input className="acct-field-input" type="text" name="name"
-              value={draft.name} onChange={handleChange} />
+              value={draft.name} onChange={handleChange} disabled={readOnly} />
           </div>
         </div>
       </div>
@@ -202,7 +204,7 @@ export default function LocationDetailPage() {
         <div className="acct-edit-grid">
           <div className="acct-field-group">
             <label className="acct-field-label">Region</label>
-            <select className="acct-field-input" name="region" value={draft.region} onChange={handleChange}>
+            <select className="acct-field-input" name="region" value={draft.region} onChange={handleChange} disabled={readOnly}>
               <option value="">— Select region —</option>
               {regions.map((r) => (
                 <option key={r.id} value={r.id}>{r.country} → {r.name}</option>
@@ -212,7 +214,7 @@ export default function LocationDetailPage() {
           <div className="acct-field-group">
             <label className="acct-field-label">State / Province</label>
             <select className="acct-field-input" name="state_province" value={draft.state_province}
-              onChange={handleChange} disabled={!draft.region}>
+              onChange={handleChange} disabled={readOnly || !draft.region}>
               <option value="">— Select state —</option>
               {statesForRegion.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -224,12 +226,12 @@ export default function LocationDetailPage() {
           <div className="acct-field-group">
             <label className="acct-field-label">City</label>
             <input className="acct-field-input" type="text" name="city"
-              value={draft.city} onChange={handleChange} />
+              value={draft.city} onChange={handleChange} disabled={readOnly} />
           </div>
           <div className="acct-field-group">
             <label className="acct-field-label">ZIP Code</label>
             <input className="acct-field-input" type="text" name="zip_code"
-              value={draft.zip_code} onChange={handleChange} />
+              value={draft.zip_code} onChange={handleChange} disabled={readOnly} />
           </div>
         </div>
       </div>
@@ -240,17 +242,17 @@ export default function LocationDetailPage() {
           <div className="acct-field-group" style={{ flexBasis: "100%", maxWidth: "100%" }}>
             <label className="acct-field-label">Address</label>
             <input className="acct-field-input" type="text" name="address"
-              value={draft.address} onChange={handleChange} />
+              value={draft.address} onChange={handleChange} disabled={readOnly} />
           </div>
           <div className="acct-field-group">
             <label className="acct-field-label">Phone</label>
             <input className="acct-field-input" type="text" name="phone"
-              value={draft.phone} onChange={handleChange} />
+              value={draft.phone} onChange={handleChange} disabled={readOnly} />
           </div>
           <div className="acct-field-group">
             <label className="acct-field-label">Email</label>
             <input className="acct-field-input" type="email" name="email"
-              value={draft.email} onChange={handleChange} />
+              value={draft.email} onChange={handleChange} disabled={readOnly} />
           </div>
         </div>
       </div>
@@ -261,9 +263,9 @@ export default function LocationDetailPage() {
           <div className="acct-field-group">
             <label className="acct-field-label">Manager Name</label>
             <input className="acct-field-input" type="text" name="manager_name"
-              value={draft.manager_name} onChange={handleChange} />
+              value={draft.manager_name} onChange={handleChange} disabled={readOnly} />
           </div>
-          <div className="acct-field-group">
+          {!readOnly && <div className="acct-field-group">
             <label className="acct-field-label">Reassign Manager Account</label>
             <select className="acct-field-input" value={assignManager}
               onChange={(e) => { setAssignManager(e.target.value); setSaveSuccess(false); }}>
@@ -274,7 +276,7 @@ export default function LocationDetailPage() {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
         </div>
 
         {location.staff && location.staff.length > 0 && (
@@ -303,21 +305,24 @@ export default function LocationDetailPage() {
       <div className="acct-field-group" style={{ flexDirection: "row", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
         <label className="acct-field-label" style={{ marginBottom: 0 }}>Active</label>
         <input type="checkbox" name="is_active" checked={draft.is_active} onChange={handleChange}
-          style={{ width: "18px", height: "18px", cursor: "pointer" }} />
+          disabled={readOnly} style={{ width: "18px", height: "18px", cursor: readOnly ? "default" : "pointer" }} />
       </div>
 
-      {saveError && <p className="acct-form-error" style={{ marginBottom: "12px" }}>{saveError}</p>}
-      {saveSuccess && <p className="acct-form-success" style={{ marginBottom: "12px" }}>Changes saved successfully.</p>}
-
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
-        <button
-          className="ticket-action-btn ticket-action-btn--save"
-          onClick={handleSave}
-          disabled={saving || !hasChanges}
-        >
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
-      </div>
+      {!readOnly && (
+        <>
+          {saveError && <p className="acct-form-error" style={{ marginBottom: "12px" }}>{saveError}</p>}
+          {saveSuccess && <p className="acct-form-success" style={{ marginBottom: "12px" }}>Changes saved successfully.</p>}
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+            <button
+              className="ticket-action-btn ticket-action-btn--save"
+              onClick={handleSave}
+              disabled={saving || !hasChanges}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
