@@ -56,6 +56,8 @@ export default function StoreSchedulePage() {
   const [showShiftModal, setShowShiftModal] = useState(false);
   const [newShift, setNewShift] = useState({ name: "", startTime: "", endTime: "" });
   const [shiftError, setShiftError] = useState("");
+  const [editingShiftId, setEditingShiftId] = useState(null);
+  const [editingShift, setEditingShift] = useState({ name: "", startTime: "", endTime: "" });
 
   const loadMonth = useCallback(async (y, m) => {
     setLoading(true);
@@ -184,6 +186,33 @@ export default function StoreSchedulePage() {
       setShowShiftModal(false);
     } catch (e) {
       setShiftError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function updateShift() {
+    if (!editingShift.name.trim() || !editingShift.startTime || !editingShift.endTime) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${API}/shifts/${editingShiftId}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({
+          name: editingShift.name.trim(),
+          startTime: editingShift.startTime,
+          endTime: editingShift.endTime,
+        }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.name?.[0] || d.detail || "Failed to update shift.");
+      }
+      const updated = await res.json();
+      setShifts(prev => prev.map(s => s.id === editingShiftId ? updated : s));
+      setEditingShiftId(null);
+    } catch (e) {
+      alert(e.message);
     } finally {
       setSaving(false);
     }
@@ -444,21 +473,76 @@ export default function StoreSchedulePage() {
                   <tr><th>Name</th><th>Start</th><th>End</th><th></th></tr>
                 </thead>
                 <tbody>
-                  {shifts.map(s => (
-                    <tr key={s.id}>
-                      <td>{s.name}</td>
-                      <td>{fmt12(s.startTime)}</td>
-                      <td>{fmt12(s.endTime)}</td>
-                      <td>
-                        <button
-                          className="sched-panel__emp-remove"
-                          style={{ fontSize: ".8rem", padding: "2px 8px" }}
-                          onClick={() => deleteShift(s.id)}
-                          disabled={saving}
-                        >Delete</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {shifts.map(s => {
+                    const isEditing = editingShiftId === s.id;
+                    return (
+                      <tr key={s.id}>
+                        {isEditing ? (
+                          <>
+                            <td>
+                              <input
+                                className="acct-field-input"
+                                style={{ width: "100%", fontSize: ".8rem" }}
+                                value={editingShift.name}
+                                onChange={e => setEditingShift(p => ({ ...p, name: e.target.value }))}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                className="acct-field-input"
+                                type="time"
+                                style={{ fontSize: ".8rem" }}
+                                value={editingShift.startTime}
+                                onChange={e => setEditingShift(p => ({ ...p, startTime: e.target.value }))}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                className="acct-field-input"
+                                type="time"
+                                style={{ fontSize: ".8rem" }}
+                                value={editingShift.endTime}
+                                onChange={e => setEditingShift(p => ({ ...p, endTime: e.target.value }))}
+                              />
+                            </td>
+                            <td style={{ whiteSpace: "nowrap" }}>
+                              <button
+                                className="sched-panel__add-btn"
+                                style={{ fontSize: ".75rem", marginRight: "4px" }}
+                                onClick={updateShift}
+                                disabled={saving}
+                              >Save</button>
+                              <button
+                                className="sched-panel__cancel-btn"
+                                style={{ fontSize: ".75rem" }}
+                                onClick={() => setEditingShiftId(null)}
+                              >Cancel</button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>{s.name}</td>
+                            <td>{fmt12(s.startTime)}</td>
+                            <td>{fmt12(s.endTime)}</td>
+                            <td style={{ whiteSpace: "nowrap" }}>
+                              <button
+                                className="sched-panel__cancel-btn"
+                                style={{ fontSize: ".75rem", marginRight: "4px" }}
+                                onClick={() => { setEditingShiftId(s.id); setEditingShift({ name: s.name, startTime: s.startTime, endTime: s.endTime }); }}
+                                disabled={saving}
+                              >Edit</button>
+                              <button
+                                className="sched-panel__emp-remove"
+                                style={{ fontSize: ".8rem", padding: "5px 8px 2px" }}
+                                onClick={() => deleteShift(s.id)}
+                                disabled={saving}
+                              >Delete</button>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
