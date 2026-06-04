@@ -6256,14 +6256,14 @@ label.inv-toggle {
 }
 
 .sched-cell {
-  height: 155px;
+  height: 230px;
   background: #fff;
   border: 1px solid #dde4ec;
   border-radius: 6px;
   padding: 6px 7px;
   cursor: pointer;
   transition: border-color .15s, background .15s;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .sched-cell:hover { border-color: #a3b8cc; background: #f8fbfd; }
 .sched-cell--empty { background: #f8f9fb; cursor: default; border-color: #eef1f5; }
@@ -6279,7 +6279,7 @@ label.inv-toggle {
 }
 .sched-cell--today .sched-cell__date { color: #2d6a9f; }
 
-.sched-cell__shifts { display: flex; flex-direction: column; gap: 4px; }
+.sched-cell__shifts { display: flex; flex-direction: column; gap: 9px; }
 .sched-cell__shift-group { display: flex; flex-direction: column; gap: 1px; }
 .sched-cell__shift-name {
   display: block;
@@ -6475,5 +6475,98 @@ label.inv-toggle {
   .admin-sidebar,
   .admin-topbar { display: none !important; }
   .sched-grid { gap: 2px; }
-  .sched-cell { height: 120px; border: 1px solid #ccc; overflow: hidden; }
+  .sched-cell { height: 180px; border: 1px solid #ccc; overflow: hidden; }
+}
+
+/* ── Employee page — current week grid ─────────────────────── */
+.emp-week-section {
+  margin-bottom: 8px;
+}
+
+.emp-week-title {
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.emp-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.emp-week-cell {
+  background: #fff;
+  border: 1px solid #dde4ec;
+  border-radius: 7px;
+  padding: 8px 9px;
+  min-height: 100px;
+}
+
+.emp-week-cell--today {
+  border-color: #5a87a8;
+  background: #eef5fb;
+}
+
+.emp-week-cell__header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 7px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.emp-week-cell--today .emp-week-cell__header {
+  border-bottom-color: #b8d4ea;
+}
+
+.emp-week-cell__day {
+  font-size: .7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #334155;
+}
+
+.emp-week-cell--today .emp-week-cell__day { color: #2d6a9f; }
+
+.emp-week-cell__date {
+  font-size: .72rem;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.emp-week-cell__shifts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.emp-week-cell__shift-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.emp-week-cell__shift-name {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #475569;
+}
+
+.emp-week-cell__emp {
+  font-size: .72rem;
+  color: #334155;
+  line-height: 1.5;
+  padding-left: 5px;
+}
+
+.emp-week-cell__empty {
+  font-size: .75rem;
+  color: #cbd5e1;
 }
