@@ -2007,7 +2007,8 @@ label.inv-toggle {
 }
 
 .order-detail-date,
-.order-detail-customer {
+.order-detail-customer,
+.order-detail-channel {
     font-family: 'Renner', sans-serif;
     font-size: 1rem;
     color: #5a85a0;

@@ -120,6 +120,13 @@ export default function OrderDetails() {
                 <strong>Status:</strong> {order.status}
             </p>
 
+            <p style={{ marginTop: 0 }}>
+                <strong>Order type:</strong>{" "}
+                {order.orderChannel === "IN_STORE"
+                    ? `In-Store${order.storeName ? ` — ${order.storeName}` : ""}`
+                    : "Online"}
+            </p>
+
             {order.status === "PENDING" && (
                 <div style={{ marginBottom: "12px" }}>
                     <button

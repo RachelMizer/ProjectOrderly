@@ -167,6 +167,11 @@ export default function AdminOrderDetail() {
                     : order.customerId ? `Customer #${order.customerId}` : "—"}
                 </strong>
               </p>
+              <p className="order-detail-channel">
+                {order.orderChannel === "IN_STORE"
+                  ? <>🏪 <strong>In-Store</strong>{order.storeName ? ` — ${order.storeName}` : ""}</>
+                  : <>🌐 <strong>Online</strong></>}
+              </p>
             </div>
             <div className="order-detail-status-wrap">
               <span className="order-detail-status-label">Status:</span>
