@@ -47,6 +47,7 @@ import LocationCreatePage from "./pages/Admin/LocationCreatePage";
 import LocationDetailPage from "./pages/Admin/LocationDetailPage";
 import RegionManagementPage from "./pages/Admin/RegionManagementPage";
 import StoreManagerEmployeesPage from "./pages/Admin/StoreManagerEmployeesPage";
+import StoreSchedulePage from "./pages/Admin/StoreSchedulePage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -511,7 +512,8 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">🏪 My Store</p>
         <p className="sidebar-desc">View and manage your store's staff and store-specific information.</p>
-        <Link to="/admin/my-store/employees" className="sidebar-btn">👥 Employees</Link>
+        <Link to="/admin/my-store/employees" className="sidebar-btn">👥 Employee Management</Link>
+        <Link to="/admin/my-store/schedule" className="sidebar-btn">📅 Schedule</Link>
         <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -623,6 +625,7 @@ function AdminLayout() {
             <Route path="/locations/regions" element={<RegionManagementPage />} />
             <Route path="/locations/:locationId" element={<LocationDetailPage />} />
             <Route path="/my-store/employees" element={<StoreManagerEmployeesPage />} />
+            <Route path="/my-store/schedule" element={<StoreSchedulePage />} />
           </Routes>
         </div>
 

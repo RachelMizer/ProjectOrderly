@@ -13,6 +13,7 @@ from accounts.models import UserRole, CustomerProfile, UserRoleChoices
 from locations.models import Location, Region, StateProvince
 from suppliers.models import Supplier
 from inventory.models import InventoryItem, StoreInventoryLevel, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
+from schedule.models import StoreShift
 from catalog.models import (
     Category,
     Product,
@@ -1431,6 +1432,27 @@ class Command(BaseCommand):
                 emp_count += 1
 
         self.stdout.write(self.style.SUCCESS(f"Employees seeded: {emp_count} across 3 locations"))
+
+        # ------------------------------------------------------------
+        # 10.7) Default shift definitions per location
+        # ------------------------------------------------------------
+        from datetime import time as t
+        default_shifts = [
+            ("Morning",   t(6, 0),  t(14, 0), 0),
+            ("Afternoon", t(14, 0), t(22, 0), 1),
+            ("Closing",   t(22, 0), t(6, 0),  2),
+        ]
+        shift_count = 0
+        for loc_obj in locations.values():
+            for name, start, end, order in default_shifts:
+                _, created = StoreShift.objects.get_or_create(
+                    store=loc_obj,
+                    name=name,
+                    defaults={"start_time": start, "end_time": end, "sort_order": order},
+                )
+                shift_count += 1 if created else 0
+
+        self.stdout.write(self.style.SUCCESS(f"Default shifts seeded: {shift_count} new records"))
 
         # ------------------------------------------------------------
         # 11) Final summary

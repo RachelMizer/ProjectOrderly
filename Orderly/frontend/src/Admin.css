@@ -6237,3 +6237,234 @@ label.inv-toggle {
   color: #9ab5c8;
   white-space: nowrap;
 }
+
+/* ── Schedule page ─────────────────────────────────────────── */
+.sched-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.sched-day-header {
+  text-align: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 6px 0;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.sched-cell {
+  min-height: 90px;
+  background: #fff;
+  border: 1px solid #dde4ec;
+  border-radius: 6px;
+  padding: 6px 7px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  overflow: hidden;
+}
+.sched-cell:hover { border-color: #a3b8cc; background: #f8fbfd; }
+.sched-cell--empty { background: #f8f9fb; cursor: default; border-color: #eef1f5; }
+.sched-cell--today { border-color: #5a87a8; background: #eef5fb; }
+.sched-cell--selected { border-color: #2d6a9f; background: #dbeaf6; }
+
+.sched-cell__date {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 4px;
+}
+.sched-cell--today .sched-cell__date { color: #2d6a9f; }
+
+.sched-cell__shifts { display: flex; flex-direction: column; gap: 2px; }
+.sched-cell__shift-row {
+  font-size: .65rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sched-cell__shift-name { font-weight: 700; color: #475569; margin-right: 3px; }
+.sched-cell__shift-emps { color: #64748b; }
+
+/* Day panel */
+.sched-panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid #dde4ec;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sched-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: .92rem;
+  color: #1e3a4f;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sched-panel__close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+.sched-panel__close:hover { color: #475569; }
+
+.sched-panel__shift {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.sched-panel__shift:last-child { border-bottom: none; padding-bottom: 0; }
+
+.sched-panel__shift-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.sched-panel__shift-header strong { font-size: .88rem; color: #334155; }
+.sched-panel__shift-time { font-size: .75rem; color: #94a3b8; }
+
+.sched-panel__empty { font-size: .78rem; color: #94a3b8; margin: 0; }
+
+.sched-panel__emps { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.sched-panel__emp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dbeaf6;
+  color: #1e3a4f;
+  font-size: .78rem;
+  padding: 3px 8px 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.sched-panel__emp-remove {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: .9rem;
+  padding: 0;
+  line-height: 1;
+}
+.sched-panel__emp-remove:hover { color: #ef4444; }
+
+.sched-panel__assign-btn {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed #a3b8cc;
+  color: #5a87a8;
+  font-size: .78rem;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.sched-panel__assign-btn:hover:not(:disabled) { background: #eef5fb; }
+.sched-panel__assign-btn:disabled { color: #94a3b8; border-color: #dde4ec; cursor: default; }
+
+.sched-panel__add-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sched-panel__select {
+  font-size: .8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  padding: 4px 7px;
+  color: #334155;
+  flex: 1;
+  min-width: 0;
+}
+
+.sched-panel__add-btn {
+  background: #2d6a9f;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: .78rem;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.sched-panel__add-btn:disabled { opacity: .5; cursor: default; }
+
+.sched-panel__cancel-btn {
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: .78rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+/* Manage shifts modal */
+.sched-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sched-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 28px;
+  width: 520px;
+  max-width: 94vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+}
+
+.sched-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e3a4f;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+@media print {
+  .submenu-bar,
+  .support-back-btn,
+  .sched-panel,
+  .sched-panel__close,
+  .sched-panel__assign-btn,
+  .sched-panel__add-row,
+  .sched-panel__emp-remove,
+  .admin-sidebar,
+  .admin-topbar { display: none !important; }
+  .sched-grid { gap: 2px; }
+  .sched-cell { min-height: 70px; border: 1px solid #ccc; }
+}

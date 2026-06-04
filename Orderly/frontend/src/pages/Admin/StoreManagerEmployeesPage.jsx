@@ -4,19 +4,6 @@ import API_HOST from "../../config";
 
 const API = `${API_HOST}/api/v1`;
 
-const STATUS_COLORS = {
-  ONLINE:  "#22c55e",
-  BUSY:    "#f472b6",
-  AWAY:    "#9ca3af",
-  OFFLINE: "transparent",
-};
-
-function fmtDate(iso) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short", day: "numeric", year: "numeric",
-  });
-}
 
 export default function StoreManagerEmployeesPage() {
   const navigate = useNavigate();
@@ -65,7 +52,7 @@ export default function StoreManagerEmployeesPage() {
     <div className="admin-dash support-dash">
       <div className="ticket-detail__header" style={{ marginBottom: "20px" }}>
         <div>
-          <h1 className="ticket-detail__title">Employees</h1>
+          <h1 className="ticket-detail__title">Employee Management</h1>
           {storeName && (
             <p style={{ color: "#64748b", marginTop: "2px", fontSize: ".9rem" }}>{storeName}</p>
           )}
@@ -106,9 +93,6 @@ export default function StoreManagerEmployeesPage() {
               <th>Name</th>
               <th>Username</th>
               <th>Email</th>
-              <th>Status</th>
-              <th>Active</th>
-              <th>Member Since</th>
             </tr>
           </thead>
           <tbody>
@@ -117,28 +101,6 @@ export default function StoreManagerEmployeesPage() {
                 <td>{[emp.firstName, emp.lastName].filter(Boolean).join(" ") || emp.username}</td>
                 <td>{emp.username}</td>
                 <td>{emp.email}</td>
-                <td>
-                  <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: emp.status === "OFFLINE" ? "transparent" : STATUS_COLORS[emp.status] || "#9ca3af",
-                        border: emp.status === "OFFLINE" ? "2px solid #9ca3af" : "none",
-                        display: "inline-block",
-                        flexShrink: 0,
-                      }}
-                    />
-                    {emp.status || "—"}
-                  </span>
-                </td>
-                <td>
-                  <span className={`acct-status-badge acct-status-badge--${emp.isActive ? "active" : "inactive"}`}>
-                    {emp.isActive ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td>{fmtDate(emp.dateJoined)}</td>
               </tr>
             ))}
           </tbody>
