@@ -225,8 +225,10 @@ export default function StoreManagerEmployeesPage() {
           </thead>
           <tbody>
             {filtered.map((emp) => (
-              <tr key={emp.id}>
-                <td>{[emp.firstName, emp.lastName].filter(Boolean).join(" ") || emp.username}</td>
+              <tr key={emp.id} style={{ cursor: "pointer" }} onClick={() => navigate(`/admin/employee-profile/${emp.id}`)}>
+                <td style={{ color: "#5a87a8", fontWeight: 600 }}>
+                  {[emp.firstName, emp.lastName].filter(Boolean).join(" ") || emp.username}
+                </td>
                 <td>{emp.username}</td>
                 <td>{emp.email}</td>
               </tr>

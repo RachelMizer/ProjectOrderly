@@ -19,6 +19,7 @@ from .views import (
     HeartbeatView,
 )
 from .store_manager_views import StoreManagerEmployeesView
+from .employee_views import MyEmployeeProfileView, EmployeeProfileDetailView, EmployeeListView
 
 urlpatterns = [
     path("register", RegisterView.as_view(), name="register"),
@@ -53,4 +54,7 @@ urlpatterns = [
     path("team-status/", TeamStatusView.as_view(), name="team-status"),
     path("heartbeat/", HeartbeatView.as_view(), name="heartbeat"),
     path("store-manager/employees/", StoreManagerEmployeesView.as_view(), name="store-manager-employees"),
+    path("employee-profile/me/", MyEmployeeProfileView.as_view(), name="employee-profile-me"),
+    path("employee-profile/<int:user_id>/", EmployeeProfileDetailView.as_view(), name="employee-profile-detail"),
+    path("employee-profiles/", EmployeeListView.as_view(), name="employee-profiles"),
 ]

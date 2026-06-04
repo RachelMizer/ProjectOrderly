@@ -3,6 +3,7 @@ from .views import (
     LocationDetailView, LocationListView,
     RegionDetailView, RegionListView,
     StateProvinceDetailView, StateProvinceListView,
+    ManagerCandidatesView,
 )
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("regions/<int:pk>/", RegionDetailView.as_view(), name="region-detail"),
     path("states/", StateProvinceListView.as_view(), name="state-list"),
     path("states/<int:pk>/", StateProvinceDetailView.as_view(), name="state-detail"),
+    path("manager-candidates/", ManagerCandidatesView.as_view(), name="manager-candidates"),
 ]

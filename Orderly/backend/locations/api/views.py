@@ -261,6 +261,28 @@ class StateProvinceDetailView(APIView):
         return Response(status=204)
 
 
+class ManagerCandidatesView(APIView):
+    """GET /api/v1/locations/manager-candidates/ — list STORE_MANAGER users for dropdown."""
+    permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
+
+    def get(self, request):
+        role = getattr(getattr(request.user, "profile", None), "role", None)
+        if role != UserRoleChoices.EXECUTIVE:
+            return Response({"error": "PERMISSION_DENIED"}, status=403)
+        managers = UserRole.objects.filter(
+            role=UserRoleChoices.STORE_MANAGER
+        ).select_related("user", "store").order_by("user__last_name")
+        return Response([
+            {
+                "id": m.user.pk,
+                "name": f"{m.user.first_name} {m.user.last_name}".strip() or m.user.username,
+                "username": m.user.username,
+                "currentStore": str(m.store) if m.store else None,
+            }
+            for m in managers
+        ])
+
+
 def _assign_manager_to_location(user_id, location):
     """
     Set UserRole.store for the given user_id to location.

@@ -57,6 +57,7 @@ class Location(models.Model):
     phone = models.CharField(max_length=20, blank=True, default="")
     email = models.EmailField(blank=True, default="")
     is_active = models.BooleanField(default=True)
+    opening_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

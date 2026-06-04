@@ -48,6 +48,9 @@ import LocationDetailPage from "./pages/Admin/LocationDetailPage";
 import RegionManagementPage from "./pages/Admin/RegionManagementPage";
 import StoreManagerEmployeesPage from "./pages/Admin/StoreManagerEmployeesPage";
 import StoreSchedulePage from "./pages/Admin/StoreSchedulePage";
+import EmployeeProfilePage from "./pages/Admin/EmployeeProfilePage";
+import ExecutiveEmployeeListPage from "./pages/Admin/ExecutiveEmployeeListPage";
+import PayPeriodPage from "./pages/Admin/PayPeriodPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -57,6 +60,7 @@ function AdminLayout() {
   const [authorized, setAuthorized] = useState(null);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [recentOrdersKey, setRecentOrdersKey] = useState(0);
   const [ticketSearch, setTicketSearch] = useState("");
   const [myStatus, setMyStatus] = useState("ONLINE");
@@ -91,6 +95,7 @@ function AdminLayout() {
           setAuthorized(true);
           setUserRole(user.role);
           setUserName(user.firstName || user.username || user.email || "Admin");
+          setCurrentUserId(user.id);
           localStorage.setItem("currentUserId", user.id);
           if (user.role === "SUPPORT") {
             fetch(`${API_HOST}/api/v1/users/my-status/`, {
@@ -286,6 +291,8 @@ function AdminLayout() {
         <Link to="/admin/support/announcements" className="sidebar-btn">📢 Team Announcements</Link>
         <Link to="/admin/support/accounts" className="sidebar-btn" style={{marginTop: "6px"}}>👤 User Accounts Dashboard</Link>
         <Link to="/admin/support/team" className="sidebar-btn" style={{marginTop: "6px"}}>👥 Team Roster</Link>
+        <Link to="/admin/employee-directory" className="sidebar-btn" style={{marginTop: "6px"}}>🪪 Employee Information</Link>
+        <Link to="/admin/employee-profile/me" className="sidebar-btn" style={{marginTop: "6px"}}>👤 My Profile</Link>
         <a href="/manual/support/index.html" target="_blank" rel="noreferrer" className="sidebar-btn" style={{marginTop: "6px", marginBottom: "16px"}}>📘 Support Manual</a>
         {path !== "/admin" && (
           <Link to="/admin" className="sidebar-back" style={{marginTop: "4px"}}>⬅️ Return to Dashboard</Link>
@@ -514,6 +521,8 @@ function AdminLayout() {
         <p className="sidebar-desc">View and manage your store's staff and store-specific information.</p>
         <Link to="/admin/my-store/employees" className="sidebar-btn">👥 Employee Management</Link>
         <Link to="/admin/my-store/schedule" className="sidebar-btn">📅 Schedule</Link>
+        <Link to="/admin/my-store/pay-periods" className="sidebar-btn">💵 Pay Periods</Link>
+        <Link to="/admin/employee-profile/me" className="sidebar-btn">🪪 Employee Information</Link>
         <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -522,6 +531,26 @@ function AdminLayout() {
       <div className="sidebar-menu">
         <p className="sidebar-title">💡 Feature Requests</p>
         <p className="sidebar-desc">Submit ideas and improvements directly to the support team's backlog for review.</p>
+        <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/employee")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">🪪 Employee Info</p>
+        {(userRole === "EXECUTIVE" || userRole === "SUPPORT") && (
+          <Link to="/admin/employee-directory" className="sidebar-btn">👥 Employee Directory</Link>
+        )}
+        <Link to="/admin/employee-profile/me" className="sidebar-btn" style={{ marginTop: "6px" }}>👤 My Profile</Link>
+        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
+    if (path.startsWith("/admin/pay-periods")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">💵 Pay Periods</p>
+        <p className="sidebar-desc">Create and manage pay periods for your store's payroll submissions.</p>
+        <Link to="/admin/my-store/employees" className="sidebar-back sidebar-back--sub">⬅️ Back to My Store</Link>
         <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -568,6 +597,9 @@ function AdminLayout() {
             )}
             {userRole === "EXECUTIVE" && (
               <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
+            )}
+            {userRole === "EXECUTIVE" && (
+              <Link to="/admin/employee-directory" className="nav-card nav-card--sm"><span>Employee<br />Directory</span></Link>
             )}
             {userRole === "STORE_MANAGER" && (
               <Link to="/admin/my-store/employees" className="nav-card nav-card--sm"><span>My<br />Store</span></Link>
@@ -628,11 +660,15 @@ function AdminLayout() {
             <Route path="/locations/:locationId" element={<LocationDetailPage />} />
             <Route path="/my-store/employees" element={<StoreManagerEmployeesPage />} />
             <Route path="/my-store/schedule" element={<StoreSchedulePage />} />
+            <Route path="/my-store/pay-periods" element={<PayPeriodPage />} />
+            <Route path="/employee-profile/me" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
+            <Route path="/employee-profile/:userId" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
+            <Route path="/employee-directory" element={<ExecutiveEmployeeListPage />} />
           </Routes>
         </div>
 
         <div className="admin-footer">
-          <span>{userRole} USER | {userName.toUpperCase()}</span>
+          <span>{userRole.replace(/_/g, " ")} USER | {userName.toUpperCase()}</span>
         </div>
       </div>
 

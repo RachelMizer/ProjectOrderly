@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, timedelta
 from decimal import Decimal
 import random
 
@@ -14,6 +15,45 @@ from locations.models import Location, Region, StateProvince
 from suppliers.models import Supplier
 from inventory.models import InventoryItem, StoreInventoryLevel, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
 from schedule.models import StoreShift
+from payroll.models import PayPeriod
+
+
+def _make_employee_id(first: str, last: str, ssn_last4: str, dob: date) -> str:
+    fi = (first[0] if first else "X").upper()
+    li = (last[0]  if last  else "X").upper()
+    mm = f"{dob.month:02d}"
+    yy = str(dob.year)[-2:]
+    return f"{fi}{li}{ssn_last4}{mm}{yy}"
+
+
+def _random_dob(rng: random.Random) -> date:
+    """Random DOB for someone aged 20–55 as of 2024."""
+    year  = rng.randint(1969, 2004)
+    month = rng.randint(1, 12)
+    day   = rng.randint(1, 28)
+    return date(year, month, day)
+
+
+def _random_date_in_range(rng: random.Random, start: date, end: date) -> date:
+    delta = (end - start).days
+    return start + timedelta(days=rng.randint(0, max(delta, 0)))
+
+
+NC_STREETS = [
+    "Maple Ave", "Oak St", "Pine Rd", "Cedar Ln", "Elm Dr",
+    "Birch Blvd", "Walnut St", "Ash Ct", "Willow Way", "Hickory Pl",
+    "Dogwood Dr", "Magnolia Ave", "Sycamore St", "Poplar Rd", "Pecan Ln",
+]
+
+RALEIGH_ZIPS   = ["27601", "27603", "27604", "27605", "27606", "27607", "27608", "27609"]
+CARY_ZIPS      = ["27511", "27513", "27518", "27519"]
+GSB_ZIPS       = ["27401", "27403", "27405", "27406", "27408", "27410"]
+
+def _random_address(rng: random.Random, city: str, state: str, zips: list) -> tuple:
+    num    = rng.randint(100, 9999)
+    street = rng.choice(NC_STREETS)
+    zipcode = rng.choice(zips)
+    return f"{num} {street}", city, state, zipcode
 from catalog.models import (
     Category,
     Product,
@@ -1272,6 +1312,7 @@ class Command(BaseCommand):
             defaults={"abbreviation": "NC"},
         )
 
+        # Store opening dates: Store 1 → Aug 1 2024, Store 2 → Aug 15 2024, Store 3 → Sep 2 2024
         location_rows = [
             {
                 "location_number": 1,
@@ -1285,6 +1326,7 @@ class Command(BaseCommand):
                 "phone": "9195550101",
                 "email": "raleigh@quicksipcafe.com",
                 "is_active": True,
+                "opening_date": date(2024, 8, 1),
             },
             {
                 "location_number": 2,
@@ -1298,6 +1340,7 @@ class Command(BaseCommand):
                 "phone": "9195550102",
                 "email": "cary@quicksipcafe.com",
                 "is_active": True,
+                "opening_date": date(2024, 8, 15),
             },
             {
                 "location_number": 3,
@@ -1311,6 +1354,7 @@ class Command(BaseCommand):
                 "phone": "3365550103",
                 "email": "greensboro@quicksipcafe.com",
                 "is_active": True,
+                "opening_date": date(2024, 9, 2),
             },
         ]
 
@@ -1323,28 +1367,69 @@ class Command(BaseCommand):
             )
             if not created:
                 changed = False
-                for field in ("name", "region", "state_province", "address", "city", "state", "zip_code", "phone", "email", "is_active"):
-                    if getattr(obj, field) != loc[field]:
-                        setattr(obj, field, loc[field])
+                for field in ("name", "region", "state_province", "address", "city", "state", "zip_code", "phone", "email", "is_active", "opening_date"):
+                    if getattr(obj, field) != loc.get(field):
+                        setattr(obj, field, loc.get(field))
                         changed = True
                 if changed:
                     obj.save()
             locations[num] = obj
 
-        # Assign store managers to locations
-        location_managers = [
-            ("mgr_kgamble", 1),  # Downtown Raleigh (Keith — test account for all roles)
-            ("lharmon_ral",  1),  # Downtown Raleigh
-            ("mtate_cary",   2),  # North Cary
-            ("sowens_gsb",   3),  # Greensboro Downtown
-        ]
-        for username, loc_num in location_managers:
+        # Assign store managers to locations + seed HR profile data
+        # Manager hire dates = 1 month before opening
+        manager_hr = {
+            "mgr_kgamble": {
+                "loc": 1, "hire_date": date(2024, 7, 1),
+                "job_title": "Store Manager", "pay_rate": Decimal("22.50"),
+                "dob": date(1985, 3, 14), "ssn_last4": "4471",
+                "addr": "812 Blount St", "city": "Raleigh", "state": "NC", "zip": "27601",
+                "phone": "9194023381",
+            },
+            "lharmon_ral": {
+                "loc": 1, "hire_date": date(2024, 7, 1),
+                "job_title": "Store Manager", "pay_rate": Decimal("23.00"),
+                "dob": date(1980, 6, 22), "ssn_last4": "7832",
+                "addr": "404 Hillsborough St", "city": "Raleigh", "state": "NC", "zip": "27603",
+                "phone": "9192871044",
+            },
+            "mtate_cary": {
+                "loc": 2, "hire_date": date(2024, 7, 15),
+                "job_title": "Store Manager", "pay_rate": Decimal("22.75"),
+                "dob": date(1982, 11, 8), "ssn_last4": "3356",
+                "addr": "220 Chatham St", "city": "Cary", "state": "NC", "zip": "27511",
+                "phone": "9197654422",
+            },
+            "sowens_gsb": {
+                "loc": 3, "hire_date": date(2024, 8, 2),
+                "job_title": "Store Manager", "pay_rate": Decimal("22.50"),
+                "dob": date(1983, 3, 23), "ssn_last4": "5106",
+                "addr": "318 S Elm St", "city": "Greensboro", "state": "NC", "zip": "27401",
+                "phone": "3362881790",
+            },
+        }
+        for username, hr in manager_hr.items():
             mgr_user = User.objects.filter(username=username).first()
-            if mgr_user:
-                role = UserRole.objects.filter(user=mgr_user).first()
-                if role and role.store_id != locations[loc_num].pk:
-                    role.store = locations[loc_num]
-                    role.save(update_fields=["store"])
+            if not mgr_user:
+                continue
+            role = UserRole.objects.filter(user=mgr_user).first()
+            if not role:
+                continue
+            loc_num = hr["loc"]
+            if role.store_id != locations[loc_num].pk:
+                role.store = locations[loc_num]
+            role.job_title    = hr["job_title"]
+            role.pay_rate     = hr["pay_rate"]
+            role.hire_date    = hr["hire_date"]
+            role.date_of_birth = hr["dob"]
+            role.ssn_last4    = hr["ssn_last4"]
+            role.home_address = hr["addr"]
+            role.city         = hr["city"]
+            role.state        = hr["state"]
+            role.phone        = hr["phone"]
+            emp_id = _make_employee_id(mgr_user.first_name, mgr_user.last_name, hr["ssn_last4"], hr["dob"])
+            if not role.employee_id:
+                role.employee_id = emp_id
+            role.save()
 
         self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
 
@@ -1372,42 +1457,62 @@ class Command(BaseCommand):
         )
 
         # ------------------------------------------------------------
-        # 10.6) Employees per location
+        # 10.6) Employees per location — with full HR profile data
         # ------------------------------------------------------------
+        # opening_date per store; hire before = within the month before opening
+        open_dates = {
+            1: date(2024, 8, 1),
+            2: date(2024, 8, 15),
+            3: date(2024, 9, 2),
+        }
+        city_info = {
+            1: ("Raleigh",     "NC", RALEIGH_ZIPS),
+            2: ("Cary",        "NC", CARY_ZIPS),
+            3: ("Greensboro",  "NC", GSB_ZIPS),
+        }
+
+        # (username, email, first, last, job_title, pay_rate, hired_before_opening)
         employees_by_location = {
-            1: [  # Downtown Raleigh — 6 employees
-                ("mwebb_ral",     "mwebb_ral@quicksip.com",     "Marcus",   "Webb"),
-                ("jtorres_ral",   "jtorres_ral@quicksip.com",   "Jasmine",  "Torres"),
-                ("dclark_ral",    "dclark_ral@quicksip.com",    "Devon",    "Clark"),
-                ("pshah_ral",     "pshah_ral@quicksip.com",     "Priya",    "Shah"),
-                ("tbrooks_ral",   "tbrooks_ral@quicksip.com",   "Tyler",    "Brooks"),
-                ("aosei_ral",     "aosei_ral@quicksip.com",     "Amara",    "Osei"),
+            1: [
+                ("mwebb_ral",   "mwebb_ral@quicksip.com",   "Marcus",  "Webb",    "Barista",    Decimal("14.00"), True),
+                ("jtorres_ral", "jtorres_ral@quicksip.com", "Jasmine", "Torres",  "Shift Lead", Decimal("16.50"), True),
+                ("dclark_ral",  "dclark_ral@quicksip.com",  "Devon",   "Clark",   "Barista",    Decimal("13.50"), True),
+                ("pshah_ral",   "pshah_ral@quicksip.com",   "Priya",   "Shah",    "Cashier",    Decimal("13.50"), True),
+                ("tbrooks_ral", "tbrooks_ral@quicksip.com", "Tyler",   "Brooks",  "Barista",    Decimal("14.25"), False),
+                ("aosei_ral",   "aosei_ral@quicksip.com",   "Amara",   "Osei",    "Cashier",    Decimal("13.75"), False),
             ],
-            2: [  # North Cary — 7 employees
-                ("lpierce_cary",  "lpierce_cary@quicksip.com",  "Logan",    "Pierce"),
-                ("nchen_cary",    "nchen_cary@quicksip.com",    "Natalie",  "Chen"),
-                ("iford_cary",    "iford_cary@quicksip.com",    "Isaiah",   "Ford"),
-                ("sreyes_cary",   "sreyes_cary@quicksip.com",   "Sofia",    "Reyes"),
-                ("cwalsh_cary",   "cwalsh_cary@quicksip.com",   "Connor",   "Walsh"),
-                ("ajames_cary",   "ajames_cary@quicksip.com",   "Aaliyah",  "James"),
-                ("bmoss_cary",    "bmoss_cary@quicksip.com",    "Brendan",  "Moss"),
+            2: [
+                ("lpierce_cary", "lpierce_cary@quicksip.com", "Logan",   "Pierce", "Barista",    Decimal("14.00"), True),
+                ("nchen_cary",   "nchen_cary@quicksip.com",   "Natalie", "Chen",   "Shift Lead", Decimal("16.50"), True),
+                ("iford_cary",   "iford_cary@quicksip.com",   "Isaiah",  "Ford",   "Barista",    Decimal("13.50"), True),
+                ("sreyes_cary",  "sreyes_cary@quicksip.com",  "Sofia",   "Reyes",  "Cashier",    Decimal("13.50"), True),
+                ("cwalsh_cary",  "cwalsh_cary@quicksip.com",  "Connor",  "Walsh",  "Barista",    Decimal("14.00"), False),
+                ("ajames_cary",  "ajames_cary@quicksip.com",  "Aaliyah", "James",  "Barista",    Decimal("13.75"), False),
+                ("bmoss_cary",   "bmoss_cary@quicksip.com",   "Brendan", "Moss",   "Cashier",    Decimal("13.50"), False),
             ],
-            3: [  # Greensboro Downtown — 8 employees
-                ("kbrown_gsb",    "kbrown_gsb@quicksip.com",    "Keisha",   "Brown"),
-                ("enakamura_gsb", "enakamura_gsb@quicksip.com", "Eli",      "Nakamura"),
-                ("dprice_gsb",    "dprice_gsb@quicksip.com",    "Destiny",  "Price"),
-                ("cmendez_gsb",   "cmendez_gsb@quicksip.com",   "Carlos",   "Mendez"),
-                ("hgrant_gsb",    "hgrant_gsb@quicksip.com",    "Hailey",   "Grant"),
-                ("dking_gsb",     "dking_gsb@quicksip.com",     "Darnell",  "King"),
-                ("mhoffman_gsb",  "mhoffman_gsb@quicksip.com",  "Mia",      "Hoffman"),
-                ("zrivera_gsb",   "zrivera_gsb@quicksip.com",   "Zack",     "Rivera"),
+            3: [
+                ("kbrown_gsb",    "kbrown_gsb@quicksip.com",    "Keisha",  "Brown",    "Shift Lead", Decimal("16.50"), True),
+                ("enakamura_gsb", "enakamura_gsb@quicksip.com", "Eli",     "Nakamura", "Barista",    Decimal("14.00"), True),
+                ("dprice_gsb",    "dprice_gsb@quicksip.com",    "Destiny", "Price",    "Cashier",    Decimal("13.50"), True),
+                ("cmendez_gsb",   "cmendez_gsb@quicksip.com",   "Carlos",  "Mendez",   "Barista",    Decimal("14.00"), True),
+                ("hgrant_gsb",    "hgrant_gsb@quicksip.com",    "Hailey",  "Grant",    "Barista",    Decimal("13.75"), False),
+                ("dking_gsb",     "dking_gsb@quicksip.com",     "Darnell", "King",     "Cashier",    Decimal("13.50"), False),
+                ("mhoffman_gsb",  "mhoffman_gsb@quicksip.com",  "Mia",     "Hoffman",  "Barista",    Decimal("14.25"), False),
+                ("zrivera_gsb",   "zrivera_gsb@quicksip.com",   "Zack",    "Rivera",   "Barista",    Decimal("13.75"), False),
             ],
         }
 
         emp_count = 0
         for loc_num, emp_list in employees_by_location.items():
-            location = locations[loc_num]
-            for username, email, first, last in emp_list:
+            location  = locations[loc_num]
+            open_date = open_dates[loc_num]
+            pre_start = open_date - timedelta(days=31)  # month before opening
+            pre_end   = open_date - timedelta(days=1)
+            post_start = open_date
+            post_end   = date(2025, 6, 30)
+            city, state, zips = city_info[loc_num]
+
+            for username, email, first, last, job_title, pay_rate, before_open in emp_list:
                 u, created = User.objects.get_or_create(
                     username=username,
                     defaults={"email": email, "first_name": first, "last_name": last, "is_staff": True},
@@ -1422,13 +1527,38 @@ class Command(BaseCommand):
                 if not u.is_staff:
                     u.is_staff = True
                     u.save(update_fields=["is_staff"])
+
                 role, _ = UserRole.objects.get_or_create(
                     user=u,
                     defaults={"role": UserRoleChoices.EMPLOYEE, "store": location},
                 )
                 if role.store != location:
                     role.store = location
-                    role.save(update_fields=["store"])
+
+                # HR fields — only seed if missing
+                role.job_title = job_title
+                role.pay_rate  = pay_rate
+                if not role.hire_date:
+                    if before_open:
+                        role.hire_date = _random_date_in_range(rng, pre_start, pre_end)
+                    else:
+                        role.hire_date = _random_date_in_range(rng, post_start, post_end)
+                if not role.date_of_birth:
+                    role.date_of_birth = _random_dob(rng)
+                if not role.ssn_last4:
+                    role.ssn_last4 = str(rng.randint(1000, 9999))
+                if not role.employee_id:
+                    role.employee_id = _make_employee_id(first, last, role.ssn_last4, role.date_of_birth)
+                if not role.phone:
+                    area = rng.choice(["919", "984", "336", "704"])
+                    role.phone = f"{area}{rng.randint(1000000, 9999999)}"
+                if not role.home_address:
+                    addr, ecity, estate, _ = _random_address(rng, city, state, zips)
+                    role.home_address = addr
+                    role.city  = ecity
+                    role.state = estate
+
+                role.save()
                 emp_count += 1
 
         self.stdout.write(self.style.SUCCESS(f"Employees seeded: {emp_count} across 3 locations"))
@@ -1453,6 +1583,35 @@ class Command(BaseCommand):
                 shift_count += 1 if created else 0
 
         self.stdout.write(self.style.SUCCESS(f"Default shifts seeded: {shift_count} new records"))
+
+        # ------------------------------------------------------------
+        # 10.8) Sample pay periods per location
+        # ------------------------------------------------------------
+        sample_periods = [
+            ("July 2024",         date(2024, 7, 1),  date(2024, 7, 31)),
+            ("August 2024",       date(2024, 8, 1),  date(2024, 8, 31)),
+            ("September 2024",    date(2024, 9, 1),  date(2024, 9, 30)),
+            ("October 2024",      date(2024, 10, 1), date(2024, 10, 31)),
+            ("November 2024",     date(2024, 11, 1), date(2024, 11, 30)),
+            ("December 2024",     date(2024, 12, 1), date(2024, 12, 31)),
+            ("January 2025",      date(2025, 1, 1),  date(2025, 1, 31)),
+            ("February 2025",     date(2025, 2, 1),  date(2025, 2, 28)),
+            ("March 2025",        date(2025, 3, 1),  date(2025, 3, 31)),
+            ("April 2025",        date(2025, 4, 1),  date(2025, 4, 30)),
+            ("May 2025",          date(2025, 5, 1),  date(2025, 5, 31)),
+            ("June 2025",         date(2025, 6, 1),  date(2025, 6, 30)),
+        ]
+        pp_count = 0
+        for loc_obj in locations.values():
+            for name, start, end in sample_periods:
+                _, created = PayPeriod.objects.get_or_create(
+                    store=loc_obj,
+                    name=name,
+                    defaults={"start_date": start, "end_date": end},
+                )
+                pp_count += 1 if created else 0
+
+        self.stdout.write(self.style.SUCCESS(f"Pay periods seeded: {pp_count} new records"))
 
         # ------------------------------------------------------------
         # 11) Final summary

@@ -69,6 +69,16 @@ class UserRole(models.Model):
         default=StatusChoices.OFFLINE,
     )
 
+    # HR / employee profile fields
+    employee_id   = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    job_title     = models.CharField(max_length=100, blank=True, default="")
+    pay_rate      = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    hire_date     = models.DateField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    ssn_last4     = models.CharField(max_length=4, blank=True, default="")
+    phone         = models.CharField(max_length=20, blank=True, default="")
+    home_address  = models.CharField(max_length=255, blank=True, default="")
+
     def __str__(self) -> str:
         username = getattr(self.user, "username", str(self.user))
         return f"{username} ({self.role})"

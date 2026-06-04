@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "tickets",
     "locations",
     "schedule",
+    "payroll",
 ]
 
 MIDDLEWARE = [

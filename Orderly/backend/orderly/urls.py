@@ -46,4 +46,6 @@ urlpatterns = [
     path("api/v1/locations/", include("locations.api.urls")),
     # Schedule API (store manager)
     path("api/v1/store-manager/schedule/", include("schedule.api.urls")),
+    # Payroll API (store manager)
+    path("api/v1/store-manager/pay-periods/", include("payroll.api.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

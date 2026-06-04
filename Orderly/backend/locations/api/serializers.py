@@ -49,6 +49,7 @@ class LocationSerializer(serializers.ModelSerializer):
             "phone",
             "email",
             "is_active",
+            "opening_date",
             "staff",
             "created_at",
         ]

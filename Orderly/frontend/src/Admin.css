@@ -6582,3 +6582,53 @@ label.inv-toggle {
   font-size: .75rem;
   color: #cbd5e1;
 }
+
+/* ── Employee profile page ─────────────────────────────────── */
+.emp-prof-card {
+  background: #fff;
+  border: 1px solid #dde4ec;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.emp-prof-section-title {
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #64748b;
+  margin: 0 0 12px;
+}
+
+.emp-prof-row {
+  display: flex;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: baseline;
+}
+.emp-prof-row:last-child { border-bottom: none; }
+
+.emp-prof-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+.emp-prof-value {
+  font-size: .85rem;
+  color: #334155;
+}
+
+.emp-prof-ticket-note {
+  font-size: .82rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
