@@ -51,6 +51,7 @@ import StoreSchedulePage from "./pages/Admin/StoreSchedulePage";
 import EmployeeProfilePage from "./pages/Admin/EmployeeProfilePage";
 import ExecutiveEmployeeListPage from "./pages/Admin/ExecutiveEmployeeListPage";
 import PayPeriodPage from "./pages/Admin/PayPeriodPage";
+import TimecardPage from "./pages/Admin/TimecardPage";
 import { removeRecentOrder } from "./utils/recentOrders";
 
 const STATUS_COLORS = { ONLINE: "#22c55e", BUSY: "#f472b6", AWAY: "#9ca3af", OFFLINE: "transparent" };
@@ -414,16 +415,12 @@ function AdminLayout() {
     if (path.startsWith("/admin/catalog")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title"><span style={{marginRight:"-1px"}}>🛍️</span>Product Catalog</p>
-
         <p className="sidebar-desc">
-          Browse and manage the full product catalog. Add new items, edit existing
-          products, update pricing, and control which items are active and visible
-          to customers. Use the Manage Suppliers link to view and edit supplier contacts.
+          Browse the full product catalog. {userRole !== "STORE_MANAGER" && "Add new items, edit existing products, update pricing, and control which items are active and visible to customers."}
         </p>
-
-        <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>
-        <Link to="/admin/categories" className="sidebar-btn">🏷️ CATEGORY MANAGEMENT</Link>
-        <Link to="/admin/variants-modifiers" className="sidebar-btn">🔧 VARIANTS &amp; MODIFIERS</Link>
+        {userRole !== "STORE_MANAGER" && <Link to="/admin/suppliers" className="sidebar-btn">🏭 SUPPLIER MANAGEMENT</Link>}
+        {userRole !== "STORE_MANAGER" && <Link to="/admin/categories" className="sidebar-btn">🏷️ CATEGORY MANAGEMENT</Link>}
+        {userRole !== "STORE_MANAGER" && <Link to="/admin/variants-modifiers" className="sidebar-btn">🔧 VARIANTS &amp; MODIFIERS</Link>}
         <Link to="/admin" className="sidebar-back" style={{marginTop:"20px"}}>⬅️ Return to Dashboard</Link>
       </div>
     );
@@ -448,7 +445,7 @@ function AdminLayout() {
 
     if (path.startsWith("/admin/settings")) return (
       <div className="sidebar-menu">
-        <p className="sidebar-title sidebar-title--sm" style={{whiteSpace:"normal"}}><span style={{marginRight:"-1px"}}>⚙️</span>Settings Management</p>
+        <p className="sidebar-title sidebar-title--sm" style={{whiteSpace:"normal"}}><span style={{marginRight:"-1px"}}>⚙️</span>Business Information &amp; Settings</p>
         <p className="sidebar-desc">Configure business and storefront settings for your Orderly instance.</p>
         <Link to="/admin" className="sidebar-back">⬅️ Return to Dashboard</Link>
       </div>
@@ -535,6 +532,14 @@ function AdminLayout() {
       </div>
     );
 
+    if (path.startsWith("/admin/timecard")) return (
+      <div className="sidebar-menu">
+        <p className="sidebar-title">🕐 Timecard</p>
+        <p className="sidebar-desc">View punch records, session hours, and period totals. Managers and executives can add or correct punches within 30 days.</p>
+        <Link to="/admin" className="sidebar-back" style={{ marginTop: "12px" }}>⬅️ Return to Dashboard</Link>
+      </div>
+    );
+
     if (path.startsWith("/admin/employee")) return (
       <div className="sidebar-menu">
         <p className="sidebar-title">🪪 Employee Info</p>
@@ -593,10 +598,7 @@ function AdminLayout() {
               <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
             )}
             {userRole !== "STORE_MANAGER" && (
-              <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
-            )}
-            {userRole === "EXECUTIVE" && (
-              <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
+              <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business<br />Information &amp; Settings</span></Link>
             )}
             {userRole === "EXECUTIVE" && (
               <Link to="/admin/employee-directory" className="nav-card nav-card--sm"><span>Employee<br />Directory</span></Link>
@@ -641,7 +643,7 @@ function AdminLayout() {
             <Route path="/catalog" element={<ProductCatalog />} />
             <Route path="/catalog/new" element={<AdminProductFormPage />} />
             <Route path="/catalog/edit/:productId" element={<AdminProductFormPage />} />
-            <Route path="/suppliers/new" element={<AdminSupplierFormPage />} />
+            <Route path="/suppliers/new" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/catalog" replace /> : <AdminSupplierFormPage />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/orders/:orderId" element={<AdminOrderDetail />} />
             <Route path="/account" element={<AccountSettings />} />
@@ -651,9 +653,9 @@ function AdminLayout() {
             <Route path="/export" element={<AdminExportPage />} />
             <Route path="/purchase-order" element={<AdminPurchaseOrderPage />} />
             <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
-            <Route path="/suppliers" element={<AdminSuppliersPage />} />
-            <Route path="/categories" element={<AdminCategoriesPage />} />
-            <Route path="/variants-modifiers" element={<AdminVariantsModifiersPage />} />
+            <Route path="/suppliers" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/catalog" replace /> : <AdminSuppliersPage />} />
+            <Route path="/categories" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/catalog" replace /> : <AdminCategoriesPage />} />
+            <Route path="/variants-modifiers" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/catalog" replace /> : <AdminVariantsModifiersPage />} />
             <Route path="/locations" element={<LocationManagementPage />} />
             <Route path="/locations/new" element={<LocationCreatePage />} />
             <Route path="/locations/regions" element={<RegionManagementPage />} />
@@ -664,6 +666,7 @@ function AdminLayout() {
             <Route path="/employee-profile/me" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
             <Route path="/employee-profile/:userId" element={<EmployeeProfilePage userRole={userRole} currentUserId={currentUserId} />} />
             <Route path="/employee-directory" element={<ExecutiveEmployeeListPage />} />
+            <Route path="/timecard/:userId" element={<TimecardPage userRole={userRole} />} />
           </Routes>
         </div>
 

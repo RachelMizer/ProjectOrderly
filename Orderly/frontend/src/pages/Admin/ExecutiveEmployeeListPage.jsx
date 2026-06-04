@@ -10,6 +10,13 @@ function fmtDate(d) {
   return new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+function fmtPhone(p) {
+  if (!p) return "—";
+  const d = p.replace(/\D/g, "");
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  return p;
+}
+
 export default function ExecutiveEmployeeListPage() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
@@ -95,16 +102,16 @@ export default function ExecutiveEmployeeListPage() {
       {!loading && error && <p className="admin-loading" style={{ color: "#ef4444" }}>{error}</p>}
 
       {!loading && !error && (
-        <table className="support-ticket-table" style={{ marginTop: "12px" }}>
+        <table className="support-ticket-table" style={{ marginTop: "12px", textAlign: "center" }}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Employee ID</th>
-              <th>Title</th>
-              <th>Store</th>
-              <th>Pay Rate</th>
-              <th>Hire Date</th>
-              <th>Phone</th>
+              <th style={{ textAlign: "center" }}>Name</th>
+              <th style={{ textAlign: "center" }}>Employee ID</th>
+              <th style={{ textAlign: "center" }}>Title</th>
+              <th style={{ textAlign: "center" }}>Store</th>
+              <th style={{ textAlign: "center" }}>Pay Rate</th>
+              <th style={{ textAlign: "center" }}>Hire Date</th>
+              <th style={{ textAlign: "center" }}>Phone</th>
             </tr>
           </thead>
           <tbody>
@@ -123,10 +130,10 @@ export default function ExecutiveEmployeeListPage() {
                   </td>
                   <td style={{ fontFamily: "monospace", fontSize: ".85rem" }}>{e.employee_id || "—"}</td>
                   <td>{e.job_title || "—"}</td>
-                  <td>{e.storeNumber ? `#${e.storeNumber} ${e.storeName}` : "—"}</td>
+                  <td>{e.storeName || "—"}</td>
                   <td>{e.pay_rate ? `$${parseFloat(e.pay_rate).toFixed(2)}/hr` : "—"}</td>
                   <td>{fmtDate(e.hire_date)}</td>
-                  <td>{e.phone || "—"}</td>
+                  <td>{fmtPhone(e.phone)}</td>
                 </tr>
               ))
             )}

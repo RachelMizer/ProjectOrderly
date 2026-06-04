@@ -155,7 +155,7 @@ export default function PayPeriodPage() {
       {!loading && !error && (
         <table className="support-ticket-table" style={{ marginTop: "16px" }}>
           <thead>
-            <tr><th>Name</th><th>Start</th><th>End</th><th>Created By</th><th></th></tr>
+            <tr><th>Name</th><th>Start</th><th>End</th><th></th></tr>
           </thead>
           <tbody>
             {periods.length === 0 ? (
@@ -170,7 +170,6 @@ export default function PayPeriodPage() {
                         <td><input className="acct-field-input" style={{ fontSize: ".8rem", width: "100%" }} value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} /></td>
                         <td><input className="acct-field-input" type="date" style={{ fontSize: ".8rem" }} value={editForm.startDate} onChange={e => setEditForm(f => ({ ...f, startDate: e.target.value }))} /></td>
                         <td><input className="acct-field-input" type="date" style={{ fontSize: ".8rem" }} value={editForm.endDate} onChange={e => setEditForm(f => ({ ...f, endDate: e.target.value }))} /></td>
-                        <td></td>
                         <td style={{ whiteSpace: "nowrap" }}>
                           <button className="sched-panel__add-btn" style={{ fontSize: ".75rem", marginRight: "4px" }} onClick={() => saveEdit(p.id)} disabled={saving}>Save</button>
                           <button className="sched-panel__cancel-btn" style={{ fontSize: ".75rem" }} onClick={() => setEditingId(null)}>Cancel</button>
@@ -181,7 +180,6 @@ export default function PayPeriodPage() {
                         <td style={{ fontWeight: 600 }}>{p.name}</td>
                         <td>{fmtDate(p.startDate)}</td>
                         <td>{fmtDate(p.endDate)}</td>
-                        <td style={{ color: "#64748b", fontSize: ".85rem" }}>{p.createdBy || "—"}</td>
                         <td style={{ whiteSpace: "nowrap" }}>
                           <button className="sched-panel__cancel-btn" style={{ fontSize: ".75rem", marginRight: "4px" }} onClick={() => { setEditingId(p.id); setEditForm({ name: p.name, startDate: p.startDate, endDate: p.endDate }); }} disabled={saving}>Edit</button>
                           <button className="sched-panel__emp-remove" style={{ fontSize: ".8rem", padding: "5px 8px 2px" }} onClick={() => deletePeriod(p.id)} disabled={saving}>Delete</button>

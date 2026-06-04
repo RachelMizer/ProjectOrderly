@@ -1251,11 +1251,11 @@ class Command(BaseCommand):
             defaults=dict(
                 store_name="Quick Sip Cafe",
                 tax_rate=Decimal("8.00"),
-                contact_phone="7045550192",
-                contact_email="hello@quicksipcafe.com",
+                contact_phone="704-555-0192",
+                contact_email="contact@quicksip.com",
                 hq_address="201 W Main St. Raleigh, NC 27601",
                 store_address="201 W Main St. Raleigh, NC 27601",
-                store_phone="7045550192",
+                store_phone="704-555-0192",
                 hours="Mon-Fri 6am-2pm\nSat-Sun 6am-3pm",
                 store_tagline="Your pause, perfected.",
                 show_tagline=False,
@@ -1312,7 +1312,7 @@ class Command(BaseCommand):
             defaults={"abbreviation": "NC"},
         )
 
-        # Store opening dates: Store 1 → Aug 1 2024, Store 2 → Aug 15 2024, Store 3 → Sep 2 2024
+        # Store opening dates: Store 1 → Aug 1 2025, Store 2 → Aug 15 2025, Store 3 → Sep 2 2025
         location_rows = [
             {
                 "location_number": 1,
@@ -1326,7 +1326,7 @@ class Command(BaseCommand):
                 "phone": "9195550101",
                 "email": "raleigh@quicksipcafe.com",
                 "is_active": True,
-                "opening_date": date(2024, 8, 1),
+                "opening_date": date(2025, 8, 1),
             },
             {
                 "location_number": 2,
@@ -1340,7 +1340,7 @@ class Command(BaseCommand):
                 "phone": "9195550102",
                 "email": "cary@quicksipcafe.com",
                 "is_active": True,
-                "opening_date": date(2024, 8, 15),
+                "opening_date": date(2025, 8, 15),
             },
             {
                 "location_number": 3,
@@ -1354,7 +1354,7 @@ class Command(BaseCommand):
                 "phone": "3365550103",
                 "email": "greensboro@quicksipcafe.com",
                 "is_active": True,
-                "opening_date": date(2024, 9, 2),
+                "opening_date": date(2025, 9, 2),
             },
         ]
 
@@ -1379,28 +1379,28 @@ class Command(BaseCommand):
         # Manager hire dates = 1 month before opening
         manager_hr = {
             "mgr_kgamble": {
-                "loc": 1, "hire_date": date(2024, 7, 1),
+                "loc": 1, "hire_date": date(2025, 7, 1),
                 "job_title": "Store Manager", "pay_rate": Decimal("22.50"),
                 "dob": date(1985, 3, 14), "ssn_last4": "4471",
                 "addr": "812 Blount St", "city": "Raleigh", "state": "NC", "zip": "27601",
                 "phone": "9194023381",
             },
             "lharmon_ral": {
-                "loc": 1, "hire_date": date(2024, 7, 1),
+                "loc": 1, "hire_date": date(2025, 7, 1),
                 "job_title": "Store Manager", "pay_rate": Decimal("23.00"),
                 "dob": date(1980, 6, 22), "ssn_last4": "7832",
                 "addr": "404 Hillsborough St", "city": "Raleigh", "state": "NC", "zip": "27603",
                 "phone": "9192871044",
             },
             "mtate_cary": {
-                "loc": 2, "hire_date": date(2024, 7, 15),
+                "loc": 2, "hire_date": date(2025, 7, 15),
                 "job_title": "Store Manager", "pay_rate": Decimal("22.75"),
                 "dob": date(1982, 11, 8), "ssn_last4": "3356",
                 "addr": "220 Chatham St", "city": "Cary", "state": "NC", "zip": "27511",
                 "phone": "9197654422",
             },
             "sowens_gsb": {
-                "loc": 3, "hire_date": date(2024, 8, 2),
+                "loc": 3, "hire_date": date(2025, 8, 2),
                 "job_title": "Store Manager", "pay_rate": Decimal("22.50"),
                 "dob": date(1983, 3, 23), "ssn_last4": "5106",
                 "addr": "318 S Elm St", "city": "Greensboro", "state": "NC", "zip": "27401",
@@ -1461,9 +1461,9 @@ class Command(BaseCommand):
         # ------------------------------------------------------------
         # opening_date per store; hire before = within the month before opening
         open_dates = {
-            1: date(2024, 8, 1),
-            2: date(2024, 8, 15),
-            3: date(2024, 9, 2),
+            1: date(2025, 8, 1),
+            2: date(2025, 8, 15),
+            3: date(2025, 9, 2),
         }
         city_info = {
             1: ("Raleigh",     "NC", RALEIGH_ZIPS),
@@ -1509,7 +1509,7 @@ class Command(BaseCommand):
             pre_start = open_date - timedelta(days=31)  # month before opening
             pre_end   = open_date - timedelta(days=1)
             post_start = open_date
-            post_end   = date(2025, 6, 30)
+            post_end   = date(2026, 6, 30)
             city, state, zips = city_info[loc_num]
 
             for username, email, first, last, job_title, pay_rate, before_open in emp_list:
@@ -1588,18 +1588,18 @@ class Command(BaseCommand):
         # 10.8) Sample pay periods per location
         # ------------------------------------------------------------
         sample_periods = [
-            ("July 2024",         date(2024, 7, 1),  date(2024, 7, 31)),
-            ("August 2024",       date(2024, 8, 1),  date(2024, 8, 31)),
-            ("September 2024",    date(2024, 9, 1),  date(2024, 9, 30)),
-            ("October 2024",      date(2024, 10, 1), date(2024, 10, 31)),
-            ("November 2024",     date(2024, 11, 1), date(2024, 11, 30)),
-            ("December 2024",     date(2024, 12, 1), date(2024, 12, 31)),
-            ("January 2025",      date(2025, 1, 1),  date(2025, 1, 31)),
-            ("February 2025",     date(2025, 2, 1),  date(2025, 2, 28)),
-            ("March 2025",        date(2025, 3, 1),  date(2025, 3, 31)),
-            ("April 2025",        date(2025, 4, 1),  date(2025, 4, 30)),
-            ("May 2025",          date(2025, 5, 1),  date(2025, 5, 31)),
-            ("June 2025",         date(2025, 6, 1),  date(2025, 6, 30)),
+            ("July 2025",         date(2025, 7, 1),  date(2025, 7, 31)),
+            ("August 2025",       date(2025, 8, 1),  date(2025, 8, 31)),
+            ("September 2025",    date(2025, 9, 1),  date(2025, 9, 30)),
+            ("October 2025",      date(2025, 10, 1), date(2025, 10, 31)),
+            ("November 2025",     date(2025, 11, 1), date(2025, 11, 30)),
+            ("December 2025",     date(2025, 12, 1), date(2025, 12, 31)),
+            ("January 2026",      date(2026, 1, 1),  date(2026, 1, 31)),
+            ("February 2026",     date(2026, 2, 1),  date(2026, 2, 28)),
+            ("March 2026",        date(2026, 3, 1),  date(2026, 3, 31)),
+            ("April 2026",        date(2026, 4, 1),  date(2026, 4, 30)),
+            ("May 2026",          date(2026, 5, 1),  date(2026, 5, 31)),
+            ("June 2026",         date(2026, 6, 1),  date(2026, 6, 30)),
         ]
         pp_count = 0
         for loc_obj in locations.values():

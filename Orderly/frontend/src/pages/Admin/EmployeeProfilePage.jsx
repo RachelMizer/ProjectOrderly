@@ -12,6 +12,13 @@ function fmtDate(d) {
   });
 }
 
+function fmtPhone(p) {
+  if (!p) return "—";
+  const d = p.replace(/\D/g, "");
+  if (d.length === 10) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  return p;
+}
+
 function Row({ label, value }) {
   return (
     <div className="emp-prof-row">
@@ -92,7 +99,7 @@ export default function EmployeeProfilePage({ userRole, currentUserId }) {
           <h1 className="ticket-detail__title">Employee Profile</h1>
           {profile && (
             <p style={{ color: "#64748b", marginTop: "2px", fontSize: ".9rem" }}>
-              {profile.storeName ? `#${profile.storeNumber} ${profile.storeName}` : ""}
+              {profile.storeName || ""}
             </p>
           )}
         </div>
@@ -113,8 +120,16 @@ export default function EmployeeProfilePage({ userRole, currentUserId }) {
             <Row label="Full Name"    value={`${profile.firstName || ""} ${profile.lastName || ""}`.trim()} />
             <Row label="Username"     value={profile.username} />
             <Row label="Email"        value={profile.email} />
-            <Row label="Phone"        value={profile.phone} />
-            <Row label="Home Address" value={[profile.home_address, profile.city, profile.state].filter(Boolean).join(", ")} />
+            <Row label="Phone"        value={fmtPhone(profile.phone)} />
+            <div className="emp-prof-row">
+              <span className="emp-prof-label">Home Address</span>
+              <span className="emp-prof-value">
+                {profile.home_address || "—"}
+                {(profile.city || profile.state) && (
+                  <><br />{[profile.city, profile.state].filter(Boolean).join(", ")}</>
+                )}
+              </span>
+            </div>
             <Row label="Date of Birth" value={fmtDate(profile.date_of_birth)} />
           </div>
 
@@ -154,6 +169,14 @@ export default function EmployeeProfilePage({ userRole, currentUserId }) {
             <Row label="Pay Rate"    value={profile.pay_rate ? `$${parseFloat(profile.pay_rate).toFixed(2)}/hr` : "—"} />
             <Row label="Role"        value={profile.role?.replace(/_/g, " ")} />
             <Row label="Employee ID" value={profile.employee_id} />
+            <div className="emp-prof-row">
+              <span className="emp-prof-label">Timecard</span>
+              <span className="emp-prof-value">
+                <Link to={`/admin/timecard/${profile.userId}`} style={{ color: "#5a87a8" }}>
+                  View Timecard →
+                </Link>
+              </span>
+            </div>
           </div>
 
           {isOwnProfile && (

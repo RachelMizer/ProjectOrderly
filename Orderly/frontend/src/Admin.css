@@ -6632,3 +6632,72 @@ label.inv-toggle {
   border-radius: 6px;
   border: 1px solid #e2e8f0;
 }
+
+/* ── Timecard page ─────────────────────────────────────────── */
+.tc-total-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.tc-total-label { font-size: .72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+.tc-total-hours { font-size: 1.6rem; font-weight: 800; color: #2d6a9f; line-height: 1; }
+
+.tc-day-block { margin-bottom: 20px; }
+
+.tc-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: #eef5fb;
+  border: 1px solid #c8dce9;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 0;
+}
+.tc-day-label { font-size: .85rem; font-weight: 700; color: #1e3a4f; }
+.tc-day-total  { font-size: .85rem; font-weight: 700; color: #2d6a9f; }
+
+.tc-punch-table { border-radius: 0 0 6px 6px; margin-top: 0; border-top: none; }
+.tc-punch-table thead th { border-top: none; }
+
+.tc-row--open td { background: #fffbeb; color: #92400e; }
+
+.tc-open-badge {
+  font-size: .75rem;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.tc-punch-note {
+  font-size: .75rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.tc-summary {
+  background: #fff;
+  border: 1px solid #dde4ec;
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin-top: 16px;
+  max-width: 320px;
+}
+.tc-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: .88rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+}
+.tc-summary__row:last-child { border-bottom: none; }
+
+@media print {
+  .tc-total-badge, .sched-panel__assign-btn, .sched-panel__add-btn,
+  .sched-panel__cancel-btn, .sched-panel__emp-remove,
+  .ticket-detail__footer { display: none !important; }
+}

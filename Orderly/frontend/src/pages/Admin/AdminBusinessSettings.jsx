@@ -163,7 +163,7 @@ export default function AdminBusinessSettings() {
                     type="tel"
                     value={form.contactPhone}
                     onChange={handleChange}
-                    placeholder="e.g. 9195550123"
+                    placeholder="e.g. 704-555-0123"
                   />
                 </td>
               </tr>
@@ -176,7 +176,7 @@ export default function AdminBusinessSettings() {
                     type="email"
                     value={form.contactEmail}
                     onChange={handleChange}
-                    placeholder="e.g. hello@quicksips.com"
+                    placeholder="e.g. contact@quicksip.com"
                   />
                 </td>
               </tr>

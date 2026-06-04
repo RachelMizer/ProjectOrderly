@@ -48,4 +48,6 @@ urlpatterns = [
     path("api/v1/store-manager/schedule/", include("schedule.api.urls")),
     # Payroll API (store manager)
     path("api/v1/store-manager/pay-periods/", include("payroll.api.urls")),
+    # Timecard API
+    path("api/v1/timecard/", include("payroll.api.timecard_urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
