@@ -611,9 +611,9 @@ function AdminLayout() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/orders/:orderId" element={<AdminOrderDetail />} />
             <Route path="/account" element={<AccountSettings />} />
-            <Route path="/settings" element={<AdminSettingsHub />} />
-            <Route path="/settings/business" element={<AdminBusinessSettings />} />
-            <Route path="/settings/storefront" element={<AdminStorefrontSettings />} />
+            <Route path="/settings" element={<AdminSettingsHub userRole={userRole} />} />
+            <Route path="/settings/business" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/settings" replace /> : <AdminBusinessSettings />} />
+            <Route path="/settings/storefront" element={userRole === "STORE_MANAGER" ? <Navigate to="/admin/settings" replace /> : <AdminStorefrontSettings />} />
             <Route path="/export" element={<AdminExportPage />} />
             <Route path="/purchase-order" element={<AdminPurchaseOrderPage />} />
             <Route path="/inventory/:itemId" element={<AdminInventoryDetailPage />} />
