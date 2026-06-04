@@ -8,6 +8,8 @@ from rest_framework.response import Response
 
 from orders.models import Order, OrderItem
 from accounts.api.permissions import IsStoreManagerOrAbove
+from accounts.models import UserRoleChoices
+from locations.models import Location
 
 from .serializers import (
     ProductSalesListSerializer,
@@ -16,6 +18,25 @@ from .serializers import (
     ProductSalesQuerySerializer,
     DateRangeSerializer,
 )
+
+
+def _resolve_store(request):
+    """
+    Returns (store_id, store_name) to use for filtering.
+
+    - STORE_MANAGER: always their assigned store (storeId param ignored).
+    - EXECUTIVE/SUPPORT: use ?storeId= if provided, else None (all stores).
+    """
+    profile = getattr(request.user, "profile", None)
+    if profile and profile.role == UserRoleChoices.STORE_MANAGER and profile.store_id:
+        store = profile.store
+        return store.pk, str(store)
+    try:
+        store_id = int(request.GET["storeId"])
+        store = Location.objects.filter(pk=store_id).first()
+        return store_id, (str(store) if store else None)
+    except (KeyError, ValueError, TypeError):
+        return None, None
 
 
 class SalesSummaryView(APIView):
@@ -30,10 +51,15 @@ class SalesSummaryView(APIView):
         end_date = params["endDate"]
         group_by = params["groupBy"]
 
-        qs = Order.objects.filter(
-            status__in=["PENDING", "COMPLETED"],
-            order_date__date__range=[start_date, end_date],
-        )
+        store_id, store_name = _resolve_store(request)
+
+        base_order_filter = {"status__in": ["PENDING", "COMPLETED"], "order_date__date__range": [start_date, end_date]}
+        base_item_filter  = {"order__status__in": ["PENDING", "COMPLETED"], "order__order_date__date__range": [start_date, end_date]}
+        if store_id:
+            base_order_filter["store_id"] = store_id
+            base_item_filter["order__store_id"] = store_id
+
+        qs = Order.objects.filter(**base_order_filter)
 
         totals = qs.aggregate(total=Sum("total_payment_due"), count=Count("id"))
         total_revenue = totals["total"] or Decimal("0.00")
@@ -61,10 +87,7 @@ class SalesSummaryView(APIView):
         ]
 
         product_qs = (
-            OrderItem.objects.filter(
-                order__status__in=["PENDING", "COMPLETED"],
-                order__order_date__date__range=[start_date, end_date],
-            )
+            OrderItem.objects.filter(**base_item_filter)
             .values("variant__product__name", "variant__name")
             .annotate(
                 units_sold=Sum("quantity"),
@@ -88,6 +111,9 @@ class SalesSummaryView(APIView):
 
         # --- Metadata for Filters ---
         all_counted = Order.objects.filter(status__in=["PENDING", "COMPLETED"])
+        if store_id:
+            all_counted = all_counted.filter(store_id=store_id)
+
         available_years = (
             all_counted.annotate(year=F("order_date__year"))
             .values_list("year", flat=True)
@@ -96,7 +122,6 @@ class SalesSummaryView(APIView):
         )
 
         available_months = []
-        # If the range represents a single year, provide month options for that year
         if start_date.year == end_date.year and start_date.month == 1 and end_date.month == 12:
             months_qs = (
                 all_counted.filter(order_date__year=start_date.year)
@@ -111,6 +136,12 @@ class SalesSummaryView(APIView):
                     "label": calendar.month_name[m]
                 })
 
+        available_stores = list(
+            Location.objects.filter(is_active=True)
+            .order_by("location_number")
+            .values("id", "location_number", "name")
+        )
+
         return Response({
             "startDate": str(start_date),
             "endDate": str(end_date),
@@ -122,6 +153,9 @@ class SalesSummaryView(APIView):
             "products": products,
             "availableYears": list(available_years),
             "availableMonths": available_months,
+            "availableStores": available_stores,
+            "currentStoreId": store_id,
+            "currentStoreName": store_name,
         })
 
 
@@ -137,10 +171,12 @@ class BestSellersView(APIView):
         end_date = params["endDate"]
         limit = params["limit"]
 
-        qs = OrderItem.objects.filter(
-            order__status__in=["PENDING", "COMPLETED"],
-            order__order_date__date__range=[start_date, end_date],
-        )
+        store_id, _ = _resolve_store(request)
+        item_filter = {"order__status__in": ["PENDING", "COMPLETED"], "order__order_date__date__range": [start_date, end_date]}
+        if store_id:
+            item_filter["order__store_id"] = store_id
+
+        qs = OrderItem.objects.filter(**item_filter)
 
         results = (
             qs.values(
@@ -184,10 +220,12 @@ class WorstSellersView(APIView):
         end_date = params["endDate"]
         limit = params["limit"]
 
-        qs = OrderItem.objects.filter(
-            order__status__in=["PENDING", "COMPLETED"],
-            order__order_date__date__range=[start_date, end_date],
-        )
+        store_id, _ = _resolve_store(request)
+        item_filter = {"order__status__in": ["PENDING", "COMPLETED"], "order__order_date__date__range": [start_date, end_date]}
+        if store_id:
+            item_filter["order__store_id"] = store_id
+
+        qs = OrderItem.objects.filter(**item_filter)
 
         results = (
             qs.values(
@@ -230,10 +268,12 @@ class SalesByCategoryView(APIView):
         start_date = params["startDate"]
         end_date = params["endDate"]
 
-        qs = OrderItem.objects.filter(
-            order__status__in=["PENDING", "COMPLETED"],
-            order__order_date__date__range=[start_date, end_date],
-        )
+        store_id, _ = _resolve_store(request)
+        item_filter = {"order__status__in": ["PENDING", "COMPLETED"], "order__order_date__date__range": [start_date, end_date]}
+        if store_id:
+            item_filter["order__store_id"] = store_id
+
+        qs = OrderItem.objects.filter(**item_filter)
 
         results = (
             qs.values(

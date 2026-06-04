@@ -28,7 +28,7 @@ function ChartTooltip({ active, payload, label }) {
   );
 }
 
-export default function AdminSalesDashboard() {
+export default function AdminSalesDashboard({ userRole }) {
   const navigate = useNavigate();
   const location = useLocation();
   const initMonth = location.state?.month || "";
@@ -36,13 +36,18 @@ export default function AdminSalesDashboard() {
     ? initMonth.split("-")[1]
     : String(new Date().getFullYear());
 
+  const isManager = userRole === "STORE_MANAGER";
+
   const [stats, setStats] = useState(null);
   const [products, setProducts] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
   const [availableMonths, setAvailableMonths] = useState([]);
+  const [availableStores, setAvailableStores] = useState([]);
+  const [currentStoreName, setCurrentStoreName] = useState(null);
   const [selectedYear, setSelectedYear] = useState(initYear);
   const [selectedMonth, setSelectedMonth] = useState(initMonth);
+  const [selectedStore, setSelectedStore] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,17 +104,14 @@ export default function AdminSalesDashboard() {
     setLoading(true);
     setError(null);
     fetchSalesSummary({
-      year:  selectedYear  || null,
-      month: selectedMonth || null,
+      year:    selectedYear  || null,
+      month:   selectedMonth || null,
+      storeId: selectedStore || null,
     })
       .then((data) => {
         setStats({
-          totalRevenue: parseFloat(
-            data.totalRevenue ?? data.total_revenue ?? 0
-          ),
-          orderCount: Number(
-            data.totalOrders ?? data.order_count ?? 0
-          ),
+          totalRevenue: parseFloat(data.totalRevenue ?? data.total_revenue ?? 0),
+          orderCount:   Number(data.totalOrders ?? data.order_count ?? 0),
         });
         setProducts(data.products || []);
         const rawBreakdown = data.breakdown || [];
@@ -129,6 +131,8 @@ export default function AdminSalesDashboard() {
         }
         setAvailableYears(data.availableYears || []);
         setAvailableMonths(data.availableMonths || []);
+        setAvailableStores(data.availableStores || []);
+        setCurrentStoreName(data.currentStoreName || null);
         const sublabel = selectedMonth
           ? formatMonthLabel(selectedMonth)
           : selectedYear
@@ -144,7 +148,7 @@ export default function AdminSalesDashboard() {
       })
       .catch((err) => setError(err.message || "Failed to load sales data."))
       .finally(() => setLoading(false));
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, selectedStore]);
 
   const filteredProducts = [...products]
     .filter((p) =>
@@ -210,11 +214,26 @@ export default function AdminSalesDashboard() {
                 <option key={m.value} value={m.value}>{m.label}</option>
               ))}
             </select>
-            {(searchQuery || selectedYear || selectedMonth) && (
+            {!isManager && availableStores.length > 0 && (
+              <select
+                className="rpt-month-select"
+                value={selectedStore}
+                onChange={(e) => setSelectedStore(e.target.value)}
+              >
+                <option value="">All Stores</option>
+                {availableStores.map((s) => (
+                  <option key={s.id} value={s.id}>#{s.location_number} {s.name}</option>
+                ))}
+              </select>
+            )}
+            {isManager && currentStoreName && (
+              <span className="rpt-store-label">📍 {currentStoreName}</span>
+            )}
+            {(searchQuery || selectedYear || selectedMonth || selectedStore) && (
               <button
                 type="button"
                 className="submenu-action submenu-action--clear"
-                onClick={() => { setSearchQuery(""); setSelectedYear(""); setSelectedMonth(""); }}
+                onClick={() => { setSearchQuery(""); setSelectedYear(""); setSelectedMonth(""); setSelectedStore(""); }}
               >
                 &times;&#x202F;CLEAR FILTERS
               </button>

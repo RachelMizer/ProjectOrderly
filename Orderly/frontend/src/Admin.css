@@ -1768,6 +1768,17 @@ label.inv-toggle {
     cursor: pointer;
 }
 
+.rpt-store-label {
+    font-family: 'Renner', sans-serif;
+    font-size: .78rem;
+    color: #33638B;
+    background: #dbeaf6;
+    border: 1px solid #a0b8c8;
+    border-radius: 3px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
 .rpt-product-select {
     min-width: 220px;
 }

@@ -38,7 +38,7 @@ export async function fetchProductPerformance({ name = null, variant = null, yea
   return data;
 }
 
-export async function fetchSalesSummary({ year = null, month = null } = {}) {
+export async function fetchSalesSummary({ year = null, month = null, storeId = null } = {}) {
   const params = new URLSearchParams();
 
   if (month) {
@@ -58,6 +58,8 @@ export async function fetchSalesSummary({ year = null, month = null } = {}) {
     params.set("endDate", today);
     params.set("groupBy", "month");
   }
+
+  if (storeId) params.set("storeId", storeId);
 
   const url = `${API_HOST}/api/v1/reports/sales/summary?${params.toString()}`;
 

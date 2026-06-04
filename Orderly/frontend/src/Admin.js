@@ -563,7 +563,9 @@ function AdminLayout() {
             {userRole !== "EXECUTIVE" && (
               <Link to="/admin/orders" className="nav-card" style={{backgroundImage: "url('/img/ord_button.png')"}}><span>Orders</span></Link>
             )}
-            <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
+            {userRole !== "STORE_MANAGER" && (
+              <Link to="/admin/settings" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/sett_button.png')"}}><span>Business &amp;<br />Store Settings</span></Link>
+            )}
             {userRole === "EXECUTIVE" && (
               <Link to="/admin/locations" className="nav-card nav-card--sm" style={{backgroundImage: "url('/img/loc_button.png')"}}><span>Location<br />Management</span></Link>
             )}
@@ -601,7 +603,7 @@ function AdminLayout() {
             <Route path="/support/tickets/new" element={<TicketCreateForm />} />
             <Route path="/support/tickets/:ticketId" element={<TicketDetail />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/reports/sales" element={<AdminSalesDashboard />} />
+            <Route path="/reports/sales" element={<AdminSalesDashboard userRole={userRole} />} />
             <Route path="/reports/products" element={<AdminProductPerformance />} />
             <Route path="/inventory" element={<AdminInventoryPage />} />
             <Route path="/catalog" element={<ProductCatalog />} />
