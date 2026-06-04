@@ -317,9 +317,11 @@ export default function StoreSchedulePage() {
                           <span className="sched-cell__date">{day}</span>
                           <div className="sched-cell__shifts">
                             {Object.values(byShift).map(s => (
-                              <div key={s.name} className="sched-cell__shift-row">
-                                <span className="sched-cell__shift-name">{s.name}:</span>
-                                <span className="sched-cell__shift-emps">{s.emps.join(", ")}</span>
+                              <div key={s.name} className="sched-cell__shift-group">
+                                <span className="sched-cell__shift-name">{s.name}</span>
+                                {s.emps.map((emp, i) => (
+                                  <div key={i} className="sched-cell__emp-row">{emp}</div>
+                                ))}
                               </div>
                             ))}
                           </div>
