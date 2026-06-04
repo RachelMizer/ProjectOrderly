@@ -12,7 +12,7 @@ from django.utils.text import slugify
 from accounts.models import UserRole, CustomerProfile, UserRoleChoices
 from locations.models import Location, Region, StateProvince
 from suppliers.models import Supplier
-from inventory.models import InventoryItem, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
+from inventory.models import InventoryItem, StoreInventoryLevel, UnitOfMeasure, VariantInventoryUsage, ModifierInventoryUsage
 from catalog.models import (
     Category,
     Product,
@@ -1332,9 +1332,10 @@ class Command(BaseCommand):
 
         # Assign store managers to locations
         location_managers = [
-            ("lharmon_ral", 1),  # Downtown Raleigh
-            ("mtate_cary",  2),  # North Cary
-            ("sowens_gsb",  3),  # Greensboro Downtown
+            ("mgr_kgamble", 1),  # Downtown Raleigh (Keith — test account for all roles)
+            ("lharmon_ral",  1),  # Downtown Raleigh
+            ("mtate_cary",   2),  # North Cary
+            ("sowens_gsb",   3),  # Greensboro Downtown
         ]
         for username, loc_num in location_managers:
             mgr_user = User.objects.filter(username=username).first()
@@ -1345,6 +1346,29 @@ class Command(BaseCommand):
                     role.save(update_fields=["store"])
 
         self.stdout.write(self.style.SUCCESS(f"Locations seeded: {len(location_rows)} locations in 2 regions"))
+
+        # ------------------------------------------------------------
+        # 10.55) Per-store inventory levels
+        # ------------------------------------------------------------
+        # Each store starts with the same quantities as the global items.
+        # Managers update their own store's levels independently.
+        all_inv_items = list(InventoryItem.objects.all())
+        sil_count = 0
+        for loc_obj in locations.values():
+            for inv_item in all_inv_items:
+                _, created = StoreInventoryLevel.objects.get_or_create(
+                    store=loc_obj,
+                    inventory_item=inv_item,
+                    defaults={
+                        "stock_quantity": inv_item.stock_quantity,
+                        "reorder_level": inv_item.reorder_level,
+                    },
+                )
+                sil_count += 1 if created else 0
+
+        self.stdout.write(
+            self.style.SUCCESS(f"Store inventory levels seeded: {sil_count} new records")
+        )
 
         # ------------------------------------------------------------
         # 10.6) Employees per location

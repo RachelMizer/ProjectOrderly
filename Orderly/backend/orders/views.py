@@ -30,7 +30,7 @@ def _validation_error_message(exc):
     messages = exc.messages if hasattr(exc, "messages") else [str(exc)]
     return "; ".join(str(m) for m in messages)
 
-from accounts.models import CustomerProfile
+from accounts.models import CustomerProfile, UserRoleChoices
 from accounts.api.permissions import IsStoreManager, IsStoreManagerOrAbove
 from orders.models import Order, OrderItem, OrderStatus
 from orders.serializers import (
@@ -562,6 +562,18 @@ class OrderHistoryView(APIView):
             status=status.HTTP_200_OK,
         )
 
+def _manager_store(request):
+    """Return the store for a store-manager request, or None for other roles."""
+    profile = getattr(request.user, "profile", None)
+    if (
+        profile is not None
+        and profile.role == UserRoleChoices.STORE_MANAGER
+        and profile.store_id is not None
+    ):
+        return profile.store
+    return None
+
+
 class BusinessOrderListView(APIView):
     """
     Business-only order list endpoint.
@@ -573,6 +585,7 @@ class BusinessOrderListView(APIView):
         - returns non-draft orders only
         - orders results newest first
         - supports optional ?status= filter
+        - store managers see only their store's orders
     """
 
     permission_classes = [IsAuthenticated, IsStoreManagerOrAbove]
@@ -581,6 +594,10 @@ class BusinessOrderListView(APIView):
         queryset = Order.objects.exclude(
             status=OrderStatus.DRAFT
         ).select_related("customer").order_by("-created_at")
+
+        store = _manager_store(request)
+        if store is not None:
+            queryset = queryset.filter(store=store)
 
         status_param = request.query_params.get("status")
         if status_param:
@@ -650,9 +667,12 @@ class OrderYearsView(APIView):
 
     def get(self, request):
         from django.db.models.functions import ExtractYear
+        qs = Order.objects.exclude(status=OrderStatus.DRAFT)
+        store = _manager_store(request)
+        if store is not None:
+            qs = qs.filter(store=store)
         years = (
-            Order.objects.exclude(status=OrderStatus.DRAFT)
-            .annotate(year=ExtractYear("created_at"))
+            qs.annotate(year=ExtractYear("created_at"))
             .values_list("year", flat=True)
             .distinct()
             .order_by("-year")
@@ -685,6 +705,16 @@ class CompleteOrderView(APIView):
                     "message": "Order not found.",
                 },
                 status=status.HTTP_404_NOT_FOUND,
+            )
+
+        store = _manager_store(request)
+        if store is not None and order.store != store:
+            return Response(
+                {
+                    "error": "FORBIDDEN",
+                    "message": "You do not have permission to complete this order.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         if order.status != OrderStatus.PENDING:

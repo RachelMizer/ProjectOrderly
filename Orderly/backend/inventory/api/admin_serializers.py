@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from inventory.models import InventoryItem
+from inventory.models import InventoryItem, StoreInventoryLevel
 from catalog.models import ProductVariant
 from suppliers.models import Supplier
 
@@ -63,6 +63,72 @@ class AdminInventoryItemSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
+
+
+class StoreInventoryLevelSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="inventory_item.name", read_only=True)
+    unit_of_measure = serializers.CharField(source="inventory_item.unit_of_measure", read_only=True)
+    supplier = SupplierSummarySerializer(source="inventory_item.supplier", read_only=True)
+    affected_products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StoreInventoryLevel
+        fields = [
+            "id",
+            "name",
+            "stock_quantity",
+            "unit_of_measure",
+            "reorder_level",
+            "supplier",
+            "affected_products",
+        ]
+        read_only_fields = ["id", "name", "unit_of_measure", "supplier", "affected_products"]
+
+    def get_affected_products(self, obj):
+        names = set()
+        item = obj.inventory_item
+        for usage in item.variant_usages.select_related("variant__product").all():
+            names.add(usage.variant.product.name)
+        for usage in item.modifier_usages.select_related(
+            "modifier_option__group__variant__product"
+        ).all():
+            names.add(usage.modifier_option.group.variant.product.name)
+        return sorted(names)
+
+    def validate_stock_quantity(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("Stock quantity cannot be negative.")
+        return value
+
+    def validate_reorder_level(self, value):
+        if value is not None and value < 0:
+            raise serializers.ValidationError("Reorder level cannot be negative.")
+        return value
+
+
+class LowStockInventoryLevelSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="inventory_item.name", read_only=True)
+    stockQuantity = serializers.DecimalField(
+        source="stock_quantity",
+        max_digits=12,
+        decimal_places=2,
+        read_only=True,
+    )
+    reorderLevel = serializers.DecimalField(
+        source="reorder_level",
+        max_digits=12,
+        decimal_places=2,
+        read_only=True,
+    )
+    unitOfMeasure = serializers.CharField(source="inventory_item.unit_of_measure", read_only=True)
+    supplierName = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StoreInventoryLevel
+        fields = ["id", "name", "stockQuantity", "reorderLevel", "unitOfMeasure", "supplierName"]
+
+    def get_supplierName(self, obj):
+        return obj.inventory_item.supplier.name if obj.inventory_item.supplier else None
 
 
 class LowStockVariantSerializer(serializers.ModelSerializer):

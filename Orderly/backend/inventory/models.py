@@ -162,3 +162,41 @@ class ModifierInventoryUsage(models.Model):
             f"{self.modifier_option} uses {self.quantity_used} "
             f"{self.inventory_item.unit_of_measure} {self.inventory_item.name}"
         )
+
+
+class StoreInventoryLevel(models.Model):
+    store = models.ForeignKey(
+        "locations.Location",
+        on_delete=models.CASCADE,
+        related_name="inventory_levels",
+    )
+    inventory_item = models.ForeignKey(
+        "inventory.InventoryItem",
+        on_delete=models.CASCADE,
+        related_name="store_levels",
+    )
+    stock_quantity = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    reorder_level = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        unique_together = [("store", "inventory_item")]
+        ordering = ["inventory_item__name"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(stock_quantity__gte=0),
+                name="store_inv_level_stock_qty_gte_0",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(reorder_level__isnull=True)
+                | models.Q(reorder_level__gte=0),
+                name="store_inv_level_reorder_gte_0_or_null",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.store} — {self.inventory_item.name}"
